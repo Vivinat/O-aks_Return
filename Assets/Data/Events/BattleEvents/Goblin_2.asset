@@ -9,14 +9,11 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: a3845463388303141a4721891b2fc23d, type: 3}
-  m_Name: Goblin
+  m_Script: {fileID: 11500000, guid: c45c94b250bd7634b9db87d78aa3bda4, type: 3}
+  m_Name: Goblin_2
   m_EditorClassIdentifier: 
-  characterName: Goblin
-  team: 1
-  maxHp: 50
-  maxMp: 100
-  defense: 2
-  speed: 2
-  battleActions:
-  - {fileID: 11400000, guid: 550d9ec4013eb6446941d04e0f2ca2bf, type: 2}
+  eventType: 0
+  sceneToLoad: BattleScene
+  enemies:
+  - {fileID: 11400000, guid: a872f435c38a33641b28f26f6e275c1f, type: 2}
+  - {fileID: 11400000, guid: a872f435c38a33641b28f26f6e275c1f, type: 2}

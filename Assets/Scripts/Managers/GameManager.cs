@@ -10,6 +10,8 @@ public class GameManager : MonoBehaviour
     
     public EventTypeSO CurrentEvent { get; private set; }
     
+    public static List<Character> enemiesToBattle;
+    
     // Agora, usamos um dicionário para guardar o estado de MÚLTIPLOS mapas.
     // A chave é o nome da cena do mapa, e o valor é o pacote de dados daquele mapa.
     private Dictionary<string, MapStateData> savedMapStates = new Dictionary<string, MapStateData>();
@@ -53,6 +55,20 @@ public class GameManager : MonoBehaviour
     public void StartEvent(EventTypeSO eventData)
     {
         CurrentEvent = eventData;
+        
+        // Verifica se o evento é do tipo Batalha
+        if (eventData is BattleEventSO battleEvent)
+        {
+            // Se for, armazena a lista de inimigos na variável estática
+            enemiesToBattle = battleEvent.enemies;
+            Debug.Log($"Iniciando batalha com {enemiesToBattle.Count} inimigos.");
+        }
+        else
+        {
+            // Se não for uma batalha, limpa a lista para evitar usar dados antigos
+            enemiesToBattle = null;
+        }
+
         SceneManager.LoadScene(eventData.sceneToLoad);
     }
     

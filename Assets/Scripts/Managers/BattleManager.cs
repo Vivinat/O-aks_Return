@@ -18,12 +18,6 @@ public enum BattleState
 public class BattleManager : MonoBehaviour
 {
     // Não é mais um singleton. Referências podem ser obtidas pela UI ou outros scripts se necessário.
-    
-    [Header("Team Prefabs & Spawn Points")]
-    public List<Transform> playerSpawns;
-    public List<Transform> enemySpawns;
-    // Futuramente, você pode popular essas listas com dados do GameManager
-    // para saber quais inimigos e jogadores carregar.
 
     [Header("Battle State")]
     public BattleState currentState;
@@ -41,9 +35,39 @@ public class BattleManager : MonoBehaviour
         playerTeam = new List<BattleEntity>();
         enemyTeam = new List<BattleEntity>();
 
-        // Lógica para instanciar os personagens na cena (exemplo)
-        // SpawnPlayers();
-        // SpawnEnemies();
+        List<GameObject> enemySlots = new List<GameObject>
+        {
+            GameObject.FindWithTag("EnemySlot1"),
+            GameObject.FindWithTag("EnemySlot2"),
+            GameObject.FindWithTag("EnemySlot3"),
+            GameObject.FindWithTag("EnemySlot4")
+        };
+        
+        List<Character> enemiesToSpawn = GameManager.enemiesToBattle;
+
+        // Desativa todos os slots para começar
+        foreach (var slot in enemySlots)
+        {
+            if(slot != null) slot.SetActive(false);
+        }
+        
+        if (enemiesToSpawn != null)
+        {
+            for (int i = 0; i < enemiesToSpawn.Count; i++)
+            {
+                // Garante que não tentemos acessar um slot que não existe
+                if (i < enemySlots.Count && enemySlots[i] != null)
+                {
+                    GameObject currentSlot = enemySlots[i];
+                    currentSlot.SetActive(true); // Ativa o slot
+                    
+                    BattleEntity entity = currentSlot.GetComponent<BattleEntity>();
+                    entity.characterData = enemiesToSpawn[i]; // Injeta os dados do inimigo!
+                    
+                    enemyTeam.Add(entity); // Adiciona à lista de combate
+                }
+            }
+        }
 
         // O ideal é que os personagens já estejam na cena ou sejam instanciados
         // com base em dados de um GameManager.

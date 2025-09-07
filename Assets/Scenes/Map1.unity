@@ -157,7 +157,7 @@ MonoBehaviour:
   - {fileID: 1348603584}
   - {fileID: 1070575933}
   isLocked: 0
-  eventType: {fileID: 11400000, guid: c889cdc989f42d447984691f8a3cd322, type: 2}
+  eventType: {fileID: 11400000, guid: 2e0c96beca99f2c4a839e33534fee06a, type: 2}
 --- !u!61 &346218325
 BoxCollider2D:
   m_ObjectHideFlags: 0

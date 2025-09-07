@@ -3,7 +3,11 @@
 --- !u!78 &1
 TagManager:
   serializedVersion: 2
-  tags: []
+  tags:
+  - EnemySlot1
+  - EnemySlot2
+  - EnemySlot3
+  - EnemySlot4
   layers:
   - Default
   - TransparentFX
