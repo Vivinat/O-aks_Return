@@ -29,6 +29,7 @@ public class BattleAction : ScriptableObject
     
     [TextArea]
     public string description; // Descrição para o jogador saber o que faz
+    public Sprite icon;
 
     [Header("Lógica da Ação")]
     public ActionType type;       // O que a ação faz (Ataca, Cura, etc.)
