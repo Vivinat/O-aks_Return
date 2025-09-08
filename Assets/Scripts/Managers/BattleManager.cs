@@ -153,11 +153,26 @@ public class BattleManager : MonoBehaviour
     private IEnumerator PerformEnemyAction()
     {
         yield return new WaitForSeconds(1.0f);
-        
-        BattleAction chosenAction = activeCharacter.characterData.battleActions[0];
+    
+        // Encontra uma ação que o inimigo possa pagar, ordenada para pegar a mais cara primeiro, se desejado.
+        BattleAction chosenAction = activeCharacter.characterData.battleActions
+            .Where(a => activeCharacter.currentMp >= a.manaCost) // Supondo que BattleEntity tenha um campo 'currentMp'
+            .OrderByDescending(a => a.manaCost)
+            .FirstOrDefault();
+
+        // Se nenhuma ação puder ser paga, o inimigo perde o turno.
+        if (chosenAction == null)
+        {
+            Debug.Log($"{activeCharacter.characterData.characterName} não tem mana para nenhuma ação e perdeu o turno!");
+            yield return new WaitForSeconds(1.0f);
+            activeCharacter.ResetATB();
+            currentState = BattleState.RUNNING;
+            yield break; // Encerra a corrotina aqui
+        }
+
         List<BattleEntity> targets = new List<BattleEntity>();
 
-        // *** MUDANÇA PRINCIPAL: IA agora entende TargetType ***
+        // Lógica para escolher o alvo com base na ação escolhida
         switch (chosenAction.targetType)
         {
             case TargetType.SingleEnemy:

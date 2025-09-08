@@ -50,16 +50,21 @@ public class BattleHUD : MonoBehaviour
         {
             // 1. Instancia o prefab do botão
             GameObject buttonObj = Instantiate(actionButtonPrefab, actionPanel.transform);
-            
+        
             // 2. Configura o tooltip no script do botão
             ActionButtonUI buttonUI = buttonObj.GetComponent<ActionButtonUI>();
             buttonUI.Setup(action, this);
-            
-            // 3. *** LÓGICA DE CLIQUE CENTRALIZADA AQUI ***
-            // Adiciona um listener diretamente no componente Button.
-            // Quando clicado, ele chamará OnActionSelected, passando a ação correta.
+        
+            // 3. Adiciona o listener de clique
             Button buttonComponent = buttonObj.GetComponent<Button>();
             buttonComponent.onClick.AddListener(() => OnActionSelected(action));
+
+            // 4. *** NOVA LÓGICA: Desabilita o botão se não houver mana suficiente ***
+            //    (Assumindo que BattleEntity tem um campo público 'currentMp')
+            if (character.currentMp < action.manaCost)
+            {
+                buttonComponent.interactable = false;
+            }
         }
     }
     

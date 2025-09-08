@@ -22,4 +22,4 @@ MonoBehaviour:
   type: 0
   targetType: 0
   power: 10
-  manaCost: 0
+  manaCost: 10

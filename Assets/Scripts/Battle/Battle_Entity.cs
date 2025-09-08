@@ -7,11 +7,12 @@ public class BattleEntity : MonoBehaviour
 {
     public Character characterData;
     public Slider atbBar;
-    public Slider hpBar; // Opcional: Adicione uma barra de vida
-
+    public Slider hpBar; 
+    public Slider mpBar;
+    
     // Status de batalha
     private int currentHp;
-    private int currentMp;
+    public int currentMp;
     private float currentAtb;
     private const float ATB_MAX = 100f;
 
@@ -25,6 +26,7 @@ public class BattleEntity : MonoBehaviour
         currentAtb = Random.Range(0, 20); // Começa com ATB aleatório para variar
         UpdateATBBar();
         UpdateHPBar();
+        UpdateMPBar();
     }
 
     public void UpdateATB(float deltaTime)
@@ -96,6 +98,7 @@ public class BattleEntity : MonoBehaviour
         if (currentMp >= manaCost)
         {
             currentMp -= manaCost;
+            UpdateMPBar();
             return true;
         }
 
@@ -119,5 +122,10 @@ public class BattleEntity : MonoBehaviour
     private void UpdateHPBar()
     {
         if (hpBar != null) hpBar.value = (float)currentHp / characterData.maxHp;
+    }
+    
+    private void UpdateMPBar()
+    {
+        if (mpBar != null) mpBar.value = (float)currentMp / characterData.maxMp;
     }
 }
