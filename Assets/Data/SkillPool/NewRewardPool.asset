@@ -9,16 +9,10 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: a3845463388303141a4721891b2fc23d, type: 3}
-  m_Name: Player
+  m_Script: {fileID: 11500000, guid: db073dd994feea34e83dd2a6d415cee1, type: 3}
+  m_Name: NewRewardPool
   m_EditorClassIdentifier: 
-  characterName: O'ak
-  team: 0
-  maxHp: 100
-  maxMp: 100
-  defense: 10
-  speed: 5
-  battleActions:
+  possibleRewards:
   - {fileID: 11400000, guid: 550d9ec4013eb6446941d04e0f2ca2bf, type: 2}
   - {fileID: 11400000, guid: 550d9ec4013eb6446941d04e0f2ca2bf, type: 2}
   - {fileID: 11400000, guid: 550d9ec4013eb6446941d04e0f2ca2bf, type: 2}

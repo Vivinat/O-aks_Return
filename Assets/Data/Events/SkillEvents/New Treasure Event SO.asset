@@ -9,8 +9,9 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 1dd4fd86671c7484186470266c5df439, type: 3}
-  m_Name: Shop
+  m_Script: {fileID: 11500000, guid: f8a051ceb155a1a4c8cec8fd82f99c6e, type: 3}
+  m_Name: New Treasure Event SO
   m_EditorClassIdentifier: 
-  eventType: 2
-  sceneToLoad: ShopScene
+  eventType: 1
+  sceneToLoad: SkillScene
+  poolForTheMap: {fileID: 11400000, guid: 439067aa8c02b5d4e8643c2ffece3cc7, type: 2}

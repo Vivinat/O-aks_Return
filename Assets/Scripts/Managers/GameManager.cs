@@ -7,10 +7,14 @@ using System.Collections.Generic;
 public class GameManager : MonoBehaviour
 {
     public static GameManager Instance { get; private set; }
-    
+    [Header("Player Configuration")]
+    public Character PlayerCharacterInfo;
     public EventTypeSO CurrentEvent { get; private set; }
     
     public static List<Character> enemiesToBattle;
+    public static TreasurePoolSO battleActionsPool; 
+    
+    public List<BattleAction> PlayerBattleActions { get; private set; } = new List<BattleAction>();
     
     // Agora, usamos um dicionário para guardar o estado de MÚLTIPLOS mapas.
     // A chave é o nome da cena do mapa, e o valor é o pacote de dados daquele mapa.
@@ -23,12 +27,25 @@ public class GameManager : MonoBehaviour
         {
             Instance = this;
             DontDestroyOnLoad(gameObject);
+            InitializePlayerActions();
         }
         else
         {
             Destroy(gameObject);
         }
     }
+    
+    private void InitializePlayerActions()
+    {
+        PlayerBattleActions.Clear();
+        // Adicione aqui as ações com as quais o jogador começa o jogo
+        // Exemplo:
+        // if (PlayerCharacterInfo != null && PlayerCharacterInfo.startingActions != null)
+        // {
+        //     PlayerBattleActions.AddRange(PlayerCharacterInfo.startingActions);
+        // }
+    }
+
 
     /// <summary>
     /// Salva o "pacote de dados" de um mapa.
@@ -62,6 +79,11 @@ public class GameManager : MonoBehaviour
             // Se for, armazena a lista de inimigos na variável estática
             enemiesToBattle = battleEvent.enemies;
             Debug.Log($"Iniciando batalha com {enemiesToBattle.Count} inimigos.");
+        }
+        else if (eventData is TreasureEventSO treasureEventSo)
+        {
+            battleActionsPool = treasureEventSo.poolForTheMap;
+            Debug.Log($"Iniciando skill selection scene");
         }
         else
         {
