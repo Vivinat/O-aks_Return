@@ -18,7 +18,7 @@ MonoBehaviour:
     TEXTO
 
     TEXTO'
-  icon: {fileID: 21300000, guid: c2935e034141803479333be40e570ca0, type: 3}
+  icon: {fileID: 21300000, guid: 0b828070c1aa013459030e58b7454b83, type: 3}
   type: 0
   targetType: 0
   power: 10

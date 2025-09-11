@@ -14,7 +14,7 @@ public class GameManager : MonoBehaviour
     public static List<Character> enemiesToBattle;
     public static TreasurePoolSO battleActionsPool; 
     
-    public List<BattleAction> PlayerBattleActions { get; private set; } = new List<BattleAction>();
+    public List<BattleAction> PlayerBattleActions { get; set; } = new List<BattleAction>();
     
     // Agora, usamos um dicionário para guardar o estado de MÚLTIPLOS mapas.
     // A chave é o nome da cena do mapa, e o valor é o pacote de dados daquele mapa.
@@ -38,12 +38,10 @@ public class GameManager : MonoBehaviour
     private void InitializePlayerActions()
     {
         PlayerBattleActions.Clear();
-        // Adicione aqui as ações com as quais o jogador começa o jogo
-        // Exemplo:
-        // if (PlayerCharacterInfo != null && PlayerCharacterInfo.startingActions != null)
-        // {
-        //     PlayerBattleActions.AddRange(PlayerCharacterInfo.startingActions);
-        // }
+        if (PlayerCharacterInfo != null && PlayerCharacterInfo.battleActions != null)
+        {
+            PlayerBattleActions.AddRange(PlayerCharacterInfo.battleActions);
+        }
     }
 
 
