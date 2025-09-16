@@ -17,6 +17,9 @@ public class BattleHUD : MonoBehaviour
     public TooltipUI tooltipUI;
     public RectTransform tooltipAnchor; 
 
+    [Header("Target Selection UI")]
+    public Button cancelTargetButton; // NOVO: Botão para cancelar seleção de alvo
+    public TextMeshProUGUI targetInstructionText; // NOVO: Texto de instrução (opcional)
     
     [Header("Prefabs")]
     public GameObject actionButtonPrefab; // Prefab de um botão que vamos criar
@@ -30,6 +33,13 @@ public class BattleHUD : MonoBehaviour
         actionPanel.SetActive(false);
         targetSelectionPanel.SetActive(false);
         tooltipUI.Hide();
+
+        // NOVO: Configura o botão de cancelar e o deixa invisível inicialmente
+        if (cancelTargetButton != null)
+        {
+            cancelTargetButton.onClick.AddListener(CancelTargetSelection);
+            cancelTargetButton.gameObject.SetActive(false); // Começa desativado
+        }
     }
     
     public void ShowActionMenu(BattleEntity character)
@@ -38,6 +48,15 @@ public class BattleHUD : MonoBehaviour
         actionPanel.SetActive(true);
         targetSelectionPanel.SetActive(false);
         tooltipUI.Hide();
+
+        // NOVO: Para todos os highlights quando voltamos ao menu de ações
+        StopAllHighlights();
+
+        // NOVO: Esconde o botão de cancelar quando no menu de ações
+        if (cancelTargetButton != null)
+        {
+            cancelTargetButton.gameObject.SetActive(false);
+        }
 
         // Limpa botões antigos
         foreach (Transform child in actionPanel.transform)
@@ -59,8 +78,7 @@ public class BattleHUD : MonoBehaviour
             Button buttonComponent = buttonObj.GetComponent<Button>();
             buttonComponent.onClick.AddListener(() => OnActionSelected(action));
 
-            // 4. *** NOVA LÓGICA: Desabilita o botão se não houver mana suficiente ***
-            //    (Assumindo que BattleEntity tem um campo público 'currentMp')
+            // 4. Desabilita o botão se não houver mana suficiente
             if (character.currentMp < action.manaCost)
             {
                 buttonComponent.interactable = false;
@@ -85,7 +103,79 @@ public class BattleHUD : MonoBehaviour
         }
         else
         {
-            targetSelectionPanel.SetActive(true);
+            // NOVO: Atualiza o texto de instrução baseado no tipo de alvo
+            ShowTargetSelectionPanel(action);
+        }
+    }
+
+    /// <summary>
+    /// NOVO: Mostra o painel de seleção de alvo com instruções específicas
+    /// </summary>
+    private void ShowTargetSelectionPanel(BattleAction action)
+    {
+        targetSelectionPanel.SetActive(true);
+
+        // NOVO: Mostra o botão de cancelar quando entramos em modo de seleção de alvo
+        if (cancelTargetButton != null)
+        {
+            cancelTargetButton.gameObject.SetActive(true);
+        }
+
+        // Atualiza o texto de instrução se existir
+        if (targetInstructionText != null)
+        {
+            string instruction = "";
+            switch (action.targetType)
+            {
+                case TargetType.SingleEnemy:
+                    instruction = $"Escolha um inimigo para usar '{action.actionName}'";
+                    break;
+                case TargetType.SingleAlly:
+                    instruction = $"Escolha um aliado para usar '{action.actionName}'";
+                    break;
+                default:
+                    instruction = "Escolha um alvo";
+                    break;
+            }
+            targetInstructionText.text = instruction;
+        }
+    }
+
+    /// <summary>
+    /// NOVO: Cancela a seleção de alvo e volta para o menu de ações
+    /// </summary>
+    public void CancelTargetSelection()
+    {
+        Debug.Log("Seleção de alvo cancelada");
+        
+        targetSelectionPanel.SetActive(false);
+        selectedAction = null;
+        
+        // NOVO: Esconde o botão de cancelar
+        if (cancelTargetButton != null)
+        {
+            cancelTargetButton.gameObject.SetActive(false);
+        }
+        
+        // NOVO: Para todos os highlights ativos
+        StopAllHighlights();
+        
+        // Volta para o menu de ações do personagem ativo
+        if (activeCharacter != null)
+        {
+            ShowActionMenu(activeCharacter);
+        }
+    }
+
+    /// <summary>
+    /// NOVO: Para todos os highlights ativos na cena
+    /// </summary>
+    private void StopAllHighlights()
+    {
+        TargetSelector[] allTargetSelectors = FindObjectsOfType<TargetSelector>();
+        foreach (TargetSelector selector in allTargetSelectors)
+        {
+            selector.ForceStopHighlight();
         }
     }
     
@@ -107,6 +197,16 @@ public class BattleHUD : MonoBehaviour
             if (isValidTarget && !target.isDead)
             {
                 targetSelectionPanel.SetActive(false);
+                
+                // NOVO: Esconde o botão de cancelar quando um alvo é selecionado
+                if (cancelTargetButton != null)
+                {
+                    cancelTargetButton.gameObject.SetActive(false);
+                }
+                
+                // NOVO: Para todos os highlights quando um alvo é selecionado
+                StopAllHighlights();
+                
                 List<BattleEntity> targets = new List<BattleEntity> { target };
                 battleManager.ExecuteAction(selectedAction, targets);
             }
@@ -139,11 +239,10 @@ public class BattleHUD : MonoBehaviour
     }
 
     // Métodos para mostrar/esconder a tooltip
-    public void ShowTooltip(string name, string description) // Não precisamos mais da 'position'
+    public void ShowTooltip(string name, string description)
     {
         if (tooltipUI != null && tooltipAnchor != null)
         {
-            // Usa a posição da âncora em vez da posição do mouse/botão
             tooltipUI.Show(name, description, tooltipAnchor.position);
         }
     }
