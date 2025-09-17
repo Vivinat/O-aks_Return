@@ -1,4 +1,4 @@
-// Assets/Scripts/Battle/BattleAction.cs
+// Assets/Scripts/Battle/BattleAction.cs (Atualizado)
 
 using UnityEngine;
 
@@ -39,7 +39,90 @@ public class BattleAction : ScriptableObject
     public int power;       // O "poder" base da ação (dano, quantidade de cura, etc.)
     public int manaCost;    // Custo de MP para usar a ação
     
-    //[Header("Efeitos Visuais e Sonoros (Opcional)")]
-    //public GameObject hitEffectPrefab; // Prefab de partícula para quando a ação atinge o alvo
-    //public AudioClip soundEffect;      // Som que a ação faz ao ser usada
+    [Header("Consumível (Opcional)")]
+    public bool isConsumable = false;  // Se true, tem usos limitados
+    public int maxUses = 1;           // Quantidade máxima de usos (só se isConsumable = true)
+    public int shopPrice = 10;        // Preço na loja
+    
+    [System.NonSerialized]
+    public int currentUses;           // Usos restantes (não serializado, gerenciado em runtime)
+    
+    void OnEnable()
+    {
+        // Quando a ação é criada/carregada, define os usos atuais como máximo se ainda não foi definido
+        if (isConsumable && currentUses <= 0)
+        {
+            currentUses = maxUses;
+        }
+    }
+    
+    void Awake()
+    {
+        // Garante que consumíveis sempre iniciem com usos completos
+        if (isConsumable && currentUses <= 0)
+        {
+            currentUses = maxUses;
+        }
+    }
+    
+    /// <summary>
+    /// Usa a ação, diminuindo os usos se for consumível
+    /// </summary>
+    /// <returns>True se a ação ainda pode ser usada, False se esgotou</returns>
+    public bool UseAction()
+    {
+        if (isConsumable)
+        {
+            if (currentUses > 0)
+            {
+                currentUses--;
+                Debug.Log($"{actionName} usado. Usos restantes: {currentUses}");
+                return currentUses > 0;
+            }
+            
+            Debug.Log($"{actionName} não tem mais usos!");
+            return false;
+        }
+        
+        return true; // Ações não consumíveis sempre podem ser usadas (se tiver MP)
+    }
+    
+    /// <summary>
+    /// Verifica se a ação ainda pode ser usada
+    /// </summary>
+    public bool CanUse()
+    {
+        if (isConsumable)
+        {
+            return currentUses > 0;
+        }
+        return true; // Ações não consumíveis sempre podem ser usadas
+    }
+    
+    /// <summary>
+    /// Redefine os usos para o máximo (útil quando a ação é comprada/obtida)
+    /// </summary>
+    public void RefillUses()
+    {
+        if (isConsumable)
+        {
+            currentUses = maxUses;
+        }
+    }
+    
+    /// <summary>
+    /// Cria uma cópia da ação para usar no inventário
+    /// </summary>
+    public BattleAction CreateInstance()
+    {
+        BattleAction instance = Instantiate(this);
+        
+        // Garante que a instância tenha usos completos se for consumível
+        if (instance.isConsumable)
+        {
+            instance.currentUses = instance.maxUses;
+        }
+        
+        return instance;
+    }
 }

@@ -1,4 +1,4 @@
-// GameManager.cs (Versão Refatorada)
+// GameManager.cs (Versão com Sistema de Moedas)
 
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -7,9 +7,15 @@ using System.Collections.Generic;
 public class GameManager : MonoBehaviour
 {
     public static GameManager Instance { get; private set; }
+    
     [Header("Player Configuration")]
     public Character PlayerCharacterInfo;
     public EventTypeSO CurrentEvent { get; private set; }
+    
+    [Header("Currency System")]
+    [SerializeField]
+    private CurrencySystem currencySystem = new CurrencySystem();
+    public CurrencySystem CurrencySystem => currencySystem;
     
     public static List<Character> enemiesToBattle;
     public static TreasurePoolSO battleActionsPool; 
@@ -44,14 +50,13 @@ public class GameManager : MonoBehaviour
         }
     }
 
-
     /// <summary>
     /// Salva o "pacote de dados" de um mapa.
     /// </summary>
     public void SaveMapState(MapStateData mapData, string mapName)
     {
         currentMapSceneName = mapName;
-        savedMapStates[mapName] = mapData; // Salva ou atualiza os dados para o mapa especificado.
+        savedMapStates[mapName] = mapData;
         Debug.Log($"Estado do mapa '{mapName}' salvo no GameManager.");
     }
 
@@ -64,7 +69,7 @@ public class GameManager : MonoBehaviour
         {
             return mapData;
         }
-        return null; // Retorna nulo se não houver dados salvos para este mapa.
+        return null;
     }
 
     public void StartEvent(EventTypeSO eventData)
@@ -74,7 +79,6 @@ public class GameManager : MonoBehaviour
         // Verifica se o evento é do tipo Batalha
         if (eventData is BattleEventSO battleEvent)
         {
-            // Se for, armazena a lista de inimigos na variável estática
             enemiesToBattle = battleEvent.enemies;
             Debug.Log($"Iniciando batalha com {enemiesToBattle.Count} inimigos.");
         }
@@ -83,9 +87,12 @@ public class GameManager : MonoBehaviour
             battleActionsPool = treasureEventSo.poolForTheMap;
             Debug.Log($"Iniciando skill selection scene");
         }
+        else if (eventData is ShopEventSO shopEvent)
+        {
+            Debug.Log($"Iniciando loja com {shopEvent.actionsForSale?.Count ?? 0} itens");
+        }
         else
         {
-            // Se não for uma batalha, limpa a lista para evitar usar dados antigos
             enemiesToBattle = null;
         }
 
@@ -102,5 +109,33 @@ public class GameManager : MonoBehaviour
         {
             Debug.LogError("Nome da cena do mapa não foi salvo! Não é possível retornar.");
         }
+    }
+
+    /// <summary>
+    /// Remove um item do inventário quando seus usos se esgotam
+    /// </summary>
+    public void RemoveItemFromInventory(BattleAction itemToRemove)
+    {
+        if (PlayerBattleActions.Contains(itemToRemove))
+        {
+            PlayerBattleActions.Remove(itemToRemove);
+            
+            // Atualiza também o Character data
+            if (PlayerCharacterInfo != null && PlayerCharacterInfo.battleActions != null)
+            {
+                PlayerCharacterInfo.battleActions.Remove(itemToRemove);
+            }
+            
+            Debug.Log($"Item '{itemToRemove.actionName}' removido do inventário (usos esgotados)");
+        }
+    }
+
+    /// <summary>
+    /// Adiciona moedas ao jogador (útil para recompensas de batalha)
+    /// </summary>
+    public void AddBattleReward(int coins)
+    {
+        currencySystem.AddCoins(coins);
+        Debug.Log($"Recompensa de batalha: {coins} moedas");
     }
 }

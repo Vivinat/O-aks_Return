@@ -1,4 +1,4 @@
-// Assets/Scripts/Managers/BattleManager.cs
+// Assets/Scripts/Managers/BattleManager.cs (Atualizado para Itens)
 
 using System.Collections;
 using System.Collections.Generic;
@@ -17,21 +17,21 @@ public enum BattleState
 
 public class BattleManager : MonoBehaviour
 {
-    // Não é mais um singleton. Referências podem ser obtidas pela UI ou outros scripts se necessário.
-
     [Header("Battle State")]
     public BattleState currentState;
     
-    // As listas agora são privadas, gerenciadas internamente
     public List<BattleEntity> playerTeam;
     public List<BattleEntity> enemyTeam;
     private List<BattleEntity> allCharacters;
     private BattleEntity activeCharacter;
     public BattleHUD battleHUD;
 
+    [Header("Battle Rewards")]
+    public int coinsRewardMin = 10;
+    public int coinsRewardMax = 25;
+
     void Start()
     {
-        // Inicializa as listas
         playerTeam = new List<BattleEntity>();
         enemyTeam = new List<BattleEntity>();
 
@@ -55,22 +55,19 @@ public class BattleManager : MonoBehaviour
         {
             for (int i = 0; i < enemiesToSpawn.Count; i++)
             {
-                // Garante que não tentemos acessar um slot que não existe
                 if (i < enemySlots.Count && enemySlots[i] != null)
                 {
                     GameObject currentSlot = enemySlots[i];
-                    currentSlot.SetActive(true); // Ativa o slot
+                    currentSlot.SetActive(true);
                     
                     BattleEntity entity = currentSlot.GetComponent<BattleEntity>();
-                    entity.characterData = enemiesToSpawn[i]; // Injeta os dados do inimigo!
+                    entity.characterData = enemiesToSpawn[i];
                     
-                    enemyTeam.Add(entity); // Adiciona à lista de combate
+                    enemyTeam.Add(entity);
                 }
             }
         }
 
-        // O ideal é que os personagens já estejam na cena ou sejam instanciados
-        // com base em dados de um GameManager.
         playerTeam = FindObjectsOfType<BattleEntity>().Where(e => e.characterData.team == Team.Player).ToList();
         enemyTeam = FindObjectsOfType<BattleEntity>().Where(e => e.characterData.team == Team.Enemy).ToList();
         allCharacters = playerTeam.Concat(enemyTeam).ToList();
@@ -87,7 +84,6 @@ public class BattleManager : MonoBehaviour
             character.UpdateATB(Time.deltaTime);
         }
 
-        // Pega o personagem pronto com a maior velocidade como critério de desempate
         var readyCharacter = allCharacters
             .Where(c => c.isReady && !c.isDead)
             .OrderByDescending(c => c.characterData.speed)
@@ -118,61 +114,140 @@ public class BattleManager : MonoBehaviour
     {
         currentState = BattleState.PERFORMING_ACTION;
 
-        if (!caster.ConsumeMana(action.manaCost))
+        bool actionExecuted = false;
+
+        // NOVO: Verifica se é consumível
+        if (action.isConsumable)
         {
-            Debug.Log("Ação falhou por falta de MP!");
+            if (action.CanUse())
+            {
+                Debug.Log($"{caster.characterData.characterName} usa o consumível {action.actionName}!");
+                yield return new WaitForSeconds(1.5f);
+
+                // Executa o efeito do consumível
+                foreach (var target in targets)
+                {
+                    if (target.isDead) continue;
+
+                    switch (action.type)
+                    {
+                        case ActionType.Attack:
+                            target.TakeDamage(action.power);
+                            break;
+                        case ActionType.Heal:
+                            target.Heal(action.power);
+                            break;
+                        // Adicione outros tipos conforme necessário
+                    }
+                }
+
+                // USA o consumível
+                bool stillHasUses = action.UseAction();
+                
+                // Se não tem mais usos, remove do inventário
+                if (!stillHasUses)
+                {
+                    Debug.Log($"Consumível {action.actionName} esgotou seus usos e será removido");
+                    if (GameManager.Instance != null)
+                    {
+                        GameManager.Instance.RemoveItemFromInventory(action);
+                    }
+                    
+                    // Se o consumível for do jogador ativo, atualiza o menu de ações
+                    if (caster.characterData.team == Team.Player)
+                    {
+                        // Força atualização do menu após a ação
+                        StartCoroutine(UpdatePlayerMenuAfterDelay());
+                    }
+                }
+
+                actionExecuted = true;
+            }
+            else
+            {
+                Debug.Log($"Consumível {action.actionName} não tem mais usos!");
+            }
         }
         else
         {
-            Debug.Log($"{caster.characterData.characterName} usa {action.actionName}!");
-            yield return new WaitForSeconds(1.5f);
-
-            // *** MUDANÇA PRINCIPAL: Itera sobre todos os alvos ***
-            foreach (var target in targets)
+            // Ação normal (não é consumível) - usa MP
+            if (!caster.ConsumeMana(action.manaCost))
             {
-                if (target.isDead) continue; // Pula alvos já mortos
+                Debug.Log("Ação falhou por falta de MP!");
+            }
+            else
+            {
+                Debug.Log($"{caster.characterData.characterName} usa {action.actionName}!");
+                yield return new WaitForSeconds(1.5f);
 
-                // Aplica o efeito da ação em cada alvo
-                switch (action.type)
+                foreach (var target in targets)
                 {
-                    case ActionType.Attack:
-                        target.TakeDamage(action.power);
-                        break;
-                    case ActionType.Heal:
-                        target.Heal(action.power);
-                        break;
+                    if (target.isDead) continue;
+
+                    switch (action.type)
+                    {
+                        case ActionType.Attack:
+                            target.TakeDamage(action.power);
+                            break;
+                        case ActionType.Heal:
+                            target.Heal(action.power);
+                            break;
+                        // Adicione buff/debuff conforme necessário
+                    }
                 }
+
+                actionExecuted = true;
             }
         }
 
-        yield return new WaitForSeconds(1.0f);
+        if (actionExecuted)
+        {
+            yield return new WaitForSeconds(1.0f);
+        }
+
         caster.ResetATB();
         CheckBattleEnd();
+    }
+
+    /// <summary>
+    /// Atualiza o menu do jogador com um delay (para dar tempo da ação terminar)
+    /// </summary>
+    private IEnumerator UpdatePlayerMenuAfterDelay()
+    {
+        yield return new WaitForSeconds(0.1f);
+        
+        // Atualiza as ações do jogador removendo o item usado
+        if (activeCharacter != null && activeCharacter.characterData.team == Team.Player)
+        {
+            // Sincroniza as ações do character com o GameManager
+            if (GameManager.Instance != null && GameManager.Instance.PlayerCharacterInfo != null)
+            {
+                activeCharacter.characterData.battleActions = new List<BattleAction>(GameManager.Instance.PlayerBattleActions);
+            }
+        }
     }
     
     private IEnumerator PerformEnemyAction()
     {
         yield return new WaitForSeconds(1.0f);
     
-        // Encontra uma ação que o inimigo possa pagar, ordenada para pegar a mais cara primeiro, se desejado.
+        // Inimigos só usam ações normais (não consumíveis)
         BattleAction chosenAction = activeCharacter.characterData.battleActions
-            .Where(a => activeCharacter.currentMp >= a.manaCost) // Supondo que BattleEntity tenha um campo 'currentMp'
+            .Where(a => !a.isConsumable && activeCharacter.currentMp >= a.manaCost)
             .OrderByDescending(a => a.manaCost)
             .FirstOrDefault();
 
-        // Se nenhuma ação puder ser paga, o inimigo perde o turno.
         if (chosenAction == null)
         {
             Debug.Log($"{activeCharacter.characterData.characterName} não tem mana para nenhuma ação e perdeu o turno!");
             yield return new WaitForSeconds(1.0f);
             activeCharacter.ResetATB();
             currentState = BattleState.RUNNING;
-            yield break; // Encerra a corrotina aqui
+            yield break;
         }
 
         List<BattleEntity> targets = new List<BattleEntity>();
 
-        // Lógica para escolher o alvo com base na ação escolhida
         switch (chosenAction.targetType)
         {
             case TargetType.SingleEnemy:
@@ -186,7 +261,6 @@ public class BattleManager : MonoBehaviour
             case TargetType.Self:
                 targets.Add(activeCharacter);
                 break;
-            // Adicione casos para SingleAlly e AllAllies se os inimigos puderem curar
         }
 
         if (targets.Count > 0)
@@ -195,7 +269,6 @@ public class BattleManager : MonoBehaviour
         }
         else
         {
-            // Se não encontrou alvos válidos, apenas reseta o turno
             activeCharacter.ResetATB();
             currentState = BattleState.RUNNING;
         }
@@ -210,14 +283,20 @@ public class BattleManager : MonoBehaviour
         {
             currentState = BattleState.WON;
             Debug.Log("VITÓRIA!");
-            // Exemplo de como interagir com o GameManager sem ser singleton
+            
+            // NOVO: Recompensa em moedas
+            int coinsReward = Random.Range(coinsRewardMin, coinsRewardMax + 1);
+            if (GameManager.Instance != null)
+            {
+                GameManager.Instance.AddBattleReward(coinsReward);
+            }
+            
             FindObjectOfType<GameManager>().ReturnToMap();
         }
         else if (allPlayersDead)
         {
             currentState = BattleState.LOST;
             Debug.Log("DERROTA!");
-            // FindObjectOfType<GameManager>().LoadScene("GameOver");
         }
         else
         {
