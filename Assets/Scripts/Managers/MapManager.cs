@@ -1,4 +1,4 @@
-// MapManager.cs (Versão com Bug Corrigido)
+// MapManager.cs (Versão com Sistema de Câmera Integrado)
 
 using UnityEngine;
 using System.Collections.Generic;
@@ -13,6 +13,10 @@ public class MapManager : MonoBehaviour
     [SerializeField]
     private Transform lineContainer;
     
+    // NOVO: Referência para o controlador de câmera
+    [SerializeField]
+    private MapCameraManager cameraController;
+    
     // Variável para rastrear qual nó foi completado mais recentemente
     private string lastCompletedNodeName;
     
@@ -24,11 +28,46 @@ public class MapManager : MonoBehaviour
             lineContainer.SetParent(this.transform);
         }
         
-        // Pega o nome do último nó completado (se houver)
-        lastCompletedNodeName = PlayerPrefs.GetString("LastCompletedNode", "");
+        // NOVO: Encontra o controlador de câmera se não foi atribuído
+        if (cameraController == null)
+        {
+            cameraController = FindObjectOfType<MapCameraManager>();
+        }
         
         LoadMapState();
         DrawConnections();
+        
+        // NOVO: Configura os limites da câmera baseado nos nós
+        SetupCameraBounds();
+    }
+
+    /// <summary>
+    /// NOVO: Configura automaticamente os limites da câmera baseado nas posições dos nós
+    /// </summary>
+    private void SetupCameraBounds()
+    {
+        if (cameraController == null || allNodes.Count == 0) return;
+        
+        Vector2 minBounds = new Vector2(float.MaxValue, float.MaxValue);
+        Vector2 maxBounds = new Vector2(float.MinValue, float.MinValue);
+        
+        // Encontra os limites baseado nas posições dos nós
+        foreach (MapNode node in allNodes)
+        {
+            Vector3 nodePos = node.transform.position;
+            minBounds.x = Mathf.Min(minBounds.x, nodePos.x);
+            minBounds.y = Mathf.Min(minBounds.y, nodePos.y);
+            maxBounds.x = Mathf.Max(maxBounds.x, nodePos.x);
+            maxBounds.y = Mathf.Max(maxBounds.y, nodePos.y);
+        }
+        
+        // Adiciona uma margem
+        float margin = 3f;
+        minBounds -= Vector2.one * margin;
+        maxBounds += Vector2.one * margin;
+        
+        cameraController.SetCameraBounds(minBounds, maxBounds);
+        Debug.Log($"Limites da câmera configurados: Min{minBounds}, Max{maxBounds}");
     }
 
     /// <summary>
@@ -36,6 +75,13 @@ public class MapManager : MonoBehaviour
     /// </summary>
     public void OnNodeClicked(MapNode clickedNode)
     {
+        // Verifica se a câmera está focando - se sim, ignora cliques
+        if (cameraController != null && cameraController.IsFocusing())
+        {
+            Debug.Log("Câmera está focando - clique ignorado");
+            return;
+        }
+        
         // --- ORDEM CORRETA ---
 
         // 1. Salva qual nó está sendo completado
@@ -100,6 +146,9 @@ public class MapManager : MonoBehaviour
 
         Debug.Log("Carregando estado do mapa...");
 
+        // Pega o nome do último nó completado (se houver)
+        lastCompletedNodeName = PlayerPrefs.GetString("LastCompletedNode", "");
+
         // *** CORREÇÃO DO BUG ***
         // Primeiro, restaura o estado de completado de todos os nós
         foreach (var node in allNodes)
@@ -121,6 +170,12 @@ public class MapManager : MonoBehaviour
             {
                 Debug.Log($"Desbloqueando nós conectados apenas do nó recém-completado: {lastCompletedNodeName}");
                 lastCompletedNode.UnlockConnectedNodes();
+                
+                // NOVO: Foca a câmera no nó completado após um pequeno delay
+                if (cameraController != null)
+                {
+                    StartCoroutine(FocusOnCompletedNodeAfterDelay(lastCompletedNode, 0.5f));
+                }
                 
                 // Lista os nós que foram desbloqueados para debug
                 foreach (var connectedNode in lastCompletedNode.GetConnectedNodes())
@@ -152,5 +207,34 @@ public class MapManager : MonoBehaviour
         var accessibleNodes = allNodes.FindAll(n => !n.IsCompleted() && !n.GetComponent<MapNode>().GetType().GetField("isLocked", 
             System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance)?.GetValue(n).Equals(true) == true);
         Debug.Log($"Nós acessíveis após carregamento: {accessibleNodes.Count}");
+    }
+    
+    /// <summary>
+    /// NOVO: Foca a câmera no nó completado após um delay
+    /// </summary>
+    private System.Collections.IEnumerator FocusOnCompletedNodeAfterDelay(MapNode node, float delay)
+    {
+        yield return new WaitForSeconds(delay);
+        
+        if (cameraController != null && node != null)
+        {
+            cameraController.FocusOnNode(node.transform);
+        }
+    }
+    
+    /// <summary>
+    /// NOVO: Método público para focar manualmente em um nó (útil para debug ou outras funcionalidades)
+    /// </summary>
+    public void FocusCameraOnNode(string nodeName)
+    {
+        MapNode node = allNodes.Find(n => n.gameObject.name == nodeName);
+        if (node != null && cameraController != null)
+        {
+            cameraController.FocusOnNode(node.transform);
+        }
+        else
+        {
+            Debug.LogWarning($"Nó '{nodeName}' não encontrado ou câmera não configurada");
+        }
     }
 }
