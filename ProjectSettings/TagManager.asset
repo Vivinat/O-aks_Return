@@ -8,6 +8,7 @@ TagManager:
   - EnemySlot2
   - EnemySlot3
   - EnemySlot4
+  - BossNode
   layers:
   - Default
   - TransparentFX

@@ -410,7 +410,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7f9cde13b90c5da4d90c67930ba0baef, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  dragSpeed: 2
+  panSpeed: 2
   smoothTime: 0.3
   minBounds: {x: -10, y: -10}
   maxBounds: {x: 10, y: 10}
@@ -655,6 +655,7 @@ GameObject:
   - component: {fileID: 1340018659}
   - component: {fileID: 1340018658}
   - component: {fileID: 1340018657}
+  - component: {fileID: 1340018661}
   m_Layer: 0
   m_Name: NodeA4
   m_TagString: Untagged
@@ -676,7 +677,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   connectedNodes: []
   isLocked: 1
-  eventType: {fileID: 11400000, guid: 558d1b97dea0b8341a32949bf74dee37, type: 2}
+  eventType: {fileID: 11400000, guid: 2e0c96beca99f2c4a839e33534fee06a, type: 2}
 --- !u!61 &1340018658
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -789,6 +790,19 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1340018661
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1340018656}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f34709a6485a02e4f8393a557042f8a4, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  nextSceneName: Map_Level2
 --- !u!1 &1348603583
 GameObject:
   m_ObjectHideFlags: 0

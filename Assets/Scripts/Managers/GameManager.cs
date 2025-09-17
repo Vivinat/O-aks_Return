@@ -1,4 +1,4 @@
-// GameManager.cs (Versão com Sistema de Moedas)
+// GameManager.cs (Versão Simplificada com Sistema de Boss)
 
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -22,8 +22,7 @@ public class GameManager : MonoBehaviour
     
     public List<BattleAction> PlayerBattleActions { get; set; } = new List<BattleAction>();
     
-    // Agora, usamos um dicionário para guardar o estado de MÚLTIPLOS mapas.
-    // A chave é o nome da cena do mapa, e o valor é o pacote de dados daquele mapa.
+    // Dicionário para guardar o estado de MÚLTIPLOS mapas
     private Dictionary<string, MapStateData> savedMapStates = new Dictionary<string, MapStateData>();
     private string currentMapSceneName;
 
@@ -72,6 +71,18 @@ public class GameManager : MonoBehaviour
         return null;
     }
 
+    /// <summary>
+    /// NOVO: Limpa os dados de um mapa específico
+    /// </summary>
+    public void ClearMapData(string mapName)
+    {
+        if (savedMapStates.ContainsKey(mapName))
+        {
+            savedMapStates.Remove(mapName);
+            Debug.Log($"Dados do mapa '{mapName}' foram limpos.");
+        }
+    }
+
     public void StartEvent(EventTypeSO eventData)
     {
         CurrentEvent = eventData;
@@ -109,6 +120,33 @@ public class GameManager : MonoBehaviour
         {
             Debug.LogError("Nome da cena do mapa não foi salvo! Não é possível retornar.");
         }
+    }
+
+    /// <summary>
+    /// NOVO: Progride para o próximo mapa (usado quando completa um boss)
+    /// </summary>
+    public void ProgressToNextMap(string nextSceneName)
+    {
+        if (string.IsNullOrEmpty(nextSceneName))
+        {
+            Debug.LogError("Nome da próxima cena é inválido!");
+            return;
+        }
+
+        // Limpa dados do mapa atual
+        if (!string.IsNullOrEmpty(currentMapSceneName))
+        {
+            ClearMapData(currentMapSceneName);
+            Debug.Log($"Dados do mapa '{currentMapSceneName}' limpos para progressão.");
+        }
+
+        // Limpa referências de nós completados
+        PlayerPrefs.DeleteKey("LastCompletedNode");
+        
+        Debug.Log($"Progredindo para o próximo mapa: {nextSceneName}");
+        
+        // Carrega a próxima cena
+        SceneManager.LoadScene(nextSceneName);
     }
 
     /// <summary>
