@@ -8,28 +8,32 @@ public class AudioManager : MonoBehaviour
 {
     public static AudioManager Instance { get; private set; }
 
-    [Header("Audio Sources")]
-    [SerializeField] private AudioSource musicSource;
+    [Header("Audio Sources")] [SerializeField]
+    private AudioSource musicSource;
+
     [SerializeField] private AudioSource sfxSource;
 
-    [Header("Default Music")]
-    [SerializeField] private AudioClip defaultMapMusic;
+    [Header("Default Music")] [SerializeField]
+    private AudioClip defaultMapMusic;
 
-    [Header("Audio Settings")]
-    [Range(0f, 1f)]
-    [SerializeField] private float musicVolume = 0.7f;
-    [Range(0f, 1f)]
-    [SerializeField] private float sfxVolume = 1f;
+    [Header("Audio Settings")] [Range(0f, 1f)] [SerializeField]
+    private float musicVolume = 0.7f;
+
+    [Range(0f, 1f)] [SerializeField] private float sfxVolume = 1f;
     [SerializeField] private float musicFadeTime = 1f;
+
+    // Keys para PlayerPrefs
+    private const string MUSIC_VOLUME_KEY = "MusicVolume";
+    private const string SFX_VOLUME_KEY = "SFXVolume";
 
     // Estado interno
     private AudioClip currentMusic;
     private bool isFading = false;
     private Coroutine fadeCoroutine;
-    
+
     // Sistema de música pendente para eventos
     private AudioClip pendingEventMusic; // Música que deve tocar no próximo evento
-    private AudioClip savedMapMusic;     // Música do mapa para retornar
+    private AudioClip savedMapMusic; // Música do mapa para retornar
 
     void Awake()
     {
@@ -37,6 +41,7 @@ public class AudioManager : MonoBehaviour
         {
             Instance = this;
             DontDestroyOnLoad(gameObject);
+            LoadAudioSettings(); // NOVO: Carrega configurações salvas
             InitializeAudioSources();
         }
         else
@@ -65,10 +70,10 @@ public class AudioManager : MonoBehaviour
             pendingEventMusic = null;
             return;
         }
-        
+
         // SEGUNDO: Procura por um MapMusicSetup na cena (apenas para mapas)
         MapMusicSetup sceneMusicSetup = FindObjectOfType<MapMusicSetup>();
-        
+
         if (sceneMusicSetup != null)
         {
             // Se encontrou um setup (cena de mapa), usa a música do setup
@@ -116,8 +121,7 @@ public class AudioManager : MonoBehaviour
             sfxSource.playOnAwake = false;
         }
 
-        musicSource.volume = musicVolume;
-        sfxSource.volume = sfxVolume;
+        ApplyVolumeSettings(); // NOVO: Aplica configurações carregadas
     }
 
     public void PlayMusic(AudioClip musicClip, bool useFade = true)
@@ -168,26 +172,67 @@ public class AudioManager : MonoBehaviour
 
         // Fade out
         float startVolume = musicSource.volume;
-        for (float t = 0; t < musicFadeTime; t += Time.deltaTime)
+        for (float t = 0;
+             t < musicFadeTime;
+             t += Time.unscaledDeltaTime) // NOVO: unscaledDeltaTime para funcionar quando pausado
         {
             musicSource.volume = Mathf.Lerp(startVolume, 0, t / musicFadeTime);
             yield return null;
         }
+
         musicSource.volume = 0;
 
         // Troca de música
         PlayMusicDirectly(newMusic);
 
         // Fade in
-        for (float t = 0; t < musicFadeTime; t += Time.deltaTime)
+        for (float t = 0;
+             t < musicFadeTime;
+             t += Time.unscaledDeltaTime) // NOVO: unscaledDeltaTime para funcionar quando pausado
         {
             musicSource.volume = Mathf.Lerp(0, musicVolume, t / musicFadeTime);
             yield return null;
         }
+
         musicSource.volume = musicVolume;
 
         isFading = false;
         fadeCoroutine = null;
+    }
+
+
+    /// <summary>
+    /// NOVO: Carrega as configurações de áudio salvas
+    /// </summary>
+    private void LoadAudioSettings()
+    {
+        musicVolume = PlayerPrefs.GetFloat(MUSIC_VOLUME_KEY, 0.7f);
+        sfxVolume = PlayerPrefs.GetFloat(SFX_VOLUME_KEY, 1f);
+
+        Debug.Log($"AudioManager: Configurações carregadas - Música: {musicVolume:F2}, SFX: {sfxVolume:F2}");
+    }
+
+    /// <summary>
+    /// NOVO: Salva as configurações de áudio
+    /// </summary>
+    private void SaveAudioSettings()
+    {
+        PlayerPrefs.SetFloat(MUSIC_VOLUME_KEY, musicVolume);
+        PlayerPrefs.SetFloat(SFX_VOLUME_KEY, sfxVolume);
+        PlayerPrefs.Save();
+
+        Debug.Log($"AudioManager: Configurações salvas - Música: {musicVolume:F2}, SFX: {sfxVolume:F2}");
+    }
+
+    /// <summary>
+    /// NOVO: Aplica as configurações de volume aos AudioSources
+    /// </summary>
+    private void ApplyVolumeSettings()
+    {
+        if (musicSource != null)
+            musicSource.volume = musicVolume;
+        if (sfxSource != null)
+            sfxSource.volume = sfxVolume;
     }
 
     public void StopMusic(bool useFade = true)
@@ -213,14 +258,16 @@ public class AudioManager : MonoBehaviour
     private IEnumerator FadeOutMusic()
     {
         isFading = true;
-        
+
         float startVolume = musicSource.volume;
-        for (float t = 0; t < musicFadeTime; t += Time.deltaTime)
+        for (float t = 0;
+             t < musicFadeTime;
+             t += Time.unscaledDeltaTime) // NOVO: unscaledDeltaTime para funcionar quando pausado
         {
             musicSource.volume = Mathf.Lerp(startVolume, 0, t / musicFadeTime);
             yield return null;
         }
-        
+
         musicSource.Stop();
         musicSource.volume = musicVolume;
         currentMusic = null;
@@ -253,7 +300,7 @@ public class AudioManager : MonoBehaviour
     {
         pendingEventMusic = eventMusic;
         savedMapMusic = mapMusic;
-        
+
         if (eventMusic != null)
         {
             Debug.Log($"AudioManager: Música '{eventMusic.name}' agendada para próximo evento");
@@ -262,7 +309,7 @@ public class AudioManager : MonoBehaviour
         {
             Debug.Log("AudioManager: Nenhuma música específica agendada para evento");
         }
-        
+
         if (mapMusic != null)
         {
             Debug.Log($"AudioManager: Música do mapa '{mapMusic.name}' salva para retorno");
@@ -290,20 +337,34 @@ public class AudioManager : MonoBehaviour
         }
     }
 
-    // --- CONTROLES DE VOLUME ---
+    // --- CONTROLES DE VOLUME (ATUALIZADOS) ---
 
+    /// <summary>
+    /// Define o volume da música e salva a configuração
+    /// </summary>
     public void SetMusicVolume(float volume)
     {
         musicVolume = Mathf.Clamp01(volume);
-        if (!isFading)
+        if (!isFading && musicSource != null)
         {
             musicSource.volume = musicVolume;
         }
+
+        SaveAudioSettings(); // NOVO: Salva automaticamente
     }
 
+    /// <summary>
+    /// Define o volume dos efeitos e salva a configuração
+    /// </summary>
     public void SetSFXVolume(float volume)
     {
         sfxVolume = Mathf.Clamp01(volume);
+        if (sfxSource != null)
+        {
+            sfxSource.volume = sfxVolume;
+        }
+
+        SaveAudioSettings(); // NOVO: Salva automaticamente
     }
 
     public float GetMusicVolume() => musicVolume;
@@ -319,10 +380,16 @@ public class AudioManager : MonoBehaviour
     {
         if (Application.isPlaying)
         {
-            if (musicSource != null && !isFading)
-                musicSource.volume = musicVolume;
-            if (sfxSource != null)
-                sfxSource.volume = sfxVolume;
+            ApplyVolumeSettings();
         }
+    }
+
+    /// <summary>
+    /// NOVO: Método para recarregar configurações (útil para o menu de opções)
+    /// </summary>
+    public void ReloadSettings()
+    {
+        LoadAudioSettings();
+        ApplyVolumeSettings();
     }
 }
