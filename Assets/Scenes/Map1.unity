@@ -158,6 +158,7 @@ MonoBehaviour:
   - {fileID: 1070575933}
   isLocked: 0
   eventType: {fileID: 11400000, guid: bf23767f8ded3534babb9c276bfc2c83, type: 2}
+  eventMusic: {fileID: 8300000, guid: 4dcd40257b3012c49aca0ed27d5c0867, type: 3}
 --- !u!61 &346218325
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -454,6 +455,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1048656628}
   - component: {fileID: 1048656627}
+  - component: {fileID: 1048656629}
   m_Layer: 0
   m_Name: FleetingManagers
   m_TagString: Untagged
@@ -496,6 +498,21 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1048656629
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1048656626}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e3eab3fcd244d4648875caa58aca93cd, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  mapMusic: {fileID: 8300000, guid: 1883438b0beba894dacfa21f0f611b75, type: 3}
+  autoPlay: 1
+  useFade: 1
 --- !u!1 &1070575932
 GameObject:
   m_ObjectHideFlags: 0
@@ -531,6 +548,7 @@ MonoBehaviour:
   - {fileID: 1737705167}
   isLocked: 1
   eventType: {fileID: 11400000, guid: 558d1b97dea0b8341a32949bf74dee37, type: 2}
+  eventMusic: {fileID: 0}
 --- !u!61 &1070575934
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -678,6 +696,7 @@ MonoBehaviour:
   connectedNodes: []
   isLocked: 1
   eventType: {fileID: 11400000, guid: 2e0c96beca99f2c4a839e33534fee06a, type: 2}
+  eventMusic: {fileID: 0}
 --- !u!61 &1340018658
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -802,7 +821,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f34709a6485a02e4f8393a557042f8a4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  nextSceneName: Map_Level2
+  nextSceneName: BossScene
 --- !u!1 &1348603583
 GameObject:
   m_ObjectHideFlags: 0
@@ -837,6 +856,7 @@ MonoBehaviour:
   connectedNodes: []
   isLocked: 1
   eventType: {fileID: 11400000, guid: bf23767f8ded3534babb9c276bfc2c83, type: 2}
+  eventMusic: {fileID: 0}
 --- !u!61 &1348603585
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -959,6 +979,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1544972947}
   - component: {fileID: 1544972946}
+  - component: {fileID: 1544972948}
   m_Layer: 0
   m_Name: SingletonManagers
   m_TagString: Untagged
@@ -996,6 +1017,24 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1544972948
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1544972944}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: add6ec074179bcb4e9c50ba17d0c5934, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  musicSource: {fileID: 0}
+  sfxSource: {fileID: 0}
+  defaultMapMusic: {fileID: 0}
+  musicVolume: 0.7
+  sfxVolume: 1
+  musicFadeTime: 1
 --- !u!1 &1737705166
 GameObject:
   m_ObjectHideFlags: 0
@@ -1031,6 +1070,7 @@ MonoBehaviour:
   - {fileID: 1340018657}
   isLocked: 1
   eventType: {fileID: 11400000, guid: 2e0c96beca99f2c4a839e33534fee06a, type: 2}
+  eventMusic: {fileID: 0}
 --- !u!61 &1737705168
 BoxCollider2D:
   m_ObjectHideFlags: 0

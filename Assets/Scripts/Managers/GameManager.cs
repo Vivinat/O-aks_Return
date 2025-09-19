@@ -1,4 +1,4 @@
-// GameManager.cs (Versão Simplificada com Sistema de Boss)
+// GameManager.cs (Versão Atualizada com AudioManager)
 
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -72,7 +72,7 @@ public class GameManager : MonoBehaviour
     }
 
     /// <summary>
-    /// NOVO: Limpa os dados de um mapa específico
+    /// Limpa os dados de um mapa específico
     /// </summary>
     public void ClearMapData(string mapName)
     {
@@ -112,6 +112,12 @@ public class GameManager : MonoBehaviour
     
     public void ReturnToMap()
     {
+        // NOVO: Volta à música do mapa quando retorna
+        if (AudioManager.Instance != null)
+        {
+            AudioManager.Instance.ReturnToMapMusic();
+        }
+        
         if (!string.IsNullOrEmpty(currentMapSceneName))
         {
             SceneManager.LoadScene(currentMapSceneName);
@@ -123,7 +129,7 @@ public class GameManager : MonoBehaviour
     }
 
     /// <summary>
-    /// NOVO: Progride para o próximo mapa (usado quando completa um boss)
+    /// Progride para o próximo mapa (usado quando completa um boss)
     /// </summary>
     public void ProgressToNextMap(string nextSceneName)
     {
@@ -144,6 +150,13 @@ public class GameManager : MonoBehaviour
         PlayerPrefs.DeleteKey("LastCompletedNode");
         
         Debug.Log($"Progredindo para o próximo mapa: {nextSceneName}");
+        
+        // NOVO: Para a música atual antes de mudar de mapa
+        if (AudioManager.Instance != null)
+        {
+            // Não precisa configurar música específica - o novo mapa terá sua própria música
+            AudioManager.Instance.StopMusic(true);
+        }
         
         // Carrega a próxima cena
         SceneManager.LoadScene(nextSceneName);

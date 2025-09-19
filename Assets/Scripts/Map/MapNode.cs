@@ -1,4 +1,4 @@
-// MapNode.cs (Versão com Método IsLocked Público)
+// MapNode.cs (Versão Atualizada com AudioClip)
 
 using UnityEngine;
 using System.Collections.Generic;
@@ -12,7 +12,12 @@ public class MapNode : MonoBehaviour
     private bool isLocked = true;
     private bool isCompleted = false;
 
+    [Header("Event Configuration")]
     public EventTypeSO eventType;
+    
+    [Header("Audio Configuration")]
+    [Tooltip("Música que tocará na cena do evento. Se null, mantém a música atual.")]
+    public AudioClip eventMusic; // NOVO: Música para a cena do evento
     
     private void Start()
     {
@@ -25,6 +30,10 @@ public class MapNode : MonoBehaviour
         if (!isLocked && !isCompleted)
         {
             Debug.Log($"Nó {gameObject.name} clicado");
+            
+            // NOVO: Configura a música antes de iniciar o evento
+            SetupAudioForEvent();
+            
             // Apenas notifica o MapManager. Toda a lógica acontecerá lá.
             FindObjectOfType<MapManager>().OnNodeClicked(this);
         }
@@ -34,6 +43,28 @@ public class MapNode : MonoBehaviour
                 Debug.Log($"Nó {gameObject.name} está bloqueado");
             if (isCompleted)
                 Debug.Log($"Nó {gameObject.name} já foi completado");
+        }
+    }
+    
+    /// <summary>
+    /// Configura o áudio que deve tocar na próxima cena de evento.
+    /// </summary>
+    private void SetupAudioForEvent()
+    {
+        if (AudioManager.Instance != null)
+        {
+            // 1. Pega a música que está tocando atualmente no mapa.
+            AudioClip currentMapMusic = AudioManager.Instance.GetCurrentMusic();
+
+            // 2. Avisa ao AudioManager qual música tocar no evento 
+            //    e qual música salvar para voltar ao mapa depois.
+            //    O próprio AudioManager cuidará de tocar a música quando a cena carregar.
+            Debug.Log($"MapNode: Agendando a música '{eventMusic?.name ?? "nenhuma"}' para o próximo evento.");
+            AudioManager.Instance.SetPendingEventMusic(eventMusic, currentMapMusic);
+        }
+        else
+        {
+            Debug.LogWarning("MapNode: AudioManager não encontrado!");
         }
     }
 
@@ -87,8 +118,13 @@ public class MapNode : MonoBehaviour
     
     // Métodos públicos para verificação de estado
     public bool IsCompleted() => isCompleted;
-    public bool IsLocked() => isLocked; // NOVO método público
+    public bool IsLocked() => isLocked;
     public List<MapNode> GetConnectedNodes() => connectedNodes;
+    
+    /// <summary>
+    /// NOVO: Retorna a música configurada para este nó
+    /// </summary>
+    public AudioClip GetEventMusic() => eventMusic;
     
     public void ForceComplete()
     {
