@@ -107,7 +107,7 @@ public class MapManager : MonoBehaviour
         SaveMapState();
 
         // Inicia o evento
-        GameManager.Instance.StartEvent(clickedNode.eventType);
+        GameManager.Instance.StartEvent(clickedNode.eventType, clickedNode);
     }
     
     private void DrawConnections()

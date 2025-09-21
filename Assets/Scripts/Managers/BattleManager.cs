@@ -1,4 +1,4 @@
-// Assets/Scripts/Managers/BattleManager.cs (Atualizado para Itens)
+// Assets/Scripts/Managers/BattleManager.cs (Atualizado com Sprites)
 
 using System.Collections;
 using System.Collections.Generic;
@@ -63,6 +63,9 @@ public class BattleManager : MonoBehaviour
                     BattleEntity entity = currentSlot.GetComponent<BattleEntity>();
                     entity.characterData = enemiesToSpawn[i];
                     
+                    // NOVO: Configura o sprite do inimigo
+                    SetupEnemySprite(currentSlot, enemiesToSpawn[i]);
+                    
                     enemyTeam.Add(entity);
                 }
             }
@@ -73,6 +76,42 @@ public class BattleManager : MonoBehaviour
         allCharacters = playerTeam.Concat(enemyTeam).ToList();
         
         currentState = BattleState.RUNNING;
+    }
+
+    /// <summary>
+    /// NOVO: Configura o sprite do inimigo no slot correspondente
+    /// </summary>
+    private void SetupEnemySprite(GameObject enemySlot, Character characterData)
+    {
+        if (characterData == null || characterData.characterSprite == null)
+        {
+            Debug.LogWarning($"Personagem ou sprite não configurado para o slot {enemySlot.name}");
+            return;
+        }
+
+        // Procura por um SpriteRenderer no slot
+        SpriteRenderer spriteRenderer = enemySlot.GetComponent<SpriteRenderer>();
+        
+        // Se não encontrou no GameObject principal, procura nos filhos
+        if (spriteRenderer == null)
+        {
+            spriteRenderer = enemySlot.GetComponentInChildren<SpriteRenderer>();
+        }
+        
+        // Se ainda não encontrou, cria um
+        if (spriteRenderer == null)
+        {
+            Debug.Log($"SpriteRenderer não encontrado no slot {enemySlot.name}, criando um novo...");
+            spriteRenderer = enemySlot.AddComponent<SpriteRenderer>();
+        }
+
+        // Aplica o sprite do personagem
+        spriteRenderer.sprite = characterData.characterSprite;
+        
+        // Configura propriedades básicas do sprite
+        spriteRenderer.sortingOrder = 1; // Garante que aparece por cima de outros elementos
+        
+        Debug.Log($"Sprite do {characterData.characterName} configurado no slot {enemySlot.name}");
     }
 
     void Update()

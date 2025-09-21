@@ -16,6 +16,9 @@ public class Character : ScriptableObject
     public string characterName;
     public Team team;
 
+    [Header("Visual")]
+    public Sprite characterSprite; // NOVO: Sprite do personagem para exibir na batalha
+
     [Header("Stats")]
     public int maxHp;
     public int maxMp;

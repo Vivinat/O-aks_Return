@@ -25,6 +25,8 @@ public class GameManager : MonoBehaviour
     // Dicionário para guardar o estado de MÚLTIPLOS mapas
     private Dictionary<string, MapStateData> savedMapStates = new Dictionary<string, MapStateData>();
     private string currentMapSceneName;
+    
+    public static Sprite pendingBattleBackground; // Sprite que será usado na próxima batalha
 
     private void Awake()
     {
@@ -83,11 +85,23 @@ public class GameManager : MonoBehaviour
         }
     }
 
-    public void StartEvent(EventTypeSO eventData)
+    public void StartEvent(EventTypeSO eventData, MapNode sourceNode = null)
     {
         CurrentEvent = eventData;
-        
-        // Verifica se o evento é do tipo Batalha
+
+        // LINHA-CHAVE: AQUI NÓS CAPTURAMOS O BACKGROUND DO MAPNODE
+        if (sourceNode != null)
+        {
+            pendingBattleBackground = sourceNode.battleBackgroundOverride;
+            Debug.Log($"Background pendente '{pendingBattleBackground?.name ?? "NULL"}' foi registrado a partir do nó '{sourceNode.name}'");
+        }
+        else
+        {
+            // Garante que não usemos um background antigo de um evento anterior
+            pendingBattleBackground = null;
+        }
+
+        // O resto do seu código continua igual...
         if (eventData is BattleEventSO battleEvent)
         {
             enemiesToBattle = battleEvent.enemies;

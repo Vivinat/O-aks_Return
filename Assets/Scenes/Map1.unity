@@ -211,8 +211,9 @@ MonoBehaviour:
   - {fileID: 1348603584}
   - {fileID: 1070575933}
   isLocked: 0
-  eventType: {fileID: 11400000, guid: bf23767f8ded3534babb9c276bfc2c83, type: 2}
+  eventType: {fileID: 11400000, guid: 2e0c96beca99f2c4a839e33534fee06a, type: 2}
   eventMusic: {fileID: 8300000, guid: 4dcd40257b3012c49aca0ed27d5c0867, type: 3}
+  battleBackgroundOverride: {fileID: 21300000, guid: f6c71d42837820b4ba213ecad75672e5, type: 3}
 --- !u!61 &346218325
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -618,6 +619,7 @@ MonoBehaviour:
   isLocked: 1
   eventType: {fileID: 11400000, guid: 558d1b97dea0b8341a32949bf74dee37, type: 2}
   eventMusic: {fileID: 8300000, guid: db2e772226172d7489ded6147a7def34, type: 3}
+  battleBackgroundOverride: {fileID: 0}
 --- !u!61 &1070575934
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -777,6 +779,7 @@ MonoBehaviour:
   isLocked: 1
   eventType: {fileID: 11400000, guid: 2e0c96beca99f2c4a839e33534fee06a, type: 2}
   eventMusic: {fileID: 0}
+  battleBackgroundOverride: {fileID: 0}
 --- !u!61 &1340018658
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -948,6 +951,7 @@ MonoBehaviour:
   isLocked: 1
   eventType: {fileID: 11400000, guid: bf23767f8ded3534babb9c276bfc2c83, type: 2}
   eventMusic: {fileID: 0}
+  battleBackgroundOverride: {fileID: 0}
 --- !u!61 &1348603585
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -1448,6 +1452,7 @@ MonoBehaviour:
   isLocked: 1
   eventType: {fileID: 11400000, guid: 2e0c96beca99f2c4a839e33534fee06a, type: 2}
   eventMusic: {fileID: 0}
+  battleBackgroundOverride: {fileID: 0}
 --- !u!61 &1737705168
 BoxCollider2D:
   m_ObjectHideFlags: 0

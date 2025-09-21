@@ -19,6 +19,10 @@ public class MapNode : MonoBehaviour
     [Tooltip("Música que tocará na cena do evento. Se null, mantém a música atual.")]
     public AudioClip eventMusic; // NOVO: Música para a cena do evento
     
+    [Header("Battle Visual Configuration")]
+    [Tooltip("Sprite de fundo específico para batalhas deste nó (sobrescreve o do BattleEventSO)")]
+    public Sprite battleBackgroundOverride;
+    
     private void Start()
     {
         UpdateVisuals();
