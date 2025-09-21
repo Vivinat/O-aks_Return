@@ -2,14 +2,15 @@
 
 using UnityEngine;
 using UnityEngine.UI;
+using System.Collections; // Adicionado para a corrotina
 
 public class BattleEntity : MonoBehaviour
 {
     public Character characterData;
     public Slider atbBar;
-    public Slider hpBar; 
+    public Slider hpBar;
     public Slider mpBar;
-    
+
     // Status de batalha
     private int currentHp;
     public int currentMp;
@@ -19,14 +20,37 @@ public class BattleEntity : MonoBehaviour
     public bool isReady = false;
     public bool isDead = false;
 
+    // Controlador de animações
+    private BattleAnimationController animationController;
+
+    void Awake()
+    {
+        // Garante que o controlador de animação exista
+        animationController = GetComponent<BattleAnimationController>();
+        if (animationController == null)
+        {
+            animationController = gameObject.AddComponent<BattleAnimationController>();
+        }
+    }
+
     void Start()
     {
         currentHp = characterData.maxHp;
         currentMp = characterData.maxMp;
-        currentAtb = Random.Range(0, 20); // Começa com ATB aleatório para variar
+        currentAtb = Random.Range(0, 20);
+
         UpdateATBBar();
         UpdateHPBar();
         UpdateMPBar();
+    }
+
+    // NOVO: Método para o BattleManager configurar o material de flash
+    public void SetupAnimationController(Material flashMat)
+    {
+        if (animationController != null)
+        {
+            animationController.SetFlashMaterial(flashMat);
+        }
     }
 
     public void UpdateATB(float deltaTime)
@@ -49,19 +73,19 @@ public class BattleEntity : MonoBehaviour
         UpdateATBBar();
     }
 
-    /// <summary>
-    /// Aplica dano a esta entidade.
-    /// </summary>
-    /// <param name="damageAmount">O dano base da ação.</param>
     public void TakeDamage(int damageAmount)
     {
         if (isDead) return;
 
-        // Fórmula de dano simples: Dano - Defesa
         int damageTaken = Mathf.Max(1, damageAmount - characterData.defense);
         currentHp -= damageTaken;
-        
         Debug.Log($"{characterData.characterName} recebeu {damageTaken} de dano!");
+
+        // Aciona a animação de dano no jogador
+        if (animationController != null)
+        {
+            animationController.OnTakeDamage();
+        }
 
         if (currentHp <= 0)
         {
@@ -70,29 +94,15 @@ public class BattleEntity : MonoBehaviour
         }
         UpdateHPBar();
     }
-    
-    /// <summary>
-    /// Cura esta entidade.
-    /// </summary>
-    /// <param name="healAmount">A quantidade de HP a restaurar.</param>
+
     public void Heal(int healAmount)
     {
         if (isDead) return;
-
-        currentHp += healAmount;
-        if (currentHp > characterData.maxHp)
-        {
-            currentHp = characterData.maxHp;
-        }
-        
+        currentHp = Mathf.Min(currentHp + healAmount, characterData.maxHp);
         Debug.Log($"{characterData.characterName} curou {healAmount} de vida!");
         UpdateHPBar();
     }
-    
-    /// <summary>
-    /// Verifica se tem MP suficiente e o consome.
-    /// </summary>
-    /// <returns>True se o MP foi consumido com sucesso.</returns>
+
     public bool ConsumeMana(int manaCost)
     {
         if (currentMp >= manaCost)
@@ -101,17 +111,45 @@ public class BattleEntity : MonoBehaviour
             UpdateMPBar();
             return true;
         }
-
         Debug.Log($"{characterData.characterName} não tem MP suficiente!");
         return false;
+    }
+
+    // Aciona o efeito de flash quando executa uma ação
+    public void OnExecuteAction()
+    {
+        if (animationController != null)
+        {
+            animationController.OnExecuteAction();
+        }
     }
 
     private void Die()
     {
         isDead = true;
         Debug.Log($"{characterData.characterName} foi derrotado!");
-        // Aqui você pode desativar o objeto ou tocar uma animação de morte
-        gameObject.SetActive(false); 
+
+        // Aciona a animação de morte no jogador
+        if (animationController != null)
+        {
+            animationController.OnDeath();
+        }
+
+        // Desativa o sprite após um delay para a animação tocar
+        StartCoroutine(DeactivateSpriteAfterDelay());
+    }
+
+    // Desativa apenas o renderer para a lógica continuar existindo se necessário
+    private IEnumerator DeactivateSpriteAfterDelay()
+    {
+        // Espera para a animação de morte
+        yield return new WaitForSeconds(1.5f);
+        
+        SpriteRenderer sr = GetComponentInChildren<SpriteRenderer>();
+        if (sr != null)
+        {
+            sr.enabled = false;
+        }
     }
 
     private void UpdateATBBar()
@@ -123,7 +161,7 @@ public class BattleEntity : MonoBehaviour
     {
         if (hpBar != null) hpBar.value = (float)currentHp / characterData.maxHp;
     }
-    
+
     private void UpdateMPBar()
     {
         if (mpBar != null) mpBar.value = (float)currentMp / characterData.maxMp;

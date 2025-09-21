@@ -2461,8 +2461,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0.25}
   m_AnchorMax: {x: 1, y: 0.75}
-  m_AnchoredPosition: {x: 1.800003, y: 0}
-  m_SizeDelta: {x: -6.4, y: 0}
+  m_AnchoredPosition: {x: 1.7528, y: -0}
+  m_SizeDelta: {x: -6.3055, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!1 &724635408
 GameObject:
@@ -2918,8 +2918,8 @@ MonoBehaviour:
   playerTeam: []
   enemyTeam: []
   battleHUD: {fileID: 835269378}
-  coinsRewardMin: 10
-  coinsRewardMax: 25
+  actionDelay: 0.5
+  postActionDelay: 1
 --- !u!4 &854426994
 Transform:
   m_ObjectHideFlags: 0
@@ -3002,7 +3002,7 @@ GameObject:
   - component: {fileID: 870546895}
   m_Layer: 0
   m_Name: Enemy1
-  m_TagString: EnemySlot1
+  m_TagString: EnemySlot
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -3200,7 +3200,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
-  m_AnchoredPosition: {x: -1.7299995, y: 0}
+  m_AnchoredPosition: {x: -1.68, y: 0}
   m_SizeDelta: {x: 3.2, y: -6.6000004}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &877241867
@@ -3257,7 +3257,7 @@ GameObject:
   - component: {fileID: 932369663}
   m_Layer: 0
   m_Name: Enemy4
-  m_TagString: EnemySlot4
+  m_TagString: EnemySlot
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -4989,7 +4989,7 @@ GameObject:
   - component: {fileID: 1527900774}
   m_Layer: 0
   m_Name: Enemy2
-  m_TagString: EnemySlot2
+  m_TagString: EnemySlot
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -5704,7 +5704,7 @@ GameObject:
   - component: {fileID: 1691492811}
   m_Layer: 0
   m_Name: Enemy3
-  m_TagString: EnemySlot3
+  m_TagString: EnemySlot
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0

@@ -10,6 +10,7 @@ TagManager:
   - EnemySlot4
   - BossNode
   - Background
+  - EnemySlot
   layers:
   - Default
   - TransparentFX
