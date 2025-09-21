@@ -16,6 +16,9 @@ public class BattleAnimationController : MonoBehaviour
     [SerializeField] private float flashDuration = 0.05f; // Tempo de cada "piscada" (preto ou branco)
     [SerializeField] private int flashCount = 5; // Quantas vezes pisca (preto-branco-preto...)
 
+    [Header("Animation Settings")]
+    [SerializeField] private float hurtAnimationDuration = 0.5f; // Duração da animação de dano
+
     void Awake()
     {
         // Pega as referências automaticamente
@@ -38,14 +41,11 @@ public class BattleAnimationController : MonoBehaviour
         }
     }
 
-    // O método SetFlashMaterial agora não é mais necessário, mas podemos mantê-lo vazio ou remover
-    // public void SetFlashMaterial(Material newFlashMaterial) { /* Não faz nada agora */ }
-    // Ou simplesmente remova-o. Para manter compatibilidade com BattleEntity, vou deixar vazio.
+    // Mantido para compatibilidade com BattleEntity
     public void SetFlashMaterial(Material newFlashMaterial)
     {
         // Este método não é mais usado para a funcionalidade de flash de cor,
         // mas é mantido para evitar erros de compilação em BattleEntity.
-        // Pode ser removido se você não quiser passar materiais.
     }
 
     // Chamado por BattleEntity quando toma dano
@@ -53,7 +53,24 @@ public class BattleAnimationController : MonoBehaviour
     {
         if (characterAnimator != null)
         {
-            characterAnimator.SetTrigger("IsHurt"); // Usar Trigger é melhor para animações rápidas
+            characterAnimator.SetTrigger("IsHurt");
+            
+            // Reset automático após um tempo
+            StartCoroutine(ResetToIdleAfterHurt());
+        }
+    }
+
+    // Corrotina que reseta para Idle após a animação de dano
+    private IEnumerator ResetToIdleAfterHurt()
+    {
+        // Espera a duração da animação de dano
+        yield return new WaitForSeconds(hurtAnimationDuration);
+        
+        // Força o retorno ao Idle
+        if (characterAnimator != null)
+        {
+            characterAnimator.SetTrigger("ToIdle");
+            characterAnimator.SetBool("IsHurt",false);
         }
     }
 

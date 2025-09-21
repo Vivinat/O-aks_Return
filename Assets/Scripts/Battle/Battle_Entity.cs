@@ -129,6 +129,9 @@ public class BattleEntity : MonoBehaviour
         isDead = true;
         Debug.Log($"{characterData.characterName} foi derrotado!");
 
+        // NOVO: Desativa os sliders da HUD imediatamente
+        DisableHUDElements();
+
         // Aciona a animação de morte no jogador
         if (animationController != null)
         {
@@ -137,6 +140,80 @@ public class BattleEntity : MonoBehaviour
 
         // Desativa o sprite após um delay para a animação tocar
         StartCoroutine(DeactivateSpriteAfterDelay());
+    }
+
+    // NOVO: Método para desativar elementos da HUD quando o personagem morre
+    private void DisableHUDElements()
+    {
+        // Opção 1: Desativa completamente os sliders
+        if (atbBar != null)
+        {
+            atbBar.gameObject.SetActive(false);
+        }
+        
+        if (hpBar != null)
+        {
+            hpBar.gameObject.SetActive(false);
+        }
+        
+        if (mpBar != null)
+        {
+            mpBar.gameObject.SetActive(false);
+        }
+
+        Debug.Log($"HUD de {characterData.characterName} desativada");
+    }
+
+    // NOVO: Método alternativo para fazer fade dos sliders em vez de desativar
+    private void FadeHUDElements()
+    {
+        // Opção 2: Faz fade dos sliders para 50% de transparência
+        SetSliderAlpha(atbBar, 0.3f);
+        SetSliderAlpha(hpBar, 0.3f);
+        SetSliderAlpha(mpBar, 0.3f);
+
+        Debug.Log($"HUD de {characterData.characterName} com fade aplicado");
+    }
+
+    // NOVO: Método auxiliar para alterar a transparência de um slider
+    private void SetSliderAlpha(Slider slider, float alpha)
+    {
+        if (slider == null) return;
+
+        // Altera a transparência de todos os componentes Image do slider
+        Image[] images = slider.GetComponentsInChildren<Image>();
+        foreach (Image img in images)
+        {
+            Color color = img.color;
+            color.a = alpha;
+            img.color = color;
+        }
+    }
+
+    // NOVO: Método público para reativar a HUD (útil para debug ou reviver)
+    public void EnableHUDElements()
+    {
+        if (atbBar != null)
+        {
+            atbBar.gameObject.SetActive(true);
+        }
+        
+        if (hpBar != null)
+        {
+            hpBar.gameObject.SetActive(true);
+        }
+        
+        if (mpBar != null)
+        {
+            mpBar.gameObject.SetActive(true);
+        }
+
+        // Restaura a opacidade total
+        SetSliderAlpha(atbBar, 1f);
+        SetSliderAlpha(hpBar, 1f);
+        SetSliderAlpha(mpBar, 1f);
+
+        Debug.Log($"HUD de {characterData.characterName} reativada");
     }
 
     // Desativa apenas o renderer para a lógica continuar existindo se necessário
@@ -154,16 +231,19 @@ public class BattleEntity : MonoBehaviour
 
     private void UpdateATBBar()
     {
-        if (atbBar != null) atbBar.value = currentAtb / ATB_MAX;
+        if (atbBar != null && !isDead) 
+            atbBar.value = currentAtb / ATB_MAX;
     }
 
     private void UpdateHPBar()
     {
-        if (hpBar != null) hpBar.value = (float)currentHp / characterData.maxHp;
+        if (hpBar != null && !isDead) 
+            hpBar.value = (float)currentHp / characterData.maxHp;
     }
 
     private void UpdateMPBar()
     {
-        if (mpBar != null) mpBar.value = (float)currentMp / characterData.maxMp;
+        if (mpBar != null && !isDead) 
+            mpBar.value = (float)currentMp / characterData.maxMp;
     }
 }
