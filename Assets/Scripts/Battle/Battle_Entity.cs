@@ -2,6 +2,7 @@
 
 using UnityEngine;
 using UnityEngine.UI;
+using TMPro;
 using System.Collections; // Adicionado para a corrotina
 
 public class BattleEntity : MonoBehaviour
@@ -10,6 +11,13 @@ public class BattleEntity : MonoBehaviour
     public Slider atbBar;
     public Slider hpBar;
     public Slider mpBar;
+
+    [Header("Text Values UI")]
+    [Tooltip("Texto que mostra o valor atual de HP (ex: '85/100')")]
+    public TextMeshProUGUI hpValueText;
+    
+    [Tooltip("Texto que mostra o valor atual de MP (ex: '30/50') - Apenas para o player")]
+    public TextMeshProUGUI mpValueText;
 
     // Status de batalha
     private int currentHp;
@@ -42,9 +50,10 @@ public class BattleEntity : MonoBehaviour
         UpdateATBBar();
         UpdateHPBar();
         UpdateMPBar();
+        UpdateValueTexts(); // NOVO: Atualiza os textos no início
     }
 
-    // NOVO: Método para o BattleManager configurar o material de flash
+    // Método para o BattleManager configurar o material de flash
     public void SetupAnimationController(Material flashMat)
     {
         if (animationController != null)
@@ -92,15 +101,20 @@ public class BattleEntity : MonoBehaviour
             currentHp = 0;
             Die();
         }
+        
         UpdateHPBar();
+        UpdateValueTexts(); // NOVO: Atualiza o texto após tomar dano
     }
 
     public void Heal(int healAmount)
     {
         if (isDead) return;
+        
         currentHp = Mathf.Min(currentHp + healAmount, characterData.maxHp);
         Debug.Log($"{characterData.characterName} curou {healAmount} de vida!");
+        
         UpdateHPBar();
+        UpdateValueTexts(); // NOVO: Atualiza o texto após curar
     }
 
     public bool ConsumeMana(int manaCost)
@@ -109,6 +123,7 @@ public class BattleEntity : MonoBehaviour
         {
             currentMp -= manaCost;
             UpdateMPBar();
+            UpdateValueTexts(); // NOVO: Atualiza o texto após consumir mana
             return true;
         }
         Debug.Log($"{characterData.characterName} não tem MP suficiente!");
@@ -129,7 +144,7 @@ public class BattleEntity : MonoBehaviour
         isDead = true;
         Debug.Log($"{characterData.characterName} foi derrotado!");
 
-        // NOVO: Desativa os sliders da HUD imediatamente
+        // Desativa os sliders da HUD imediatamente
         DisableHUDElements();
 
         // Aciona a animação de morte no jogador
@@ -142,7 +157,7 @@ public class BattleEntity : MonoBehaviour
         StartCoroutine(DeactivateSpriteAfterDelay());
     }
 
-    // NOVO: Método para desativar elementos da HUD quando o personagem morre
+    // Método para desativar elementos da HUD quando o personagem morre
     private void DisableHUDElements()
     {
         // Opção 1: Desativa completamente os sliders
@@ -161,10 +176,21 @@ public class BattleEntity : MonoBehaviour
             mpBar.gameObject.SetActive(false);
         }
 
+        // NOVO: Esconde os textos de valores também
+        if (hpValueText != null)
+        {
+            hpValueText.gameObject.SetActive(false);
+        }
+        
+        if (mpValueText != null)
+        {
+            mpValueText.gameObject.SetActive(false);
+        }
+
         Debug.Log($"HUD de {characterData.characterName} desativada");
     }
 
-    // NOVO: Método alternativo para fazer fade dos sliders em vez de desativar
+    // Método alternativo para fazer fade dos sliders em vez de desativar
     private void FadeHUDElements()
     {
         // Opção 2: Faz fade dos sliders para 50% de transparência
@@ -172,10 +198,14 @@ public class BattleEntity : MonoBehaviour
         SetSliderAlpha(hpBar, 0.3f);
         SetSliderAlpha(mpBar, 0.3f);
 
+        // NOVO: Faz fade dos textos também
+        SetTextAlpha(hpValueText, 0.3f);
+        SetTextAlpha(mpValueText, 0.3f);
+
         Debug.Log($"HUD de {characterData.characterName} com fade aplicado");
     }
 
-    // NOVO: Método auxiliar para alterar a transparência de um slider
+    // Método auxiliar para alterar a transparência de um slider
     private void SetSliderAlpha(Slider slider, float alpha)
     {
         if (slider == null) return;
@@ -190,7 +220,17 @@ public class BattleEntity : MonoBehaviour
         }
     }
 
-    // NOVO: Método público para reativar a HUD (útil para debug ou reviver)
+    // NOVO: Método auxiliar para alterar a transparência de um texto
+    private void SetTextAlpha(TextMeshProUGUI text, float alpha)
+    {
+        if (text == null) return;
+
+        Color color = text.color;
+        color.a = alpha;
+        text.color = color;
+    }
+
+    // Método público para reativar a HUD (útil para debug ou reviver)
     public void EnableHUDElements()
     {
         if (atbBar != null)
@@ -208,10 +248,23 @@ public class BattleEntity : MonoBehaviour
             mpBar.gameObject.SetActive(true);
         }
 
+        // NOVO: Reativa os textos também
+        if (hpValueText != null)
+        {
+            hpValueText.gameObject.SetActive(true);
+        }
+        
+        if (mpValueText != null)
+        {
+            mpValueText.gameObject.SetActive(true);
+        }
+
         // Restaura a opacidade total
         SetSliderAlpha(atbBar, 1f);
         SetSliderAlpha(hpBar, 1f);
         SetSliderAlpha(mpBar, 1f);
+        SetTextAlpha(hpValueText, 1f);
+        SetTextAlpha(mpValueText, 1f);
 
         Debug.Log($"HUD de {characterData.characterName} reativada");
     }
@@ -245,5 +298,69 @@ public class BattleEntity : MonoBehaviour
     {
         if (mpBar != null && !isDead) 
             mpBar.value = (float)currentMp / characterData.maxMp;
+    }
+
+    // ===== NOVO MÉTODO PARA ATUALIZAR TEXTOS DE VALORES =====
+
+    /// <summary>
+    /// NOVO: Atualiza os textos que mostram os valores numéricos de HP e MP
+    /// </summary>
+    private void UpdateValueTexts()
+    {
+        if (isDead) return;
+
+        // Atualiza texto de HP (para todos os personagens)
+        if (hpValueText != null)
+        {
+            hpValueText.text = $"{currentHp}/{characterData.maxHp}";
+        }
+
+        // Atualiza texto de MP (geralmente só para o player)
+        if (mpValueText != null)
+        {
+            mpValueText.text = $"{currentMp}/{characterData.maxMp}";
+        }
+    }
+
+    // ===== MÉTODOS PÚBLICOS PARA ACESSO AOS VALORES =====
+
+    /// <summary>
+    /// NOVO: Retorna o HP atual
+    /// </summary>
+    public int GetCurrentHP()
+    {
+        return currentHp;
+    }
+
+    /// <summary>
+    /// NOVO: Retorna o MP atual
+    /// </summary>
+    public int GetCurrentMP()
+    {
+        return currentMp;
+    }
+
+    /// <summary>
+    /// NOVO: Retorna o HP máximo
+    /// </summary>
+    public int GetMaxHP()
+    {
+        return characterData.maxHp;
+    }
+
+    /// <summary>
+    /// NOVO: Retorna o MP máximo
+    /// </summary>
+    public int GetMaxMP()
+    {
+        return characterData.maxMp;
+    }
+
+    /// <summary>
+    /// NOVO: Força uma atualização dos textos (útil para debug ou mudanças externas)
+    /// </summary>
+    public void ForceUpdateValueTexts()
+    {
+        UpdateValueTexts();
     }
 }

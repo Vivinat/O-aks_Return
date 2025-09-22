@@ -14,11 +14,13 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   characterName: O'ak
   team: 0
+  characterSprite: {fileID: 0}
   maxHp: 100
   maxMp: 100
   defense: 10
   speed: 5
   battleActions:
   - {fileID: 11400000, guid: 2c7c1202afc4e87419c6856878772779, type: 2}
+  - {fileID: 11400000, guid: 550d9ec4013eb6446941d04e0f2ca2bf, type: 2}
   - {fileID: 11400000, guid: 550d9ec4013eb6446941d04e0f2ca2bf, type: 2}
   - {fileID: 11400000, guid: 550d9ec4013eb6446941d04e0f2ca2bf, type: 2}

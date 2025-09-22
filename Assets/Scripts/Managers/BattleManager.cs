@@ -21,6 +21,7 @@ public class BattleManager : MonoBehaviour
     [Header("Timings")]
     [SerializeField] private float actionDelay = 0.5f;
     [SerializeField] private float postActionDelay = 1.0f;
+    [SerializeField] private float enemyActionDisplayTime = 2.0f; // NOVO: Tempo para mostrar ação do inimigo
 
     void Start()
     {
@@ -116,6 +117,21 @@ public class BattleManager : MonoBehaviour
         // 2. Aplica os efeitos da ação (dano, cura, etc.)
         if (caster.ConsumeMana(action.manaCost))
         {
+            // NOVO: Se é consumível, usa a ação e verifica se deve remover
+            if (action.isConsumable)
+            {
+                bool canStillUse = action.UseAction();
+                if (!canStillUse)
+                {
+                    // Remove do inventário se os usos acabaram
+                    if (caster.characterData.team == Team.Player)
+                    {
+                        GameManager.Instance.RemoveItemFromInventory(action);
+                    }
+                    Debug.Log($"{action.actionName} foi removido - usos esgotados!");
+                }
+            }
+
             foreach (var target in targets)
             {
                 if (target.isDead) continue;
@@ -150,22 +166,52 @@ public class BattleManager : MonoBehaviour
         yield return new WaitForSeconds(1.0f);
     
         BattleAction chosenAction = activeCharacter.characterData.battleActions
-            .Where(a => activeCharacter.currentMp >= a.manaCost)
+            .Where(a => activeCharacter.currentMp >= a.manaCost && (!a.isConsumable || a.CanUse())) // NOVO: Verifica se consumível pode ser usado
             .OrderBy(a => Random.value) // Escolhe uma ação aleatória que ele possa pagar
             .FirstOrDefault();
 
         if (chosenAction == null)
         {
+            Debug.Log($"{activeCharacter.characterData.characterName} não tem ações disponíveis!");
             activeCharacter.ResetATB();
             currentState = BattleState.RUNNING;
             yield break;
         }
 
-        List<BattleEntity> targets = new List<BattleEntity>();
-        List<BattleEntity> alivePlayers = playerTeam.Where(p => !p.isDead).ToList();
+        // NOVO: Mostra qual ação o inimigo vai usar
+        string enemyActionText = $"{activeCharacter.characterData.characterName} usa {chosenAction.actionName}!";
+        battleHUD.ShowEnemyAction(enemyActionText);
+        
+        // Aguarda um tempo para o jogador ler a ação
+        yield return new WaitForSeconds(enemyActionDisplayTime);
+        
+        // Esconde o texto da ação
+        battleHUD.HideEnemyAction();
 
-        if(alivePlayers.Any())
-            targets.Add(alivePlayers[Random.Range(0, alivePlayers.Count)]);
+        List<BattleEntity> targets = new List<BattleEntity>();
+        
+        // Escolhe alvos baseado no tipo da ação
+        switch (chosenAction.targetType)
+        {
+            case TargetType.SingleEnemy:
+            case TargetType.SingleAlly:
+                List<BattleEntity> alivePlayers = playerTeam.Where(p => !p.isDead).ToList();
+                if(alivePlayers.Any())
+                    targets.Add(alivePlayers[Random.Range(0, alivePlayers.Count)]);
+                break;
+                
+            case TargetType.Self:
+                targets.Add(activeCharacter);
+                break;
+                
+            case TargetType.AllEnemies:
+                targets.AddRange(playerTeam.Where(p => !p.isDead));
+                break;
+                
+            case TargetType.AllAllies:
+                targets.AddRange(enemyTeam.Where(e => !e.isDead));
+                break;
+        }
 
         if (targets.Any())
         {
@@ -173,6 +219,7 @@ public class BattleManager : MonoBehaviour
         }
         else
         {
+            Debug.Log($"{activeCharacter.characterData.characterName} não encontrou alvos válidos!");
             activeCharacter.ResetATB();
             currentState = BattleState.RUNNING;
         }
@@ -184,16 +231,38 @@ public class BattleManager : MonoBehaviour
         {
             currentState = BattleState.WON;
             Debug.Log("VITÓRIA!");
-            // ... sua lógica de recompensa ...
+            
+            // NOVO: Adiciona recompensa de moedas
+            int rewardCoins = Random.Range(10, 31); // 10-30 moedas
+            GameManager.Instance.AddBattleReward(rewardCoins);
+            
+            // Aqui você pode adicionar mais lógica de vitória
+            StartCoroutine(HandleBattleVictory(rewardCoins));
         }
         else if (playerTeam.All(p => p.isDead))
         {
             currentState = BattleState.LOST;
             Debug.Log("DERROTA!");
+            // Aqui você pode adicionar lógica de derrota
         }
         else
         {
             currentState = BattleState.RUNNING;
         }
+    }
+
+    // NOVO: Corrotina para lidar com a vitória
+    private IEnumerator HandleBattleVictory(int rewardCoins)
+    {
+        yield return new WaitForSeconds(2f); // Aguarda um pouco após a vitória
+        
+        // Mostra mensagem de vitória e recompensa
+        string victoryMessage = $"Vitória! Você ganhou {rewardCoins} moedas!";
+        battleHUD.ShowEnemyAction(victoryMessage);
+        
+        yield return new WaitForSeconds(3f); // Mostra a mensagem por 3 segundos
+        
+        // Retorna ao mapa
+        GameManager.Instance.ReturnToMap();
     }
 }

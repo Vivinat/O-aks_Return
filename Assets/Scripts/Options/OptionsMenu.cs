@@ -290,7 +290,7 @@ public class OptionsMenu : MonoBehaviour
     {
         if (musicVolumeText != null)
         {
-            musicVolumeText.text = $"Música: {Mathf.RoundToInt(value * 100)}%";
+            musicVolumeText.text = $"Music:{Mathf.RoundToInt(value * 100)}";
         }
     }
 
@@ -298,7 +298,7 @@ public class OptionsMenu : MonoBehaviour
     {
         if (sfxVolumeText != null)
         {
-            sfxVolumeText.text = $"Efeitos: {Mathf.RoundToInt(value * 100)}%";
+            sfxVolumeText.text = $"SFX:{Mathf.RoundToInt(value * 100)}";
         }
     }
 

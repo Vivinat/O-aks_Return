@@ -1,4 +1,4 @@
-// Assets/Scripts/UI/BattleHUD.cs (Atualizado para Itens)
+// Assets/Scripts/UI/BattleHUD.cs (Atualizado para mostrar ações do inimigo)
 
 using System.Collections;
 using System.Collections.Generic;
@@ -54,13 +54,16 @@ public class BattleHUD : MonoBehaviour
             cancelTargetButton.gameObject.SetActive(false);
         }
 
+        // NOVO: Esconde qualquer texto de ação do inimigo que possa estar sendo exibido
+        HideEnemyAction();
+
         // Limpa botões antigos
         foreach (Transform child in actionPanel.transform)
         {
             Destroy(child.gameObject);
         }
 
-        // NOVO: Filtra ações disponíveis
+        // Filtra ações disponíveis
         List<BattleAction> availableActions = GetAvailableActions(character);
 
         foreach (BattleAction action in availableActions)
@@ -73,11 +76,11 @@ public class BattleHUD : MonoBehaviour
             Button buttonComponent = buttonObj.GetComponent<Button>();
             buttonComponent.onClick.AddListener(() => OnActionSelected(action));
 
-            // NOVO: Lógica de disponibilidade atualizada
+            // Lógica de disponibilidade atualizada
             bool isAvailable = IsActionAvailable(character, action);
             buttonComponent.interactable = isAvailable;
             
-            // NOVO: Feedback visual para consumíveis sem uso
+            // Feedback visual para consumíveis sem uso
             if (!isAvailable && action.isConsumable)
             {
                 Image buttonImage = buttonComponent.GetComponent<Image>();
@@ -92,7 +95,7 @@ public class BattleHUD : MonoBehaviour
     }
 
     /// <summary>
-    /// NOVO: Obtém apenas as ações disponíveis para o personagem
+    /// Obtém apenas as ações disponíveis para o personagem
     /// </summary>
     private List<BattleAction> GetAvailableActions(BattleEntity character)
     {
@@ -121,7 +124,7 @@ public class BattleHUD : MonoBehaviour
     }
 
     /// <summary>
-    /// NOVO: Verifica se uma ação específica está disponível
+    /// Verifica se uma ação específica está disponível
     /// </summary>
     private bool IsActionAvailable(BattleEntity character, BattleAction action)
     {
@@ -272,5 +275,65 @@ public class BattleHUD : MonoBehaviour
         {
             tooltipUI.Hide();
         }
+    }
+
+    // ===== NOVOS MÉTODOS PARA EXIBIR AÇÕES DO INIMIGO =====
+
+    /// <summary>
+    /// NOVO: Mostra o texto da ação do inimigo usando o targetInstructionText
+    /// </summary>
+    public void ShowEnemyAction(string actionText)
+    {
+        if (targetInstructionText != null)
+        {
+            // Ativa o painel de seleção de alvo para mostrar o texto
+            targetSelectionPanel.SetActive(true);
+            
+            // Esconde o botão de cancelar para que não interfira
+            if (cancelTargetButton != null)
+            {
+                cancelTargetButton.gameObject.SetActive(false);
+            }
+            
+            // Define o texto da ação do inimigo
+            targetInstructionText.text = actionText;
+            
+            Debug.Log($"Mostrando ação do inimigo: {actionText}");
+        }
+    }
+
+    /// <summary>
+    /// NOVO: Esconde o texto da ação do inimigo
+    /// </summary>
+    public void HideEnemyAction()
+    {
+        if (targetSelectionPanel != null && targetSelectionPanel.activeSelf)
+        {
+            // Só esconde se não estamos realmente em seleção de alvo
+            // (verifica se o botão de cancelar está ativo)
+            if (cancelTargetButton != null && !cancelTargetButton.gameObject.activeSelf)
+            {
+                targetSelectionPanel.SetActive(false);
+                Debug.Log("Escondendo ação do inimigo");
+            }
+        }
+    }
+
+    /// <summary>
+    /// NOVO: Método alternativo para mostrar temporariamente uma mensagem
+    /// </summary>
+    public void ShowTemporaryMessage(string message, float duration = 2f)
+    {
+        StartCoroutine(ShowTemporaryMessageCoroutine(message, duration));
+    }
+
+    /// <summary>
+    /// NOVO: Corrotina para mostrar mensagem temporária
+    /// </summary>
+    private System.Collections.IEnumerator ShowTemporaryMessageCoroutine(string message, float duration)
+    {
+        ShowEnemyAction(message);
+        yield return new WaitForSeconds(duration);
+        HideEnemyAction();
     }
 }
