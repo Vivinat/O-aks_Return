@@ -5,6 +5,7 @@ using UnityEngine.UI;
 using System.Collections.Generic;
 using System.Linq;
 using TMPro;
+using System.Collections; // Necessário para Coroutines
 
 public class ShopManager : MonoBehaviour
 {
@@ -14,14 +15,14 @@ public class ShopManager : MonoBehaviour
 
     [Header("UI References")]
     public Transform shopItemsContainer;
-    public GameObject shopItemPrefab; // Prefab com ShopItemUI (mostra preço e usos)
+    public GameObject shopItemPrefab;
     public Button exitButton;
     public TextMeshProUGUI exitButtonText;
     public TextMeshProUGUI coinsDisplay;
 
     [Header("Player Actions UI")]
     public GameObject playerActionsPanel;
-    public GameObject playerActionSlotPrefab; // Prefab com ShopItemUI (para slots do jogador)
+    public GameObject playerActionSlotPrefab;
 
     [Header("Tooltip UI")]
     public TooltipUI tooltipUI;
@@ -32,9 +33,9 @@ public class ShopManager : MonoBehaviour
     public Color defaultColor = Color.white;
     public Color emptySlotColor = new Color(0.7f, 0.7f, 0.7f, 0.8f);
     public Color cantAffordColor = new Color(0.7f, 0.4f, 0.4f);
-
+    
     [Header("Purchase State")]
-    public GameObject purchaseInstructionPanel; // Painel que mostra "Escolha um slot"
+    public GameObject purchaseInstructionPanel;
     public TextMeshProUGUI purchaseInstructionText;
 
     // --- Estado Interno ---
@@ -42,17 +43,15 @@ public class ShopManager : MonoBehaviour
     private BattleAction selectedShopItem;
     private int selectedShopItemIndex = -1;
     private int selectedPlayerSlotIndex = -1;
-    private int shopItemPrice = 0;
-    private bool hasPurchased = false; // Se o jogador comprou algo e precisa escolher slot
+    private bool hasPendingPurchase = false;
 
     // Listas para gerenciar os botões criados
     private List<GameObject> shopButtonObjects = new List<GameObject>();
     private List<GameObject> playerSlotObjects = new List<GameObject>();
+    private List<BattleAction> shopActions = new List<BattleAction>();
 
     void Start()
     {
-        Debug.Log("ShopManager: Iniciando...");
-        
         if (GameManager.Instance == null)
         {
             Debug.LogError("GameManager não encontrado!");
@@ -76,8 +75,6 @@ public class ShopManager : MonoBehaviour
             playerActions = new List<BattleAction>();
         }
 
-        Debug.Log($"Jogador tem {playerActions.Count} habilidades");
-
         if (tooltipUI != null)
             tooltipUI.Hide();
 
@@ -98,8 +95,7 @@ public class ShopManager : MonoBehaviour
         selectedShopItem = null;
         selectedShopItemIndex = -1;
         selectedPlayerSlotIndex = -1;
-        shopItemPrice = 0;
-        hasPurchased = false;
+        hasPendingPurchase = false;
         
         if (exitButtonText != null)
             exitButtonText.text = "Sair";
@@ -118,8 +114,6 @@ public class ShopManager : MonoBehaviour
 
     private void GenerateShopItems()
     {
-        Debug.Log("Gerando itens da loja...");
-        
         ClearShopButtons();
         
         if (shopData.actionsForSale == null || shopData.actionsForSale.Count == 0)
@@ -133,14 +127,13 @@ public class ShopManager : MonoBehaviour
             .Take(shopData.numberOfChoices)
             .ToList();
         
-        Debug.Log($"Geradas {selectedActions.Count} ações para a loja");
+        shopActions = selectedActions;
         
         for (int i = 0; i < selectedActions.Count; i++)
         {
             BattleAction action = selectedActions[i];
             if (action == null) continue;
 
-            // NOVO: Garante que itens consumíveis à venda mostrem usos corretos
             if (action.isConsumable && action.currentUses <= 0)
             {
                 action.currentUses = action.maxUses;
@@ -151,42 +144,24 @@ public class ShopManager : MonoBehaviour
             GameObject shopInstance = Instantiate(shopItemPrefab, shopItemsContainer);
             ShopItemUI shopButton = shopInstance.GetComponent<ShopItemUI>();
             
-            if (shopButton == null)
-            {
-                Debug.LogError("ShopItemUI não encontrado no prefab!");
-                continue;
-            }
+            if (shopButton == null) continue;
             
-            // Setup usando ShopItemUI para itens à venda
             shopButton.SetupForSale(action, this);
             shopButtonObjects.Add(shopInstance);
 
-            bool canAfford = GameManager.Instance.CurrencySystem.HasEnoughCoins(action.shopPrice);
-            
             Button buttonComponent = shopInstance.GetComponent<Button>();
             if (buttonComponent != null)
             {
                 buttonComponent.onClick.AddListener(() => OnShopItemSelected(action, buttonIndex));
-                
-                Image buttonImage = buttonComponent.GetComponent<Image>();
-                if (buttonImage != null && !canAfford)
-                {
-                    buttonImage.color = cantAffordColor;
-                }
             }
         }
+        
+        UpdateShopItemStates();
     }
 
     private void PopulatePlayerActionsPanel()
     {
-        Debug.Log($"Populando painel do jogador com {playerActions.Count} ações...");
-        
-        if (playerActionsPanel == null)
-        {
-            Debug.LogError("playerActionsPanel não foi atribuído!");
-            return;
-        }
-
+        if (playerActionsPanel == null) return;
         playerActionsPanel.SetActive(true);
         ClearPlayerSlots();
 
@@ -197,16 +172,11 @@ public class ShopManager : MonoBehaviour
             GameObject slotInstance = Instantiate(playerActionSlotPrefab, playerActionsPanel.transform);
             ShopItemUI slotButton = slotInstance.GetComponent<ShopItemUI>();
 
-            if (slotButton == null)
-            {
-                Debug.LogError("ShopItemUI não encontrado no prefab do slot!");
-                continue;
-            }
+            if (slotButton == null) continue;
 
             if (i < playerActions.Count && playerActions[i] != null)
             {
                 slotButton.SetupPlayerSlot(playerActions[i], this);
-                Debug.Log($"Slot {i}: {playerActions[i].actionName}");
             }
             else
             {
@@ -225,145 +195,153 @@ public class ShopManager : MonoBehaviour
 
     private void SetupEmptySlot(ShopItemUI buttonUI, int slotIndex)
     {
-        if (buttonUI.iconImage != null)
-        {
-            buttonUI.iconImage.enabled = false;
-        }
-        
-        // Esconde preço e usos para slots vazios
-        if (buttonUI.priceText != null)
-        {
-            buttonUI.priceText.gameObject.SetActive(false);
-        }
-        
-        if (buttonUI.usesText != null)
-        {
-            buttonUI.usesText.gameObject.SetActive(false);
-        }
-        
+        if (buttonUI.iconImage != null) buttonUI.iconImage.enabled = false;
+        if (buttonUI.priceText != null) buttonUI.priceText.gameObject.SetActive(false);
+        if (buttonUI.usesText != null) buttonUI.usesText.gameObject.SetActive(false);
         Image buttonImage = buttonUI.GetComponent<Image>();
-        if (buttonImage != null)
-        {
-            buttonImage.color = emptySlotColor;
-        }
-        
-        Debug.Log($"Slot {slotIndex}: vazio");
+        if (buttonImage != null) buttonImage.color = emptySlotColor;
     }
 
     public void OnShopItemSelected(BattleAction action, int buttonIndex)
     {
-        // Se já comprou algo, não pode selecionar outro item
-        if (hasPurchased) return;
+        if (hasPendingPurchase)
+        {
+            CancelPendingPurchase();
+        }
 
         if (!GameManager.Instance.CurrencySystem.HasEnoughCoins(action.shopPrice))
         {
-            Debug.Log($"Não é possível comprar {action.actionName} - moedas insuficientes!");
+            Debug.Log($"Moedas insuficientes para {action.actionName}!");
+            // Pode-se adicionar um feedback visual aqui (ex: balançar o botão)
             return;
         }
 
-        // Compra imediatamente
-        if (GameManager.Instance.CurrencySystem.SpendCoins(action.shopPrice))
-        {
-            selectedShopItem = action.CreateInstance(); // Cria instância com usos completos
-            selectedShopItemIndex = buttonIndex;
-            selectedPlayerSlotIndex = -1;
-            hasPurchased = true;
-            
-            UpdateCoinsDisplay();
-            UpdateShopHighlights();
-            UpdatePlayerSlotHighlights();
-            
-            // Mostra instrução para escolher slot
-            ShowSlotSelectionMode();
-            
-            Debug.Log($"Comprou {action.actionName} por {action.shopPrice} moedas! Escolha um slot.");
-        }
+        selectedShopItem = action.CreateInstance();
+        selectedShopItemIndex = buttonIndex;
+        selectedPlayerSlotIndex = -1;
+        hasPendingPurchase = true;
+        
+        UpdateShopHighlights();
+        UpdatePlayerSlotHighlights();
+        
+        ShowSlotSelectionMode();
     }
 
     private void ShowSlotSelectionMode()
     {
-        if (exitButtonText != null)
-            exitButtonText.text = "Confirmar";
-            
         if (purchaseInstructionPanel != null)
         {
             purchaseInstructionPanel.SetActive(true);
             if (purchaseInstructionText != null)
             {
-                purchaseInstructionText.text = $"Escolha onde colocar '{selectedShopItem.actionName}'";
+                purchaseInstructionText.text = $"Escolha um slot para '{selectedShopItem.actionName}' (Custo: {shopActions[selectedShopItemIndex].shopPrice})";
             }
         }
     }
 
     public void OnPlayerSlotSelected(int slotIndex)
     {
-        // Só permite seleção se comprou algo
-        if (!hasPurchased || selectedShopItem == null) return;
+        if (!hasPendingPurchase || selectedShopItem == null) return;
 
         selectedPlayerSlotIndex = slotIndex;
-        UpdatePlayerSlotHighlights();
         
-        if (slotIndex >= playerActions.Count)
+        if (ConfirmPurchase())
         {
-            Debug.Log($"Slot vazio {slotIndex} selecionado para '{selectedShopItem.actionName}'");
+            ProcessSlotAssignment();
+            CompletePurchase();
+        }
+    }
+
+    private bool ConfirmPurchase()
+    {
+        int price = shopActions[selectedShopItemIndex].shopPrice;
+        
+        if (GameManager.Instance.CurrencySystem.SpendCoins(price))
+        {
+            Debug.Log($"Compra de {selectedShopItem.actionName} por {price} moedas confirmada!");
+            return true;
         }
         else
         {
-            string currentAction = playerActions[slotIndex]?.actionName ?? "vazio";
-            Debug.Log($"Slot {slotIndex} selecionado para substituir '{currentAction}' por '{selectedShopItem.actionName}'");
+            Debug.Log("Falha na compra - verificação final de moedas falhou!");
+            CancelPendingPurchase();
+            return false;
+        }
+    }
+
+    private void CompletePurchase()
+    {
+        int indexToRemove = selectedShopItemIndex;
+
+        UpdateCoinsDisplay();
+        RefreshPlayerSlotsDisplay();
+        
+        selectedShopItem = null;
+        selectedShopItemIndex = -1;
+        selectedPlayerSlotIndex = -1;
+        hasPendingPurchase = false;
+        
+        if (purchaseInstructionPanel != null)
+            purchaseInstructionPanel.SetActive(false);
+        
+        // **CHAMADA PARA O NOVO MÉTODO DE REMOÇÃO**
+        if (indexToRemove != -1)
+        {
+            RemoveShopItem(indexToRemove);
+        }
+        
+        Debug.Log("Compra concluída!");
+    }
+
+    private void CancelPendingPurchase()
+    {
+        selectedShopItem = null;
+        selectedShopItemIndex = -1;
+        selectedPlayerSlotIndex = -1;
+        hasPendingPurchase = false;
+        
+        if (purchaseInstructionPanel != null)
+            purchaseInstructionPanel.SetActive(false);
+        
+        UpdateShopHighlights();
+        UpdatePlayerSlotHighlights();
+        
+        Debug.Log("Seleção de compra cancelada.");
+    }
+
+    private void UpdateShopItemStates()
+    {
+        for (int i = 0; i < shopButtonObjects.Count; i++)
+        {
+            if (i >= shopActions.Count || shopButtonObjects[i] == null) continue;
+
+            Button button = shopButtonObjects[i].GetComponent<Button>();
+            Image buttonImage = shopButtonObjects[i].GetComponent<Image>();
+            
+            if (button == null || buttonImage == null) continue;
+            
+            bool canAfford = GameManager.Instance.CurrencySystem.HasEnoughCoins(shopActions[i].shopPrice);
+            bool isSelected = (i == selectedShopItemIndex && hasPendingPurchase);
+            
+            if (isSelected)
+            {
+                buttonImage.color = highlightColor;
+            }
+            else if (!canAfford)
+            {
+                buttonImage.color = cantAffordColor;
+            }
+            else
+            {
+                buttonImage.color = defaultColor;
+            }
+            button.interactable = true;
         }
     }
 
     private void UpdateShopHighlights()
     {
-        for (int i = 0; i < shopButtonObjects.Count; i++)
-        {
-            Image buttonImage = shopButtonObjects[i].GetComponent<Image>();
-            if (buttonImage != null)
-            {
-                bool isSelected = (i == selectedShopItemIndex);
-                
-                if (isSelected)
-                {
-                    buttonImage.color = highlightColor;
-                }
-                else
-                {
-                    // Se já comprou, deixa todos os outros itens indisponíveis
-                    if (hasPurchased)
-                    {
-                        buttonImage.color = cantAffordColor;
-                    }
-                    else
-                    {
-                        ShopItemUI shopUI = shopButtonObjects[i].GetComponent<ShopItemUI>();
-                        if (shopUI != null)
-                        {
-                            BattleAction action = shopUI.GetAction();
-                            bool canAfford = GameManager.Instance.CurrencySystem.HasEnoughCoins(action.shopPrice);
-                            buttonImage.color = canAfford ? defaultColor : cantAffordColor;
-                        }
-                        else
-                        {
-                            buttonImage.color = defaultColor;
-                        }
-                    }
-                }
-            }
-        }
-        
-        // Desabilita cliques nos outros itens se já comprou
-        if (hasPurchased)
-        {
-            for (int i = 0; i < shopButtonObjects.Count; i++)
-            {
-                if (i != selectedShopItemIndex)
-                {
-                    Button btn = shopButtonObjects[i].GetComponent<Button>();
-                    if (btn != null) btn.interactable = false;
-                }
-            }
-        }
+        UpdateShopItemStates();
     }
 
     private void UpdatePlayerSlotHighlights()
@@ -381,17 +359,16 @@ public class ShopManager : MonoBehaviour
                 }
                 else
                 {
-                    if (i >= playerActions.Count)
-                    {
-                        buttonImage.color = emptySlotColor;
-                    }
-                    else
-                    {
-                        buttonImage.color = defaultColor;
-                    }
+                    buttonImage.color = (i >= playerActions.Count) ? emptySlotColor : defaultColor;
                 }
             }
         }
+    }
+
+    private void RefreshPlayerSlotsDisplay()
+    {
+        ClearPlayerSlots();
+        PopulatePlayerActionsPanel();
     }
 
     private void ClearShopButtons()
@@ -401,6 +378,7 @@ public class ShopManager : MonoBehaviour
             if (obj != null) Destroy(obj);
         }
         shopButtonObjects.Clear();
+        shopActions.Clear();
     }
 
     private void ClearPlayerSlots()
@@ -417,10 +395,9 @@ public class ShopManager : MonoBehaviour
         if (tooltipUI != null)
             tooltipUI.Hide();
 
-        // Se comprou algo e selecionou um slot, confirma
-        if (hasPurchased && selectedPlayerSlotIndex >= 0)
+        if (hasPendingPurchase)
         {
-            ProcessSlotAssignment();
+            CancelPendingPurchase();
         }
         
         EndShopEvent();
@@ -430,25 +407,116 @@ public class ShopManager : MonoBehaviour
     {
         if (selectedPlayerSlotIndex >= playerActions.Count)
         {
-            // Adicionar a uma posição vazia
             while (playerActions.Count <= selectedPlayerSlotIndex)
             {
                 playerActions.Add(null);
             }
-            playerActions[selectedPlayerSlotIndex] = selectedShopItem;
-            Debug.Log($"Adicionado '{selectedShopItem.actionName}' ao slot {selectedPlayerSlotIndex}");
         }
-        else
-        {
-            // Substituir habilidade existente
-            string oldAction = playerActions[selectedPlayerSlotIndex]?.actionName ?? "vazio";
-            playerActions[selectedPlayerSlotIndex] = selectedShopItem;
-            Debug.Log($"Substituído '{oldAction}' por '{selectedShopItem.actionName}' no slot {selectedPlayerSlotIndex}");
-        }
+        string oldActionName = playerActions[selectedPlayerSlotIndex]?.actionName ?? "vazio";
+        playerActions[selectedPlayerSlotIndex] = selectedShopItem;
+        Debug.Log($"Slot {selectedPlayerSlotIndex} ('{oldActionName}') substituído por '{selectedShopItem.actionName}'.");
 
-        // Remove nulls da lista
         playerActions.RemoveAll(action => action == null);
     }
+    
+    // --- MÉTODOS DE REMOÇÃO DE ITENS (INSERÇÃO NOVA) ---
+
+    /// <summary>
+    /// Remove um item da loja de forma mais robusta.
+    /// </summary>
+    private void RemoveShopItem(int itemIndex)
+    {
+        if (itemIndex < 0 || itemIndex >= shopButtonObjects.Count)
+        {
+            Debug.LogError($"Índice inválido para remoção: {itemIndex}");
+            return;
+        }
+
+        GameObject buttonToRemove = shopButtonObjects[itemIndex];
+        string itemName = shopActions[itemIndex].actionName;
+        
+        Debug.Log($"Iniciando remoção do item: {itemName} (índice {itemIndex})");
+
+        // Passo 1: Desativa o objeto imediatamente para sumir da tela
+        if (buttonToRemove != null)
+        {
+            buttonToRemove.SetActive(false);
+            Debug.Log($"Botão do {itemName} desativado.");
+        }
+
+        // Passo 2: Remove das listas de controle
+        shopButtonObjects.RemoveAt(itemIndex);
+        shopActions.RemoveAt(itemIndex);
+        Debug.Log($"Item {itemName} removido das listas de dados.");
+
+        // Passo 3: Destrói o objeto (usando corrotina para segurança)
+        if (buttonToRemove != null)
+        {
+            StartCoroutine(DestroyButtonDelayed(buttonToRemove, itemName));
+        }
+
+        // Passo 4: Reordena os índices dos botões restantes
+        UpdateShopButtonIndices();
+        
+        // Passo 5: Força a atualização visual do layout
+        ForceShopRefresh();
+        
+        Debug.Log($"Remoção de {itemName} concluída. Restam {shopButtonObjects.Count} itens na loja.");
+    }
+
+    /// <summary>
+    /// Corrotina para destruir o botão com um pequeno delay, evitando problemas de frame.
+    /// </summary>
+    private IEnumerator DestroyButtonDelayed(GameObject buttonToDestroy, string itemName)
+    {
+        yield return new WaitForEndOfFrame();
+        
+        if (buttonToDestroy != null)
+        {
+            Destroy(buttonToDestroy); // Usar Destroy é geralmente mais seguro que DestroyImmediate
+            Debug.Log($"GameObject do botão de {itemName} destruído com sucesso.");
+        }
+        
+        // Opcional: Força outro refresh após a destruição para garantir
+        yield return new WaitForEndOfFrame();
+        ForceShopRefresh();
+    }
+
+    // --- MÉTODOS AUXILIARES PARA REMOÇÃO (NOVOS) ---
+
+    /// <summary>
+    /// Atualiza os listeners dos botões com os novos índices corretos após uma remoção.
+    /// </summary>
+    private void UpdateShopButtonIndices()
+    {
+        for (int i = 0; i < shopButtonObjects.Count; i++)
+        {
+            Button button = shopButtonObjects[i].GetComponent<Button>();
+            if (button != null)
+            {
+                button.onClick.RemoveAllListeners();
+
+                int newIndex = i;
+                BattleAction action = shopActions[newIndex];
+                button.onClick.AddListener(() => OnShopItemSelected(action, newIndex));
+            }
+        }
+        Debug.Log("Índices dos botões da loja foram atualizados.");
+    }
+
+    /// <summary>
+    /// Força a atualização do layout do contêiner da loja.
+    /// </summary>
+    private void ForceShopRefresh()
+    {
+        if (shopItemsContainer != null)
+        {
+            LayoutRebuilder.ForceRebuildLayoutImmediate(shopItemsContainer.GetComponent<RectTransform>());
+            Debug.Log("Layout da loja atualizado.");
+        }
+    }
+    
+    // --- FIM DOS MÉTODOS DE REMOÇÃO ---
 
     private void EndShopEvent()
     {
@@ -456,11 +524,10 @@ public class ShopManager : MonoBehaviour
         {
             GameManager.Instance.PlayerCharacterInfo.battleActions = new List<BattleAction>(playerActions);
         }
-        
         GameManager.Instance.ReturnToMap();
     }
 
-    // --- MÉTODOS DO TOOLTIP (compatibilidade com RewardButtonUI) ---
+    // --- MÉTODOS DO TOOLTIP ---
     public void ShowTooltip(string name, string description)
     {
         if (tooltipUI != null && tooltipAnchor != null)

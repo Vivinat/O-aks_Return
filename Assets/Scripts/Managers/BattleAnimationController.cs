@@ -1,4 +1,4 @@
-// Assets/Scripts/Battle/BattleAnimationController.cs
+// Assets/Scripts/Battle/BattleAnimationController.cs (CORRIGIDO)
 
 using UnityEngine;
 using System.Collections;
@@ -11,6 +11,7 @@ public class BattleAnimationController : MonoBehaviour
     // Efeito de Flash (agora baseado em cor)
     private Color originalColor;
     private Coroutine flashCoroutine;
+    private Coroutine hurtResetCoroutine; // NOVO: Corrotina específica para reset de hurt
 
     [Header("Flash Settings (Color Swap)")]
     [SerializeField] private float flashDuration = 0.05f; // Tempo de cada "piscada" (preto ou branco)
@@ -53,10 +54,22 @@ public class BattleAnimationController : MonoBehaviour
     {
         if (characterAnimator != null)
         {
+            // CORREÇÃO: Para a corrotina anterior se ela estiver rodando
+            if (hurtResetCoroutine != null)
+            {
+                StopCoroutine(hurtResetCoroutine);
+                hurtResetCoroutine = null;
+            }
+
+            // CORREÇÃO: Reseta explicitamente o estado antes de aplicar o novo
+            characterAnimator.SetBool("IsHurt", false);
+            characterAnimator.ResetTrigger("ToIdle"); // Limpa triggers anteriores
+            
+            // Aplica a nova animação de dano
             characterAnimator.SetTrigger("IsHurt");
             
-            // Reset automático após um tempo
-            StartCoroutine(ResetToIdleAfterHurt());
+            // Inicia nova corrotina de reset
+            hurtResetCoroutine = StartCoroutine(ResetToIdleAfterHurt());
         }
     }
 
@@ -66,19 +79,37 @@ public class BattleAnimationController : MonoBehaviour
         // Espera a duração da animação de dano
         yield return new WaitForSeconds(hurtAnimationDuration);
         
-        // Força o retorno ao Idle
+        // Força o retorno ao Idle apenas se o Animator ainda existe
         if (characterAnimator != null)
         {
+            characterAnimator.SetBool("IsHurt", false);
             characterAnimator.SetTrigger("ToIdle");
-            characterAnimator.SetBool("IsHurt",false);
         }
+
+        // Limpa a referência da corrotina
+        hurtResetCoroutine = null;
     }
 
     // Chamado por BattleEntity quando morre
     public void OnDeath()
     {
+        // CORREÇÃO: Para todas as corrotinas quando morre
+        if (hurtResetCoroutine != null)
+        {
+            StopCoroutine(hurtResetCoroutine);
+            hurtResetCoroutine = null;
+        }
+
+        if (flashCoroutine != null)
+        {
+            StopCoroutine(flashCoroutine);
+            flashCoroutine = null;
+        }
+
         if (characterAnimator != null)
         {
+            // Limpa qualquer estado de hurt antes de aplicar morte
+            characterAnimator.SetBool("IsHurt", false);
             characterAnimator.SetBool("IsDead", true);
         }
     }
@@ -116,5 +147,28 @@ public class BattleAnimationController : MonoBehaviour
         // Garante que a cor volte ao original no final
         spriteRenderer.color = originalColor;
         flashCoroutine = null;
+    }
+
+    // NOVO: Método para limpar tudo quando o objeto é destruído ou desabilitado
+    private void OnDisable()
+    {
+        // Para todas as corrotinas ativas
+        if (hurtResetCoroutine != null)
+        {
+            StopCoroutine(hurtResetCoroutine);
+            hurtResetCoroutine = null;
+        }
+
+        if (flashCoroutine != null)
+        {
+            StopCoroutine(flashCoroutine);
+            flashCoroutine = null;
+        }
+
+        // Restaura a cor original se possível
+        if (spriteRenderer != null)
+        {
+            spriteRenderer.color = originalColor;
+        }
     }
 }

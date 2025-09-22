@@ -1,4 +1,4 @@
-// Assets/Scripts/UI/ShopItemUI.cs
+// Assets/Scripts/UI/ShopItemUI.cs (Simplificado - sem estado vendido)
 
 using UnityEngine;
 using UnityEngine.EventSystems;
@@ -124,7 +124,14 @@ public class ShopItemUI : MonoBehaviour, IPointerEnterHandler, IPointerExitHandl
             // Adiciona preço apenas para itens à venda
             if (isForSale && actionData.shopPrice > 0)
             {
-                description += $"\n\nPreço: {actionData.shopPrice} moedas";
+                if (GameManager.Instance.CurrencySystem.HasEnoughCoins(actionData.shopPrice))
+                {
+                    description += $"\n\nPreço: {actionData.shopPrice} moedas";
+                }
+                else
+                {
+                    description += $"\n\nPreço: {actionData.shopPrice} moedas (Moedas insuficientes!)";
+                }
             }
             
             shopManager.ShowTooltip(actionData.actionName, description);

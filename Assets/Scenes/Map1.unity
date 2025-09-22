@@ -211,9 +211,9 @@ MonoBehaviour:
   - {fileID: 1348603584}
   - {fileID: 1070575933}
   isLocked: 0
-  eventType: {fileID: 11400000, guid: 2e0c96beca99f2c4a839e33534fee06a, type: 2}
-  eventMusic: {fileID: 8300000, guid: 4dcd40257b3012c49aca0ed27d5c0867, type: 3}
-  battleBackgroundOverride: {fileID: 21300000, guid: f6c71d42837820b4ba213ecad75672e5, type: 3}
+  eventType: {fileID: 11400000, guid: 558d1b97dea0b8341a32949bf74dee37, type: 2}
+  eventMusic: {fileID: 8300000, guid: 89a268cad7d4a574fa2463297cd3498a, type: 3}
+  battleBackgroundOverride: {fileID: 21300000, guid: ef4f6ce4e28d1bc458197bbd5b8cf868, type: 3}
 --- !u!61 &346218325
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -581,7 +581,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e3eab3fcd244d4648875caa58aca93cd, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  mapMusic: {fileID: 8300000, guid: 1883438b0beba894dacfa21f0f611b75, type: 3}
+  mapMusic: {fileID: 8300000, guid: 18dbfa0088701974a95efdc946bf1411, type: 3}
   useFade: 1
 --- !u!1 &1070575932
 GameObject:
@@ -617,9 +617,9 @@ MonoBehaviour:
   connectedNodes:
   - {fileID: 1737705167}
   isLocked: 1
-  eventType: {fileID: 11400000, guid: 558d1b97dea0b8341a32949bf74dee37, type: 2}
-  eventMusic: {fileID: 8300000, guid: db2e772226172d7489ded6147a7def34, type: 3}
-  battleBackgroundOverride: {fileID: 0}
+  eventType: {fileID: 11400000, guid: bf23767f8ded3534babb9c276bfc2c83, type: 2}
+  eventMusic: {fileID: 8300000, guid: 630d0ca4ec9e4884bb44999e2502e789, type: 3}
+  battleBackgroundOverride: {fileID: 21300000, guid: c8f692d997b31a54f9d0b20cad38aec6, type: 3}
 --- !u!61 &1070575934
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -778,7 +778,7 @@ MonoBehaviour:
   connectedNodes: []
   isLocked: 1
   eventType: {fileID: 11400000, guid: 2e0c96beca99f2c4a839e33534fee06a, type: 2}
-  eventMusic: {fileID: 0}
+  eventMusic: {fileID: 8300000, guid: b39dd8c5ddbeed843a617136c38638e9, type: 3}
   battleBackgroundOverride: {fileID: 0}
 --- !u!61 &1340018658
 BoxCollider2D:
@@ -950,7 +950,7 @@ MonoBehaviour:
   connectedNodes: []
   isLocked: 1
   eventType: {fileID: 11400000, guid: bf23767f8ded3534babb9c276bfc2c83, type: 2}
-  eventMusic: {fileID: 0}
+  eventMusic: {fileID: 8300000, guid: 630d0ca4ec9e4884bb44999e2502e789, type: 3}
   battleBackgroundOverride: {fileID: 0}
 --- !u!61 &1348603585
 BoxCollider2D:
@@ -1451,8 +1451,8 @@ MonoBehaviour:
   - {fileID: 1340018657}
   isLocked: 1
   eventType: {fileID: 11400000, guid: 2e0c96beca99f2c4a839e33534fee06a, type: 2}
-  eventMusic: {fileID: 0}
-  battleBackgroundOverride: {fileID: 0}
+  eventMusic: {fileID: 8300000, guid: b39dd8c5ddbeed843a617136c38638e9, type: 3}
+  battleBackgroundOverride: {fileID: 21300000, guid: f6c71d42837820b4ba213ecad75672e5, type: 3}
 --- !u!61 &1737705168
 BoxCollider2D:
   m_ObjectHideFlags: 0

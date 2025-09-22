@@ -1,26 +1,5 @@
-// Assets/Scripts/Battle/BattleBackgroundManager.cs
 
 using UnityEngine;
-
-// Assets/Scripts/Map/MapNode.cs (ATUALIZAÇÃO ADICIONAL)
-// Adicione este campo ao MapNode existente para configurar background por nó:
-
-/*
-Em MapNode.cs, adicione:
-
-[Header("Battle Visual Configuration")]
-[Tooltip("Sprite de fundo específico para batalhas deste nó (sobrescreve o do BattleEventSO)")]
-public Sprite battleBackgroundOverride;
-*/
-
-// ========== GAME MANAGER ATUALIZAÇÃO ==========
-// Adicione este campo estático ao GameManager:
-
-/*
-Em GameManager.cs, adicione:
-
-public static Sprite pendingBattleBackground; // Sprite que será usado na próxima batalha
-*/
 
 /// <summary>
 /// Gerencia o sprite de fundo das batalhas dinamicamente
