@@ -82,13 +82,19 @@ public class BattleEntity : MonoBehaviour
         UpdateATBBar();
     }
 
-    public void TakeDamage(int damageAmount)
+    public void TakeDamage(int damageAmount, BattleEntity attacker = null)
     {
         if (isDead) return;
 
         int damageTaken = Mathf.Max(1, damageAmount - characterData.defense);
         currentHp -= damageTaken;
         Debug.Log($"{characterData.characterName} recebeu {damageTaken} de dano!");
+
+        // *** ADICIONE ESTAS LINHAS AQUI: ***
+        if (attacker != null)
+        {
+            BehaviorAnalysisIntegration.OnPlayerDamageReceived(this, attacker, damageTaken);
+        }
 
         // Aciona a animação de dano no jogador
         if (animationController != null)
@@ -101,9 +107,9 @@ public class BattleEntity : MonoBehaviour
             currentHp = 0;
             Die();
         }
-        
+    
         UpdateHPBar();
-        UpdateValueTexts(); // NOVO: Atualiza o texto após tomar dano
+        UpdateValueTexts();
     }
 
     public void Heal(int healAmount)

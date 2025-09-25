@@ -110,13 +110,16 @@ public class BattleManager : MonoBehaviour
         // 1. Toca o efeito de flash do atacante
         caster.OnExecuteAction();
         Debug.Log($"{caster.characterData.characterName} usa {action.actionName}!");
-        
+    
         // Espera um pouco para o efeito visual acontecer
         yield return new WaitForSeconds(actionDelay);
 
         // 2. Aplica os efeitos da ação (dano, cura, etc.)
         if (caster.ConsumeMana(action.manaCost))
         {
+            // *** ADICIONE ESTA LINHA AQUI: ***
+            BehaviorAnalysisIntegration.OnPlayerSkillUsed(action, caster);
+        
             // NOVO: Se é consumível, usa a ação e verifica se deve remover
             if (action.isConsumable)
             {
@@ -139,7 +142,8 @@ public class BattleManager : MonoBehaviour
                 switch (action.type)
                 {
                     case ActionType.Attack:
-                        target.TakeDamage(action.power);
+                        // *** MODIFIQUE ESTA LINHA para passar o atacante: ***
+                        target.TakeDamage(action.power, caster);  // <-- Adicione ", caster"
                         break;
                     case ActionType.Heal:
                         target.Heal(action.power);
@@ -215,7 +219,7 @@ public class BattleManager : MonoBehaviour
 
         if (targets.Any())
         {
-            ExecuteAction(chosenAction, targets);
+            StartCoroutine(ProcessAction(chosenAction, activeCharacter, targets));
         }
         else
         {

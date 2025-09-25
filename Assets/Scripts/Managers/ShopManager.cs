@@ -275,23 +275,27 @@ public class ShopManager : MonoBehaviour
 
         UpdateCoinsDisplay();
         RefreshPlayerSlotsDisplay();
-        
+    
+        // *** ADICIONE ESTA LINHA AQUI: ***
+        BehaviorAnalysisIntegration.OnShopPurchase(selectedShopItem);
+    
         selectedShopItem = null;
         selectedShopItemIndex = -1;
         selectedPlayerSlotIndex = -1;
         hasPendingPurchase = false;
-        
+    
         if (purchaseInstructionPanel != null)
             purchaseInstructionPanel.SetActive(false);
-        
+    
         // **CHAMADA PARA O NOVO MÉTODO DE REMOÇÃO**
         if (indexToRemove != -1)
         {
             RemoveShopItem(indexToRemove);
         }
-        
+    
         Debug.Log("Compra concluída!");
     }
+
 
     private void CancelPendingPurchase()
     {
@@ -399,7 +403,10 @@ public class ShopManager : MonoBehaviour
         {
             CancelPendingPurchase();
         }
-        
+    
+        // *** ADICIONE ESTA LINHA AQUI: ***
+        BehaviorAnalysisIntegration.OnShopExit(shopActions);
+    
         EndShopEvent();
     }
 
