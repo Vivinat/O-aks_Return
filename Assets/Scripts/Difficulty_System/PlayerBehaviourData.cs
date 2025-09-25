@@ -9,21 +9,21 @@ using UnityEngine;
 /// </summary>
 public enum BehaviorTriggerType
 {
-    PlayerDeath,              // Jogador morreu em batalha
-    SkillOveruse,            // Jogador usa muito uma skill específica
-    LowHealthNoCure,         // Jogador com pouca vida e sem cura
-    NoDamageReceived,        // Jogador não recebeu dano
-    CriticalHealth,          // Jogador com vida crítica
-    ItemExhausted,           // Item consumível esgotado
-    LowCoinsUnvisitedShops,  // Poucas moedas com lojas disponíveis
-    UnusedSkill,             // Skill não utilizada no nível
-    NoDefensiveSkills,       // Falta de skills defensivas
-    RepeatedBossDeath,       // Morte repetida no mesmo boss
-    ShopIgnored,             // Ignorou itens na loja
-    BossEasyVictory,         // Derrotou boss facilmente
-    AllSkillsUseMana,        // Todas skills usam MP
-    LowManaStreak,           // Sequência de batalhas com pouco MP
-    ZeroManaStreak           // Sequência de batalhas com MP zerado
+    PlayerDeath,              // Jogador morreu em batalha 0
+    SkillOveruse,            // Jogador usa muito uma skill específica 1
+    LowHealthNoCure,         // Jogador com pouca vida e sem cura 2
+    NoDamageReceived,        // Jogador não recebeu dano 3
+    CriticalHealth,          // Jogador com vida crítica 4
+    ItemExhausted,           // Item consumível esgotado 5
+    LowCoinsUnvisitedShops,  // Poucas moedas com lojas disponíveis 6
+    UnusedSkill,             // Skill não utilizada no nível 7
+    NoDefensiveSkills,       // Falta de skills defensivas 8
+    RepeatedBossDeath,       // Morte repetida no mesmo boss 9
+    ShopIgnored,             // Ignorou itens na loja  TRIGGER 10
+    BossEasyVictory,         // Derrotou boss facilmente 11
+    AllSkillsUseMana,        // Todas skills usam MP 12
+    LowManaStreak,           // Sequência de batalhas com pouco MP 13
+    ZeroManaStreak           // Sequência de batalhas com MP zerado 14
 }
 
 /// <summary>

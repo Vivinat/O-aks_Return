@@ -700,6 +700,26 @@ public class PlayerBehaviorAnalyzer : MonoBehaviour
             Log($"Consumidas {toRemove.Count} observações do tipo {type}");
         }
     }
+    
+    /// <summary>
+    /// NOVO: Método para capturar dados corretos no fim da batalha
+    /// </summary>
+    public void RecordBattleEnd()
+    {
+        if (!isBattleActive) return;
+    
+        var player = playerTeamAtStart.FirstOrDefault();
+        if (player != null && !player.isDead)
+        {
+            playerProfile.currentBattle.endingHP = player.GetCurrentHP();
+            playerProfile.currentBattle.endingMP = player.GetCurrentMP();
+        
+            Debug.Log($"=== DADOS CORRETOS CAPTURADOS ===");
+            Debug.Log($"HP Final: {playerProfile.currentBattle.endingHP}");
+            Debug.Log($"MP Final: {playerProfile.currentBattle.endingMP}");
+            Debug.Log($"================================");
+        }
+    }
 
     /// <summary>
     /// Remove múltiplas observações (usadas em uma negociação)

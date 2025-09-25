@@ -231,6 +231,12 @@ public class BattleManager : MonoBehaviour
     
     private void CheckBattleEnd()
     {
+        
+        if (PlayerBehaviorAnalyzer.Instance != null)
+        {
+            PlayerBehaviorAnalyzer.Instance.RecordBattleEnd(); // Método que vamos criar
+        }
+        
         if (enemyTeam.All(e => e.isDead))
         {
             currentState = BattleState.WON;
