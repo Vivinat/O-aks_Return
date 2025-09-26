@@ -1,4 +1,4 @@
-// GameManager.cs (Versão Atualizada com AudioManager)
+// GameManager.cs (Versão com Sistema de Estados Corrigido)
 
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -22,11 +22,11 @@ public class GameManager : MonoBehaviour
     
     public List<BattleAction> PlayerBattleActions { get; set; } = new List<BattleAction>();
     
-    // Dicionário para guardar o estado de MÚLTIPLOS mapas
+    // CORREÇÃO: Dicionário melhorado para guardar o estado de MÚLTIPLOS mapas
     private Dictionary<string, MapStateData> savedMapStates = new Dictionary<string, MapStateData>();
     private string currentMapSceneName;
     
-    public static Sprite pendingBattleBackground; // Sprite que será usado na próxima batalha
+    public static Sprite pendingBattleBackground;
 
     private void Awake()
     {
@@ -35,6 +35,9 @@ public class GameManager : MonoBehaviour
             Instance = this;
             DontDestroyOnLoad(gameObject);
             InitializePlayerActions();
+            
+            // NOVO: Carrega os estados salvos ao iniciar
+            LoadAllMapStates();
         }
         else
         {
@@ -52,25 +55,124 @@ public class GameManager : MonoBehaviour
     }
 
     /// <summary>
-    /// Salva o "pacote de dados" de um mapa.
+    /// CORRIGIDO: Salva o estado de um mapa com validação
     /// </summary>
     public void SaveMapState(MapStateData mapData, string mapName)
     {
+        if (string.IsNullOrEmpty(mapName) || mapData == null)
+        {
+            Debug.LogError("GameManager: Dados ou nome do mapa inválidos para salvar!");
+            return;
+        }
+
         currentMapSceneName = mapName;
-        savedMapStates[mapName] = mapData;
-        Debug.Log($"Estado do mapa '{mapName}' salvo no GameManager.");
+    
+        // CORREÇÃO: A clonagem agora é feita dentro do MapStateData para ser mais segura.
+        // Ou podemos criar um novo método de clone se preferir.
+        // Por simplicidade, vamos criar uma cópia aqui.
+        MapStateData clonedData = new MapStateData(mapName);
+        var originalDict = mapData.GetNodeStatesAsDictionary(); // Pega os dados do original
+        foreach(var kvp in originalDict)
+        {
+            clonedData.SetNodeState(kvp.Key, kvp.Value); // Adiciona na cópia
+        }
+    
+        savedMapStates[mapName] = clonedData;
+    
+        SaveMapStatesToFile(); // Isso também precisará de ajuste se quiser que funcione
+    
+        Debug.Log($"GameManager: Estado do mapa '{mapName}' salvo.");
+    }
+    
+// Dentro do método GetSavedMapState em GameManager.cs
+
+    public MapStateData GetSavedMapState(string mapName)
+    {
+        if (string.IsNullOrEmpty(mapName))
+        {
+            Debug.LogError("GameManager: Nome do mapa não pode ser vazio!");
+            return null;
+        }
+
+        if (savedMapStates.TryGetValue(mapName, out MapStateData mapData))
+        {
+            // 1. Chamamos o novo método para obter os dados como um dicionário
+            var nodeStatesDict = mapData.GetNodeStatesAsDictionary();
+        
+            // 2. Usamos o dicionário temporário para os logs
+            Debug.Log($"GameManager: Estado do mapa '{mapName}' recuperado com {nodeStatesDict.Count} nós");
+        
+            // 3. O loop continua igual, mas usando o dicionário que acabamos de criar
+            foreach (var kvp in nodeStatesDict)
+            {
+                Debug.Log($"  {kvp.Key}: {(kvp.Value ? "COMPLETADO" : "não completado")}");
+            }
+        
+            return mapData;
+        }
+    
+        Debug.Log($"GameManager: Nenhum estado salvo encontrado para o mapa '{mapName}'");
+        return null;
     }
 
     /// <summary>
-    /// Tenta recuperar o "pacote de dados" de um mapa.
+    /// NOVO: Salva todos os estados de mapas em arquivo
     /// </summary>
-    public MapStateData GetSavedMapState(string mapName)
+    private void SaveMapStatesToFile()
     {
-        if (savedMapStates.TryGetValue(mapName, out MapStateData mapData))
+        try
         {
-            return mapData;
+            string dataPath = Application.persistentDataPath + "/map_states.json";
+            MapStatesContainer container = new MapStatesContainer();
+            container.savedStates = savedMapStates;
+            
+            string jsonData = JsonUtility.ToJson(container, true);
+            System.IO.File.WriteAllText(dataPath, jsonData);
+            
+            Debug.Log($"GameManager: Estados de mapas salvos em {dataPath}");
         }
-        return null;
+        catch (System.Exception e)
+        {
+            Debug.LogError($"GameManager: Erro ao salvar estados: {e.Message}");
+        }
+    }
+
+    /// <summary>
+    /// NOVO: Carrega todos os estados de mapas do arquivo
+    /// </summary>
+    private void LoadAllMapStates()
+    {
+        try
+        {
+            string dataPath = Application.persistentDataPath + "/map_states.json";
+            
+            if (System.IO.File.Exists(dataPath))
+            {
+                string jsonData = System.IO.File.ReadAllText(dataPath);
+                MapStatesContainer container = JsonUtility.FromJson<MapStatesContainer>(jsonData);
+                
+                if (container != null && container.savedStates != null)
+                {
+                    savedMapStates = container.savedStates;
+                    Debug.Log($"GameManager: {savedMapStates.Count} estados de mapas carregados do arquivo");
+                }
+                else
+                {
+                    Debug.Log("GameManager: Arquivo de estados existe mas está vazio ou corrompido");
+                    savedMapStates = new Dictionary<string, MapStateData>();
+                }
+            }
+            else
+            {
+                Debug.Log("GameManager: Nenhum arquivo de estados encontrado - iniciando novo");
+                savedMapStates = new Dictionary<string, MapStateData>();
+            }
+        }
+        catch (System.Exception e)
+        {
+            Debug.LogError($"GameManager: Erro ao carregar estados: {e.Message}");
+            savedMapStates = new Dictionary<string, MapStateData>();
+        }
     }
 
     /// <summary>
@@ -81,6 +183,7 @@ public class GameManager : MonoBehaviour
         if (savedMapStates.ContainsKey(mapName))
         {
             savedMapStates.Remove(mapName);
+            SaveMapStatesToFile();
             Debug.Log($"Dados do mapa '{mapName}' foram limpos.");
         }
     }
@@ -89,7 +192,7 @@ public class GameManager : MonoBehaviour
     {
         CurrentEvent = eventData;
 
-        // LINHA-CHAVE: AQUI NÓS CAPTURAMOS O BACKGROUND DO MAPNODE
+        // Captura o background do MapNode
         if (sourceNode != null)
         {
             pendingBattleBackground = sourceNode.battleBackgroundOverride;
@@ -101,7 +204,6 @@ public class GameManager : MonoBehaviour
             pendingBattleBackground = null;
         }
 
-        // O resto do seu código continua igual...
         if (eventData is BattleEventSO battleEvent)
         {
             enemiesToBattle = battleEvent.enemies;
@@ -126,7 +228,7 @@ public class GameManager : MonoBehaviour
     
     public void ReturnToMap()
     {
-        // NOVO: Volta à música do mapa quando retorna
+        // Volta à música do mapa quando retorna
         if (AudioManager.Instance != null)
         {
             AudioManager.Instance.ReturnToMapMusic();
@@ -165,10 +267,9 @@ public class GameManager : MonoBehaviour
         
         Debug.Log($"Progredindo para o próximo mapa: {nextSceneName}");
         
-        // NOVO: Para a música atual antes de mudar de mapa
+        // Para a música atual antes de mudar de mapa
         if (AudioManager.Instance != null)
         {
-            // Não precisa configurar música específica - o novo mapa terá sua própria música
             AudioManager.Instance.StopMusic(true);
         }
         
@@ -203,4 +304,28 @@ public class GameManager : MonoBehaviour
         currencySystem.AddCoins(coins);
         Debug.Log($"Recompensa de batalha: {coins} moedas");
     }
+
+    [ContextMenu("Clear All Map States")]
+    public void ClearAllMapStates()
+    {
+        savedMapStates.Clear();
+        SaveMapStatesToFile();
+        Debug.Log("Todos os estados de mapas foram limpos");
+    }
+
+    [ContextMenu("Force Save Map States")]
+    public void ForceSaveMapStates()
+    {
+        SaveMapStatesToFile();
+        Debug.Log("Estados de mapas salvos manualmente");
+    }
+}
+
+/// <summary>
+/// NOVO: Container para serialização dos estados de mapas
+/// </summary>
+[System.Serializable]
+public class MapStatesContainer
+{
+    public Dictionary<string, MapStateData> savedStates = new Dictionary<string, MapStateData>();
 }

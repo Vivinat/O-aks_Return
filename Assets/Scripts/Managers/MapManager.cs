@@ -1,8 +1,9 @@
-// MapManager.cs (Versão Simplificada com Boss)
+// MapManager.cs (Versão Final - Bug Corrigido)
 
 using UnityEngine;
 using System.Collections.Generic;
 using UnityEngine.SceneManagement;
+using System.Linq;
 
 public class MapManager : MonoBehaviour
 {
@@ -34,14 +35,35 @@ public class MapManager : MonoBehaviour
             cameraController = FindObjectOfType<MapCameraManager>();
         }
         
+        // Garante que a lista de nós está preenchida
+        PopulateNodesList();
+        
         LoadMapState();
         DrawConnections();
         SetupCameraBounds();
     }
 
-    /// <summary>
-    /// Configura automaticamente os limites da câmera baseado nas posições dos nós
-    /// </summary>
+    private void PopulateNodesList()
+    {
+        // Se a lista já foi preenchida no Inspector, não faz nada
+        if (allNodes != null && allNodes.Count > 0 && allNodes.All(node => node != null))
+        {
+            Debug.Log($"MapManager: {allNodes.Count} nós já configurados no Inspector");
+            return;
+        }
+
+        // Encontra todos os MapNodes na cena automaticamente
+        MapNode[] foundNodes = FindObjectsOfType<MapNode>();
+        allNodes = new List<MapNode>(foundNodes);
+        
+        Debug.Log($"MapManager: {allNodes.Count} nós encontrados automaticamente na cena");
+        
+        if (allNodes.Count == 0)
+        {
+            Debug.LogError("MapManager: Nenhum MapNode encontrado na cena!");
+        }
+    }
+
     private void SetupCameraBounds()
     {
         if (cameraController == null || allNodes.Count == 0) return;
@@ -70,25 +92,53 @@ public class MapManager : MonoBehaviour
 
     /// <summary>
     /// Função principal chamada quando um nó é clicado
-    /// NOVO: Verifica se é um nó de boss
+    /// CORREÇÃO CRÍTICA: Evita clique duplo e salvamento duplo
     /// </summary>
     public void OnNodeClicked(MapNode clickedNode)
     {
+        // Validação adicional
+        if (clickedNode == null)
+        {
+            Debug.LogError("MapManager: Nó clicado é null!");
+            return;
+        }
+
+        if (allNodes == null || allNodes.Count == 0)
+        {
+            Debug.LogError("MapManager: Lista de nós não foi inicializada!");
+            PopulateNodesList();
+            if (allNodes.Count == 0) return;
+        }
+
         // Verifica se a câmera está focando - se sim, ignora cliques
         if (cameraController != null && cameraController.IsFocusing())
         {
             Debug.Log("Câmera está focando - clique ignorado");
             return;
         }
+
+        // CORREÇÃO PRINCIPAL: Verifica se o nó pode ser clicado antes de processar
+        if (clickedNode.IsLocked())
+        {
+            Debug.Log($"Nó {clickedNode.gameObject.name} está bloqueado - clique ignorado");
+            return;
+        }
+
+        if (clickedNode.IsCompleted())
+        {
+            Debug.Log($"Nó {clickedNode.gameObject.name} já foi completado - clique ignorado");
+            return;
+        }
         
-        // NOVO: Verifica se é um nó de boss
+        Debug.Log($"=== PROCESSANDO CLIQUE NO NÓ {clickedNode.gameObject.name} ===");
+        
+        // Verifica se é um nó de boss
         BossNode bossNode = clickedNode.GetComponent<BossNode>();
         bool isBossNode = bossNode != null;
         
         if (isBossNode)
         {
             Debug.Log($"Boss node clicado: {clickedNode.gameObject.name}");
-            // Salva informação de que é um boss para usar após o evento
             PlayerPrefs.SetString("CompletedBossNode", clickedNode.gameObject.name);
             PlayerPrefs.SetString("NextSceneAfterBoss", bossNode.GetNextScene());
         }
@@ -97,21 +147,25 @@ public class MapManager : MonoBehaviour
             // Salva qual nó normal está sendo completado
             lastCompletedNodeName = clickedNode.gameObject.name;
             PlayerPrefs.SetString("LastCompletedNode", lastCompletedNodeName);
+            Debug.Log($"Salvando nó completado: {lastCompletedNodeName}");
         }
 
-        // Atualiza o estado LÓGICO do mapa
+        // CORREÇÃO CRÍTICA: Sequência correta de operações
+        // 1. Marca o nó como completado
         clickedNode.CompleteNode();
-        clickedNode.UnlockConnectedNodes();
         
-        // Salva o estado atualizado
+        // 2. IMEDIATAMENTE salva o estado para garantir persistência
         SaveMapState();
-
-        // Inicia o evento
+        
+        // 3. Inicia o evento (que mudará de cena)
+        Debug.Log($"Iniciando evento para o nó: {clickedNode.gameObject.name}");
         GameManager.Instance.StartEvent(clickedNode.eventType, clickedNode);
     }
     
     private void DrawConnections()
     {
+        if (lineContainer == null || linePrefab == null) return;
+        
         // Limpa linhas antigas
         foreach (Transform child in lineContainer) 
             Destroy(child.gameObject);
@@ -131,25 +185,42 @@ public class MapManager : MonoBehaviour
 
     private void SaveMapState()
     {
-        MapStateData mapData = new MapStateData();
-        
+        if (allNodes == null || allNodes.Count == 0) return;
+
+        // Usando o construtor correto
+        MapStateData mapData = new MapStateData(SceneManager.GetActiveScene().name);
+    
+        Debug.Log($"=== SALVANDO ESTADO DO MAPA ===");
+    
         foreach (var node in allNodes)
         {
-            mapData.nodeStates[node.gameObject.name] = node.IsCompleted();
+            if (node != null)
+            {
+                // Usando o novo método SetNodeState
+                mapData.SetNodeState(node.gameObject.name, node.IsCompleted());
+            
+                if (node.IsCompleted())
+                {
+                    Debug.Log($"✓ Nó {node.gameObject.name}: COMPLETADO");
+                }
+                else
+                {
+                    Debug.Log($"✗ Nó {node.gameObject.name}: não completado");
+                }
+            }
         }
-        
-        string mapName = SceneManager.GetActiveScene().name;
-        GameManager.Instance.SaveMapState(mapData, mapName);
-        
-        Debug.Log($"Estado do mapa salvo. Nós completados: {mapData.nodeStates.Count}");
+    
+        GameManager.Instance.SaveMapState(mapData, mapData.mapName);
+        Debug.Log($"Estado do mapa '{mapData.mapName}' salvo.");
+        Debug.Log($"=== FIM DO SALVAMENTO ===");
     }
 
     private void LoadMapState()
     {
         string mapName = SceneManager.GetActiveScene().name;
-        MapStateData loadedData = GameManager.Instance.GetSavedMapState(mapName);
-
-        // NOVO: Verifica primeiro se estamos retornando de um boss
+        Debug.Log($"=== CARREGANDO ESTADO DO MAPA '{mapName}' ===");
+        
+        // Verifica primeiro se estamos retornando de um boss
         string completedBossNode = PlayerPrefs.GetString("CompletedBossNode", "");
         if (!string.IsNullOrEmpty(completedBossNode))
         {
@@ -163,61 +234,76 @@ public class MapManager : MonoBehaviour
             
             // Progride para o próximo mapa
             GameManager.Instance.ProgressToNextMap(nextScene);
-            return; // Sai aqui pois estamos mudando de cena
-        }
-
-        if (loadedData == null) 
-        {
-            Debug.Log("Nenhum estado salvo encontrado para este mapa - começando do zero.");
             return;
         }
 
-        Debug.Log("Carregando estado do mapa...");
-
-        // Pega o nome do último nó completado (se houver)
+        MapStateData loadedData = GameManager.Instance.GetSavedMapState(mapName);
         lastCompletedNodeName = PlayerPrefs.GetString("LastCompletedNode", "");
+        
+        if (loadedData == null) 
+        {
+            Debug.Log("Nenhum estado salvo encontrado - começando do zero.");
+            
+            // No primeiro carregamento, desbloqueia o primeiro nó
+            if (allNodes.Count > 0)
+            {
+                allNodes[0].UnlockNode();
+                Debug.Log($"Primeiro nó '{allNodes[0].gameObject.name}' desbloqueado");
+            }
+            
+            // CRÍTICO: Limpa qualquer flag remanescente
+            PlayerPrefs.DeleteKey("LastCompletedNode");
+            return;
+        }
 
-        // Restaura o estado de completado de todos os nós
+        Debug.Log($"Estado encontrado! Último nó completado: '{lastCompletedNodeName}'");
+
+        // PARTE 1: Restaura TODOS os estados primeiro
+        int restoredCount = 0; // Contador inicializado
         foreach (var node in allNodes)
         {
-            if (loadedData.nodeStates.TryGetValue(node.gameObject.name, out bool isCompleted) && isCompleted)
+            if (loadedData.TryGetNodeState(node.gameObject.name, out bool wasCompleted))
             {
-                node.ForceComplete();
-                Debug.Log($"Nó {node.gameObject.name} marcado como completado");
+                if (wasCompleted)
+                {
+                    node.ForceComplete();
+                    restoredCount++; // << CORREÇÃO: Incrementa o contador
+                    // O log de "restaurado como COMPLETADO" já está dentro do ForceComplete
+                }
             }
         }
         
-        // Se estamos voltando de um evento normal
+        Debug.Log($"Total de {restoredCount} nós restaurados como completados");
+        
+        foreach (var node in allNodes)
+        {
+            if (node.IsCompleted())
+            {
+                // Este comando irá desbloquear os nós seguintes
+                node.UnlockConnectedNodes();
+            }
+        }
+        
+        // Se estamos voltando de um evento, foca na câmera E limpa a flag
         if (!string.IsNullOrEmpty(lastCompletedNodeName))
         {
             MapNode lastCompletedNode = allNodes.Find(n => n.gameObject.name == lastCompletedNodeName);
-            if (lastCompletedNode != null && lastCompletedNode.IsCompleted())
+            if (lastCompletedNode != null)
             {
-                Debug.Log($"Desbloqueando nós conectados do nó recém-completado: {lastCompletedNodeName}");
-                lastCompletedNode.UnlockConnectedNodes();
+                Debug.Log($"Focando câmera no nó recém-completado: {lastCompletedNodeName}");
                 
-                // Foca a câmera no nó completado
                 if (cameraController != null)
                 {
                     StartCoroutine(FocusOnCompletedNodeAfterDelay(lastCompletedNode, 0.5f));
                 }
             }
             
-            // Limpa o registro
+            // CRÍTICO: SEMPRE limpa o registro após usar
             PlayerPrefs.DeleteKey("LastCompletedNode");
+            Debug.Log("Flag 'LastCompletedNode' limpa após uso");
         }
-        else
-        {
-            // Carregamento inicial - desbloqueamos os conectados de todos os nós completados
-            Debug.Log("Carregamento inicial - desbloqueando todos os nós conectados");
-            foreach (var node in allNodes)
-            {
-                if (node.IsCompleted())
-                {
-                    node.UnlockConnectedNodes();
-                }
-            }
-        }
+        
+        Debug.Log($"=== FIM DO CARREGAMENTO ===");
     }
     
     /// <summary>
@@ -231,5 +317,59 @@ public class MapManager : MonoBehaviour
         {
             cameraController.FocusOnNode(node.transform);
         }
+    }
+
+    // Método para forçar refresh da lista de nós
+    [ContextMenu("Refresh Nodes List")]
+    public void RefreshNodesList()
+    {
+        allNodes.Clear();
+        PopulateNodesList();
+        Debug.Log("Lista de nós atualizada manualmente");
+    }
+
+    // Método para forçar salvamento
+    [ContextMenu("Force Save Map State")]
+    public void ForceSaveMapState()
+    {
+        SaveMapState();
+    }
+
+    // Método para limpar PlayerPrefs
+    [ContextMenu("Clear PlayerPrefs")]
+    public void ClearPlayerPrefs()
+    {
+        PlayerPrefs.DeleteKey("LastCompletedNode");
+        PlayerPrefs.DeleteKey("CompletedBossNode");
+        PlayerPrefs.DeleteKey("NextSceneAfterBoss");
+        Debug.Log("PlayerPrefs limpos");
+    }
+
+    // NOVO: Método para forçar reset completo
+    [ContextMenu("Reset All Nodes")]
+    public void ResetAllNodes()
+    {
+        foreach (var node in allNodes)
+        {
+            if (node != null)
+            {
+                node.ResetNode();
+            }
+        }
+        
+        // Desbloqueia o primeiro nó
+        if (allNodes.Count > 0)
+        {
+            allNodes[0].UnlockNode();
+        }
+        
+        // Limpa PlayerPrefs
+        ClearPlayerPrefs();
+        
+        // Limpa estado salvo
+        string mapName = SceneManager.GetActiveScene().name;
+        GameManager.Instance.ClearMapData(mapName);
+        
+        Debug.Log("RESET COMPLETO: Todos os nós resetados, primeiro nó desbloqueado");
     }
 }

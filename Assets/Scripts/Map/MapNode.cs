@@ -1,4 +1,4 @@
-// MapNode.cs (Versão Atualizada com AudioClip)
+// MapNode.cs (Versão Corrigida)
 
 using UnityEngine;
 using System.Collections.Generic;
@@ -17,7 +17,7 @@ public class MapNode : MonoBehaviour
     
     [Header("Audio Configuration")]
     [Tooltip("Música que tocará na cena do evento. Se null, mantém a música atual.")]
-    public AudioClip eventMusic; // NOVO: Música para a cena do evento
+    public AudioClip eventMusic;
     
     [Header("Battle Visual Configuration")]
     [Tooltip("Sprite de fundo específico para batalhas deste nó (sobrescreve o do BattleEventSO)")]
@@ -30,23 +30,36 @@ public class MapNode : MonoBehaviour
     
     private void OnMouseDown()
     {
-        // A única condição para o clique é o nó estar acessível.
+        // CORREÇÃO 1: Validações mais robustas
+        MapManager mapManager = FindObjectOfType<MapManager>();
+        if (mapManager == null)
+        {
+            Debug.LogError("MapManager não encontrado na cena!");
+            return;
+        }
+
+        // CORREÇÃO 2: Só permite clique se o nó estiver acessível E não completado
         if (!isLocked && !isCompleted)
         {
-            Debug.Log($"Nó {gameObject.name} clicado");
+            Debug.Log($"Nó {gameObject.name} clicado - Estado: Bloqueado={isLocked}, Completado={isCompleted}");
             
-            // NOVO: Configura a música antes de iniciar o evento
+            // Configura a música antes de iniciar o evento
             SetupAudioForEvent();
             
-            // Apenas notifica o MapManager. Toda a lógica acontecerá lá.
-            FindObjectOfType<MapManager>().OnNodeClicked(this);
+            // Notifica o MapManager
+            mapManager.OnNodeClicked(this);
         }
         else
         {
+            // CORREÇÃO 3: Logs mais informativos
             if (isLocked)
-                Debug.Log($"Nó {gameObject.name} está bloqueado");
+            {
+                Debug.Log($"Nó {gameObject.name} está BLOQUEADO - clique ignorado");
+            }
             if (isCompleted)
-                Debug.Log($"Nó {gameObject.name} já foi completado");
+            {
+                Debug.Log($"Nó {gameObject.name} já foi COMPLETADO - clique ignorado");
+            }
         }
     }
     
@@ -57,12 +70,7 @@ public class MapNode : MonoBehaviour
     {
         if (AudioManager.Instance != null)
         {
-            // 1. Pega a música que está tocando atualmente no mapa.
             AudioClip currentMapMusic = AudioManager.Instance.GetCurrentMusic();
-
-            // 2. Avisa ao AudioManager qual música tocar no evento 
-            //    e qual música salvar para voltar ao mapa depois.
-            //    O próprio AudioManager cuidará de tocar a música quando a cena carregar.
             Debug.Log($"MapNode: Agendando a música '{eventMusic?.name ?? "nenhuma"}' para o próximo evento.");
             AudioManager.Instance.SetPendingEventMusic(eventMusic, currentMapMusic);
         }
@@ -72,31 +80,49 @@ public class MapNode : MonoBehaviour
         }
     }
 
-    // Tornamos esta função PÚBLICA para que o MapManager possa chamá-la.
+    // CORREÇÃO 4: Método CompleteNode mais robusto
     public void CompleteNode()
     {
+        if (isCompleted)
+        {
+            Debug.LogWarning($"Nó {gameObject.name} já estava completado!");
+            return;
+        }
+
         isCompleted = true;
         UpdateVisuals();
-        Debug.Log($"Nó {gameObject.name} completado");
+        Debug.Log($"Nó {gameObject.name} COMPLETADO");
+        
+        // CORREÇÃO 5: Desbloqueia os nós conectados IMEDIATAMENTE após completar
+        UnlockConnectedNodes();
     }
     
     public void UnlockNode()
     {
-        if (!isCompleted)
+        // CORREÇÃO 6: Só desbloqueia se não estiver completado
+        if (!isCompleted && isLocked)
         {
             isLocked = false;
             UpdateVisuals();
-            Debug.Log($"Nó {gameObject.name} desbloqueado");
+            Debug.Log($"Nó {gameObject.name} DESBLOQUEADO");
         }
     }
     
     public void UnlockConnectedNodes()
     {
-        Debug.Log($"Desbloqueando nós conectados do {gameObject.name}:");
+        Debug.Log($"Desbloqueando {connectedNodes.Count} nós conectados do {gameObject.name}:");
+        
         foreach (MapNode node in connectedNodes)
         {
-            Debug.Log($"  -> Desbloqueando: {node.gameObject.name}");
-            node.UnlockNode();
+            if (node != null) // CORREÇÃO 7: Verificação de null
+            {
+                Debug.Log($"  -> Desbloqueando: {node.gameObject.name}");
+                node.UnlockNode();
+            }
+            else
+            {
+                Debug.LogWarning($"Nó conectado NULL encontrado em {gameObject.name}!");
+            }
         }
     }
 
@@ -108,15 +134,22 @@ public class MapNode : MonoBehaviour
             if (isCompleted) 
             {
                 spriteRenderer.color = Color.gray;
+                Debug.Log($"Visual do nó {gameObject.name}: CINZA (completado)");
             }
             else if (isLocked) 
             {
                 spriteRenderer.color = Color.red;
+                Debug.Log($"Visual do nó {gameObject.name}: VERMELHO (bloqueado)");
             }
             else 
             {
                 spriteRenderer.color = Color.white;
+                Debug.Log($"Visual do nó {gameObject.name}: BRANCO (disponível)");
             }
+        }
+        else
+        {
+            Debug.LogWarning($"Nó {gameObject.name} não tem SpriteRenderer!");
         }
     }
     
@@ -126,15 +159,75 @@ public class MapNode : MonoBehaviour
     public List<MapNode> GetConnectedNodes() => connectedNodes;
     
     /// <summary>
-    /// NOVO: Retorna a música configurada para este nó
+    /// Retorna a música configurada para este nó
     /// </summary>
     public AudioClip GetEventMusic() => eventMusic;
     
+    // CORREÇÃO 8: ForceComplete mais robusto
     public void ForceComplete()
     {
+        bool wasCompleted = isCompleted;
         isCompleted = true;
         isLocked = false;
         UpdateVisuals();
-        Debug.Log($"Nó {gameObject.name} forçado a completar");
+        
+        if (!wasCompleted)
+        {
+            Debug.Log($"Nó {gameObject.name} FORÇADO a completar");
+        }
+    }
+
+    // CORREÇÃO 9: Método para debug
+    [ContextMenu("Debug Node State")]
+    public void DebugNodeState()
+    {
+        Debug.Log($"=== DEBUG NÓ {gameObject.name} ===");
+        Debug.Log($"Bloqueado: {isLocked}");
+        Debug.Log($"Completado: {isCompleted}");
+        Debug.Log($"Nós conectados: {connectedNodes.Count}");
+        
+        for (int i = 0; i < connectedNodes.Count; i++)
+        {
+            if (connectedNodes[i] != null)
+            {
+                Debug.Log($"  [{i}] {connectedNodes[i].gameObject.name}");
+            }
+            else
+            {
+                Debug.Log($"  [{i}] NULL!");
+            }
+        }
+    }
+
+    // CORREÇÃO 10: Método para forçar reset (útil para testes)
+    [ContextMenu("Reset Node")]
+    public void ResetNode()
+    {
+        isCompleted = false;
+        isLocked = true;
+        UpdateVisuals();
+        Debug.Log($"Nó {gameObject.name} foi RESETADO");
+    }
+
+    // CORREÇÃO 11: Validação no Editor
+    private void OnValidate()
+    {
+        // Remove referências null da lista de nós conectados
+        if (connectedNodes != null)
+        {
+            for (int i = connectedNodes.Count - 1; i >= 0; i--)
+            {
+                if (connectedNodes[i] == null)
+                {
+                    connectedNodes.RemoveAt(i);
+                }
+            }
+        }
+
+        // Verifica se tem EventType
+        if (eventType == null)
+        {
+            Debug.LogWarning($"Nó {gameObject.name} não tem EventTypeSO configurado!");
+        }
     }
 }
