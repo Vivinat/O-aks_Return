@@ -1,94 +1,61 @@
-// MapStateData.cs (Versão Corrigida com Listas)
+// Assets/Scripts/Map/MapStateData.cs (VERSÃO FINAL CORRIGIDA)
 
 using System.Collections.Generic;
 using UnityEngine;
-using System.Linq;
 
 [System.Serializable]
-public class MapStateData
+public class MapStateData : ISerializationCallbackReceiver
 {
-    // Dicionário foi substituído por duas listas para garantir a serialização pela Unity
+    // Dicionário que usamos no código. Não será salvo diretamente.
+    public Dictionary<string, bool> nodeStates = new Dictionary<string, bool>();
+
+    // Listas que o JsonUtility VAI salvar.
     [SerializeField]
     private List<string> nodeNames = new List<string>();
     [SerializeField]
     private List<bool> completionStates = new List<bool>();
 
-    public string mapName;
-    public long lastUpdated;
-    public int totalNodes;
-    public int completedNodes;
-
-    public MapStateData()
+    // Chamado ANTES de salvar o objeto em JSON.
+    public void OnBeforeSerialize()
     {
-        lastUpdated = System.DateTime.Now.Ticks;
+        // Limpa as listas para garantir que não haja dados antigos.
+        nodeNames.Clear();
+        completionStates.Clear();
+
+        // Converte o dicionário para as listas.
+        foreach (var kvp in nodeStates)
+        {
+            nodeNames.Add(kvp.Key);
+            completionStates.Add(kvp.Value);
+        }
+    }
+
+    // Chamado DEPOIS de carregar o objeto do JSON.
+    public void OnAfterDeserialize()
+    {
+        // Limpa o dicionário para preenchê-lo com os dados carregados.
+        nodeStates = new Dictionary<string, bool>();
+
+        // Reconstrói o dicionário a partir das listas.
+        for (int i = 0; i < nodeNames.Count && i < completionStates.Count; i++)
+        {
+            nodeStates[nodeNames[i]] = completionStates[i];
+        }
     }
     
-    public MapStateData(string mapName) : this()
-    {
-        this.mapName = mapName;
-    }
-
-    /// <summary>
-    /// Adiciona ou atualiza o estado de um nó usando as listas.
-    /// </summary>
+    // Métodos de ajuda para interagir com o dicionário
     public void SetNodeState(string nodeName, bool isCompleted)
     {
-        if (string.IsNullOrEmpty(nodeName))
-        {
-            Debug.LogError("MapStateData: Nome do nó não pode ser vazio!");
-            return;
-        }
-
-        int index = nodeNames.IndexOf(nodeName);
-        if (index != -1)
-        {
-            // O nó já existe, apenas atualiza o estado
-            completionStates[index] = isCompleted;
-        }
-        else
-        {
-            // Novo nó, adiciona às listas
-            nodeNames.Add(nodeName);
-            completionStates.Add(isCompleted);
-        }
-        UpdateMetadata();
+        nodeStates[nodeName] = isCompleted;
+    }
+    
+    public bool GetNodeState(string nodeName)
+    {
+        return nodeStates.TryGetValue(nodeName, out bool isCompleted) && isCompleted;
     }
 
-    /// <summary>
-    /// Tenta obter o estado de um nó. Retorna true se encontrou, false caso contrário.
-    /// </summary>
-    public bool TryGetNodeState(string nodeName, out bool isCompleted)
+    public int GetNodeCount()
     {
-        int index = nodeNames.IndexOf(nodeName);
-        if (index != -1)
-        {
-            isCompleted = completionStates[index];
-            return true;
-        }
-
-        isCompleted = false;
-        return false;
-    }
-
-    /// <summary>
-    /// NOVO: Método para obter todas as entradas como um dicionário (para uso temporário)
-    /// </summary>
-    public Dictionary<string, bool> GetNodeStatesAsDictionary()
-    {
-        Dictionary<string, bool> dict = new Dictionary<string, bool>();
-        for (int i = 0; i < nodeNames.Count; i++)
-        {
-            dict[nodeNames[i]] = completionStates[i];
-        }
-        return dict;
-    }
-
-    // Você pode manter os outros métodos (UpdateMetadata, GetCompletedNodes, etc.)
-    // mas eles precisarão ser adaptados para usar as listas em vez do dicionário.
-    public void UpdateMetadata()
-    {
-        lastUpdated = System.DateTime.Now.Ticks;
-        totalNodes = nodeNames.Count;
-        completedNodes = completionStates.Count(completed => completed);
+        return nodeStates.Count;
     }
 }
