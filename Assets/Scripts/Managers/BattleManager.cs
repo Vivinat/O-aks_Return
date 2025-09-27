@@ -1,4 +1,4 @@
-// Assets/Scripts/Managers/BattleManager.cs
+// Assets/Scripts/Managers/BattleManager.cs (Enhanced for new Action System)
 
 using System.Collections;
 using System.Collections.Generic;
@@ -21,7 +21,7 @@ public class BattleManager : MonoBehaviour
     [Header("Timings")]
     [SerializeField] private float actionDelay = 0.5f;
     [SerializeField] private float postActionDelay = 1.0f;
-    [SerializeField] private float enemyActionDisplayTime = 2.0f; // NOVO: Tempo para mostrar ação do inimigo
+    [SerializeField] private float enemyActionDisplayTime = 2.0f;
 
     void Start()
     {
@@ -87,6 +87,9 @@ public class BattleManager : MonoBehaviour
             activeCharacter = readyCharacter;
             currentState = BattleState.ACTION_PENDING;
 
+            // Process status effects at the start of turn
+            activeCharacter.ProcessStatusEffectsTurn();
+
             if (activeCharacter.characterData.team == Team.Player)
             {
                 battleHUD.ShowActionMenu(activeCharacter);
@@ -106,63 +109,133 @@ public class BattleManager : MonoBehaviour
     private IEnumerator ProcessAction(BattleAction action, BattleEntity caster, List<BattleEntity> targets)
     {
         currentState = BattleState.PERFORMING_ACTION;
+        currentProcessingAction = action; // Set current action for special processing
 
         // 1. Toca o efeito de flash do atacante
         caster.OnExecuteAction();
-        Debug.Log($"{caster.characterData.characterName} usa {action.actionName}!");
+        Debug.Log($"{caster.characterData.characterName} uses {action.actionName}!");
     
         // Espera um pouco para o efeito visual acontecer
         yield return new WaitForSeconds(actionDelay);
 
-        // 2. Aplica os efeitos da ação (dano, cura, etc.)
+        // 2. Check mana cost and apply effects
         if (caster.ConsumeMana(action.manaCost))
         {
-            // *** ADICIONE ESTA LINHA AQUI: ***
             BehaviorAnalysisIntegration.OnPlayerSkillUsed(action, caster);
         
-            // NOVO: Se é consumível, usa a ação e verifica se deve remover
+            // Handle consumable usage
             if (action.isConsumable)
             {
                 bool canStillUse = action.UseAction();
                 if (!canStillUse)
                 {
-                    // Remove do inventário se os usos acabaram
                     if (caster.characterData.team == Team.Player)
                     {
                         GameManager.Instance.RemoveItemFromInventory(action);
                     }
-                    Debug.Log($"{action.actionName} foi removido - usos esgotados!");
+                    Debug.Log($"{action.actionName} was removed - uses exhausted!");
                 }
             }
 
-            foreach (var target in targets)
+            // Apply all effects from the action
+            foreach (ActionEffect effect in action.effects)
             {
-                if (target.isDead) continue;
-
-                switch (action.type)
-                {
-                    case ActionType.Attack:
-                        // *** MODIFIQUE ESTA LINHA para passar o atacante: ***
-                        target.TakeDamage(action.power, caster);  // <-- Adicione ", caster"
-                        break;
-                    case ActionType.Heal:
-                        target.Heal(action.power);
-                        break;
-                }
-                yield return new WaitForSeconds(0.2f); // Pequeno delay entre alvos
+                yield return StartCoroutine(ApplyActionEffect(effect, caster, targets));
             }
         }
         else
         {
-            Debug.Log("Ação falhou por falta de MP!");
+            Debug.Log("Action failed due to insufficient MP!");
         }
 
-        // 3. Espera um pouco antes de continuar
+        // 3. Wait before continuing
         yield return new WaitForSeconds(postActionDelay);
         
-        // 4. Reseta o ATB e verifica o fim da batalha
+        // 4. Reset ATB and check battle end
         caster.ResetATB();
+        currentProcessingAction = null; // Clear current action
         CheckBattleEnd();
+    }
+
+    private IEnumerator ApplyActionEffect(ActionEffect effect, BattleEntity caster, List<BattleEntity> targets)
+    {
+        // Check for special effects first
+        if (ActionEffectProcessor.RequiresSpecialProcessing(GetCurrentAction()))
+        {
+            foreach (var target in targets)
+            {
+                if (target.isDead) continue;
+                ActionEffectProcessor.ProcessSpecialEffect(GetCurrentAction(), caster, target);
+                yield return new WaitForSeconds(0.2f);
+            }
+            yield break; // Use yield break instead of return in coroutines
+        }
+
+        // Apply primary effect to targets
+        foreach (var target in targets)
+        {
+            if (target.isDead) continue;
+
+            switch (effect.effectType)
+            {
+                case ActionType.Attack:
+                    int attackPower = caster.GetModifiedAttackPower(effect.power);
+                    target.TakeDamage(attackPower, caster);
+                    break;
+                    
+                case ActionType.Heal:
+                    target.Heal(effect.power);
+                    break;
+                    
+                case ActionType.Buff:
+                case ActionType.Debuff:
+                    // Status effects are handled below
+                    break;
+            }
+
+            // Apply status effect if present
+            if (effect.statusEffect != StatusEffectType.None)
+            {
+                target.ApplyStatusEffect(effect.statusEffect, effect.statusPower, effect.statusDuration);
+            }
+
+            yield return new WaitForSeconds(0.2f);
+        }
+
+        // Apply self effect if present
+        if (effect.hasSelfEffect && !caster.isDead)
+        {
+            switch (effect.selfEffectType)
+            {
+                case ActionType.Attack:
+                    caster.TakeDamage(effect.selfEffectPower);
+                    Debug.Log($"{caster.characterData.characterName} takes {effect.selfEffectPower} recoil damage!");
+                    break;
+                    
+                case ActionType.Heal:
+                    caster.Heal(effect.selfEffectPower);
+                    break;
+                    
+                case ActionType.Buff:
+                case ActionType.Debuff:
+                    // Self status effect handled below
+                    break;
+            }
+
+            // Apply self status effect if present
+            if (effect.selfStatusEffect != StatusEffectType.None)
+            {
+                caster.ApplyStatusEffect(effect.selfStatusEffect, effect.selfStatusPower, effect.selfStatusDuration);
+            }
+        }
+    }
+
+    // Helper to get current action being processed
+    private BattleAction currentProcessingAction;
+    
+    private BattleAction GetCurrentAction()
+    {
+        return currentProcessingAction;
     }
 
     private IEnumerator PerformEnemyAction()
@@ -170,52 +243,27 @@ public class BattleManager : MonoBehaviour
         yield return new WaitForSeconds(1.0f);
     
         BattleAction chosenAction = activeCharacter.characterData.battleActions
-            .Where(a => activeCharacter.currentMp >= a.manaCost && (!a.isConsumable || a.CanUse())) // NOVO: Verifica se consumível pode ser usado
-            .OrderBy(a => Random.value) // Escolhe uma ação aleatória que ele possa pagar
+            .Where(a => activeCharacter.currentMp >= a.manaCost && (!a.isConsumable || a.CanUse()))
+            .OrderBy(a => Random.value)
             .FirstOrDefault();
 
         if (chosenAction == null)
         {
-            Debug.Log($"{activeCharacter.characterData.characterName} não tem ações disponíveis!");
+            Debug.Log($"{activeCharacter.characterData.characterName} has no available actions!");
             activeCharacter.ResetATB();
             currentState = BattleState.RUNNING;
             yield break;
         }
 
-        // NOVO: Mostra qual ação o inimigo vai usar
-        string enemyActionText = $"{activeCharacter.characterData.characterName} usa {chosenAction.actionName}!";
+        // Show enemy action
+        string enemyActionText = $"{activeCharacter.characterData.characterName} uses {chosenAction.actionName}!";
         battleHUD.ShowEnemyAction(enemyActionText);
         
-        // Aguarda um tempo para o jogador ler a ação
         yield return new WaitForSeconds(enemyActionDisplayTime);
-        
-        // Esconde o texto da ação
         battleHUD.HideEnemyAction();
 
-        List<BattleEntity> targets = new List<BattleEntity>();
-        
-        // Escolhe alvos baseado no tipo da ação
-        switch (chosenAction.targetType)
-        {
-            case TargetType.SingleEnemy:
-            case TargetType.SingleAlly:
-                List<BattleEntity> alivePlayers = playerTeam.Where(p => !p.isDead).ToList();
-                if(alivePlayers.Any())
-                    targets.Add(alivePlayers[Random.Range(0, alivePlayers.Count)]);
-                break;
-                
-            case TargetType.Self:
-                targets.Add(activeCharacter);
-                break;
-                
-            case TargetType.AllEnemies:
-                targets.AddRange(playerTeam.Where(p => !p.isDead));
-                break;
-                
-            case TargetType.AllAllies:
-                targets.AddRange(enemyTeam.Where(e => !e.isDead));
-                break;
-        }
+        // Choose targets based on action
+        List<BattleEntity> targets = GetTargetsForAction(chosenAction, activeCharacter);
 
         if (targets.Any())
         {
@@ -223,37 +271,103 @@ public class BattleManager : MonoBehaviour
         }
         else
         {
-            Debug.Log($"{activeCharacter.characterData.characterName} não encontrou alvos válidos!");
+            Debug.Log($"{activeCharacter.characterData.characterName} found no valid targets!");
             activeCharacter.ResetATB();
             currentState = BattleState.RUNNING;
         }
     }
+
+    private List<BattleEntity> GetTargetsForAction(BattleAction action, BattleEntity caster)
+    {
+        List<BattleEntity> targets = new List<BattleEntity>();
+        
+        switch (action.targetType)
+        {
+            case TargetType.SingleEnemy:
+                if (caster.characterData.team == Team.Player)
+                {
+                    var aliveEnemies = enemyTeam.Where(e => !e.isDead).ToList();
+                    if (aliveEnemies.Any())
+                        targets.Add(aliveEnemies[Random.Range(0, aliveEnemies.Count)]);
+                }
+                else
+                {
+                    var alivePlayers = playerTeam.Where(p => !p.isDead).ToList();
+                    if (alivePlayers.Any())
+                        targets.Add(alivePlayers[Random.Range(0, alivePlayers.Count)]);
+                }
+                break;
+                
+            case TargetType.SingleAlly:
+                if (caster.characterData.team == Team.Player)
+                {
+                    var alivePlayers = playerTeam.Where(p => !p.isDead).ToList();
+                    if (alivePlayers.Any())
+                        targets.Add(alivePlayers[Random.Range(0, alivePlayers.Count)]);
+                }
+                else
+                {
+                    var aliveEnemies = enemyTeam.Where(e => !e.isDead).ToList();
+                    if (aliveEnemies.Any())
+                        targets.Add(aliveEnemies[Random.Range(0, aliveEnemies.Count)]);
+                }
+                break;
+                
+            case TargetType.Self:
+                targets.Add(caster);
+                break;
+                
+            case TargetType.AllEnemies:
+                if (caster.characterData.team == Team.Player)
+                {
+                    targets.AddRange(enemyTeam.Where(e => !e.isDead));
+                }
+                else
+                {
+                    targets.AddRange(playerTeam.Where(p => !p.isDead));
+                }
+                break;
+                
+            case TargetType.AllAllies:
+                if (caster.characterData.team == Team.Player)
+                {
+                    targets.AddRange(playerTeam.Where(p => !p.isDead));
+                }
+                else
+                {
+                    targets.AddRange(enemyTeam.Where(e => !e.isDead));
+                }
+                break;
+                
+            case TargetType.Everyone:
+                targets.AddRange(allCharacters.Where(c => !c.isDead));
+                break;
+        }
+
+        return targets;
+    }
     
     private void CheckBattleEnd()
     {
-        
         if (PlayerBehaviorAnalyzer.Instance != null)
         {
-            PlayerBehaviorAnalyzer.Instance.RecordBattleEnd(); // Método que vamos criar
+            PlayerBehaviorAnalyzer.Instance.RecordBattleEnd();
         }
         
         if (enemyTeam.All(e => e.isDead))
         {
             currentState = BattleState.WON;
-            Debug.Log("VITÓRIA!");
+            Debug.Log("VICTORY!");
             
-            // NOVO: Adiciona recompensa de moedas
-            int rewardCoins = Random.Range(10, 31); // 10-30 moedas
+            int rewardCoins = Random.Range(10, 31);
             GameManager.Instance.AddBattleReward(rewardCoins);
             
-            // Aqui você pode adicionar mais lógica de vitória
             StartCoroutine(HandleBattleVictory(rewardCoins));
         }
         else if (playerTeam.All(p => p.isDead))
         {
             currentState = BattleState.LOST;
-            Debug.Log("DERROTA!");
-            // Aqui você pode adicionar lógica de derrota
+            Debug.Log("DEFEAT!");
         }
         else
         {
@@ -261,18 +375,15 @@ public class BattleManager : MonoBehaviour
         }
     }
 
-    // NOVO: Corrotina para lidar com a vitória
     private IEnumerator HandleBattleVictory(int rewardCoins)
     {
-        yield return new WaitForSeconds(2f); // Aguarda um pouco após a vitória
+        yield return new WaitForSeconds(2f);
         
-        // Mostra mensagem de vitória e recompensa
-        string victoryMessage = $"Vitória! Você ganhou {rewardCoins} moedas!";
+        string victoryMessage = $"Victory! You earned {rewardCoins} coins!";
         battleHUD.ShowEnemyAction(victoryMessage);
         
-        yield return new WaitForSeconds(3f); // Mostra a mensagem por 3 segundos
+        yield return new WaitForSeconds(3f);
         
-        // Retorna ao mapa
         GameManager.Instance.ReturnToMap();
     }
 }

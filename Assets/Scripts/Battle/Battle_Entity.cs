@@ -1,9 +1,11 @@
-// Assets/Scripts/Battle/BattleEntity.cs
+// Assets/Scripts/Battle/BattleEntity.cs (Enhanced with Status Effects)
 
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
-using System.Collections; // Adicionado para a corrotina
+using System.Collections;
+using System.Collections.Generic;
+using System.Linq;
 
 public class BattleEntity : MonoBehaviour
 {
@@ -28,12 +30,14 @@ public class BattleEntity : MonoBehaviour
     public bool isReady = false;
     public bool isDead = false;
 
+    // Status Effects System
+    private List<StatusEffect> activeStatusEffects = new List<StatusEffect>();
+
     // Controlador de animações
     private BattleAnimationController animationController;
 
     void Awake()
     {
-        // Garante que o controlador de animação exista
         animationController = GetComponent<BattleAnimationController>();
         if (animationController == null)
         {
@@ -50,10 +54,9 @@ public class BattleEntity : MonoBehaviour
         UpdateATBBar();
         UpdateHPBar();
         UpdateMPBar();
-        UpdateValueTexts(); // NOVO: Atualiza os textos no início
+        UpdateValueTexts();
     }
 
-    // Método para o BattleManager configurar o material de flash
     public void SetupAnimationController(Material flashMat)
     {
         if (animationController != null)
@@ -66,7 +69,11 @@ public class BattleEntity : MonoBehaviour
     {
         if (isDead || isReady) return;
 
-        currentAtb += characterData.speed * deltaTime * 5f;
+        // Apply speed modifiers from status effects
+        float speedModifier = GetSpeedModifier();
+        float effectiveSpeed = characterData.speed * (1f + speedModifier / 100f);
+
+        currentAtb += effectiveSpeed * deltaTime * 5f;
         if (currentAtb >= ATB_MAX)
         {
             currentAtb = ATB_MAX;
@@ -86,17 +93,22 @@ public class BattleEntity : MonoBehaviour
     {
         if (isDead) return;
 
-        int damageTaken = Mathf.Max(1, damageAmount - characterData.defense);
-        currentHp -= damageTaken;
-        Debug.Log($"{characterData.characterName} recebeu {damageTaken} de dano!");
+        // Apply defense modifiers from status effects
+        int effectiveDefense = characterData.defense + GetDefenseModifier();
+        int baseDamage = Mathf.Max(1, damageAmount - effectiveDefense);
+        
+        // Apply damage multipliers from status effects
+        float damageMultiplier = GetDamageMultiplier();
+        int finalDamage = Mathf.RoundToInt(baseDamage * damageMultiplier);
+        
+        currentHp -= finalDamage;
+        Debug.Log($"{characterData.characterName} received {finalDamage} damage!");
 
-        // *** ADICIONE ESTAS LINHAS AQUI: ***
         if (attacker != null)
         {
-            BehaviorAnalysisIntegration.OnPlayerDamageReceived(this, attacker, damageTaken);
+            BehaviorAnalysisIntegration.OnPlayerDamageReceived(this, attacker, finalDamage);
         }
 
-        // Aciona a animação de dano no jogador
         if (animationController != null)
         {
             animationController.OnTakeDamage();
@@ -116,11 +128,28 @@ public class BattleEntity : MonoBehaviour
     {
         if (isDead) return;
         
+        int oldHp = currentHp;
         currentHp = Mathf.Min(currentHp + healAmount, characterData.maxHp);
-        Debug.Log($"{characterData.characterName} curou {healAmount} de vida!");
+        int actualHealing = currentHp - oldHp;
+        
+        Debug.Log($"{characterData.characterName} healed {actualHealing} HP!");
         
         UpdateHPBar();
-        UpdateValueTexts(); // NOVO: Atualiza o texto após curar
+        UpdateValueTexts();
+    }
+
+    public void RestoreMana(int manaAmount)
+    {
+        if (isDead) return;
+        
+        int oldMp = currentMp;
+        currentMp = Mathf.Min(currentMp + manaAmount, characterData.maxMp);
+        int actualManaRestore = currentMp - oldMp;
+        
+        Debug.Log($"{characterData.characterName} restored {actualManaRestore} MP!");
+        
+        UpdateMPBar();
+        UpdateValueTexts();
     }
 
     public bool ConsumeMana(int manaCost)
@@ -129,11 +158,126 @@ public class BattleEntity : MonoBehaviour
         {
             currentMp -= manaCost;
             UpdateMPBar();
-            UpdateValueTexts(); // NOVO: Atualiza o texto após consumir mana
+            UpdateValueTexts();
             return true;
         }
-        Debug.Log($"{characterData.characterName} não tem MP suficiente!");
+        Debug.Log($"{characterData.characterName} doesn't have enough MP!");
         return false;
+    }
+
+    // Status Effects Management
+    public void ApplyStatusEffect(StatusEffectType type, int power, int duration)
+    {
+        if (type == StatusEffectType.None || duration <= 0) return;
+
+        // Check if we already have this status effect
+        StatusEffect existingEffect = activeStatusEffects.FirstOrDefault(e => e.type == type);
+        if (existingEffect != null)
+        {
+            // Refresh the effect with new values
+            existingEffect.power = power;
+            existingEffect.remainingTurns = duration;
+            Debug.Log($"{characterData.characterName}'s {existingEffect.effectName} refreshed!");
+        }
+        else
+        {
+            // Add new status effect
+            StatusEffect newEffect = new StatusEffect(type, power, duration);
+            activeStatusEffects.Add(newEffect);
+            Debug.Log($"{characterData.characterName} gains {newEffect.effectName}!");
+        }
+    }
+
+    public void ProcessStatusEffectsTurn()
+    {
+        if (isDead) return;
+
+        List<StatusEffect> effectsToRemove = new List<StatusEffect>();
+
+        foreach (StatusEffect effect in activeStatusEffects)
+        {
+            bool shouldRemove = effect.ProcessTurnEffect(this);
+            if (shouldRemove)
+            {
+                effectsToRemove.Add(effect);
+                Debug.Log($"{characterData.characterName} loses {effect.effectName}");
+            }
+        }
+
+        // Remove expired effects
+        foreach (StatusEffect effect in effectsToRemove)
+        {
+            activeStatusEffects.Remove(effect);
+        }
+    }
+
+    private float GetSpeedModifier()
+    {
+        float modifier = 0f;
+        foreach (StatusEffect effect in activeStatusEffects)
+        {
+            if (effect.type == StatusEffectType.SpeedUp)
+                modifier += effect.power;
+            else if (effect.type == StatusEffectType.SpeedDown)
+                modifier -= effect.power;
+        }
+        return modifier;
+    }
+
+    private int GetDefenseModifier()
+    {
+        int modifier = 0;
+        foreach (StatusEffect effect in activeStatusEffects)
+        {
+            if (effect.type == StatusEffectType.DefenseUp)
+                modifier += effect.power;
+            else if (effect.type == StatusEffectType.DefenseDown)
+                modifier -= effect.power;
+        }
+        return modifier;
+    }
+
+    private int GetAttackModifier()
+    {
+        int modifier = 0;
+        foreach (StatusEffect effect in activeStatusEffects)
+        {
+            if (effect.type == StatusEffectType.AttackUp)
+                modifier += effect.power;
+            else if (effect.type == StatusEffectType.AttackDown)
+                modifier -= effect.power;
+        }
+        return modifier;
+    }
+
+    private float GetDamageMultiplier()
+    {
+        float multiplier = 1f;
+        foreach (StatusEffect effect in activeStatusEffects)
+        {
+            if (effect.type == StatusEffectType.Vulnerable)
+                multiplier += effect.power / 100f;
+            else if (effect.type == StatusEffectType.Protected)
+                multiplier -= effect.power / 100f;
+        }
+        return Mathf.Max(0.1f, multiplier); // Minimum 10% damage
+    }
+
+    public int GetModifiedAttackPower(int basePower)
+    {
+        int modifier = GetAttackModifier();
+        return Mathf.Max(1, basePower + modifier);
+    }
+
+    public List<StatusEffect> GetActiveStatusEffects()
+    {
+        return new List<StatusEffect>(activeStatusEffects);
+    }
+
+    public void ClearAllStatusEffects()
+    {
+        activeStatusEffects.Clear();
+        Debug.Log($"{characterData.characterName} has all status effects cleared!");
     }
 
     // Aciona o efeito de flash quando executa uma ação
@@ -149,6 +293,9 @@ public class BattleEntity : MonoBehaviour
     {
         isDead = true;
         Debug.Log($"{characterData.characterName} foi derrotado!");
+
+        // Clear all status effects on death
+        ClearAllStatusEffects();
 
         // Desativa os sliders da HUD imediatamente
         DisableHUDElements();
@@ -182,7 +329,7 @@ public class BattleEntity : MonoBehaviour
             mpBar.gameObject.SetActive(false);
         }
 
-        // NOVO: Esconde os textos de valores também
+        // Esconde os textos de valores também
         if (hpValueText != null)
         {
             hpValueText.gameObject.SetActive(false);
@@ -204,7 +351,7 @@ public class BattleEntity : MonoBehaviour
         SetSliderAlpha(hpBar, 0.3f);
         SetSliderAlpha(mpBar, 0.3f);
 
-        // NOVO: Faz fade dos textos também
+        // Faz fade dos textos também
         SetTextAlpha(hpValueText, 0.3f);
         SetTextAlpha(mpValueText, 0.3f);
 
@@ -226,7 +373,7 @@ public class BattleEntity : MonoBehaviour
         }
     }
 
-    // NOVO: Método auxiliar para alterar a transparência de um texto
+    // Método auxiliar para alterar a transparência de um texto
     private void SetTextAlpha(TextMeshProUGUI text, float alpha)
     {
         if (text == null) return;
@@ -254,7 +401,7 @@ public class BattleEntity : MonoBehaviour
             mpBar.gameObject.SetActive(true);
         }
 
-        // NOVO: Reativa os textos também
+        // Reativa os textos também
         if (hpValueText != null)
         {
             hpValueText.gameObject.SetActive(true);
@@ -306,10 +453,10 @@ public class BattleEntity : MonoBehaviour
             mpBar.value = (float)currentMp / characterData.maxMp;
     }
 
-    // ===== NOVO MÉTODO PARA ATUALIZAR TEXTOS DE VALORES =====
+    // ===== MÉTODO PARA ATUALIZAR TEXTOS DE VALORES =====
 
     /// <summary>
-    /// NOVO: Atualiza os textos que mostram os valores numéricos de HP e MP
+    /// Atualiza os textos que mostram os valores numéricos de HP e MP
     /// </summary>
     private void UpdateValueTexts()
     {
@@ -331,7 +478,7 @@ public class BattleEntity : MonoBehaviour
     // ===== MÉTODOS PÚBLICOS PARA ACESSO AOS VALORES =====
 
     /// <summary>
-    /// NOVO: Retorna o HP atual
+    /// Retorna o HP atual
     /// </summary>
     public int GetCurrentHP()
     {
@@ -339,7 +486,7 @@ public class BattleEntity : MonoBehaviour
     }
 
     /// <summary>
-    /// NOVO: Retorna o MP atual
+    /// Retorna o MP atual
     /// </summary>
     public int GetCurrentMP()
     {
@@ -347,7 +494,7 @@ public class BattleEntity : MonoBehaviour
     }
 
     /// <summary>
-    /// NOVO: Retorna o HP máximo
+    /// Retorna o HP máximo
     /// </summary>
     public int GetMaxHP()
     {
@@ -355,7 +502,7 @@ public class BattleEntity : MonoBehaviour
     }
 
     /// <summary>
-    /// NOVO: Retorna o MP máximo
+    /// Retorna o MP máximo
     /// </summary>
     public int GetMaxMP()
     {
@@ -363,7 +510,7 @@ public class BattleEntity : MonoBehaviour
     }
 
     /// <summary>
-    /// NOVO: Força uma atualização dos textos (útil para debug ou mudanças externas)
+    /// Força uma atualização dos textos (útil para debug ou mudanças externas)
     /// </summary>
     public void ForceUpdateValueTexts()
     {

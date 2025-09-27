@@ -1,4 +1,4 @@
-// Assets/Scripts/Analytics/PlayerBehaviorAnalyzer.cs
+// Assets/Scripts/Analytics/PlayerBehaviorAnalyzer.cs (FIXED)
 
 using System.Collections.Generic;
 using System.Linq;
@@ -6,9 +6,6 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 using System.IO;
 
-/// <summary>
-/// Sistema principal que monitora e analisa o comportamento do jogador
-/// </summary>
 public class PlayerBehaviorAnalyzer : MonoBehaviour
 {
     public static PlayerBehaviorAnalyzer Instance { get; private set; }
@@ -18,16 +15,13 @@ public class PlayerBehaviorAnalyzer : MonoBehaviour
     [SerializeField] private bool saveToFile = true;
     [SerializeField] private string saveFileName = "player_behavior.json";
     
-    // Profile do jogador
     private PlayerBehaviorProfile playerProfile = new PlayerBehaviorProfile();
     
-    // Estado atual da batalha
     private bool isBattleActive = false;
     private BattleManager currentBattleManager;
     private List<BattleEntity> playerTeamAtStart = new List<BattleEntity>();
     private List<BattleEntity> enemyTeamAtStart = new List<BattleEntity>();
     
-    // Rastreamento de loja
     private List<BattleAction> lastShopItems = new List<BattleAction>();
     private bool playerBoughtSomething = false;
 
@@ -68,13 +62,11 @@ public class PlayerBehaviorAnalyzer : MonoBehaviour
 
     private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
     {
-        // Reset dados da batalha ao mudar de cena
         if (isBattleActive)
         {
             FinalizeBattleAnalysis();
         }
         
-        // Detecta tipo de cena e inicia monitoramento apropriado
         if (scene.name.ToLower().Contains("battle"))
         {
             StartBattleMonitoring();
@@ -98,7 +90,6 @@ public class PlayerBehaviorAnalyzer : MonoBehaviour
         isBattleActive = true;
         playerProfile.currentBattle.Reset();
         
-        // Encontra BattleManager
         currentBattleManager = FindObjectOfType<BattleManager>();
         if (currentBattleManager == null)
         {
@@ -106,7 +97,6 @@ public class PlayerBehaviorAnalyzer : MonoBehaviour
             return;
         }
         
-        // Aguarda um frame para garantir que tudo foi inicializado
         Invoke(nameof(CaptureBattleStartState), 0.1f);
     }
 
@@ -114,7 +104,6 @@ public class PlayerBehaviorAnalyzer : MonoBehaviour
     {
         if (currentBattleManager == null) return;
         
-        // Captura estado inicial dos times
         playerTeamAtStart.Clear();
         enemyTeamAtStart.Clear();
         
@@ -128,7 +117,6 @@ public class PlayerBehaviorAnalyzer : MonoBehaviour
             enemyTeamAtStart.AddRange(currentBattleManager.enemyTeam);
         }
         
-        // Registra estado inicial do jogador
         var player = playerTeamAtStart.FirstOrDefault();
         if (player != null)
         {
@@ -136,13 +124,11 @@ public class PlayerBehaviorAnalyzer : MonoBehaviour
             playerProfile.currentBattle.startingMP = player.GetCurrentMP();
         }
         
-        // Registra inimigos presentes
         foreach (var enemy in enemyTeamAtStart)
         {
             playerProfile.currentBattle.enemiesInBattle.Add(enemy.characterData.characterName);
         }
         
-        // Registra skills disponíveis do jogador
         if (GameManager.Instance != null && GameManager.Instance.PlayerBattleActions != null)
         {
             foreach (var action in GameManager.Instance.PlayerBattleActions)
@@ -157,9 +143,6 @@ public class PlayerBehaviorAnalyzer : MonoBehaviour
         Log($"Estado inicial capturado - HP: {playerProfile.currentBattle.startingHP}, MP: {playerProfile.currentBattle.startingMP}");
     }
 
-    /// <summary>
-    /// Registra uso de skill pelo jogador
-    /// </summary>
     public void RecordPlayerSkillUsage(BattleAction skill, BattleEntity user)
     {
         if (!isBattleActive || skill == null) return;
@@ -170,9 +153,6 @@ public class PlayerBehaviorAnalyzer : MonoBehaviour
         Log($"Skill usada: {skill.actionName}");
     }
 
-    /// <summary>
-    /// Registra dano recebido pelo jogador
-    /// </summary>
     public void RecordPlayerDamageReceived(BattleEntity attacker, int damage)
     {
         if (!isBattleActive || attacker == null) return;
@@ -182,9 +162,6 @@ public class PlayerBehaviorAnalyzer : MonoBehaviour
         Log($"Dano recebido de {attacker.characterData.characterName}: {damage}");
     }
 
-    /// <summary>
-    /// Registra morte do jogador
-    /// </summary>
     public void RecordPlayerDeath()
     {
         if (!isBattleActive) return;
@@ -203,13 +180,10 @@ public class PlayerBehaviorAnalyzer : MonoBehaviour
             playerProfile.currentBattle.endingHP = player.GetCurrentHP();
             playerProfile.currentBattle.endingMP = player.GetCurrentMP();
         
-            // *** ADICIONE ESTES LOGS DE DEBUG: ***
             Debug.Log($"=== BATTLE END DEBUG ===");
             Debug.Log($"Player Starting HP/MP: {playerProfile.currentBattle.startingHP}/{playerProfile.currentBattle.startingMP}");
             Debug.Log($"Player Ending HP/MP: {playerProfile.currentBattle.endingHP}/{playerProfile.currentBattle.endingMP}");
             Debug.Log($"Player isDead: {player.isDead}");
-            Debug.Log($"Player GetCurrentHP(): {player.GetCurrentHP()}");
-            Debug.Log($"Player GetCurrentMP(): {player.GetCurrentMP()}");
             Debug.Log($"Total damage recorded: {playerProfile.currentBattle.enemyDamageDealt.Values.Sum()}");
             Debug.Log($"=========================");
         }
@@ -227,7 +201,6 @@ public class PlayerBehaviorAnalyzer : MonoBehaviour
         string currentMap = SceneManager.GetActiveScene().name;
         var battleData = playerProfile.currentBattle;
         
-        // 1. Morte do jogador
         if (battleData.playerDied)
         {
             string killerEnemy = battleData.GetMostDamagingEnemy();
@@ -238,35 +211,17 @@ public class PlayerBehaviorAnalyzer : MonoBehaviour
             
             playerProfile.AddObservation(observation);
             
-            // Verifica se é boss
             CheckRepeatedBossDeath(killerEnemy);
         }
         
-        // 2. Overuso de skill
         CheckSkillOveruse(currentMap);
-        
-        // 3. Vida baixa sem cura
         CheckLowHealthNoCure(currentMap);
-        
-        // 4. Nenhum dano recebido
         CheckNoDamageReceived(currentMap);
-        
-        // 5. Vida crítica
         CheckCriticalHealth(currentMap);
-        
-        // 6. Items esgotados
         CheckExhaustedItems(currentMap);
-        
-        // 7. Skills não utilizadas
         CheckUnusedSkills(currentMap);
-        
-        // 8. Falta de skills defensivas
         CheckDefensiveSkills(currentMap);
-        
-        // 9. Vitória fácil em boss
         CheckEasyBossVictory(currentMap);
-        
-        // 10. Problemas com MP
         CheckManaIssues(currentMap);
     }
 
@@ -291,9 +246,9 @@ public class PlayerBehaviorAnalyzer : MonoBehaviour
         
         if (healthPercentage < 0.5f)
         {
-            // Verifica se tem itens de cura
+            // FIXED: Use GetPrimaryActionType() instead of .type
             bool hasCureItems = GameManager.Instance.PlayerBattleActions?.Any(action => 
-                action != null && action.type == ActionType.Heal && action.isConsumable && action.CanUse()) ?? false;
+                action != null && action.GetPrimaryActionType() == ActionType.Heal && action.isConsumable && action.CanUse()) ?? false;
             
             if (!hasCureItems)
             {
@@ -311,7 +266,6 @@ public class PlayerBehaviorAnalyzer : MonoBehaviour
         if (playerProfile.currentBattle.enemyDamageDealt.Count == 0 || 
             playerProfile.currentBattle.enemyDamageDealt.Values.Sum() == 0)
         {
-            // Escolhe inimigo aleatório
             if (playerProfile.currentBattle.enemiesInBattle.Count > 0)
             {
                 string randomEnemy = playerProfile.currentBattle.enemiesInBattle[
@@ -371,8 +325,9 @@ public class PlayerBehaviorAnalyzer : MonoBehaviour
 
     private void CheckDefensiveSkills(string mapName)
     {
+        // FIXED: Use GetPrimaryActionType() instead of .type
         bool hasDefensiveSkills = GameManager.Instance?.PlayerBattleActions?.Any(action => 
-            action != null && (action.type == ActionType.Heal || action.type == ActionType.Buff)) ?? false;
+            action != null && (action.GetPrimaryActionType() == ActionType.Heal || action.GetPrimaryActionType() == ActionType.Buff)) ?? false;
         
         if (!hasDefensiveSkills)
         {
@@ -383,7 +338,6 @@ public class PlayerBehaviorAnalyzer : MonoBehaviour
 
     private void CheckRepeatedBossDeath(string enemyName)
     {
-        // Considera boss se o nome contém certas palavras ou se está em cena de boss
         bool isBoss = enemyName.ToLower().Contains("boss") || 
                      SceneManager.GetActiveScene().name.ToLower().Contains("boss") ||
                      FindObjectOfType<BossNode>() != null;
@@ -430,7 +384,6 @@ public class PlayerBehaviorAnalyzer : MonoBehaviour
     {
         float manaPercentage = (float)playerProfile.currentBattle.endingMP / playerProfile.currentBattle.startingMP;
         
-        // Verifica se todas skills usam MP
         bool allSkillsUseMana = GameManager.Instance?.PlayerBattleActions?.All(action =>
             action == null || action.manaCost > 0) ?? false;
         
@@ -443,7 +396,6 @@ public class PlayerBehaviorAnalyzer : MonoBehaviour
             playerProfile.AddObservation(observation);
         }
         
-        // Rastreia sequências de MP baixo/zero
         if (manaPercentage < 0.1f)
         {
             playerProfile.session.consecutiveZeroManaBattles++;
@@ -460,7 +412,6 @@ public class PlayerBehaviorAnalyzer : MonoBehaviour
             playerProfile.session.consecutiveZeroManaBattles = 0;
         }
         
-        // Registra streaks problemáticas
         if (playerProfile.session.consecutiveLowManaBattles >= 2)
         {
             var observation = new BehaviorObservation(BehaviorTriggerType.LowManaStreak, mapName);
@@ -489,7 +440,6 @@ public class PlayerBehaviorAnalyzer : MonoBehaviour
         lastShopItems.Clear();
         playerBoughtSomething = false;
         
-        // Aguarda inicialização da loja
         Invoke(nameof(CaptureShopItems), 0.5f);
     }
 
@@ -497,9 +447,6 @@ public class PlayerBehaviorAnalyzer : MonoBehaviour
     {
         var shopManager = FindObjectOfType<ShopManager>();
         if (shopManager == null) return;
-        
-        // Como não temos acesso direto aos itens da loja, registramos quando o jogador sai
-        // Este método será chamado quando a loja for fechada
     }
 
     public void RecordShopPurchase(BattleAction purchasedItem)
@@ -512,7 +459,6 @@ public class PlayerBehaviorAnalyzer : MonoBehaviour
     {
         if (!playerBoughtSomething && availableItems != null && availableItems.Count > 0)
         {
-            // Jogador saiu da loja sem comprar nada
             string mapName = SceneManager.GetActiveScene().name;
             
             var observation = new BehaviorObservation(BehaviorTriggerType.ShopIgnored, mapName);
@@ -532,8 +478,6 @@ public class PlayerBehaviorAnalyzer : MonoBehaviour
     private void AnalyzeMapBehavior()
     {
         Log("Analisando comportamento no mapa");
-        
-        // Verifica moedas baixas com lojas disponíveis
         CheckLowCoinsWithShops();
     }
 
@@ -543,9 +487,8 @@ public class PlayerBehaviorAnalyzer : MonoBehaviour
         
         int currentCoins = GameManager.Instance.CurrencySystem.CurrentCoins;
         
-        if (currentCoins < 50) // Considera "poucas moedas"
+        if (currentCoins < 50)
         {
-            // Verifica se há lojas não visitadas
             var mapNodes = FindObjectsOfType<MapNode>();
             bool hasUnvisitedShops = mapNodes.Any(node => 
                 node.eventType != null && 
@@ -608,7 +551,6 @@ public class PlayerBehaviorAnalyzer : MonoBehaviour
                     playerProfile = new PlayerBehaviorProfile();
                 }
                 
-                // Limpa observações antigas
                 playerProfile.CleanOldObservations();
                 
                 Log($"Profile carregado: {playerProfile.observations.Count} observações");
@@ -630,25 +572,16 @@ public class PlayerBehaviorAnalyzer : MonoBehaviour
 
     #region Public API
 
-    /// <summary>
-    /// Retorna todas as observações do jogador
-    /// </summary>
     public List<BehaviorObservation> GetAllObservations()
     {
         return new List<BehaviorObservation>(playerProfile.observations);
     }
 
-    /// <summary>
-    /// Retorna observações de um tipo específico
-    /// </summary>
     public List<BehaviorObservation> GetObservationsByType(BehaviorTriggerType type)
     {
         return playerProfile.GetObservationsByType(type);
     }
 
-    /// <summary>
-    /// Retorna as observações mais relevantes para negociação
-    /// </summary>
     public List<BehaviorObservation> GetNegotiationTriggers(int maxResults = 5)
     {
         return playerProfile.observations
@@ -658,11 +591,6 @@ public class PlayerBehaviorAnalyzer : MonoBehaviour
             .ToList();
     }
 
-    // ===== NOVOS MÉTODOS DE CLEANUP =====
-
-    /// <summary>
-    /// Remove uma observação específica após ser "consumida" em negociação
-    /// </summary>
     public void ConsumeObservation(BehaviorObservation observation)
     {
         if (playerProfile.observations.Contains(observation))
@@ -673,19 +601,14 @@ public class PlayerBehaviorAnalyzer : MonoBehaviour
         }
     }
 
-    /// <summary>
-    /// Remove observação por tipo e dados específicos
-    /// </summary>
     public void ConsumeObservationByType(BehaviorTriggerType type, string dataKey = null, object dataValue = null)
     {
         var toRemove = playerProfile.observations.FindAll(obs => 
         {
             if (obs.triggerType != type) return false;
             
-            // Se não especificou dados, remove qualquer uma do tipo
             if (dataKey == null) return true;
             
-            // Se especificou dados, verifica se coincide
             return obs.HasData(dataKey) && obs.GetData<object>(dataKey)?.Equals(dataValue) == true;
         });
         
@@ -701,9 +624,6 @@ public class PlayerBehaviorAnalyzer : MonoBehaviour
         }
     }
     
-    /// <summary>
-    /// NOVO: Método para capturar dados corretos no fim da batalha
-    /// </summary>
     public void RecordBattleEnd()
     {
         if (!isBattleActive) return;
@@ -721,9 +641,6 @@ public class PlayerBehaviorAnalyzer : MonoBehaviour
         }
     }
 
-    /// <summary>
-    /// Remove múltiplas observações (usadas em uma negociação)
-    /// </summary>
     public void ConsumeObservations(List<BehaviorObservation> observationsToConsume)
     {
         int removedCount = 0;
@@ -743,9 +660,6 @@ public class PlayerBehaviorAnalyzer : MonoBehaviour
         }
     }
 
-    /// <summary>
-    /// Obtém observações não resolvidas para negociação
-    /// </summary>
     public List<BehaviorObservation> GetUnresolvedNegotiationTriggers(int maxResults = 5)
     {
         return playerProfile.observations
@@ -756,9 +670,6 @@ public class PlayerBehaviorAnalyzer : MonoBehaviour
             .ToList();
     }
 
-    /// <summary>
-    /// Marca uma observação como "resolvida" sem removê-la
-    /// </summary>
     public void MarkObservationAsResolved(BehaviorObservation observation)
     {
         if (playerProfile.observations.Contains(observation))
@@ -770,9 +681,6 @@ public class PlayerBehaviorAnalyzer : MonoBehaviour
         }
     }
 
-    /// <summary>
-    /// Força uma análise manual (útil para debug)
-    /// </summary>
     public void ForceAnalysis()
     {
         if (isBattleActive)
@@ -786,9 +694,6 @@ public class PlayerBehaviorAnalyzer : MonoBehaviour
         Log("Análise manual executada");
     }
 
-    /// <summary>
-    /// Limpa todos os dados comportamentais
-    /// </summary>
     public void ClearAllData()
     {
         playerProfile = new PlayerBehaviorProfile();
@@ -796,9 +701,6 @@ public class PlayerBehaviorAnalyzer : MonoBehaviour
         Log("Todos os dados foram limpos");
     }
 
-    /// <summary>
-    /// Retorna estatísticas resumidas
-    /// </summary>
     public string GetSummaryStats()
     {
         var stats = new System.Text.StringBuilder();
@@ -860,4 +762,3 @@ public class PlayerBehaviorAnalyzer : MonoBehaviour
 
     #endregion
 }
-
