@@ -12,9 +12,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3b28a35cc03f4464295db8452ec8fc55, type: 3}
   m_Name: Nuvem_Venenosa
   m_EditorClassIdentifier: 
-  actionName: Nuvem Venenosa
+  actionName: Morcegos
   description: 'Envenena todos os inimigos por 3 turnos. Custo: 15 MP'
-  icon: {fileID: 0}
+  icon: {fileID: 21300000, guid: 2269985627c90064babe631092d8ff7f, type: 3}
   targetType: 3
   effects:
   - effectType: 3

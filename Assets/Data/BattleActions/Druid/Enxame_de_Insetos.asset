@@ -12,10 +12,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3b28a35cc03f4464295db8452ec8fc55, type: 3}
   m_Name: Enxame_de_Insetos
   m_EditorClassIdentifier: 
-  actionName: Enxame de Insetos
+  actionName: Familiar
   description: "Amaldi\xE7oa todos os inimigos, causando dano por 3 turnos. Custo:
     18 MP"
-  icon: {fileID: 0}
+  icon: {fileID: 21300000, guid: 8e67bb198d1908b42973c83368119c13, type: 3}
   targetType: 3
   effects:
   - effectType: 3

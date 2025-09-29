@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   actionName: "Regenera\xE7\xE3o Sombria"
   description: 'Restaura 35 de vida. Custo: 10 MP'
-  icon: {fileID: 0}
+  icon: {fileID: 21300000, guid: f8e0808ab62efd5418f4bf1206df2ed4, type: 3}
   targetType: 2
   effects:
   - effectType: 1

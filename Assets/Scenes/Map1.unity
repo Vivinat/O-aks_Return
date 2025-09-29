@@ -491,10 +491,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   connectedNodes: []
-  isLocked: 1
-  eventType: {fileID: 11400000, guid: 2e0c96beca99f2c4a839e33534fee06a, type: 2}
-  eventMusic: {fileID: 8300000, guid: b39dd8c5ddbeed843a617136c38638e9, type: 3}
-  battleBackgroundOverride: {fileID: 21300000, guid: f6c71d42837820b4ba213ecad75672e5, type: 3}
+  isLocked: 0
+  eventType: {fileID: 11400000, guid: 330a0cfd505959241bde8e59455f1920, type: 2}
+  eventMusic: {fileID: 8300000, guid: 093617ec03826524bb8b5f6e136c5354, type: 3}
+  battleBackgroundOverride: {fileID: 0}
 --- !u!61 &444595864
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -6785,7 +6785,6 @@ GameObject:
   - component: {fileID: 1340018659}
   - component: {fileID: 1340018658}
   - component: {fileID: 1340018657}
-  - component: {fileID: 1340018661}
   m_Layer: 0
   m_Name: BattleEvent
   m_TagString: Untagged
@@ -6923,19 +6922,6 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &1340018661
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1340018656}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f34709a6485a02e4f8393a557042f8a4, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  nextSceneName: BossScene
 --- !u!114 &1341675737 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 8143633899509199143, guid: 0e2cfb47d30131b408ff1e2a3841a99f, type: 3}
@@ -16408,7 +16394,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 1544972944}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: b7579876f9811ef44896389f5c0a14b7, type: 3}
+  m_Script: {fileID: 11500000, guid: f1a62137b8f5ba145b2f9cc315fe3609, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   statusPanel: {fileID: 615948952}
@@ -16578,7 +16564,6 @@ GameObject:
   m_Component:
   - component: {fileID: 1681200404}
   - component: {fileID: 1681200403}
-  - component: {fileID: 1681200405}
   m_Layer: 0
   m_Name: DialogueSystem
   m_TagString: Untagged
@@ -16647,20 +16632,6 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &1681200405
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1681200402}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 6cd15865c44c63744ae3e827f05f9d00, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  testKey: 32
-  testDialogueSO: {fileID: 11400000, guid: 405e3d7e3b435184e99d567526e89bfd, type: 2}
 --- !u!114 &1733437435 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 1507241857941152914, guid: 634f0a548f72d13438a695827a14cd45, type: 3}
@@ -16684,6 +16655,7 @@ GameObject:
   - component: {fileID: 1737705169}
   - component: {fileID: 1737705168}
   - component: {fileID: 1737705167}
+  - component: {fileID: 1737705171}
   m_Layer: 0
   m_Name: BossNode
   m_TagString: Untagged
@@ -16821,6 +16793,19 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1737705171
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1737705166}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f34709a6485a02e4f8393a557042f8a4, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  nextSceneName: Map_Level2
 --- !u!114 &1766109687 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 9057472692246560393, guid: 634f0a548f72d13438a695827a14cd45, type: 3}

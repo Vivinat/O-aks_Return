@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   actionName: Ataque Sombrio
   description: Causa 25 de dano. Sem custo
-  icon: {fileID: 0}
+  icon: {fileID: 21300000, guid: b2ad649e6dbdaaa4ab0d146a5fad58c7, type: 3}
   targetType: 0
   effects:
   - effectType: 0

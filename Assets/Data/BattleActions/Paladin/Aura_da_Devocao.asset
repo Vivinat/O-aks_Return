@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   actionName: "Aura da Devo\xE7\xE3o"
   description: 'Cura 25 de vida de todos os aliados. Custo: 20 MP'
-  icon: {fileID: 0}
+  icon: {fileID: 21300000, guid: 4b128a3e77ce4414ebe845ba2dfbaa7b, type: 3}
   targetType: 4
   effects:
   - effectType: 1

@@ -12,9 +12,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3b28a35cc03f4464295db8452ec8fc55, type: 3}
   m_Name: Flecha_Venenosa
   m_EditorClassIdentifier: 
-  actionName: Flecha Venenosa
+  actionName: Jato Venenoso
   description: 'Causa 20 de dano e envenena o alvo por 4 turnos. Custo: 10 MP'
-  icon: {fileID: 0}
+  icon: {fileID: 21300000, guid: 3261ca9be8e81fa458134c040b75bde5, type: 3}
   targetType: 0
   effects:
   - effectType: 0

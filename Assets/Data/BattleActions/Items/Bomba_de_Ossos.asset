@@ -12,9 +12,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3b28a35cc03f4464295db8452ec8fc55, type: 3}
   m_Name: Bomba_de_Ossos
   m_EditorClassIdentifier: 
-  actionName: Bomba de Ossos
+  actionName: Flechas
   description: 'Causa 60 de dano a um inimigo. Usos: 3'
-  icon: {fileID: 0}
+  icon: {fileID: 21300000, guid: b8c4db00c84e8664baf3793f3d854db8, type: 3}
   targetType: 0
   effects:
   - effectType: 0

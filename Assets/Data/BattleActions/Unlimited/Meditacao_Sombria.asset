@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   actionName: "Medita\xE7\xE3o Sombria"
   description: Restaura 15 de vida. Sem custo
-  icon: {fileID: 0}
+  icon: {fileID: 21300000, guid: 0a3216aa88a9a8447926548574fd5033, type: 3}
   targetType: 2
   effects:
   - effectType: 1

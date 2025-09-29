@@ -12,9 +12,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3b28a35cc03f4464295db8452ec8fc55, type: 3}
   m_Name: Elixir_Sombrio
   m_EditorClassIdentifier: 
-  actionName: Elixir Sombrio
+  actionName: Alma em Trevas
   description: 'Restaura 80 de vida. Usos: 2'
-  icon: {fileID: 0}
+  icon: {fileID: 21300000, guid: a1219dec3ec998e47a43b40a17bfb306, type: 3}
   targetType: 2
   effects:
   - effectType: 1

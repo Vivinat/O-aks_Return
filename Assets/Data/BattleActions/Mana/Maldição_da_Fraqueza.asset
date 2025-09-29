@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   actionName: "Maldi\xE7\xE3o da Fraqueza"
   description: 'Reduz defesa do inimigo por 4 turnos. Custo: 10 MP'
-  icon: {fileID: 0}
+  icon: {fileID: 21300000, guid: 8cd2a3876f52a8a48aadf347f0ab86d0, type: 3}
   targetType: 0
   effects:
   - effectType: 3

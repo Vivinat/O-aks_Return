@@ -1,0 +1,42 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d20f0df1dbbcccb48abf69dbcc5cc4f7, type: 3}
+  m_Name: IntroData
+  m_EditorClassIdentifier: 
+  dialogueTitle: Intro
+  dialogueEntries:
+  - speakerName: 
+    text: "H\xE1 muito tempo atr\xE1s, o arquidem\xF4nio Logrif, desgra\xE7ado pelo
+      pr\xF3prio universo, tra\xEDdo pelos seus aliados, e cercado por paladinos
+      e patrulheiros, foi selado. "
+    customDelay: 0
+    customSound: {fileID: 0}
+  - speakerName: 
+    text: "Sua vingan\xE7a ecoou pelos s\xE9culos, mas foi esquecida pelo tempo.
+      Outros seres mais perigosos, mais belos e mais bem-sucedidos, se levantaram
+      para desafiar a humanidade. "
+    customDelay: 0
+    customSound: {fileID: 0}
+  - speakerName: Logrif
+    text: "Sil\xEAncio, narrador! Eu tomo as r\xE9deas de minha pr\xF3pria cruzada!
+      Os humanos podem ter cometido o insulto de me esquecer, mas o universo ainda
+      se lembra. N\xE3o h\xE1 desafio melhor! "
+    customDelay: 0
+    customSound: {fileID: 0}
+  - speakerName: Logrif
+    text: "Posso ter jogado minhas cartas de forma... Incorreta, mas o tempo de novos
+      recome\xE7os aqui se revela. Todos cair\xE3o! Nenhum truque pat\xE9tico do
+      universo ser\xE1 capaz de me deter! "
+    customDelay: 0
+    customSound: {fileID: 0}
+  backgroundMusic: {fileID: 8300000, guid: 093617ec03826524bb8b5f6e136c5354, type: 3}
+  stopCurrentMusicWhenPlaying: 1

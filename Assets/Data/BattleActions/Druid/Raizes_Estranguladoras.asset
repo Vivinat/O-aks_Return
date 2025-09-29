@@ -12,10 +12,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3b28a35cc03f4464295db8452ec8fc55, type: 3}
   m_Name: Raizes_Estranguladoras
   m_EditorClassIdentifier: 
-  actionName: "Ra\xEDzes Estranguladoras"
+  actionName: "Maldi\xE7\xE3o"
   description: 'Causa 15 de dano e reduz a velocidade do alvo por 4 turnos. Custo:
     12 MP'
-  icon: {fileID: 0}
+  icon: {fileID: 21300000, guid: a076f498b4c29c04d82b14f3903fd592, type: 3}
   targetType: 0
   effects:
   - effectType: 0

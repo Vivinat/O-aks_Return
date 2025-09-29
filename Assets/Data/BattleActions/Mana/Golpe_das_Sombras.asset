@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   actionName: Golpe das Sombras
   description: 'Causa 55 de dano. Custo: 12 MP'
-  icon: {fileID: 0}
+  icon: {fileID: 21300000, guid: 5ee5b16118e5d744baedd22af95c5f19, type: 3}
   targetType: 0
   effects:
   - effectType: 0

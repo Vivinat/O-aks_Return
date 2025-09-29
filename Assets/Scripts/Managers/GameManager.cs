@@ -1,4 +1,4 @@
-// GameManager.cs (Versão Atualizada com AudioManager)
+// GameManager.cs (Versão Atualizada com Suporte a Eventos de Diálogo)
 
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -27,6 +27,10 @@ public class GameManager : MonoBehaviour
     private string currentMapSceneName;
     
     public static Sprite pendingBattleBackground; // Sprite que será usado na próxima batalha
+    
+    // NOVO: Sistema para eventos de diálogo
+    private MapManager currentMapManager;
+    private MapNode pendingNodeToComplete;
 
     private void Awake()
     {
@@ -89,7 +93,14 @@ public class GameManager : MonoBehaviour
     {
         CurrentEvent = eventData;
 
-        // LINHA-CHAVE: AQUI NÓS CAPTURAMOS O BACKGROUND DO MAPNODE
+        // NOVO: Verifica se é um evento de diálogo
+        if (eventData is DialogueEventSO dialogueEvent)
+        {
+            StartDialogueEvent(dialogueEvent, sourceNode);
+            return; // Não carrega nova cena para eventos de diálogo
+        }
+
+        // LINHA-CHAVE: AQUI NÓS CAPTURAMOS O BACKGROUND DO MAPNODE (para outros eventos)
         if (sourceNode != null)
         {
             pendingBattleBackground = sourceNode.battleBackgroundOverride;
@@ -101,7 +112,7 @@ public class GameManager : MonoBehaviour
             pendingBattleBackground = null;
         }
 
-        // O resto do seu código continua igual...
+        // O resto do código para outros tipos de eventos...
         if (eventData is BattleEventSO battleEvent)
         {
             enemiesToBattle = battleEvent.enemies;
@@ -122,6 +133,109 @@ public class GameManager : MonoBehaviour
         }
 
         SceneManager.LoadScene(eventData.sceneToLoad);
+    }
+    
+    /// <summary>
+    /// NOVO: Inicia um evento de diálogo diretamente no mapa atual
+    /// </summary>
+    private void StartDialogueEvent(DialogueEventSO dialogueEvent, MapNode sourceNode)
+    {
+        Debug.Log($"Iniciando evento de diálogo: '{dialogueEvent.name}'");
+        
+        // Salva referências para completar o nó após o diálogo
+        currentMapManager = FindObjectOfType<MapManager>();
+        pendingNodeToComplete = sourceNode;
+        
+        if (!dialogueEvent.HasValidDialogue())
+        {
+            Debug.LogError($"Evento de diálogo '{dialogueEvent.name}' não tem conteúdo válido!");
+            CompleteDialogueEvent(); // Completa mesmo assim para não travar o jogo
+            return;
+        }
+
+        if (DialogueManager.Instance == null)
+        {
+            Debug.LogError("DialogueManager não encontrado! Não é possível executar o evento de diálogo.");
+            CompleteDialogueEvent();
+            return;
+        }
+
+        // Toca som específico se configurado
+        if (dialogueEvent.dialogueSound != null && AudioManager.Instance != null)
+        {
+            AudioManager.Instance.PlaySFX(dialogueEvent.dialogueSound);
+        }
+
+        // Decide como iniciar o diálogo baseado na configuração
+        if (dialogueEvent.ShouldUseDialogueSO())
+        {
+            // Usa o DialogueSO complexo
+            Debug.Log("Usando DialogueSO para o evento de diálogo");
+            DialogueUtils.ShowDialogue(dialogueEvent.dialogueData, OnDialogueEventComplete);
+        }
+        else
+        {
+            // Usa o texto simples
+            string speaker = dialogueEvent.GetSpeakerName();
+            string text = dialogueEvent.GetDialogueText();
+            
+            Debug.Log($"Usando texto simples para o evento de diálogo: Speaker='{speaker}', Text='{text.Substring(0, Mathf.Min(50, text.Length))}...'");
+            
+            if (string.IsNullOrEmpty(speaker))
+            {
+                DialogueUtils.ShowNarration(text, OnDialogueEventComplete);
+            }
+            else
+            {
+                DialogueUtils.ShowSimpleDialogue(speaker, text, OnDialogueEventComplete);
+            }
+        }
+    }
+    
+    /// <summary>
+    /// NOVO: Callback chamado quando o evento de diálogo termina
+    /// </summary>
+    private void OnDialogueEventComplete()
+    {
+        Debug.Log("Evento de diálogo completado");
+        CompleteDialogueEvent();
+    }
+    
+    /// <summary>
+    /// NOVO: Completa o evento de diálogo e marca o nó como terminado
+    /// </summary>
+    private void CompleteDialogueEvent()
+    {
+        if (pendingNodeToComplete != null)
+        {
+            Debug.Log($"Completando nó de diálogo: {pendingNodeToComplete.gameObject.name}");
+            
+            // Marca o nó como completado
+            pendingNodeToComplete.CompleteNode();
+            pendingNodeToComplete.UnlockConnectedNodes();
+            
+            // Salva o estado do mapa
+            if (currentMapManager != null)
+            {
+                // Força o MapManager a salvar o estado atualizado
+                var saveMethod = typeof(MapManager).GetMethod("SaveMapState", 
+                    System.Reflection.BindingFlags.NonPublic | 
+                    System.Reflection.BindingFlags.Instance);
+                
+                if (saveMethod != null)
+                {
+                    saveMethod.Invoke(currentMapManager, null);
+                    Debug.Log("Estado do mapa salvo após completar evento de diálogo");
+                }
+            }
+        }
+        
+        // Limpa as referências
+        pendingNodeToComplete = null;
+        currentMapManager = null;
+        CurrentEvent = null;
+        
+        Debug.Log("Evento de diálogo finalizado com sucesso");
     }
     
     public void ReturnToMap()

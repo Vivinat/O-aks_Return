@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   actionName: Drenar Alma
   description: 'Causa 50 de dano e cura 25 de vida. Custo: 18 MP'
-  icon: {fileID: 0}
+  icon: {fileID: 21300000, guid: 50cc37e578b43284a98cd54d7a99b95d, type: 3}
   targetType: 0
   effects:
   - effectType: 0

@@ -12,9 +12,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3b28a35cc03f4464295db8452ec8fc55, type: 3}
   m_Name: Frasco_de_Mana
   m_EditorClassIdentifier: 
-  actionName: Frasco de Mana
+  actionName: Totem de Mana
   description: 'Restaura 35 de mana. Usos: 2'
-  icon: {fileID: 0}
+  icon: {fileID: 21300000, guid: 118a6df272a89244690cbf5f17342cee, type: 3}
   targetType: 2
   effects:
   - effectType: 1

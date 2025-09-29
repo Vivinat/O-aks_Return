@@ -12,9 +12,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3b28a35cc03f4464295db8452ec8fc55, type: 3}
   m_Name: Espinhos
   m_EditorClassIdentifier: 
-  actionName: Espinhos
+  actionName: Desintegrar
   description: 'Causa 28 de dano perfurante. Custo: 0 MP'
-  icon: {fileID: 0}
+  icon: {fileID: 21300000, guid: 55a5659876d6d4a4f976491162a536be, type: 3}
   targetType: 0
   effects:
   - effectType: 0

@@ -12,9 +12,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3b28a35cc03f4464295db8452ec8fc55, type: 3}
   m_Name: Pocao_Carmesim
   m_EditorClassIdentifier: 
-  actionName: "Po\xE7\xE3o Carmesim"
+  actionName: Orbe da Vida
   description: 'Restaura 40 de vida. Usos: 3'
-  icon: {fileID: 0}
+  icon: {fileID: 21300000, guid: fc1d81d37791fb44fabcd1f532b02cba, type: 3}
   targetType: 2
   effects:
   - effectType: 1

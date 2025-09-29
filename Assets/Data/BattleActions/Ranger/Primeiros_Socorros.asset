@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   actionName: Primeiros Socorros
   description: "Restaura 30 de sua pr\xF3pria vida. Custo: 5 MP"
-  icon: {fileID: 0}
+  icon: {fileID: 21300000, guid: 134c4b6f9ece361499e40b55894d7782, type: 3}
   targetType: 2
   effects:
   - effectType: 1

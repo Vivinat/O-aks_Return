@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   actionName: Toque Restaurador
   description: 'Cura 45 de vida de um alvo. Custo: 9 MP'
-  icon: {fileID: 0}
+  icon: {fileID: 21300000, guid: 53dd99a2f8c9daa478d50ec95783a3d3, type: 3}
   targetType: 1
   effects:
   - effectType: 1

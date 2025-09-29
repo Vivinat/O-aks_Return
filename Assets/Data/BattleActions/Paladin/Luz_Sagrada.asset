@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   actionName: Luz Sagrada
   description: 'Cura 50 de vida de um aliado. Custo: 10 MP'
-  icon: {fileID: 0}
+  icon: {fileID: 21300000, guid: e39dd2670e5bf094cb315cba13de3f53, type: 3}
   targetType: 1
   effects:
   - effectType: 1

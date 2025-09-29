@@ -12,9 +12,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3b28a35cc03f4464295db8452ec8fc55, type: 3}
   m_Name: Granada_Amaldicoada
   m_EditorClassIdentifier: 
-  actionName: "Granada Amaldi\xE7oada"
+  actionName: "Selo Amaldi\xE7oado"
   description: 'Causa 35 de dano a todos os inimigos. Usos: 2'
-  icon: {fileID: 0}
+  icon: {fileID: 21300000, guid: 15c1d5e75fa69404381909e31555c28d, type: 3}
   targetType: 3
   effects:
   - effectType: 0

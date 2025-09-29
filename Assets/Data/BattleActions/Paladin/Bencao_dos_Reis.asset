@@ -15,7 +15,7 @@ MonoBehaviour:
   actionName: "B\xEAn\xE7\xE3o dos Reis"
   description: 'Aumenta o ataque e a defesa de um aliado por 4 turnos. Custo: 18
     MP'
-  icon: {fileID: 0}
+  icon: {fileID: 21300000, guid: 8806f401abad05e499f0f9831c43bfed, type: 3}
   targetType: 1
   effects:
   - effectType: 2

@@ -15,7 +15,7 @@ MonoBehaviour:
   actionName: Tranquilidade
   description: "Cura 20 de vida e aplica Regenera\xE7\xE3o a todos os aliados por
     2 turnos. Custo: 28 MP"
-  icon: {fileID: 0}
+  icon: {fileID: 21300000, guid: f4a141ec1fb9bdb4fbed6a6b437c04b1, type: 3}
   targetType: 4
   effects:
   - effectType: 1

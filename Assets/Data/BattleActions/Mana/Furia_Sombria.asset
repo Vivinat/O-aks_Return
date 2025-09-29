@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   actionName: "F\xFAria Sombria"
   description: 'Aumenta ataque por 3 turnos, mas reduz defesa. Custo: 8 MP'
-  icon: {fileID: 0}
+  icon: {fileID: 21300000, guid: 13aee9c0daf2e95438ae32776b1aaff9, type: 3}
   targetType: 2
   effects:
   - effectType: 2

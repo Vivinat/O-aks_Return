@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   actionName: Tiro Preciso
   description: "Um tiro r\xE1pido que causa 30 de dano. Custo: 0 MP"
-  icon: {fileID: 0}
+  icon: {fileID: 21300000, guid: f2b32883b79daa24c8b3a03fa7b3b76a, type: 3}
   targetType: 0
   effects:
   - effectType: 0
