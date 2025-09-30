@@ -89,39 +89,46 @@ public class GameManager : MonoBehaviour
         }
     }
 
+// Modifique o método StartEvent no GameManager.cs
+
     public void StartEvent(EventTypeSO eventData, MapNode sourceNode = null)
     {
         CurrentEvent = eventData;
 
-        // NOVO: Verifica se é um evento de diálogo
+        // Para eventos de diálogo
         if (eventData is DialogueEventSO dialogueEvent)
         {
             StartDialogueEvent(dialogueEvent, sourceNode);
-            return; // Não carrega nova cena para eventos de diálogo
+            return;
+        }
+    
+        // NOVO: Para eventos de negociação
+        if (eventData is NegotiationEventSO negotiationEvent)
+        {
+            // Salva referências para completar o nó após a negociação
+            currentMapManager = FindObjectOfType<MapManager>();
+            pendingNodeToComplete = sourceNode;
+        
+            Debug.Log("Iniciando evento de negociação");
         }
 
-        // LINHA-CHAVE: AQUI NÓS CAPTURAMOS O BACKGROUND DO MAPNODE (para outros eventos)
+        // Captura background do MapNode
         if (sourceNode != null)
         {
             pendingBattleBackground = sourceNode.battleBackgroundOverride;
-            Debug.Log($"Background pendente '{pendingBattleBackground?.name ?? "NULL"}' foi registrado a partir do nó '{sourceNode.name}'");
         }
         else
         {
-            // Garante que não usemos um background antigo de um evento anterior
             pendingBattleBackground = null;
         }
 
-        // O resto do código para outros tipos de eventos...
         if (eventData is BattleEventSO battleEvent)
         {
             enemiesToBattle = battleEvent.enemies;
-            Debug.Log($"Iniciando batalha com {enemiesToBattle.Count} inimigos.");
         }
         else if (eventData is TreasureEventSO treasureEventSo)
         {
             battleActionsPool = treasureEventSo.poolForTheMap;
-            Debug.Log($"Iniciando skill selection scene");
         }
         else if (eventData is ShopEventSO shopEvent)
         {
@@ -307,6 +314,39 @@ public class GameManager : MonoBehaviour
             
             Debug.Log($"Item '{itemToRemove.actionName}' removido do inventário (usos esgotados)");
         }
+    }
+    
+    public void CompleteNegotiationEvent(NegotiationCardSO selectedCard, CardAttribute playerAttr, CardAttribute enemyAttr, int value)
+    {
+        Debug.Log("=== COMPLETANDO EVENTO DE NEGOCIAÇÃO ===");
+        Debug.Log($"Aplicando: Jogador +{value} {playerAttr}, Inimigos +{value} {enemyAttr}");
+    
+        // TODO: Aplicar no sistema de dificuldade
+        // DifficultySystem.ApplyNegotiation(playerAttr, enemyAttr, value);
+    
+        // Marca o nó como completado
+        if (currentMapManager != null && pendingNodeToComplete != null)
+        {
+            Debug.Log($"✅ Completando nó: {pendingNodeToComplete.gameObject.name}");
+        
+            pendingNodeToComplete.CompleteNode();
+            pendingNodeToComplete.UnlockConnectedNodes();
+        
+            // Salva estado do mapa
+            var saveMethod = typeof(MapManager).GetMethod("SaveMapState", 
+                System.Reflection.BindingFlags.NonPublic | 
+                System.Reflection.BindingFlags.Instance);
+        
+            if (saveMethod != null)
+            {
+                saveMethod.Invoke(currentMapManager, null);
+            }
+        }
+    
+        // Limpa referências
+        pendingNodeToComplete = null;
+        currentMapManager = null;
+        CurrentEvent = null;
     }
 
     /// <summary>

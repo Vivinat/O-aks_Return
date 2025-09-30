@@ -1,0 +1,26 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: eff679ffb81af6a4290f0fb2b5909410, type: 3}
+  m_Name: FIXED
+  m_EditorClassIdentifier: 
+  cardName: FIXO
+  cardSprite: {fileID: 0}
+  cardDescription: "Descri\xE7\xE3o da carta"
+  cardType: 0
+  fixedValue: 20
+  fixedPlayerAttribute: 0
+  fixedEnemyAttribute: 6
+  intensityOnlyPlayerAttribute: 0
+  intensityOnlyEnemyAttribute: 6
+  availablePlayerAttributes: 
+  availableEnemyAttributes: 
+  availableIntensities: 
