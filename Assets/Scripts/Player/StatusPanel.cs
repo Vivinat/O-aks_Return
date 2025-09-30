@@ -1,7 +1,8 @@
-// Assets/Scripts/UI/StatusPanel.cs (Corrected)
+// Assets/Scripts/UI/StatusPanel.cs (UPDATED - Scene-Aware)
 
 using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.SceneManagement;
 using TMPro;
 using System.Collections.Generic;
 using System.Linq;
@@ -57,9 +58,13 @@ public class StatusPanel : MonoBehaviour
     void Update()
     {
         // Tecla 'E' para abrir/fechar o painel
+        // Mas apenas se o OptionsMenu não estiver aberto
         if (Input.GetKeyDown(KeyCode.E))
         {
-            TogglePanel();
+            if (OptionsMenu.Instance == null || !OptionsMenu.Instance.IsMenuOpen())
+            {
+                TogglePanel();
+            }
         }
     }
 
@@ -100,7 +105,11 @@ public class StatusPanel : MonoBehaviour
         isOpen = true;
         statusPanel.SetActive(true);
         
-        Time.timeScale = 0f;
+        // Só pausa o tempo se NÃO for a cena de negociação
+        if (!IsNegotiationScene())
+        {
+            Time.timeScale = 0f;
+        }
         
         UpdateCharacterInfo();
         UpdateSkillsList();
@@ -115,12 +124,25 @@ public class StatusPanel : MonoBehaviour
         isOpen = false;
         statusPanel.SetActive(false);
         
-        Time.timeScale = 1f;
+        // Só volta o tempo se NÃO for a cena de negociação
+        if (!IsNegotiationScene())
+        {
+            Time.timeScale = 1f;
+        }
         
         if (tooltipUI != null)
             tooltipUI.Hide();
         
         Debug.Log("Painel de status fechado");
+    }
+
+    /// <summary>
+    /// Verifica se está na cena de negociação
+    /// </summary>
+    private bool IsNegotiationScene()
+    {
+        string currentScene = SceneManager.GetActiveScene().name;
+        return currentScene == "NegotiationScene";
     }
 
     private void UpdateCharacterInfo()
@@ -168,7 +190,6 @@ public class StatusPanel : MonoBehaviour
             {
                 if (action != null)
                 {
-                    // Use GetPrimaryActionType() for compatibility with the new system
                     ActionType actionType = action.GetPrimaryActionType();
                     if (actionType == ActionType.Attack && action.effects.Count > 0)
                     {

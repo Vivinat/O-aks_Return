@@ -1,4 +1,4 @@
-// Assets/Scripts/Negotiation/NegotiationManager.cs (UPDATED)
+// Assets/Scripts/Negotiation/NegotiationManager.cs (FIXED - UI Control)
 
 using UnityEngine;
 using UnityEngine.UI;
@@ -16,12 +16,10 @@ public class NegotiationManager : MonoBehaviour
     [SerializeField] private Button confirmButton;
     [SerializeField] private TextMeshProUGUI confirmButtonText;
     
-    [Header("Instructions")]
-    [SerializeField] private TextMeshProUGUI instructionText;
-    
     // Estado interno
     private List<NegotiationCardUI> cardUIList = new List<NegotiationCardUI>();
     private NegotiationCardUI selectedCard;
+    private bool cardsVisible = true;
     
     void Start()
     {
@@ -43,25 +41,104 @@ public class NegotiationManager : MonoBehaviour
         if (confirmButton != null)
         {
             confirmButton.onClick.AddListener(ConfirmSelection);
-            confirmButton.interactable = false; // Começa desabilitado
+            confirmButton.interactable = false;
         }
-        
-        UpdateInstructions();
     }
     
     void Update()
     {
+        // Verifica se algum menu está aberto
+        CheckMenuStates();
+        
         // Permite abrir o painel de status com a tecla E
-        if (Input.GetKeyDown(KeyCode.E) && StatusPanel.Instance != null)
+        if (Input.GetKeyDown(KeyCode.E))
         {
-            StatusPanel.Instance.TogglePanel();
+            ToggleStatusPanel();
         }
+    }
+    
+    /// <summary>
+    /// Verifica o estado dos menus e esconde/mostra as cartas
+    /// </summary>
+    private void CheckMenuStates()
+    {
+        bool shouldHideCards = false;
+        
+        // Verifica OptionsMenu
+        if (OptionsMenu.Instance != null && OptionsMenu.Instance.IsMenuOpen())
+        {
+            shouldHideCards = true;
+        }
+        
+        // Verifica StatusPanel
+        if (StatusPanel.Instance != null && StatusPanel.Instance.IsOpen())
+        {
+            shouldHideCards = true;
+        }
+        
+        // Atualiza visibilidade das cartas
+        if (shouldHideCards && cardsVisible)
+        {
+            HideCards();
+        }
+        else if (!shouldHideCards && !cardsVisible)
+        {
+            ShowCards();
+        }
+    }
+    
+    /// <summary>
+    /// Esconde as cartas
+    /// </summary>
+    private void HideCards()
+    {
+        if (cardsContainer != null)
+        {
+            cardsContainer.gameObject.SetActive(false);
+            cardsVisible = false;
+            Debug.Log("Cartas escondidas - menu aberto");
+        }
+    }
+    
+    /// <summary>
+    /// Mostra as cartas
+    /// </summary>
+    private void ShowCards()
+    {
+        if (cardsContainer != null)
+        {
+            cardsContainer.gameObject.SetActive(true);
+            cardsVisible = true;
+            Debug.Log("Cartas visíveis - menu fechado");
+        }
+    }
+    
+    /// <summary>
+    /// Abre/fecha o painel de status
+    /// </summary>
+    private void ToggleStatusPanel()
+    {
+        if (StatusPanel.Instance == null)
+        {
+            Debug.LogWarning("StatusPanel não encontrado!");
+            return;
+        }
+        
+        // Se o OptionsMenu está aberto, não faz nada
+        if (OptionsMenu.Instance != null && OptionsMenu.Instance.IsMenuOpen())
+        {
+            Debug.Log("OptionsMenu está aberto - StatusPanel bloqueado");
+            return;
+        }
+        
+        // Toggle do status panel
+        StatusPanel.Instance.TogglePanel();
+        
+        Debug.Log($"StatusPanel toggled - Aberto: {StatusPanel.Instance.IsOpen()}");
     }
     
     private void SetupUI(NegotiationEventSO negotiationEvent)
     {
-        
-        // Configura texto inicial do botão
         if (confirmButtonText != null)
         {
             confirmButtonText.text = "Selecione uma Carta";
@@ -76,10 +153,8 @@ public class NegotiationManager : MonoBehaviour
             return;
         }
         
-        // Limpa cartas antigas
         ClearCards();
         
-        // Obtém cartas aleatórias
         List<NegotiationCardSO> cards = negotiationEvent.GetRandomCards();
         
         if (cards.Count == 0)
@@ -90,7 +165,6 @@ public class NegotiationManager : MonoBehaviour
         
         Debug.Log($"Gerando {cards.Count} cartas de negociação");
         
-        // Cria UI para cada carta
         foreach (var cardData in cards)
         {
             GameObject cardObj = Instantiate(cardPrefab, cardsContainer);
@@ -115,18 +189,28 @@ public class NegotiationManager : MonoBehaviour
     {
         if (card == null) return;
         
-        // Se já havia uma carta selecionada, desmarca ela
+        // Não permite seleção se algum menu está aberto
+        if (StatusPanel.Instance != null && StatusPanel.Instance.IsOpen())
+        {
+            Debug.Log("StatusPanel está aberto - seleção bloqueada");
+            return;
+        }
+        
+        if (OptionsMenu.Instance != null && OptionsMenu.Instance.IsMenuOpen())
+        {
+            Debug.Log("OptionsMenu está aberto - seleção bloqueada");
+            return;
+        }
+        
         if (selectedCard != null && selectedCard != card)
         {
             selectedCard.SetSelected(false);
             Debug.Log($"Carta '{selectedCard.GetCardData().cardName}' desmarcada");
         }
         
-        // Marca a nova carta como selecionada
         selectedCard = card;
         selectedCard.SetSelected(true);
         
-        // Habilita o botão de confirmar
         if (confirmButton != null)
         {
             confirmButton.interactable = true;
@@ -137,29 +221,9 @@ public class NegotiationManager : MonoBehaviour
             confirmButtonText.text = "Confirmar Negociação";
         }
         
-        UpdateInstructions();
-        
         Debug.Log($"✅ Carta selecionada: {card.GetCardData().cardName}");
     }
     
-    private void UpdateInstructions()
-    {
-        if (instructionText == null) return;
-        
-        if (selectedCard == null)
-        {
-            instructionText.text = "Escolha uma carta de negociação para continuar.\nPressione 'E' para ver seu status.";
-        }
-        else
-        {
-            instructionText.text = $"<color=#FFD700><b>Carta Selecionada:</b></color> {selectedCard.GetCardData().cardName}\n\nClique em '<b>Confirmar Negociação</b>' para aplicar os efeitos.\nOu clique em outra carta para mudar sua escolha.\n\n<size=80%>Pressione 'E' para ver seu status</size>";
-        }
-    }
-    
-    // Modifique o método ConfirmSelection no NegotiationManager.cs
-
-// Modifique apenas o método ConfirmSelection
-
     private void ConfirmSelection()
     {
         if (selectedCard == null)
@@ -167,12 +231,12 @@ public class NegotiationManager : MonoBehaviour
             Debug.LogWarning("Nenhuma carta foi selecionada!");
             return;
         }
-    
+        
         NegotiationCardSO cardData = selectedCard.GetCardData();
         CardAttribute playerAttr = selectedCard.GetSelectedPlayerAttribute();
         CardAttribute enemyAttr = selectedCard.GetSelectedEnemyAttribute();
         int value = selectedCard.GetSelectedValue();
-    
+        
         Debug.Log($"");
         Debug.Log($"╔═══════════════════════════════════════════════╗");
         Debug.Log($"║         NEGOCIAÇÃO CONFIRMADA                 ║");
@@ -190,13 +254,12 @@ public class NegotiationManager : MonoBehaviour
         Debug.Log($"│     {AttributeHelper.GetDisplayName(enemyAttr)}: +{value}");
         Debug.Log($"└───────────────────────────────────────────────┘");
         Debug.Log($"");
-    
-        // Notifica o GameManager
+        
         if (GameManager.Instance != null)
         {
             GameManager.Instance.CompleteNegotiationEvent(cardData, playerAttr, enemyAttr, value);
         }
-    
+        
         ReturnToMap();
     }
     
