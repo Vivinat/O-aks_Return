@@ -58,9 +58,16 @@ public class StatusPanel : MonoBehaviour
     void Update()
     {
         // Tecla 'E' para abrir/fechar o painel
-        // Mas apenas se o OptionsMenu não estiver aberto
+        // Mas NÃO processa se estiver na cena de negociação (deixa o NegotiationManager controlar)
         if (Input.GetKeyDown(KeyCode.E))
         {
+            // Ignora se estiver na cena de negociação
+            if (IsNegotiationScene())
+            {
+                return; // Deixa o NegotiationManager controlar
+            }
+        
+            // Verifica se o OptionsMenu não está aberto
             if (OptionsMenu.Instance == null || !OptionsMenu.Instance.IsMenuOpen())
             {
                 TogglePanel();
