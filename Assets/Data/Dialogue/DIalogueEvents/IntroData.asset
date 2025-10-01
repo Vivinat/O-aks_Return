@@ -15,27 +15,31 @@ MonoBehaviour:
   dialogueTitle: Intro
   dialogueEntries:
   - speakerName: 
-    text: "H\xE1 muito tempo atr\xE1s, o arquidem\xF4nio Logrif, desgra\xE7ado pelo
-      pr\xF3prio universo, tra\xEDdo pelos seus aliados, e cercado por paladinos
-      e patrulheiros, foi selado. "
+    text: "Logrif paira diante de um patrulheiro ferido. O \xFAnico sobrevivente.
+      Mas este patrulheiro n\xE3o foui abatido pelo arquidem\xF4nio. Seus ferimentos
+      s\xE3o mais potentes. Viscerais. Mortais. Impec\xE1veis. Logrif, barbeiro como
+      \xE9, jamais... "
+    customDelay: 0
+    customSound: {fileID: 0}
+  - speakerName: Logrif
+    text: "Calado, narrador! Ou\xE7a-me, tolo mortal. E tua morte ser\xE1 limpa.
+      Quem faz guerra com teu povo? Quem \xE9 esse farsante que se diz um Senhor
+      do Escuro?!"
+    customDelay: 0
+    customSound: {fileID: 0}
+  - speakerName: Patrulheiro
+    text: Mawron...
     customDelay: 0
     customSound: {fileID: 0}
   - speakerName: 
-    text: "Sua vingan\xE7a ecoou pelos s\xE9culos, mas foi esquecida pelo tempo.
-      Outros seres mais perigosos, mais belos e mais bem-sucedidos, se levantaram
-      para desafiar a humanidade. "
+    text: "Ao mencionar o nome, o jovem agoniza. Sangue escorre de sua boca, e sua
+      vida se esvai. A morte limpa, prometida por Logrif, \xE9 mais uma das promessas
+      que o arquidem\xF4nio falhou em cumprir."
     customDelay: 0
     customSound: {fileID: 0}
   - speakerName: Logrif
-    text: "Sil\xEAncio, narrador! Eu tomo as r\xE9deas de minha pr\xF3pria cruzada!
-      Os humanos podem ter cometido o insulto de me esquecer, mas o universo ainda
-      se lembra. N\xE3o h\xE1 desafio melhor! "
-    customDelay: 0
-    customSound: {fileID: 0}
-  - speakerName: Logrif
-    text: "Posso ter jogado minhas cartas de forma... Incorreta, mas o tempo de novos
-      recome\xE7os aqui se revela. Todos cair\xE3o! Nenhum truque pat\xE9tico do
-      universo ser\xE1 capaz de me deter! "
+    text: "Curioso. Um nome amaldi\xE7oado?! Por que n\xE3o pensei nisso antes! Maldito
+      novato estiloso! Mostrarei a ele quem \xE9 que manda!"
     customDelay: 0
     customSound: {fileID: 0}
   backgroundMusic: {fileID: 8300000, guid: 093617ec03826524bb8b5f6e136c5354, type: 3}

@@ -16479,6 +16479,7 @@ GameObject:
   - component: {fileID: 1544972946}
   - component: {fileID: 1544972948}
   - component: {fileID: 1544972949}
+  - component: {fileID: 1544972950}
   m_Layer: 0
   m_Name: SingletonManagers
   m_TagString: Untagged
@@ -16559,6 +16560,20 @@ MonoBehaviour:
   skillSlotPrefab: {fileID: 3198887975348253832, guid: 01d66fa5b9889c84fbaa3c795a4eae69, type: 3}
   tooltipUI: {fileID: 570847236}
   tooltipAnchor: {fileID: 727170626}
+--- !u!114 &1544972950
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1544972944}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6134145445b6f9f4fbf96308912c8afd, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  enableTutorials: 1
+  delayBeforeTutorial: 0.5
 --- !u!1 &1579635002
 GameObject:
   m_ObjectHideFlags: 0
