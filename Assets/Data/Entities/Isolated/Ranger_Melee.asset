@@ -20,4 +20,4 @@ MonoBehaviour:
   defense: 2
   speed: 2
   battleActions:
-  - {fileID: 11400000, guid: 550d9ec4013eb6446941d04e0f2ca2bf, type: 2}
+  - {fileID: 11400000, guid: d23e6ff57cbbc894cbd664e02d94cde3, type: 2}

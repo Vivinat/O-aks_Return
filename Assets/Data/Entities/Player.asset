@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a3845463388303141a4721891b2fc23d, type: 3}
   m_Name: Player
   m_EditorClassIdentifier: 
-  characterName: O'ak
+  characterName: Logrif
   team: 0
   characterSprite: {fileID: 0}
   maxHp: 100
@@ -20,7 +20,4 @@ MonoBehaviour:
   defense: 10
   speed: 5
   battleActions:
-  - {fileID: 11400000, guid: 2c7c1202afc4e87419c6856878772779, type: 2}
-  - {fileID: 11400000, guid: 550d9ec4013eb6446941d04e0f2ca2bf, type: 2}
-  - {fileID: 11400000, guid: 550d9ec4013eb6446941d04e0f2ca2bf, type: 2}
-  - {fileID: 11400000, guid: 550d9ec4013eb6446941d04e0f2ca2bf, type: 2}
+  - {fileID: 11400000, guid: 847fb2ec48e0cb14b9b57826e6d6a45f, type: 2}
