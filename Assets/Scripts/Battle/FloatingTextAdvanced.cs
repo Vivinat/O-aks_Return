@@ -45,10 +45,17 @@ public class FloatingTextAdvanced : MonoBehaviour
     private float elapsedTime = 0f;
     private Vector2 randomOffset; // MUDOU: Vector2 para UI
 
+    
     void Awake()
     {
-        textMesh = GetComponent<TextMeshProUGUI>(); // MUDOU: UI version
-        rectTransform = GetComponent<RectTransform>(); // NOVO
+        textMesh = GetComponentInChildren<TextMeshProUGUI>();
+        
+        if (textMesh == null)
+        {
+            Debug.LogError("ERRO CRÍTICO: O componente TextMeshProUGUI não foi encontrado na prefab ou em seus filhos!", this.gameObject);
+        }
+
+        rectTransform = GetComponent<RectTransform>();
         
         if (textMesh != null)
         {
@@ -56,7 +63,7 @@ public class FloatingTextAdvanced : MonoBehaviour
         }
         
         startScale = transform.localScale;
-    }
+    }    
 
     void Start()
     {

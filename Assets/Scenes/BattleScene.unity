@@ -4319,9 +4319,9 @@ MonoBehaviour:
   statusPositiveColor: {r: 0.5, g: 0.8, b: 1, a: 1}
   statusNegativeColor: {r: 1, g: 0.5, b: 0, a: 1}
   statusRemoveColor: {r: 0.6132076, g: 0.6132076, b: 0.6132076, a: 1}
-  baseFontSize: 36
-  criticalFontMultiplier: 1.5
-  statusFontSize: 2.5
+  baseFontSize: 24
+  criticalFontMultiplier: 1.2
+  statusFontSize: 1.2
   smallDamageThreshold: 20
   mediumDamageThreshold: 50
   largeDamageThreshold: 100

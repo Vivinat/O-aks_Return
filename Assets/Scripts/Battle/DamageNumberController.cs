@@ -189,29 +189,15 @@ public class DamageNumberController : MonoBehaviour
             
             rectTransform.anchoredPosition = localPoint;
         }
-
-        // Configura o componente FloatingTextAdvanced
-        FloatingTextAdvanced floatingText = textObj.GetComponent<FloatingTextAdvanced>();
+        
+        FloatingTextAdvanced floatingText = textObj.GetComponentInChildren<FloatingTextAdvanced>(); // Usar GetInChildren aqui também é uma boa prática
         if (floatingText != null)
         {
             floatingText.Setup(text, color, fontSize);
         }
-
-        // Configura o TextMeshProUGUI diretamente também
-        TextMeshProUGUI textMesh = textObj.GetComponent<TextMeshProUGUI>();
-        if (textMesh != null)
+        else
         {
-            textMesh.text = text;
-            textMesh.color = color;
-            textMesh.fontSize = fontSize;
-            
-            // Configurações adicionais para melhor aparência
-            textMesh.alignment = TextAlignmentOptions.Center;
-            textMesh.fontStyle = FontStyles.Bold;
-            
-            // Adiciona outline para melhor legibilidade
-            textMesh.outlineWidth = 0.2f;
-            textMesh.outlineColor = Color.black;
+            Debug.LogError("O script FloatingTextAdvanced não foi encontrado no prefab instanciado!", textObj);
         }
     }
 

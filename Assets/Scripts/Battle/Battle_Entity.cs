@@ -134,18 +134,18 @@ public class BattleEntity : MonoBehaviour
     public void Heal(int healAmount)
     {
         if (isDead) return;
-        
+    
         int oldHp = currentHp;
         currentHp = Mathf.Min(currentHp + healAmount, characterData.maxHp);
         int actualHealing = currentHp - oldHp;
-        
+    
         Debug.Log($"{characterData.characterName} healed {actualHealing} HP!");
         
-        if (DamageNumberController.Instance != null && actualHealing > 0)
+        if (DamageNumberController.Instance != null && actualHealing >= 0)
         {
             DamageNumberController.Instance.ShowHealing(transform.position, actualHealing);
         }
-        
+    
         UpdateHPBar();
         UpdateValueTexts();
     }
