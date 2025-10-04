@@ -1,4 +1,4 @@
-// Assets/Scripts/UI/OptionsMenu.cs (Versão Manual)
+// Assets/Scripts/UI/OptionsMenu.cs (Versão Corrigida - Bug de Pausa Resolvido)
 
 using UnityEngine;
 using UnityEngine.UI;
@@ -26,17 +26,12 @@ public class OptionsMenu : MonoBehaviour
     [SerializeField] private string menuSceneName = "MainMenu";
     [SerializeField] private bool pauseGameWhenOpen = true;
 
-    // Estado do jogo pausado
-    private bool wasGamePaused = false;
-    private float originalTimeScale = 1f;
-
     // Keys para PlayerPrefs
     private const string MUSIC_VOLUME_KEY = "MusicVolume";
     private const string SFX_VOLUME_KEY = "SFXVolume";
 
     void Awake()
     {
-        // Singleton - persiste entre cenas
         if (Instance == null)
         {
             Instance = this;
@@ -65,7 +60,6 @@ public class OptionsMenu : MonoBehaviour
 
     private void InitializeMenu()
     {
-        // Garante que o painel comece fechado
         if (optionsPanel != null)
             optionsPanel.SetActive(false);
 
@@ -78,7 +72,6 @@ public class OptionsMenu : MonoBehaviour
 
     private void SetupButtons()
     {
-        // Configura os eventos dos botões
         if (optionsButton != null)
         {
             optionsButton.onClick.RemoveAllListeners();
@@ -106,7 +99,6 @@ public class OptionsMenu : MonoBehaviour
 
     private void SetupAudioSliders()
     {
-        // Configura os eventos dos sliders
         if (musicVolumeSlider != null)
         {
             musicVolumeSlider.onValueChanged.RemoveAllListeners();
@@ -122,18 +114,15 @@ public class OptionsMenu : MonoBehaviour
 
     private void LoadAudioSettings()
     {
-        // Carrega configurações salvas ou usa valores padrão
         float musicVolume = PlayerPrefs.GetFloat(MUSIC_VOLUME_KEY, 0.7f);
         float sfxVolume = PlayerPrefs.GetFloat(SFX_VOLUME_KEY, 1f);
 
-        // Aplica no AudioManager se disponível
         if (AudioManager.Instance != null)
         {
             AudioManager.Instance.SetMusicVolume(musicVolume);
             AudioManager.Instance.SetSFXVolume(sfxVolume);
         }
 
-        // Atualiza os sliders (sem disparar eventos)
         if (musicVolumeSlider != null)
         {
             musicVolumeSlider.SetValueWithoutNotify(musicVolume);
@@ -179,18 +168,21 @@ public class OptionsMenu : MonoBehaviour
 
         Debug.Log("Abrindo menu de opções");
 
-        // Salva o estado atual do jogo
+        // CORRIGIDO: Pausa o jogo de forma mais robusta
         if (pauseGameWhenOpen)
         {
-            originalTimeScale = Time.timeScale;
-            wasGamePaused = (Time.timeScale == 0f);
             Time.timeScale = 0f;
+            Debug.Log($"Jogo pausado. Time.timeScale = {Time.timeScale}");
         }
 
-        // Ativa o painel
-        optionsPanel.SetActive(true);
+        // Notifica o BattleHUD se existir
+        BattleHUD battleHUD = FindObjectOfType<BattleHUD>();
+        if (battleHUD != null)
+        {
+            battleHUD.OnGamePaused();
+        }
 
-        // Atualiza as configurações de áudio
+        optionsPanel.SetActive(true);
         LoadAudioSettings();
     }
 
@@ -200,16 +192,22 @@ public class OptionsMenu : MonoBehaviour
 
         Debug.Log("Fechando menu de opções");
 
-        // Desativa o painel
         optionsPanel.SetActive(false);
 
-        // Restaura o estado do tempo apenas se o jogo não estava pausado antes
-        if (pauseGameWhenOpen && !wasGamePaused)
+        // CORRIGIDO: Sempre restaura o Time.timeScale para 1 quando fecha
+        if (pauseGameWhenOpen)
         {
-            Time.timeScale = originalTimeScale;
+            Time.timeScale = 1f;
+            Debug.Log($"Jogo retomado. Time.timeScale = {Time.timeScale}");
         }
 
-        // Salva as configurações
+        // Notifica o BattleHUD se existir
+        BattleHUD battleHUD = FindObjectOfType<BattleHUD>();
+        if (battleHUD != null)
+        {
+            battleHUD.OnGameResumed();
+        }
+
         SaveAudioSettings();
     }
 
@@ -217,6 +215,9 @@ public class OptionsMenu : MonoBehaviour
     {
         Debug.Log("Saindo do jogo...");
         SaveAudioSettings();
+
+        // CORRIGIDO: Restaura o timeScale antes de sair
+        Time.timeScale = 1f;
 
         #if UNITY_EDITOR
             UnityEditor.EditorApplication.isPlaying = false;
@@ -231,10 +232,9 @@ public class OptionsMenu : MonoBehaviour
         
         SaveAudioSettings();
 
-        // Restaura o tempo antes de mudar de cena
+        // CORRIGIDO: Restaura o tempo antes de mudar de cena
         Time.timeScale = 1f;
 
-        // Limpa dados do mapa atual se aplicável
         if (GameManager.Instance != null)
         {
             PlayerPrefs.DeleteKey("LastCompletedNode");
@@ -269,8 +269,6 @@ public class OptionsMenu : MonoBehaviour
             AudioManager.Instance.SetMusicVolume(value);
         }
         UpdateMusicVolumeText(value);
-        
-        // Salva imediatamente quando o usuário muda o slider
         PlayerPrefs.SetFloat(MUSIC_VOLUME_KEY, value);
     }
 
@@ -281,8 +279,6 @@ public class OptionsMenu : MonoBehaviour
             AudioManager.Instance.SetSFXVolume(value);
         }
         UpdateSFXVolumeText(value);
-        
-        // Salva imediatamente quando o usuário muda o slider
         PlayerPrefs.SetFloat(SFX_VOLUME_KEY, value);
     }
 
@@ -334,14 +330,15 @@ public class OptionsMenu : MonoBehaviour
 
     private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
     {
-        // Garante que o menu esteja fechado ao carregar nova cena
+        // CORRIGIDO: Garante que o timeScale está correto ao carregar nova cena
         if (optionsPanel != null && optionsPanel.activeSelf)
         {
             optionsPanel.SetActive(false);
-            Time.timeScale = 1f;
         }
+        
+        Time.timeScale = 1f;
+        Debug.Log($"Nova cena carregada: {scene.name}. Time.timeScale resetado para 1");
 
-        // Reaplica as configurações de áudio
         LoadAudioSettings();
     }
 
@@ -351,7 +348,6 @@ public class OptionsMenu : MonoBehaviour
 
     void OnValidate()
     {
-        // Validação no Editor para ajudar na configuração
         if (optionsPanel == null)
             Debug.LogWarning("OptionsMenu: optionsPanel não foi atribuído!");
             

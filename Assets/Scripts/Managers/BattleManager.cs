@@ -386,4 +386,25 @@ public class BattleManager : MonoBehaviour
         
         GameManager.Instance.ReturnToMap();
     }
+    
+    public void OnPlayerTurnTimeout(BattleEntity character)
+    {
+        if (character == null) return;
+
+        Debug.Log($"⏱️ {character.characterData.characterName} perdeu o turno por timeout!");
+
+        // Reseta a ATB do personagem
+        character.ResetATB();
+    
+        // Mostra uma mensagem temporária
+        if (battleHUD != null)
+        {
+            battleHUD.ShowTemporaryMessage(
+                $"{character.characterData.characterName} perdeu o turno!",
+                1.5f
+            );
+        }
+        
+        currentState = BattleState.RUNNING;
+    }
 }

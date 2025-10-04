@@ -83,9 +83,7 @@ public class DamageNumberController : MonoBehaviour
     /// </summary>
     public void ShowHealing(Vector3 position, int healAmount)
     {
-        if (healAmount <= 0) return;
-
-        string text = $"+{healAmount}";
+        string text = $"+{healAmount}"; // Isso vai gerar o texto "+0"
         float fontSize = CalculateDamageFontSize(healAmount, false);
 
         CreateFloatingText(position, text, healColor, fontSize);
