@@ -13,6 +13,6 @@ MonoBehaviour:
   m_Name: NewRewardPool
   m_EditorClassIdentifier: 
   possibleRewards:
-  - {fileID: 11400000, guid: 2c7c1202afc4e87419c6856878772779, type: 2}
-  - {fileID: 11400000, guid: 2c7c1202afc4e87419c6856878772779, type: 2}
-  - {fileID: 11400000, guid: 2c7c1202afc4e87419c6856878772779, type: 2}
+  - {fileID: 11400000, guid: fd2185eac5ce59d40a6129af997a4632, type: 2}
+  - {fileID: 11400000, guid: 24a3f069b82739d4cbc531c24d6c29fb, type: 2}
+  - {fileID: 11400000, guid: c12b0cd68139e7547ae9aa997584c1de, type: 2}
