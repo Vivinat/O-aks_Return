@@ -103,6 +103,13 @@ public class BattleEntity : MonoBehaviour
         
         currentHp -= finalDamage;
         Debug.Log($"{characterData.characterName} received {finalDamage} damage!");
+        
+        if (DamageNumberController.Instance != null)
+        {
+            Debug.Log("chamando numero flutuante");
+            bool isCritical = finalDamage >= (characterData.maxHp * 0.3f); // Crítico se for 30%+ do HP máximo
+            DamageNumberController.Instance.ShowDamage(transform.position, finalDamage, isCritical);
+        }
 
         if (attacker != null)
         {
@@ -133,6 +140,11 @@ public class BattleEntity : MonoBehaviour
         int actualHealing = currentHp - oldHp;
         
         Debug.Log($"{characterData.characterName} healed {actualHealing} HP!");
+        
+        if (DamageNumberController.Instance != null && actualHealing > 0)
+        {
+            DamageNumberController.Instance.ShowHealing(transform.position, actualHealing);
+        }
         
         UpdateHPBar();
         UpdateValueTexts();
@@ -185,6 +197,10 @@ public class BattleEntity : MonoBehaviour
             StatusEffect newEffect = new StatusEffect(type, power, duration);
             activeStatusEffects.Add(newEffect);
             Debug.Log($"{characterData.characterName} gains {newEffect.effectName}!");
+            if (DamageNumberController.Instance != null)
+            {
+                DamageNumberController.Instance.ShowStatusEffect(transform.position, type, duration, false);
+            }
         }
     }
 
@@ -201,6 +217,11 @@ public class BattleEntity : MonoBehaviour
             {
                 effectsToRemove.Add(effect);
                 Debug.Log($"{characterData.characterName} loses {effect.effectName}");
+                
+                if (DamageNumberController.Instance != null)
+                {
+                    DamageNumberController.Instance.ShowStatusEffect(transform.position, effect.type, 0, true);
+                }
             }
         }
 
