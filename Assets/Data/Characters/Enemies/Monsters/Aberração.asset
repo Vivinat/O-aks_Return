@@ -1,0 +1,25 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a3845463388303141a4721891b2fc23d, type: 3}
+  m_Name: "Aberra\xE7\xE3o"
+  m_EditorClassIdentifier: 
+  characterName: "Aberra\xE7\xE3o"
+  team: 1
+  characterSprite: {fileID: 21300000, guid: 14dbe4165f261524d8f8c5903953ccd4, type: 3}
+  maxHp: 87
+  maxMp: 24
+  defense: 12
+  speed: 1.2021571
+  battleActions:
+  - {fileID: 11400000, guid: 0060d794505e9224388cb6ec5fd4069d, type: 2}
+  - {fileID: 11400000, guid: aefdae9b07600d1448948b8ee092ee4f, type: 2}
+  - {fileID: 11400000, guid: 8fecc7f7fdf6ede46bf10520a1edae55, type: 2}

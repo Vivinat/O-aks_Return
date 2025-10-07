@@ -1,0 +1,25 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a3845463388303141a4721891b2fc23d, type: 3}
+  m_Name: Cruzado
+  m_EditorClassIdentifier: 
+  characterName: Cruzado
+  team: 1
+  characterSprite: {fileID: 21300000, guid: 3c2b36afeba967e4a9facc9f5bcc0cae, type: 3}
+  maxHp: 117
+  maxMp: 47
+  defense: 12
+  speed: 0.88844895
+  battleActions:
+  - {fileID: 11400000, guid: 8fecc7f7fdf6ede46bf10520a1edae55, type: 2}
+  - {fileID: 11400000, guid: 7d3885c5e2b855d46bf54260a45667f5, type: 2}
+  - {fileID: 11400000, guid: 42af41ce3c6c9fd4b86e0ce3da94b225, type: 2}

@@ -493,7 +493,7 @@ MonoBehaviour:
   connectedNodes: []
   isLocked: 0
   eventType: {fileID: 11400000, guid: 49c00a95a5fe8e845be861d16869a638, type: 2}
-  eventMusic: {fileID: 8300000, guid: 93c7e191304970e46b7a268ae25c3df5, type: 3}
+  eventMusic: {fileID: 8300000, guid: 23d8d8f77322850498744f3027fe877b, type: 3}
   battleBackgroundOverride: {fileID: 21300000, guid: b9aa14e29ef603f43a85a5793b3d8d29, type: 3}
 --- !u!61 &428612219
 BoxCollider2D:
@@ -16834,7 +16834,7 @@ GameObject:
   - component: {fileID: 1737705167}
   - component: {fileID: 1737705171}
   m_Layer: 0
-  m_Name: BossNode
+  m_Name: BossNode_Mawron
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -16852,11 +16852,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 656dade85ee2ee54da8863c131593fe3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  connectedNodes:
-  - {fileID: 444595863}
+  connectedNodes: []
   isLocked: 1
   eventType: {fileID: 11400000, guid: 2e0c96beca99f2c4a839e33534fee06a, type: 2}
-  eventMusic: {fileID: 8300000, guid: b39dd8c5ddbeed843a617136c38638e9, type: 3}
+  eventMusic: {fileID: 8300000, guid: 8a2dd0a7e0a5a714db5403c79753f496, type: 3}
   battleBackgroundOverride: {fileID: 21300000, guid: f6c71d42837820b4ba213ecad75672e5, type: 3}
 --- !u!61 &1737705168
 BoxCollider2D:
@@ -16964,7 +16963,7 @@ Transform:
   m_GameObject: {fileID: 1737705166}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -1.47, y: 3.96, z: 0}
+  m_LocalPosition: {x: -1.47, y: 26.49, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
