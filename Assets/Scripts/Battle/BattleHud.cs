@@ -288,6 +288,7 @@ public class BattleHUD : MonoBehaviour
         actionPanel.SetActive(false);
         selectedAction = action;
         tooltipUI.Hide();
+        AudioConstants.PlayButtonSelect();
 
         if (action.targetType == TargetType.Self || action.targetType == TargetType.AllEnemies || action.targetType == TargetType.AllAllies)
         {
@@ -334,6 +335,7 @@ public class BattleHUD : MonoBehaviour
     public void CancelTargetSelection()
     {
         Debug.Log("Seleção de alvo cancelada");
+        AudioConstants.PlayCannotSelect();
         
         targetSelectionPanel.SetActive(false);
         selectedAction = null;

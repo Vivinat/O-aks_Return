@@ -66,6 +66,7 @@ public class MainMenuManager : MonoBehaviour
     public void StartGame()
     {
         Debug.Log($"Iniciando jogo - Carregando: {firstMapScene}");
+        AudioConstants.PlayButtonSelect();
         
         // Limpa dados de saves anteriores se necessário
         ResetGameData();

@@ -320,6 +320,11 @@ public class BattleEntity : MonoBehaviour
 
         // Desativa os sliders da HUD imediatamente
         DisableHUDElements();
+        
+        if (characterData.deathSound != null)
+        {
+            AudioConstants.PlayDeathSound(characterData.deathSound);
+        }
 
         // Aciona a animação de morte no jogador
         if (animationController != null)

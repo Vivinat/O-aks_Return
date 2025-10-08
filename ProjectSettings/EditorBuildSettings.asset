@@ -26,4 +26,7 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scenes/NegotiationScene.unity
     guid: dbcd8fbdeba3e6f43a7df843cecc2743
+  - enabled: 1
+    path: Assets/Scenes/Defeat_Scene.unity
+    guid: 06e72cb5774d9744ab27a0c0b9c1d2a4
   m_configObjects: {}

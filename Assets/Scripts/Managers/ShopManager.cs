@@ -212,9 +212,10 @@ public class ShopManager : MonoBehaviour
         if (!GameManager.Instance.CurrencySystem.HasEnoughCoins(action.shopPrice))
         {
             Debug.Log($"Moedas insuficientes para {action.actionName}!");
-            // Pode-se adicionar um feedback visual aqui (ex: balançar o botão)
+            AudioConstants.PlayCannotSelect();
             return;
         }
+        AudioConstants.PlayButtonSelect();
 
         selectedShopItem = action.CreateInstance();
         selectedShopItemIndex = buttonIndex;
@@ -249,6 +250,7 @@ public class ShopManager : MonoBehaviour
         {
             ProcessSlotAssignment();
             CompletePurchase();
+            AudioConstants.PlayItemBuy();
         }
     }
 
@@ -258,11 +260,13 @@ public class ShopManager : MonoBehaviour
         
         if (GameManager.Instance.CurrencySystem.SpendCoins(price))
         {
+            AudioConstants.PlayButtonSelect();
             Debug.Log($"Compra de {selectedShopItem.actionName} por {price} moedas confirmada!");
             return true;
         }
         else
         {
+            AudioConstants.PlayCannotSelect();
             Debug.Log("Falha na compra - verificação final de moedas falhou!");
             CancelPendingPurchase();
             return false;
@@ -276,7 +280,6 @@ public class ShopManager : MonoBehaviour
         UpdateCoinsDisplay();
         RefreshPlayerSlotsDisplay();
     
-        // *** ADICIONE ESTA LINHA AQUI: ***
         BehaviorAnalysisIntegration.OnShopPurchase(selectedShopItem);
     
         selectedShopItem = null;
@@ -287,16 +290,12 @@ public class ShopManager : MonoBehaviour
         if (purchaseInstructionPanel != null)
             purchaseInstructionPanel.SetActive(false);
     
-        // **CHAMADA PARA O NOVO MÉTODO DE REMOÇÃO**
         if (indexToRemove != -1)
         {
             RemoveShopItem(indexToRemove);
         }
-    
-        Debug.Log("Compra concluída!");
     }
-
-
+    
     private void CancelPendingPurchase()
     {
         selectedShopItem = null;
@@ -310,7 +309,7 @@ public class ShopManager : MonoBehaviour
         UpdateShopHighlights();
         UpdatePlayerSlotHighlights();
         
-        Debug.Log("Seleção de compra cancelada.");
+        AudioConstants.PlayCannotSelect();
     }
 
     private void UpdateShopItemStates()
@@ -404,7 +403,6 @@ public class ShopManager : MonoBehaviour
             CancelPendingPurchase();
         }
     
-        // *** ADICIONE ESTA LINHA AQUI: ***
         BehaviorAnalysisIntegration.OnShopExit(shopActions);
     
         EndShopEvent();

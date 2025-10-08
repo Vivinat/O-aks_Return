@@ -399,6 +399,58 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &909328553
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 909328555}
+  - component: {fileID: 909328554}
+  m_Layer: 0
+  m_Name: AudioLibrary
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &909328554
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 909328553}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 46959dce1c805dc4bb9db4f47c326f95, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  selectButton: {fileID: 8300000, guid: d5d7a2d75db6b8c4cb23188911eb8319, type: 3}
+  openMenu: {fileID: 8300000, guid: 4e3d91f249ab4514ea252635a79dca52, type: 3}
+  cannotSelect: {fileID: 8300000, guid: 1a32657a9d02d2041b9693ba60eb1058, type: 3}
+  itemBuy: {fileID: 8300000, guid: 67c589e7c6145e2429ba3421708a060f, type: 3}
+  deathMonster: {fileID: 8300000, guid: 8701719d77ebba44998facdbfa02b085, type: 3}
+  deathHuman: {fileID: 8300000, guid: e12666ffd7681944aa9226f20dc7cb95, type: 3}
+  defeatSound: {fileID: 8300000, guid: a2f5c91df37d88d4faabe0f80d06ea1d, type: 3}
+  textTypeSound: {fileID: 0}
+--- !u!4 &909328555
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 909328553}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 462.96362, y: 232.34995, z: 0.8279607}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1505218256
 GameObject:
   m_ObjectHideFlags: 0
@@ -955,3 +1007,4 @@ SceneRoots:
   - {fileID: 831080037}
   - {fileID: 2146686189}
   - {fileID: 1931188754}
+  - {fileID: 909328555}

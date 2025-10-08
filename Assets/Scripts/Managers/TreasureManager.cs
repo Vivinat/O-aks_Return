@@ -234,6 +234,7 @@ public class TreasureManager : MonoBehaviour
         if (selectedReward == null)
         {
             Debug.Log("Selecione uma recompensa primeiro!");
+            AudioConstants.PlayCannotSelect();
             return;
         }
 
@@ -250,6 +251,7 @@ public class TreasureManager : MonoBehaviour
             string currentAction = playerActions[slotIndex]?.actionName ?? "vazio";
             Debug.Log($"Slot {slotIndex} selecionado para substituir '{currentAction}' por '{selectedReward.actionName}'");
         }
+        AudioConstants.PlayItemBuy();
     }
 
     /// <summary>

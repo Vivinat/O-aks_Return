@@ -24,6 +24,10 @@ public class Character : ScriptableObject
     public int maxMp;
     public int defense;
     public float speed; // Influenciará a velocidade de preenchimento do ATB
+    
+    [Header("Audio")]
+    [Tooltip("Som que toca quando este personagem morre")]
+    public AudioClip deathSound;
 
     [Header("Battle")]
     public List<BattleAction> battleActions;

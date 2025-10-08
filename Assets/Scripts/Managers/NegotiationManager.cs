@@ -202,6 +202,8 @@ public class NegotiationManager : MonoBehaviour
             return;
         }
         
+        AudioConstants.PlayButtonSelect();
+        
         if (selectedCard != null && selectedCard != card)
         {
             selectedCard.SetSelected(false);
@@ -229,31 +231,15 @@ public class NegotiationManager : MonoBehaviour
         if (selectedCard == null)
         {
             Debug.LogWarning("Nenhuma carta foi selecionada!");
+            AudioConstants.PlayCannotSelect();
             return;
         }
+        AudioConstants.PlayButtonSelect();
         
         NegotiationCardSO cardData = selectedCard.GetCardData();
         CardAttribute playerAttr = selectedCard.GetSelectedPlayerAttribute();
         CardAttribute enemyAttr = selectedCard.GetSelectedEnemyAttribute();
         int value = selectedCard.GetSelectedValue();
-        
-        Debug.Log($"");
-        Debug.Log($"╔═══════════════════════════════════════════════╗");
-        Debug.Log($"║         NEGOCIAÇÃO CONFIRMADA                 ║");
-        Debug.Log($"╚═══════════════════════════════════════════════╝");
-        Debug.Log($"");
-        Debug.Log($"📜 Carta: {cardData.cardName}");
-        Debug.Log($"🎯 Tipo: {cardData.cardType}");
-        Debug.Log($"⚖️  Valor Amarrado: +{value}");
-        Debug.Log($"");
-        Debug.Log($"┌───────────────────────────────────────────────┐");
-        Debug.Log($"│  📈 JOGADOR GANHA:                            │");
-        Debug.Log($"│     {AttributeHelper.GetDisplayName(playerAttr)}: +{value}");
-        Debug.Log($"│                                               │");
-        Debug.Log($"│  📉 INIMIGOS GANHAM:                          │");
-        Debug.Log($"│     {AttributeHelper.GetDisplayName(enemyAttr)}: +{value}");
-        Debug.Log($"└───────────────────────────────────────────────┘");
-        Debug.Log($"");
         
         if (GameManager.Instance != null)
         {

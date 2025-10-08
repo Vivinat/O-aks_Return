@@ -108,7 +108,8 @@ public class StatusPanel : MonoBehaviour
             Debug.LogWarning("StatusPanel: statusPanel não foi atribuído!");
             return;
         }
-
+        AudioConstants.PlayMenuOpen();
+        
         isOpen = true;
         statusPanel.SetActive(true);
         

@@ -167,8 +167,8 @@ public class OptionsMenu : MonoBehaviour
         }
 
         Debug.Log("Abrindo menu de opções");
+        AudioConstants.PlayMenuOpen();
 
-        // CORRIGIDO: Pausa o jogo de forma mais robusta
         if (pauseGameWhenOpen)
         {
             Time.timeScale = 0f;

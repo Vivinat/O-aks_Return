@@ -34,8 +34,7 @@ public class MapNode : MonoBehaviour
         if (!isLocked && !isCompleted)
         {
             Debug.Log($"Nó {gameObject.name} clicado");
-            
-            // NOVO: Configura a música antes de iniciar o evento
+            AudioConstants.PlayButtonSelect();
             SetupAudioForEvent();
             
             // Apenas notifica o MapManager. Toda a lógica acontecerá lá.
@@ -44,9 +43,15 @@ public class MapNode : MonoBehaviour
         else
         {
             if (isLocked)
+            {
                 Debug.Log($"Nó {gameObject.name} está bloqueado");
+                AudioConstants.PlayCannotSelect();
+            }
+
             if (isCompleted)
+            {
                 Debug.Log($"Nó {gameObject.name} já foi completado");
+            }
         }
     }
     
