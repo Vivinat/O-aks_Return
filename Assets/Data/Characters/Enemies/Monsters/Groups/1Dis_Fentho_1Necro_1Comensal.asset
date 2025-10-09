@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: 1Dis_Fentho_1Necro_1Comensal
   m_EditorClassIdentifier: 
   eventType: 0
-  sceneToLoad: 
+  sceneToLoad: BattleScene
   enemies:
   - {fileID: 11400000, guid: a4a3952e27877dd4fb584a5b7629180d, type: 2}
   - {fileID: 11400000, guid: 2f910201109fe5e419dee39ff9a1f628, type: 2}

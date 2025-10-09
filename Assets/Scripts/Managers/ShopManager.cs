@@ -44,6 +44,8 @@ public class ShopManager : MonoBehaviour
     private int selectedShopItemIndex = -1;
     private int selectedPlayerSlotIndex = -1;
     private bool hasPendingPurchase = false;
+    
+    private bool playerBoughtSomething = false; // <<< ADICIONE ESTA LINHA
 
     // Listas para gerenciar os botões criados
     private List<GameObject> shopButtonObjects = new List<GameObject>();
@@ -83,6 +85,8 @@ public class ShopManager : MonoBehaviour
 
         if (purchaseInstructionPanel != null)
             purchaseInstructionPanel.SetActive(false);
+        
+        playerBoughtSomething = false; // <<< ADICIONE ESTA LINHA
 
         ResetState();
         UpdateCoinsDisplay();
@@ -279,6 +283,8 @@ public class ShopManager : MonoBehaviour
 
         UpdateCoinsDisplay();
         RefreshPlayerSlotsDisplay();
+        
+        playerBoughtSomething = true;
     
         BehaviorAnalysisIntegration.OnShopPurchase(selectedShopItem);
     
@@ -401,6 +407,34 @@ public class ShopManager : MonoBehaviour
         if (hasPendingPurchase)
         {
             CancelPendingPurchase();
+        }
+        
+        // NOVO: Detecta se gastou quase todas as moedas
+        if (playerBoughtSomething && GameManager.Instance?.CurrencySystem != null)
+        {
+            int coinsLeft = GameManager.Instance.CurrencySystem.CurrentCoins;
+        
+            // Usa uma estimativa: se tem <30 moedas, provavelmente gastou muito
+            if (coinsLeft < 30)
+            {
+                // Calcula percentual gasto (estimativa)
+                float percentageSpent = 0.8f; // Placeholder: pelo menos 80%
+            
+                // Registra observação
+                if (PlayerBehaviorAnalyzer.Instance != null)
+                {
+                    var observation = new BehaviorObservation(
+                        BehaviorTriggerType.BrokeAfterShopping, 
+                        UnityEngine.SceneManagement.SceneManager.GetActiveScene().name
+                    );
+                    observation.SetData("percentageSpent", percentageSpent);
+                    observation.SetData("coinsLeft", coinsLeft);
+                
+                    PlayerBehaviorAnalyzer.Instance.AddObservationDirectly(observation);
+                
+                    Debug.Log($"BrokeAfterShopping detectado: Restam apenas {coinsLeft} moedas");
+                }
+            }
         }
     
         BehaviorAnalysisIntegration.OnShopExit(shopActions);

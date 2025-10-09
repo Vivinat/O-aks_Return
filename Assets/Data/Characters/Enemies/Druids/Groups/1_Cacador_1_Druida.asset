@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: 1_Cacador_1_Druida
   m_EditorClassIdentifier: 
   eventType: 0
-  sceneToLoad: 
+  sceneToLoad: BattleScene
   enemies:
   - {fileID: 11400000, guid: 401300cbce720f24e974ff448b5c352d, type: 2}
   - {fileID: 11400000, guid: cacb8e54f240a3c448e294432346f5d2, type: 2}

@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: 1_TrocaPeles_1_AtiradorElite
   m_EditorClassIdentifier: 
   eventType: 0
-  sceneToLoad: 
+  sceneToLoad: BattleScene
   enemies:
   - {fileID: 11400000, guid: 23df1bfe2c58591439d2042a517f7edb, type: 2}
   - {fileID: 11400000, guid: 0612fb2d6b38b004b9188d58497d8b40, type: 2}

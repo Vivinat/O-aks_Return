@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: 3Dis_Fentho
   m_EditorClassIdentifier: 
   eventType: 0
-  sceneToLoad: 
+  sceneToLoad: BattleScene
   enemies:
   - {fileID: 11400000, guid: a4a3952e27877dd4fb584a5b7629180d, type: 2}
   - {fileID: 11400000, guid: a4a3952e27877dd4fb584a5b7629180d, type: 2}

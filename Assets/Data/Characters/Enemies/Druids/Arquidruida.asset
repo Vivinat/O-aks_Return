@@ -10,15 +10,16 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: a3845463388303141a4721891b2fc23d, type: 3}
-  m_Name: "Druida_Anci\xE3o"
+  m_Name: Arquidruida
   m_EditorClassIdentifier: 
-  characterName: "Druida Anci\xE3o"
+  characterName: Arquidruida
   team: 1
   characterSprite: {fileID: 21300000, guid: cc545ffe2701bd84b9d18c61d5e6070b, type: 3}
   maxHp: 88
   maxMp: 53
   defense: 10
   speed: 1.2144374
+  deathSound: {fileID: 0}
   battleActions:
   - {fileID: 11400000, guid: 0060d794505e9224388cb6ec5fd4069d, type: 2}
   - {fileID: 11400000, guid: cd771e387f0689d4ea06e46767972381, type: 2}

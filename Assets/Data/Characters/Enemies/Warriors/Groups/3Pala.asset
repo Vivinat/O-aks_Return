@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: 3Pala
   m_EditorClassIdentifier: 
   eventType: 0
-  sceneToLoad: 
+  sceneToLoad: BattleScene
   enemies:
   - {fileID: 11400000, guid: e7c3a57dc983c864a9499b74257800dd, type: 2}
   - {fileID: 11400000, guid: e7c3a57dc983c864a9499b74257800dd, type: 2}

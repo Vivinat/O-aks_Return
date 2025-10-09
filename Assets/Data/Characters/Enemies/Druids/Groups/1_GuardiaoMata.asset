@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: 1_GuardiaoMata
   m_EditorClassIdentifier: 
   eventType: 0
-  sceneToLoad: 
+  sceneToLoad: BattleScene
   enemies:
   - {fileID: 11400000, guid: f145aea1e67e47a488f18a9f1aaff455, type: 2}
   battleBackground: {fileID: 0}

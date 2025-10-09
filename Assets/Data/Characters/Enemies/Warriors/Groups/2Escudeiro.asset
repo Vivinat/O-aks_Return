@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: 2Escudeiro
   m_EditorClassIdentifier: 
   eventType: 0
-  sceneToLoad: 
+  sceneToLoad: BattleScene
   enemies:
   - {fileID: 11400000, guid: 0418a224b21e4574f86cbf44347a2083, type: 2}
   - {fileID: 11400000, guid: 0418a224b21e4574f86cbf44347a2083, type: 2}

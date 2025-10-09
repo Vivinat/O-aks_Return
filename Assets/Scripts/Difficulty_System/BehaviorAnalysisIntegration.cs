@@ -20,6 +20,17 @@ public static class BehaviorAnalysisIntegration
     }
     
     /// <summary>
+    /// NOVO: Registra quando o jogador causa dano com uma skill
+    /// </summary>
+    public static void OnPlayerSkillDamage(BattleAction skill, int damage)
+    {
+        if (PlayerBehaviorAnalyzer.Instance != null && skill != null)
+        {
+            PlayerBehaviorAnalyzer.Instance.RecordPlayerSkillDamage(skill, damage);
+        }
+    }
+    
+    /// <summary>
     /// Registra quando o jogador recebe dano
     /// </summary>
     public static void OnPlayerDamageReceived(BattleEntity target, BattleEntity attacker, int damage)
@@ -31,6 +42,28 @@ public static class BehaviorAnalysisIntegration
             {
                 PlayerBehaviorAnalyzer.Instance.RecordPlayerDamageReceived(attacker, damage);
             }
+        }
+    }
+    
+    /// <summary>
+    /// NOVO: Registra quando alguém age (para ordem de turnos)
+    /// </summary>
+    public static void OnTurnAction(BattleEntity actor)
+    {
+        if (PlayerBehaviorAnalyzer.Instance != null && actor != null)
+        {
+            PlayerBehaviorAnalyzer.Instance.RecordTurnAction(actor);
+        }
+    }
+    
+    /// <summary>
+    /// NOVO: Registra hit individual recebido
+    /// </summary>
+    public static void OnPlayerHitReceived(int damage)
+    {
+        if (PlayerBehaviorAnalyzer.Instance != null)
+        {
+            PlayerBehaviorAnalyzer.Instance.RecordPlayerHitReceived(damage);
         }
     }
     

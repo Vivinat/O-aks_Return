@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: 1_Druida_Anciao
   m_EditorClassIdentifier: 
   eventType: 0
-  sceneToLoad: 
+  sceneToLoad: BattleScene
   enemies:
   - {fileID: 11400000, guid: 62aa2b259fb5a8846bc33856c37f0c91, type: 2}
   battleBackground: {fileID: 0}

@@ -9,21 +9,53 @@ using UnityEngine;
 /// </summary>
 public enum BehaviorTriggerType
 {
-    PlayerDeath,              // Jogador morreu em batalha 0
-    SkillOveruse,            // Jogador usa muito uma skill específica 1
-    LowHealthNoCure,         // Jogador com pouca vida e sem cura 2
-    NoDamageReceived,        // Jogador não recebeu dano 3
-    CriticalHealth,          // Jogador com vida crítica 4
-    ItemExhausted,           // Item consumível esgotado 5
-    LowCoinsUnvisitedShops,  // Poucas moedas com lojas disponíveis 6
-    UnusedSkill,             // Skill não utilizada no nível 7
-    NoDefensiveSkills,       // Falta de skills defensivas 8
-    RepeatedBossDeath,       // Morte repetida no mesmo boss 9
-    ShopIgnored,             // Ignorou itens na loja  TRIGGER 10
-    BossEasyVictory,         // Derrotou boss facilmente 11
-    AllSkillsUseMana,        // Todas skills usam MP 12
-    LowManaStreak,           // Sequência de batalhas com pouco MP 13
-    ZeroManaStreak           // Sequência de batalhas com MP zerado 14
+    // EVENTOS ORIGINAIS
+    PlayerDeath,              // 0
+    SkillOveruse,            // 1 - DEPRECADO: Use SingleSkillCarry
+    LowHealthNoCure,         // 2
+    NoDamageReceived,        // 3
+    CriticalHealth,          // 4 - DEPRECADO: Use FrequentLowHP
+    ItemExhausted,           // 5
+    LowCoinsUnvisitedShops,  // 6
+    UnusedSkill,             // 7 - DEPRECADO: Use WeakSkillIgnored
+    NoDefensiveSkills,       // 8
+    RepeatedBossDeath,       // 9
+    ShopIgnored,             // 10
+    BattleEasyVictory,       // 11
+    AllSkillsUseMana,        // 12
+    LowManaStreak,           // 13
+    ZeroManaStreak,          // 14
+    
+    // EVENTOS MELHORADOS (Substituem os deprecados)
+    SingleSkillCarry,        // 15 - Skill específica domina em DANO (melhoria de SkillOveruse)
+    FrequentLowHP,           // 16 - Padrão de terminar batalhas com pouca vida (melhoria de CriticalHealth)
+    WeakSkillIgnored,        // 17 - Skill nunca usada em múltiplas batalhas (melhoria de UnusedSkill)
+    
+    // NOVOS EVENTOS - VELOCIDADE/ATB
+    AlwaysOutsped,           // 18 - Inimigos sempre agem primeiro
+    AlwaysFirstTurn,         // 19 - Jogador sempre age primeiro (muito fácil)
+    
+    // NOVOS EVENTOS - TIPO DE INIMIGO
+    StrugglesAgainstTanks,   // 20 - Dificuldade contra inimigos com muito HP
+    StrugglesAgainstFast,    // 21 - Dificuldade contra inimigos rápidos
+    StrugglesAgainstSwarms,  // 22 - Dificuldade contra múltiplos inimigos
+    
+    // NOVOS EVENTOS - PADRÕES DE MORTE
+    AlwaysDiesEarly,         // 23 - Morre nos primeiros turnos
+    AlwaysDiesLate,          // 24 - Morre em batalhas longas
+    DeathByChipDamage,       // 25 - Morre por múltiplos hits pequenos
+    
+    // NOVOS EVENTOS - ONE-SHOT
+    OneHitKOVulnerable,      // 26 - Recebe hits que tiram >40% HP
+    
+    // NOVOS EVENTOS - BUILD
+    ExpensiveSkillsOnly,     // 27 - Todas skills custam muito MP
+    NoAOEDamage,             // 28 - Não tem ataques em área
+    
+    // NOVOS EVENTOS - RECURSOS
+    BrokeAfterShopping,      // 29 - Gastou quase todas moedas
+    RanOutOfConsumables,     // 30 - Esgotou todos consumíveis numa batalha
+    ConsumableDependency     // 31 - Vitórias dependem muito de consumíveis
 }
 
 /// <summary>
@@ -94,6 +126,23 @@ public class BattleBehaviorData
 {
     public Dictionary<string, int> skillUsageCount = new Dictionary<string, int>();
     public Dictionary<string, int> enemyDamageDealt = new Dictionary<string, int>();
+    
+        
+    // NOVOS: Rastreamento de dano por skill
+    public Dictionary<string, int> skillDamageDealt = new Dictionary<string, int>();
+    
+    // NOVOS: Rastreamento de ordem de turnos
+    public List<string> turnOrder = new List<string>(); // "Player" ou nome do inimigo
+    
+    // NOVOS: Rastreamento de hits individuais
+    public List<int> hitsReceived = new List<int>();
+    public int turnOfDeath = -1; // -1 = não morreu
+    
+    // NOVOS: Contadores de tipo de inimigo
+    public int tankEnemiesCount = 0;  // HP > 100
+    public int fastEnemiesCount = 0;  // Speed > 5
+    public int totalEnemiesInBattle = 0;
+    
     public int totalActionsUsed = 0;
     public int startingHP;
     public int startingMP;
@@ -107,6 +156,14 @@ public class BattleBehaviorData
     {
         skillUsageCount.Clear();
         enemyDamageDealt.Clear();
+        skillDamageDealt.Clear();
+        turnOrder.Clear();
+        hitsReceived.Clear();
+        
+        turnOfDeath = -1;
+        tankEnemiesCount = 0;
+        fastEnemiesCount = 0;
+        totalEnemiesInBattle = 0;
         totalActionsUsed = 0;
         playerDied = false;
         enemiesInBattle.Clear();
@@ -127,6 +184,17 @@ public class BattleBehaviorData
     }
     
     /// <summary>
+    /// NOVO: Registra dano causado por skill específica
+    /// </summary>
+    public void RecordSkillDamage(string skillName, int damage)
+    {
+        if (skillDamageDealt.ContainsKey(skillName))
+            skillDamageDealt[skillName] += damage;
+        else
+            skillDamageDealt[skillName] = damage;
+    }
+    
+    /// <summary>
     /// Registra dano causado por inimigo
     /// </summary>
     public void RecordEnemyDamage(string enemyName, int damage)
@@ -135,6 +203,22 @@ public class BattleBehaviorData
             enemyDamageDealt[enemyName] += damage;
         else
             enemyDamageDealt[enemyName] = damage;
+    }
+    
+    /// <summary>
+    /// NOVO: Registra ordem de ação
+    /// </summary>
+    public void RecordTurnOrder(string actor)
+    {
+        turnOrder.Add(actor);
+    }
+    
+    /// <summary>
+    /// NOVO: Registra hit recebido
+    /// </summary>
+    public void RecordHitReceived(int damage)
+    {
+        hitsReceived.Add(damage);
     }
     
     /// <summary>
@@ -155,6 +239,43 @@ public class BattleBehaviorData
         }
         
         return mostUsed;
+    }
+    
+    /// <summary>
+    /// NOVO: Retorna a skill que causou mais dano
+    /// </summary>
+    public string GetHighestDamageSkill()
+    {
+        string highestDamage = "";
+        int maxDamage = 0;
+        
+        foreach (var skill in skillDamageDealt)
+        {
+            if (skill.Value > maxDamage)
+            {
+                maxDamage = skill.Value;
+                highestDamage = skill.Key;
+            }
+        }
+        
+        return highestDamage;
+    }
+    
+    /// <summary>
+    /// NOVO: Retorna percentual de dano de uma skill
+    /// </summary>
+    public float GetSkillDamagePercentage(string skillName)
+    {
+        int totalDamage = 0;
+        foreach (var damage in skillDamageDealt.Values)
+        {
+            totalDamage += damage;
+        }
+        
+        if (totalDamage == 0) return 0f;
+        
+        int skillDamage = skillDamageDealt.GetValueOrDefault(skillName, 0);
+        return (float)skillDamage / totalDamage;
     }
     
     /// <summary>
@@ -189,6 +310,53 @@ public class BattleBehaviorData
         
         return usage >= percentage;
     }
+    
+    /// <summary>
+    /// NOVO: Calcula percentual de turnos que o jogador foi primeiro
+    /// </summary>
+    public float GetPlayerFirstTurnPercentage()
+    {
+        if (turnOrder.Count == 0) return 0f;
+        
+        int playerFirstCount = 0;
+        for (int i = 0; i < turnOrder.Count; i++)
+        {
+            if (turnOrder[i] == "Player")
+            {
+                // Verifica se é o primeiro do turno (não tem nenhum antes dele no mesmo ciclo)
+                bool isFirst = true;
+                for (int j = i - 1; j >= 0 && j >= i - 4; j--) // Olha até 4 ações atrás
+                {
+                    if (turnOrder[j] == "Player")
+                    {
+                        isFirst = false;
+                        break;
+                    }
+                }
+                if (isFirst) playerFirstCount++;
+            }
+        }
+        
+        // Estimativa grosseira: divide pelo número de "ciclos"
+        int estimatedTurns = Mathf.Max(1, turnOrder.Count / 4);
+        return (float)playerFirstCount / estimatedTurns;
+    }
+    
+    /// <summary>
+    /// NOVO: Calcula dano médio dos hits recebidos
+    /// </summary>
+    public float GetAverageHitSize()
+    {
+        if (hitsReceived.Count == 0) return 0f;
+        
+        int total = 0;
+        foreach (int hit in hitsReceived)
+        {
+            total += hit;
+        }
+        
+        return (float)total / hitsReceived.Count;
+    }
 }
 
 /// <summary>
@@ -201,6 +369,16 @@ public class SessionBehaviorData
     public int consecutiveZeroManaBattles = 0;
     public List<string> bossDeathHistory = new List<string>();
     public Dictionary<string, int> mapCompletionCount = new Dictionary<string, int>();
+    
+    // NOVOS: Histórico de HP ao fim das batalhas
+    public List<float> recentBattleEndHPPercentages = new List<float>();
+    
+    // NOVOS: Histórico de uso de skills
+    public Dictionary<string, int> skillNeverUsedCount = new Dictionary<string, int>(); // Quantas batalhas cada skill não foi usada
+    
+    // NOVOS: Histórico de vitórias com consumíveis
+    public int victoriesWithConsumables = 0;
+    public int totalVictories = 0;
     
     public void Reset()
     {
@@ -237,6 +415,64 @@ public class SessionBehaviorData
             }
         }
         return false;
+    }
+    
+    /// <summary>
+    /// NOVO: Registra HP ao final da batalha
+    /// </summary>
+    public void RecordBattleEndHP(float hpPercentage)
+    {
+        recentBattleEndHPPercentages.Add(hpPercentage);
+        
+        // Mantém apenas as últimas 5 batalhas
+        if (recentBattleEndHPPercentages.Count > 5)
+        {
+            recentBattleEndHPPercentages.RemoveAt(0);
+        }
+    }
+    
+    /// <summary>
+    /// NOVO: Verifica se há padrão de HP baixo
+    /// </summary>
+    public bool HasFrequentLowHPPattern(float threshold = 0.3f, int minBattles = 3)
+    {
+        if (recentBattleEndHPPercentages.Count < minBattles) return false;
+        
+        int lowHPCount = 0;
+        foreach (float hp in recentBattleEndHPPercentages)
+        {
+            if (hp < threshold) lowHPCount++;
+        }
+        
+        return lowHPCount >= minBattles;
+    }
+    
+    /// <summary>
+    /// NOVO: Registra skill não usada
+    /// </summary>
+    public void RecordSkillNotUsed(string skillName)
+    {
+        if (skillNeverUsedCount.ContainsKey(skillName))
+            skillNeverUsedCount[skillName]++;
+        else
+            skillNeverUsedCount[skillName] = 1;
+    }
+    
+    /// <summary>
+    /// NOVO: Reseta contador de skill (quando ela é usada)
+    /// </summary>
+    public void ResetSkillUsageCounter(string skillName)
+    {
+        if (skillNeverUsedCount.ContainsKey(skillName))
+            skillNeverUsedCount[skillName] = 0;
+    }
+    
+    /// <summary>
+    /// NOVO: Verifica se skill é cronicamente ignorada
+    /// </summary>
+    public bool IsSkillChronicallyIgnored(string skillName, int minBattles = 5)
+    {
+        return skillNeverUsedCount.GetValueOrDefault(skillName, 0) >= minBattles;
     }
 }
 

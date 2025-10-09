@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: 1_Druida_Anciao_1_GuardiaoMata_1_AtiradorElite
   m_EditorClassIdentifier: 
   eventType: 0
-  sceneToLoad: 
+  sceneToLoad: BattleScene
   enemies:
   - {fileID: 11400000, guid: 62aa2b259fb5a8846bc33856c37f0c91, type: 2}
   - {fileID: 11400000, guid: f145aea1e67e47a488f18a9f1aaff455, type: 2}

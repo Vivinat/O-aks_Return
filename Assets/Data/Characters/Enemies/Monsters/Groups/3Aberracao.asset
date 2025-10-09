@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: 3Aberracao
   m_EditorClassIdentifier: 
   eventType: 0
-  sceneToLoad: 
+  sceneToLoad: BattleScene
   enemies:
   - {fileID: 11400000, guid: a90c49af3c9ff7740bad577c9b6b02fe, type: 2}
   - {fileID: 11400000, guid: a90c49af3c9ff7740bad577c9b6b02fe, type: 2}

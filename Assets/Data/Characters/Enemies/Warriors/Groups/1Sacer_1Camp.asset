@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: 1Sacer_1Camp
   m_EditorClassIdentifier: 
   eventType: 0
-  sceneToLoad: 
+  sceneToLoad: BattleScene
   enemies:
   - {fileID: 11400000, guid: 5c057b5051e112146baafa4300335034, type: 2}
   - {fileID: 11400000, guid: 7a5bad781e287874dad5025d0dae6bb0, type: 2}

@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: 1Necro_2Morto
   m_EditorClassIdentifier: 
   eventType: 0
-  sceneToLoad: 
+  sceneToLoad: BattleScene
   enemies:
   - {fileID: 11400000, guid: 2f910201109fe5e419dee39ff9a1f628, type: 2}
   - {fileID: 11400000, guid: 3f48084d13c2288499fac36fb3a6b291, type: 2}

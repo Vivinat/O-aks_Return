@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: 1Camp_2Inquisi
   m_EditorClassIdentifier: 
   eventType: 0
-  sceneToLoad: 
+  sceneToLoad: BattleScene
   enemies:
   - {fileID: 11400000, guid: 7a5bad781e287874dad5025d0dae6bb0, type: 2}
   - {fileID: 11400000, guid: e9620b67b99c7184e9ae877b14f84899, type: 2}

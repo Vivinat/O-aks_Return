@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: 1Infero_2Cultista
   m_EditorClassIdentifier: 
   eventType: 0
-  sceneToLoad: 
+  sceneToLoad: BattleScene
   enemies:
   - {fileID: 11400000, guid: 5671eeb5ae49e6942b9e9806fb3a561e, type: 2}
   - {fileID: 11400000, guid: 834dff690678a8346870ece5cd466981, type: 2}

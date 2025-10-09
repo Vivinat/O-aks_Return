@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: 1SacerTrevas_1Cultista_1Necro
   m_EditorClassIdentifier: 
   eventType: 0
-  sceneToLoad: 
+  sceneToLoad: BattleScene
   enemies:
   - {fileID: 11400000, guid: f386bb2f8d1195b4ba4b44d43c1cd7e3, type: 2}
   - {fileID: 11400000, guid: 834dff690678a8346870ece5cd466981, type: 2}

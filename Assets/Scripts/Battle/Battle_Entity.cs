@@ -101,6 +101,12 @@ public class BattleEntity : MonoBehaviour
         float damageMultiplier = GetDamageMultiplier();
         int finalDamage = Mathf.RoundToInt(baseDamage * damageMultiplier);
         
+        // NOVO: Registra o hit individual
+        if (characterData.team == Team.Player)
+        {
+            BehaviorAnalysisIntegration.OnPlayerHitReceived(finalDamage);
+        }
+        
         currentHp -= finalDamage;
         Debug.Log($"{characterData.characterName} received {finalDamage} damage!");
         

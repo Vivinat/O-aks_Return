@@ -179,7 +179,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: 100
+  m_text: 
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 82077400bfb59e24bbb87e02fee6d6d5, type: 2}
   m_sharedMaterial: {fileID: -2472636003630793469, guid: 82077400bfb59e24bbb87e02fee6d6d5, type: 2}
@@ -588,7 +588,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: 100
+  m_text: 
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 82077400bfb59e24bbb87e02fee6d6d5, type: 2}
   m_sharedMaterial: {fileID: -2472636003630793469, guid: 82077400bfb59e24bbb87e02fee6d6d5, type: 2}
@@ -2293,7 +2293,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: 100
+  m_text: 
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 82077400bfb59e24bbb87e02fee6d6d5, type: 2}
   m_sharedMaterial: {fileID: -2472636003630793469, guid: 82077400bfb59e24bbb87e02fee6d6d5, type: 2}
@@ -2427,7 +2427,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: 100
+  m_text: 
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 82077400bfb59e24bbb87e02fee6d6d5, type: 2}
   m_sharedMaterial: {fileID: -2472636003630793469, guid: 82077400bfb59e24bbb87e02fee6d6d5, type: 2}
@@ -3968,7 +3968,7 @@ MonoBehaviour:
   atbBar: {fileID: 724635410}
   hpBar: {fileID: 1724584129}
   mpBar: {fileID: 351787502}
-  hpValueText: {fileID: 3128088}
+  hpValueText: {fileID: 0}
   mpValueText: {fileID: 0}
   currentMp: 0
   isReady: 0
@@ -4299,7 +4299,7 @@ MonoBehaviour:
   atbBar: {fileID: 183037778}
   hpBar: {fileID: 698858668}
   mpBar: {fileID: 227874295}
-  hpValueText: {fileID: 448628028}
+  hpValueText: {fileID: 0}
   mpValueText: {fileID: 0}
   currentMp: 0
   isReady: 0
@@ -6055,7 +6055,7 @@ MonoBehaviour:
   atbBar: {fileID: 315902997}
   hpBar: {fileID: 1318845741}
   mpBar: {fileID: 1986279832}
-  hpValueText: {fileID: 439535288}
+  hpValueText: {fileID: 0}
   mpValueText: {fileID: 0}
   currentMp: 0
   isReady: 0
@@ -6846,7 +6846,7 @@ MonoBehaviour:
   atbBar: {fileID: 273079909}
   hpBar: {fileID: 1307394153}
   mpBar: {fileID: 43956498}
-  hpValueText: {fileID: 134251828}
+  hpValueText: {fileID: 0}
   mpValueText: {fileID: 0}
   currentMp: 0
   isReady: 0

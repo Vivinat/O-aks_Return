@@ -22,6 +22,8 @@ public class BattleManager : MonoBehaviour
     [SerializeField] private float actionDelay = 0.5f;
     [SerializeField] private float postActionDelay = 1.0f;
     [SerializeField] private float enemyActionDisplayTime = 2.0f;
+    
+    private int currentTurnNumber = 0;
 
     void Start()
     {
@@ -32,6 +34,7 @@ public class BattleManager : MonoBehaviour
         allCharacters = playerTeam.Concat(enemyTeam).ToList();
 
         currentState = BattleState.RUNNING;
+        currentTurnNumber = 0;
     }
 
     private void InitializeEnemyTeam()
@@ -110,6 +113,11 @@ public class BattleManager : MonoBehaviour
     {
         currentState = BattleState.PERFORMING_ACTION;
         currentProcessingAction = action; // Set current action for special processing
+        
+        // NOVO: Registra ação na ordem de turnos
+        BehaviorAnalysisIntegration.OnTurnAction(caster);
+    
+        currentTurnNumber++; // NOVO: Incrementa contador de turno
 
         // 1. Toca o efeito de flash do atacante
         caster.OnExecuteAction();
@@ -136,11 +144,44 @@ public class BattleManager : MonoBehaviour
                     Debug.Log($"{action.actionName} was removed - uses exhausted!");
                 }
             }
+            
+            // NOVO: Rastreia dano total causado pela skill
+            int totalDamageThisAction = 0;
 
-            // Apply all effects from the action
             foreach (ActionEffect effect in action.effects)
             {
+                // MODIFICADO: Captura HP antes do efeito
+                Dictionary<BattleEntity, int> hpBefore = new Dictionary<BattleEntity, int>();
+                foreach (var target in targets)
+                {
+                    if (!target.isDead)
+                    {
+                        hpBefore[target] = target.GetCurrentHP();
+                    }
+                }
+            
                 yield return StartCoroutine(ApplyActionEffect(effect, caster, targets));
+            
+                // NOVO: Calcula dano causado
+                foreach (var target in targets)
+                {
+                    if (hpBefore.ContainsKey(target))
+                    {
+                        int hpAfter = target.isDead ? 0 : target.GetCurrentHP();
+                        int damageCaused = hpBefore[target] - hpAfter;
+                    
+                        if (damageCaused > 0)
+                        {
+                            totalDamageThisAction += damageCaused;
+                        }
+                    }
+                }
+            }
+        
+            // NOVO: Registra dano causado pela skill (apenas para jogador)
+            if (totalDamageThisAction > 0 && caster.characterData.team == Team.Player)
+            {
+                BehaviorAnalysisIntegration.OnPlayerSkillDamage(action, totalDamageThisAction);
             }
         }
         else
@@ -148,13 +189,19 @@ public class BattleManager : MonoBehaviour
             Debug.Log("Action failed due to insufficient MP!");
         }
 
-        // 3. Wait before continuing
         yield return new WaitForSeconds(postActionDelay);
-        
-        // 4. Reset ATB and check battle end
+    
         caster.ResetATB();
-        currentProcessingAction = null; // Clear current action
+        currentProcessingAction = null;
         CheckBattleEnd();
+    }
+    
+    /// <summary>
+    /// NOVO: Retorna o número do turno atual
+    /// </summary>
+    public int GetCurrentTurn()
+    {
+        return currentTurnNumber;
     }
 
     private IEnumerator ApplyActionEffect(ActionEffect effect, BattleEntity caster, List<BattleEntity> targets)

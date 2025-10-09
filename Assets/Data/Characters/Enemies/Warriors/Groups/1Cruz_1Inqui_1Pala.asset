@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: 1Cruz_1Inqui_1Pala
   m_EditorClassIdentifier: 
   eventType: 0
-  sceneToLoad: 
+  sceneToLoad: BattleScene
   enemies:
   - {fileID: 11400000, guid: bdc485a4d97248549b6c91ae8e171947, type: 2}
   - {fileID: 11400000, guid: e9620b67b99c7184e9ae877b14f84899, type: 2}

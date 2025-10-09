@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Fentho_Boss
   m_EditorClassIdentifier: 
   eventType: 0
-  sceneToLoad: 
+  sceneToLoad: BattleScene
   enemies:
   - {fileID: 11400000, guid: 6bb5baca0165e5b4e9af4d97c0d020e5, type: 2}
   battleBackground: {fileID: 0}

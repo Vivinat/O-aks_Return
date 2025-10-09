@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: 2Merc
   m_EditorClassIdentifier: 
   eventType: 0
-  sceneToLoad: 
+  sceneToLoad: BattleScene
   enemies:
   - {fileID: 11400000, guid: b29528a0fe017664c976fac2b4b546c4, type: 2}
   - {fileID: 11400000, guid: b29528a0fe017664c976fac2b4b546c4, type: 2}

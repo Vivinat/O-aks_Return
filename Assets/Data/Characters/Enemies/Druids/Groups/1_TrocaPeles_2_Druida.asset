@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: 1_TrocaPeles_2_Druida
   m_EditorClassIdentifier: 
   eventType: 0
-  sceneToLoad: 
+  sceneToLoad: BattleScene
   enemies:
   - {fileID: 11400000, guid: 23df1bfe2c58591439d2042a517f7edb, type: 2}
   - {fileID: 11400000, guid: cacb8e54f240a3c448e294432346f5d2, type: 2}

@@ -7003,7 +7003,7 @@ MonoBehaviour:
   connectedNodes:
   - {fileID: 1737705167}
   isLocked: 0
-  eventType: {fileID: 11400000, guid: 2e0c96beca99f2c4a839e33534fee06a, type: 2}
+  eventType: {fileID: 11400000, guid: 130e5b12f45b5524fa7843621b56d155, type: 2}
   eventMusic: {fileID: 8300000, guid: b39dd8c5ddbeed843a617136c38638e9, type: 3}
   battleBackgroundOverride: {fileID: 21300000, guid: f6c71d42837820b4ba213ecad75672e5, type: 3}
 --- !u!61 &1340018658
