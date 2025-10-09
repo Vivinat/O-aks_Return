@@ -1,4 +1,4 @@
-// Assets/Scripts/Negotiation/NegotiationCardUI.cs (UPDATED - No Zoom, Yellow Hover)
+// Assets/Scripts/Negotiation/NegotiationCardUI.cs (UPDATED - Dual Support)
 
 using UnityEngine;
 using UnityEngine.UI;
@@ -28,7 +28,11 @@ public class NegotiationCardUI : MonoBehaviour, IPointerEnterHandler, IPointerEx
     [SerializeField] private Color selectedColor = Color.red;
     [SerializeField] private float colorTransitionSpeed = 8f;
     
-    private NegotiationCardSO cardData;
+    // Dados - pode ser SO ou dinâmico
+    private NegotiationCardSO cardDataSO; // Sistema antigo
+    private DynamicNegotiationCard cardDataDynamic; // Sistema novo
+    private bool isDynamicCard = false;
+    
     private NegotiationManager negotiationManager;
     private bool isSelected = false;
     private bool isHovered = false;
@@ -55,7 +59,6 @@ public class NegotiationCardUI : MonoBehaviour, IPointerEnterHandler, IPointerEx
     
     void Update()
     {
-        // Smooth color transition
         if (cardImage != null)
         {
             cardImage.color = Color.Lerp(
@@ -66,34 +69,60 @@ public class NegotiationCardUI : MonoBehaviour, IPointerEnterHandler, IPointerEx
         }
     }
     
+    /// <summary>
+    /// Setup para cartas estáticas (SO)
+    /// </summary>
     public void Setup(NegotiationCardSO card, NegotiationManager manager)
     {
-        cardData = card;
+        cardDataSO = card;
         negotiationManager = manager;
+        isDynamicCard = false;
         
-        if (cardData == null)
+        if (cardDataSO == null)
         {
-            Debug.LogError("NegotiationCardUI: Dados da carta são nulos!");
+            Debug.LogError("NegotiationCardUI: Dados da carta SO são nulos!");
             return;
         }
         
-        if (cardImage != null && cardData.cardSprite != null)
-            cardImage.sprite = cardData.cardSprite;
+        if (cardImage != null && cardDataSO.cardSprite != null)
+            cardImage.sprite = cardDataSO.cardSprite;
         
-        SetupByType();
-        isSelected = false;
+        SetupByType(cardDataSO.cardType);
         UpdateVisuals();
         UpdateDescription();
     }
     
-    private void SetupByType()
+    /// <summary>
+    /// Setup para cartas dinâmicas
+    /// </summary>
+    public void SetupDynamic(DynamicNegotiationCard card, NegotiationManager manager)
+    {
+        cardDataDynamic = card;
+        negotiationManager = manager;
+        isDynamicCard = true;
+        
+        if (cardDataDynamic == null)
+        {
+            Debug.LogError("NegotiationCardUI: Dados da carta dinâmica são nulos!");
+            return;
+        }
+        
+        if (cardImage != null && cardDataDynamic.cardSprite != null)
+            cardImage.sprite = cardDataDynamic.cardSprite;
+        
+        SetupByType(cardDataDynamic.cardType);
+        UpdateVisuals();
+        UpdateDescription();
+    }
+    
+    private void SetupByType(NegotiationCardType type)
     {
         // Esconde tudo primeiro
         if (playerAttributePanel != null) playerAttributePanel.SetActive(false);
         if (enemyAttributePanel != null) enemyAttributePanel.SetActive(false);
         if (intensityPanel != null) intensityPanel.SetActive(false);
         
-        switch (cardData.cardType)
+        switch (type)
         {
             case NegotiationCardType.Fixed:
                 SetupFixed();
@@ -111,32 +140,42 @@ public class NegotiationCardUI : MonoBehaviour, IPointerEnterHandler, IPointerEx
     
     private void SetupFixed()
     {
-        // Nenhum dropdown visível
-        selectedPlayerAttribute = cardData.fixedPlayerAttribute;
-        selectedEnemyAttribute = cardData.fixedEnemyAttribute;
-        selectedValue = cardData.fixedValue;
-        
-        Debug.Log($"[FIXED] Jogador: {selectedPlayerAttribute} +{selectedValue}, Inimigo: {selectedEnemyAttribute} +{selectedValue}");
+        if (isDynamicCard)
+        {
+            selectedPlayerAttribute = cardDataDynamic.playerBenefit.playerAttribute;
+            selectedEnemyAttribute = cardDataDynamic.playerCost.enemyAttribute;
+            selectedValue = cardDataDynamic.playerBenefit.playerValue;
+        }
+        else
+        {
+            selectedPlayerAttribute = cardDataSO.fixedPlayerAttribute;
+            selectedEnemyAttribute = cardDataSO.fixedEnemyAttribute;
+            selectedValue = cardDataSO.fixedValue;
+        }
     }
     
     private void SetupIntensityOnly()
     {
-        // Apenas dropdown de intensidade visível
         if (intensityPanel != null)
         {
             intensityPanel.SetActive(true);
             PopulateIntensityDropdown();
         }
         
-        selectedPlayerAttribute = cardData.intensityOnlyPlayerAttribute;
-        selectedEnemyAttribute = cardData.intensityOnlyEnemyAttribute;
-        
-        Debug.Log($"[INTENSITY ONLY] Jogador: {selectedPlayerAttribute}, Inimigo: {selectedEnemyAttribute}");
+        if (isDynamicCard)
+        {
+            selectedPlayerAttribute = cardDataDynamic.playerBenefit.playerAttribute;
+            selectedEnemyAttribute = cardDataDynamic.playerCost.enemyAttribute;
+        }
+        else
+        {
+            selectedPlayerAttribute = cardDataSO.intensityOnlyPlayerAttribute;
+            selectedEnemyAttribute = cardDataSO.intensityOnlyEnemyAttribute;
+        }
     }
     
     private void SetupAttributeAndIntensity()
     {
-        // Todos os dropdowns visíveis
         if (playerAttributePanel != null)
         {
             playerAttributePanel.SetActive(true);
@@ -154,8 +193,6 @@ public class NegotiationCardUI : MonoBehaviour, IPointerEnterHandler, IPointerEx
             intensityPanel.SetActive(true);
             PopulateIntensityDropdown();
         }
-        
-        Debug.Log($"[ATTRIBUTE AND INTENSITY] Dropdowns configurados");
     }
     
     private void PopulatePlayerAttributeDropdown()
@@ -165,16 +202,20 @@ public class NegotiationCardUI : MonoBehaviour, IPointerEnterHandler, IPointerEx
         playerAttributeDropdown.ClearOptions();
         List<string> options = new List<string>();
         
-        foreach (var attr in cardData.availablePlayerAttributes)
+        List<CardAttribute> availableAttrs = isDynamicCard 
+            ? cardDataDynamic.availablePlayerAttributes 
+            : cardDataSO.availablePlayerAttributes;
+        
+        foreach (var attr in availableAttrs)
         {
             options.Add(AttributeHelper.GetDisplayName(attr));
         }
         
         playerAttributeDropdown.AddOptions(options);
         
-        if (cardData.availablePlayerAttributes.Count > 0)
+        if (availableAttrs.Count > 0)
         {
-            selectedPlayerAttribute = cardData.availablePlayerAttributes[0];
+            selectedPlayerAttribute = availableAttrs[0];
             playerAttributeDropdown.value = 0;
         }
     }
@@ -186,16 +227,20 @@ public class NegotiationCardUI : MonoBehaviour, IPointerEnterHandler, IPointerEx
         enemyAttributeDropdown.ClearOptions();
         List<string> options = new List<string>();
         
-        foreach (var attr in cardData.availableEnemyAttributes)
+        List<CardAttribute> availableAttrs = isDynamicCard 
+            ? cardDataDynamic.availableEnemyAttributes 
+            : cardDataSO.availableEnemyAttributes;
+        
+        foreach (var attr in availableAttrs)
         {
             options.Add(AttributeHelper.GetDisplayName(attr));
         }
         
         enemyAttributeDropdown.AddOptions(options);
         
-        if (cardData.availableEnemyAttributes.Count > 0)
+        if (availableAttrs.Count > 0)
         {
-            selectedEnemyAttribute = cardData.availableEnemyAttributes[0];
+            selectedEnemyAttribute = availableAttrs[0];
             enemyAttributeDropdown.value = 0;
         }
     }
@@ -207,7 +252,11 @@ public class NegotiationCardUI : MonoBehaviour, IPointerEnterHandler, IPointerEx
         intensityDropdown.ClearOptions();
         List<string> options = new List<string>();
         
-        foreach (var intensity in cardData.availableIntensities)
+        List<CardIntensity> availableIntensities = isDynamicCard 
+            ? cardDataDynamic.availableIntensities 
+            : cardDataSO.availableIntensities;
+        
+        foreach (var intensity in availableIntensities)
         {
             int val = IntensityHelper.GetValue(intensity);
             options.Add($"{IntensityHelper.GetDisplayName(intensity)} (+{val})");
@@ -215,47 +264,72 @@ public class NegotiationCardUI : MonoBehaviour, IPointerEnterHandler, IPointerEx
         
         intensityDropdown.AddOptions(options);
         
-        if (cardData.availableIntensities.Count > 0)
+        if (availableIntensities.Count > 0)
         {
-            selectedValue = IntensityHelper.GetValue(cardData.availableIntensities[0]);
+            selectedValue = IntensityHelper.GetValue(availableIntensities[0]);
             intensityDropdown.value = 0;
         }
     }
     
     private void OnPlayerAttributeChanged(int index)
     {
-        if (cardData.availablePlayerAttributes.Count > index)
+        List<CardAttribute> availableAttrs = isDynamicCard 
+            ? cardDataDynamic.availablePlayerAttributes 
+            : cardDataSO.availablePlayerAttributes;
+        
+        if (availableAttrs.Count > index)
         {
-            selectedPlayerAttribute = cardData.availablePlayerAttributes[index];
+            selectedPlayerAttribute = availableAttrs[index];
             UpdateDescription();
-            Debug.Log($"Atributo do jogador selecionado: {selectedPlayerAttribute}");
         }
     }
     
     private void OnEnemyAttributeChanged(int index)
     {
-        if (cardData.availableEnemyAttributes.Count > index)
+        List<CardAttribute> availableAttrs = isDynamicCard 
+            ? cardDataDynamic.availableEnemyAttributes 
+            : cardDataSO.availableEnemyAttributes;
+        
+        if (availableAttrs.Count > index)
         {
-            selectedEnemyAttribute = cardData.availableEnemyAttributes[index];
+            selectedEnemyAttribute = availableAttrs[index];
             UpdateDescription();
-            Debug.Log($"Atributo dos inimigos selecionado: {selectedEnemyAttribute}");
         }
     }
     
     private void OnIntensityChanged(int index)
     {
-        if (cardData.availableIntensities.Count > index)
+        List<CardIntensity> availableIntensities = isDynamicCard 
+            ? cardDataDynamic.availableIntensities 
+            : cardDataSO.availableIntensities;
+        
+        if (availableIntensities.Count > index)
         {
-            selectedValue = IntensityHelper.GetValue(cardData.availableIntensities[index]);
+            selectedValue = IntensityHelper.GetValue(availableIntensities[index]);
             UpdateDescription();
-            Debug.Log($"Intensidade selecionada: {selectedValue}");
         }
     }
     
     private void UpdateDescription()
     {
         if (descriptionText == null) return;
-        descriptionText.text = cardData.GetFullDescription(selectedPlayerAttribute, selectedEnemyAttribute, selectedValue);
+        
+        if (isDynamicCard)
+        {
+            descriptionText.text = cardDataDynamic.GetFullDescription(
+                selectedPlayerAttribute, 
+                selectedEnemyAttribute, 
+                selectedValue
+            );
+        }
+        else
+        {
+            descriptionText.text = cardDataSO.GetFullDescription(
+                selectedPlayerAttribute, 
+                selectedEnemyAttribute, 
+                selectedValue
+            );
+        }
     }
     
     public void OnPointerEnter(PointerEventData eventData)
@@ -303,7 +377,9 @@ public class NegotiationCardUI : MonoBehaviour, IPointerEnterHandler, IPointerEx
         }
     }
     
-    public NegotiationCardSO GetCardData() => cardData;
+    // Getters
+    public NegotiationCardSO GetCardData() => cardDataSO;
+    public DynamicNegotiationCard GetDynamicCardData() => cardDataDynamic;
     public CardAttribute GetSelectedPlayerAttribute() => selectedPlayerAttribute;
     public CardAttribute GetSelectedEnemyAttribute() => selectedEnemyAttribute;
     public int GetSelectedValue() => selectedValue;

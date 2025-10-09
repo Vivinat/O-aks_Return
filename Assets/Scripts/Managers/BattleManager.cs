@@ -36,14 +36,13 @@ public class BattleManager : MonoBehaviour
         currentState = BattleState.RUNNING;
         currentTurnNumber = 0;
     }
-
+    
     private void InitializeEnemyTeam()
     {
         enemyTeam = new List<BattleEntity>();
         List<GameObject> enemySlots = GameObject.FindGameObjectsWithTag("EnemySlot").ToList();
         List<Character> enemiesToSpawn = GameManager.enemiesToBattle;
 
-        // Desativa todos os slots
         enemySlots.ForEach(slot => slot.SetActive(false));
 
         for (int i = 0; i < enemiesToSpawn.Count; i++)
@@ -54,8 +53,15 @@ public class BattleManager : MonoBehaviour
                 currentSlot.SetActive(true);
 
                 BattleEntity entity = currentSlot.GetComponent<BattleEntity>();
+            
+                // NOVO: Aplica modificadores de dificuldade ao inimigo ANTES de atribuir
+                if (DifficultySystem.Instance != null)
+                {
+                    DifficultySystem.Instance.ApplyToEnemy(enemiesToSpawn[i]);
+                }
+            
                 entity.characterData = enemiesToSpawn[i];
-                
+            
                 SpriteRenderer sr = currentSlot.GetComponentInChildren<SpriteRenderer>();
                 if(sr != null) sr.sprite = enemiesToSpawn[i].characterSprite;
 
@@ -425,8 +431,12 @@ public class BattleManager : MonoBehaviour
     private IEnumerator HandleBattleVictory(int rewardCoins)
     {
         yield return new WaitForSeconds(2f);
+        if (DifficultySystem.Instance != null)
+        {
+            rewardCoins = DifficultySystem.Instance.GetModifiedCoins(rewardCoins);
+        }
         
-        string victoryMessage = $"Victory! You earned {rewardCoins} coins!";
+        string victoryMessage = $"Vitória! Recebido {rewardCoins} moedas!";
         battleHUD.ShowEnemyAction(victoryMessage);
         
         yield return new WaitForSeconds(3f);

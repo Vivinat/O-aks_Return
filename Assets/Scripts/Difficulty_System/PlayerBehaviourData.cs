@@ -11,51 +11,48 @@ public enum BehaviorTriggerType
 {
     // EVENTOS ORIGINAIS
     PlayerDeath,              // 0
-    SkillOveruse,            // 1 - DEPRECADO: Use SingleSkillCarry
-    LowHealthNoCure,         // 2
-    NoDamageReceived,        // 3
-    CriticalHealth,          // 4 - DEPRECADO: Use FrequentLowHP
-    ItemExhausted,           // 5
-    LowCoinsUnvisitedShops,  // 6
-    UnusedSkill,             // 7 - DEPRECADO: Use WeakSkillIgnored
-    NoDefensiveSkills,       // 8
-    RepeatedBossDeath,       // 9
-    ShopIgnored,             // 10
-    BattleEasyVictory,       // 11
-    AllSkillsUseMana,        // 12
-    LowManaStreak,           // 13
-    ZeroManaStreak,          // 14
+    LowHealthNoCure,         // 1
+    NoDamageReceived,        // 2
+    ItemExhausted,           // 3
+    LowCoinsUnvisitedShops,  // 4
+    NoDefensiveSkills,       // 5
+    RepeatedBossDeath,       // 6
+    ShopIgnored,             // 7
+    BattleEasyVictory,       // 8
+    AllSkillsUseMana,        // 9
+    LowManaStreak,           // 10
+    ZeroManaStreak,          // 11
     
-    // EVENTOS MELHORADOS (Substituem os deprecados)
-    SingleSkillCarry,        // 15 - Skill específica domina em DANO (melhoria de SkillOveruse)
-    FrequentLowHP,           // 16 - Padrão de terminar batalhas com pouca vida (melhoria de CriticalHealth)
-    WeakSkillIgnored,        // 17 - Skill nunca usada em múltiplas batalhas (melhoria de UnusedSkill)
+    // EVENTOS MELHORADOS
+    SingleSkillCarry,        // 12
+    FrequentLowHP,           // 13
+    WeakSkillIgnored,        // 14
     
     // NOVOS EVENTOS - VELOCIDADE/ATB
-    AlwaysOutsped,           // 18 - Inimigos sempre agem primeiro
-    AlwaysFirstTurn,         // 19 - Jogador sempre age primeiro (muito fácil)
+    AlwaysOutsped,           // 15
+    AlwaysFirstTurn,         // 16
     
     // NOVOS EVENTOS - TIPO DE INIMIGO
-    StrugglesAgainstTanks,   // 20 - Dificuldade contra inimigos com muito HP
-    StrugglesAgainstFast,    // 21 - Dificuldade contra inimigos rápidos
-    StrugglesAgainstSwarms,  // 22 - Dificuldade contra múltiplos inimigos
+    StrugglesAgainstTanks,   // 17
+    StrugglesAgainstFast,    // 18
+    StrugglesAgainstSwarms,  // 19
     
     // NOVOS EVENTOS - PADRÕES DE MORTE
-    AlwaysDiesEarly,         // 23 - Morre nos primeiros turnos
-    AlwaysDiesLate,          // 24 - Morre em batalhas longas
-    DeathByChipDamage,       // 25 - Morre por múltiplos hits pequenos
+    AlwaysDiesEarly,         // 20
+    AlwaysDiesLate,          // 21
+    DeathByChipDamage,       // 22
     
     // NOVOS EVENTOS - ONE-SHOT
-    OneHitKOVulnerable,      // 26 - Recebe hits que tiram >40% HP
+    OneHitKOVulnerable,      // 23
     
     // NOVOS EVENTOS - BUILD
-    ExpensiveSkillsOnly,     // 27 - Todas skills custam muito MP
-    NoAOEDamage,             // 28 - Não tem ataques em área
+    ExpensiveSkillsOnly,     // 24
+    NoAOEDamage,             // 25
     
     // NOVOS EVENTOS - RECURSOS
-    BrokeAfterShopping,      // 29 - Gastou quase todas moedas
-    RanOutOfConsumables,     // 30 - Esgotou todos consumíveis numa batalha
-    ConsumableDependency     // 31 - Vitórias dependem muito de consumíveis
+    BrokeAfterShopping,      // 26
+    RanOutOfConsumables,     // 27
+    ConsumableDependency     // 28
 }
 
 /// <summary>
@@ -522,12 +519,18 @@ public class PlayerBehaviorProfile
         // Lógica básica - pode ser expandida por tipo específico
         switch (obs1.triggerType)
         {
-            case BehaviorTriggerType.SkillOveruse:
+            // Eventos melhorados que comparam por skill
+            case BehaviorTriggerType.SingleSkillCarry:
+            case BehaviorTriggerType.WeakSkillIgnored:
                 return obs1.GetData<string>("skillName") == obs2.GetData<string>("skillName");
+        
+            // Eventos que comparam por inimigo
             case BehaviorTriggerType.PlayerDeath:
                 return obs1.GetData<string>("killerEnemy") == obs2.GetData<string>("killerEnemy");
+        
             case BehaviorTriggerType.RepeatedBossDeath:
                 return obs1.GetData<string>("bossName") == obs2.GetData<string>("bossName");
+        
             default:
                 return true; // Para outros tipos, considera similar
         }

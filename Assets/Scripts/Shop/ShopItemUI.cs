@@ -15,15 +15,21 @@ public class ShopItemUI : MonoBehaviour, IPointerEnterHandler, IPointerExitHandl
     private BattleAction actionData;
     private ShopManager shopManager;
     private bool isForSale; // Se true, mostra preço. Se false, é slot do jogador
+    private int displayPrice = 0;
+
 
     /// <summary>
     /// Setup para itens à venda (mostra preço)
     /// </summary>
-    public void SetupForSale(BattleAction action, ShopManager manager)
+    public void SetupForSale(BattleAction action, ShopManager manager, int displayPrice = -1)
     {
         this.actionData = action;
         this.shopManager = manager;
         this.isForSale = true;
+    
+        // NOVO: Usa preço modificado se fornecido
+        this.displayPrice = displayPrice > 0 ? displayPrice : action.shopPrice;
+    
         SetupUI();
     }
 
@@ -50,9 +56,10 @@ public class ShopItemUI : MonoBehaviour, IPointerEnterHandler, IPointerExitHandl
         // Configura o preço (apenas para itens à venda)
         if (priceText != null)
         {
-            if (isForSale && actionData != null && actionData.shopPrice > 0)
+            if (isForSale && actionData != null)
             {
-                priceText.text = $"{actionData.shopPrice}";
+                int priceToShow = displayPrice > 0 ? displayPrice : actionData.shopPrice;
+                priceText.text = $"{priceToShow}";
                 priceText.gameObject.SetActive(true);
             }
             else

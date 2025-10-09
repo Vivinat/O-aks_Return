@@ -38,6 +38,10 @@ public class GameManager : MonoBehaviour
         {
             Instance = this;
             DontDestroyOnLoad(gameObject);
+            if (DifficultySystem.Instance != null && PlayerCharacterInfo != null)
+            {
+                DifficultySystem.Instance.ApplyToPlayer(PlayerCharacterInfo);
+            }
             InitializePlayerActions();
         }
         else

@@ -269,22 +269,15 @@ public class PlayerBehaviorAnalyzer : MonoBehaviour
         }
     
         // CHAMADAS ORIGINAIS
-        CheckSkillOveruse(currentMap);
         CheckLowHealthNoCure(currentMap);
         CheckNoDamageReceived(currentMap);
-        CheckCriticalHealth(currentMap);
         CheckExhaustedItems(currentMap);
-        CheckUnusedSkills(currentMap);
         CheckDefensiveSkills(currentMap);
         CheckEasyBattleVictory(currentMap);
         CheckManaIssues(currentMap);
-    
-        // ========== NOVOS CHECKS ==========
-    
-        // EVENTOS MELHORADOS
-        CheckSingleSkillCarry(currentMap);      // Melhoria de SkillOveruse
-        CheckFrequentLowHP(currentMap);         // Melhoria de CriticalHealth
-        CheckWeakSkillIgnored(currentMap);      // Melhoria de UnusedSkill
+        CheckSingleSkillCarry(currentMap);     
+        CheckFrequentLowHP(currentMap);         
+        CheckWeakSkillIgnored(currentMap);      
     
         // VELOCIDADE/ATB
         CheckAlwaysOutsped(currentMap);
@@ -350,21 +343,6 @@ public class PlayerBehaviorAnalyzer : MonoBehaviour
         // Log($"Hit recebido: {damage} de dano");
     }
 
-    private void CheckSkillOveruse(string mapName)
-    {
-        foreach (var skill in playerProfile.currentBattle.skillUsageCount)
-        {
-            if (playerProfile.currentBattle.IsSkillOverused(skill.Key, 0.5f))
-            {
-                var observation = new BehaviorObservation(BehaviorTriggerType.SkillOveruse, mapName);
-                observation.SetData("skillName", skill.Key);
-                observation.SetData("usagePercentage", (float)skill.Value / playerProfile.currentBattle.totalActionsUsed);
-                
-                playerProfile.AddObservation(observation);
-            }
-        }
-    }
-
     private void CheckLowHealthNoCure(string mapName)
     {
         float healthPercentage = (float)playerProfile.currentBattle.endingHP / playerProfile.currentBattle.startingHP;
@@ -404,22 +382,6 @@ public class PlayerBehaviorAnalyzer : MonoBehaviour
         }
     }
 
-    private void CheckCriticalHealth(string mapName)
-    {
-        float healthPercentage = (float)playerProfile.currentBattle.endingHP / playerProfile.currentBattle.startingHP;
-        
-        if (healthPercentage < 0.25f)
-        {
-            string mostDamagingEnemy = playerProfile.currentBattle.GetMostDamagingEnemy();
-            
-            var observation = new BehaviorObservation(BehaviorTriggerType.CriticalHealth, mapName);
-            observation.SetData("mostDamagingEnemy", mostDamagingEnemy);
-            observation.SetData("healthPercentage", healthPercentage);
-            
-            playerProfile.AddObservation(observation);
-        }
-    }
-
     private void CheckExhaustedItems(string mapName)
     {
         if (GameManager.Instance?.PlayerBattleActions != null)
@@ -434,17 +396,6 @@ public class PlayerBehaviorAnalyzer : MonoBehaviour
                     playerProfile.AddObservation(observation);
                 }
             }
-        }
-    }
-
-    private void CheckUnusedSkills(string mapName)
-    {
-        foreach (string unusedSkill in playerProfile.currentBattle.unusedSkills)
-        {
-            var observation = new BehaviorObservation(BehaviorTriggerType.UnusedSkill, mapName);
-            observation.SetData("unusedSkill", unusedSkill);
-            
-            playerProfile.AddObservation(observation);
         }
     }
 

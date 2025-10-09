@@ -29,9 +29,11 @@ public enum CardAttribute
     
     // Atributos de Inimigos (Específicos)
     EnemyMaxHP,
+    EnemyMaxMP,           // ADICIONADO
     EnemyDefense,
     EnemySpeed,
     EnemyActionPower,
+    EnemyActionManaCost,  // ADICIONADO
     
     // Atributos Gerais
     CoinsEarned,
@@ -98,9 +100,11 @@ public static class AttributeHelper
             case CardAttribute.PlayerActionPower: return "Poder das Ações do Jogador";
             case CardAttribute.PlayerActionManaCost: return "Custo de Mana das Ações";
             case CardAttribute.EnemyMaxHP: return "Vida Máxima dos Inimigos";
+            case CardAttribute.EnemyMaxMP: return "Mana Máxima dos Inimigos";
             case CardAttribute.EnemyDefense: return "Defesa dos Inimigos";
             case CardAttribute.EnemySpeed: return "Velocidade dos Inimigos";
             case CardAttribute.EnemyActionPower: return "Poder das Ações dos Inimigos";
+            case CardAttribute.EnemyActionManaCost: return "Custo de Mana Inimigo";
             case CardAttribute.CoinsEarned: return "Moedas Ganhas";
             case CardAttribute.ShopPrices: return "Preços da Loja";
             default: return attribute.ToString();

@@ -1,11 +1,11 @@
-// Assets/Scripts/Managers/ShopManager.cs
+// Assets/Scripts/Managers/ShopManager.cs (FIXED)
 
 using UnityEngine;
 using UnityEngine.UI;
 using System.Collections.Generic;
 using System.Linq;
 using TMPro;
-using System.Collections; // Necessário para Coroutines
+using System.Collections;
 
 public class ShopManager : MonoBehaviour
 {
@@ -45,12 +45,14 @@ public class ShopManager : MonoBehaviour
     private int selectedPlayerSlotIndex = -1;
     private bool hasPendingPurchase = false;
     
-    private bool playerBoughtSomething = false; // <<< ADICIONE ESTA LINHA
+    private bool playerBoughtSomething = false;
+    private int currentItemPrice = 0; // NOVO: Preço modificado do item selecionado
 
     // Listas para gerenciar os botões criados
     private List<GameObject> shopButtonObjects = new List<GameObject>();
     private List<GameObject> playerSlotObjects = new List<GameObject>();
     private List<BattleAction> shopActions = new List<BattleAction>();
+    private List<int> shopModifiedPrices = new List<int>(); // NOVO: Armazena preços modificados
 
     void Start()
     {
@@ -86,7 +88,7 @@ public class ShopManager : MonoBehaviour
         if (purchaseInstructionPanel != null)
             purchaseInstructionPanel.SetActive(false);
         
-        playerBoughtSomething = false; // <<< ADICIONE ESTA LINHA
+        playerBoughtSomething = false;
 
         ResetState();
         UpdateCoinsDisplay();
@@ -100,6 +102,7 @@ public class ShopManager : MonoBehaviour
         selectedShopItemIndex = -1;
         selectedPlayerSlotIndex = -1;
         hasPendingPurchase = false;
+        currentItemPrice = 0;
         
         if (exitButtonText != null)
             exitButtonText.text = "Sair";
@@ -132,6 +135,7 @@ public class ShopManager : MonoBehaviour
             .ToList();
         
         shopActions = selectedActions;
+        shopModifiedPrices.Clear(); // NOVO: Limpa preços anteriores
         
         for (int i = 0; i < selectedActions.Count; i++)
         {
@@ -142,6 +146,14 @@ public class ShopManager : MonoBehaviour
             {
                 action.currentUses = action.maxUses;
             }
+            
+            // NOVO: Calcula e armazena preço modificado
+            int displayPrice = action.shopPrice;
+            if (DifficultySystem.Instance != null)
+            {
+                displayPrice = DifficultySystem.Instance.GetModifiedShopPrice(action.shopPrice);
+            }
+            shopModifiedPrices.Add(displayPrice);
 
             int buttonIndex = i;
             
@@ -150,13 +162,13 @@ public class ShopManager : MonoBehaviour
             
             if (shopButton == null) continue;
             
-            shopButton.SetupForSale(action, this);
+            shopButton.SetupForSale(action, this, displayPrice);
             shopButtonObjects.Add(shopInstance);
 
             Button buttonComponent = shopInstance.GetComponent<Button>();
             if (buttonComponent != null)
             {
-                buttonComponent.onClick.AddListener(() => OnShopItemSelected(action, buttonIndex));
+                buttonComponent.onClick.AddListener(() => OnShopItemSelected(action, buttonIndex, displayPrice));
             }
         }
         
@@ -206,14 +218,14 @@ public class ShopManager : MonoBehaviour
         if (buttonImage != null) buttonImage.color = emptySlotColor;
     }
 
-    public void OnShopItemSelected(BattleAction action, int buttonIndex)
+    public void OnShopItemSelected(BattleAction action, int buttonIndex, int modifiedPrice)
     {
         if (hasPendingPurchase)
         {
             CancelPendingPurchase();
         }
 
-        if (!GameManager.Instance.CurrencySystem.HasEnoughCoins(action.shopPrice))
+        if (!GameManager.Instance.CurrencySystem.HasEnoughCoins(modifiedPrice))
         {
             Debug.Log($"Moedas insuficientes para {action.actionName}!");
             AudioConstants.PlayCannotSelect();
@@ -225,6 +237,7 @@ public class ShopManager : MonoBehaviour
         selectedShopItemIndex = buttonIndex;
         selectedPlayerSlotIndex = -1;
         hasPendingPurchase = true;
+        currentItemPrice = modifiedPrice;
         
         UpdateShopHighlights();
         UpdatePlayerSlotHighlights();
@@ -239,7 +252,7 @@ public class ShopManager : MonoBehaviour
             purchaseInstructionPanel.SetActive(true);
             if (purchaseInstructionText != null)
             {
-                purchaseInstructionText.text = $"Escolha um slot para '{selectedShopItem.actionName}' (Custo: {shopActions[selectedShopItemIndex].shopPrice})";
+                purchaseInstructionText.text = $"Escolha um slot para '{selectedShopItem.actionName}' (Custo: {currentItemPrice})";
             }
         }
     }
@@ -260,7 +273,7 @@ public class ShopManager : MonoBehaviour
 
     private bool ConfirmPurchase()
     {
-        int price = shopActions[selectedShopItemIndex].shopPrice;
+        int price = currentItemPrice;
         
         if (GameManager.Instance.CurrencySystem.SpendCoins(price))
         {
@@ -292,6 +305,7 @@ public class ShopManager : MonoBehaviour
         selectedShopItemIndex = -1;
         selectedPlayerSlotIndex = -1;
         hasPendingPurchase = false;
+        currentItemPrice = 0;
     
         if (purchaseInstructionPanel != null)
             purchaseInstructionPanel.SetActive(false);
@@ -308,6 +322,7 @@ public class ShopManager : MonoBehaviour
         selectedShopItemIndex = -1;
         selectedPlayerSlotIndex = -1;
         hasPendingPurchase = false;
+        currentItemPrice = 0;
         
         if (purchaseInstructionPanel != null)
             purchaseInstructionPanel.SetActive(false);
@@ -322,14 +337,14 @@ public class ShopManager : MonoBehaviour
     {
         for (int i = 0; i < shopButtonObjects.Count; i++)
         {
-            if (i >= shopActions.Count || shopButtonObjects[i] == null) continue;
+            if (i >= shopActions.Count || i >= shopModifiedPrices.Count || shopButtonObjects[i] == null) continue;
 
             Button button = shopButtonObjects[i].GetComponent<Button>();
             Image buttonImage = shopButtonObjects[i].GetComponent<Image>();
             
             if (button == null || buttonImage == null) continue;
             
-            bool canAfford = GameManager.Instance.CurrencySystem.HasEnoughCoins(shopActions[i].shopPrice);
+            bool canAfford = GameManager.Instance.CurrencySystem.HasEnoughCoins(shopModifiedPrices[i]);
             bool isSelected = (i == selectedShopItemIndex && hasPendingPurchase);
             
             if (isSelected)
@@ -388,6 +403,7 @@ public class ShopManager : MonoBehaviour
         }
         shopButtonObjects.Clear();
         shopActions.Clear();
+        shopModifiedPrices.Clear(); // NOVO: Limpa preços também
     }
 
     private void ClearPlayerSlots()
@@ -409,18 +425,14 @@ public class ShopManager : MonoBehaviour
             CancelPendingPurchase();
         }
         
-        // NOVO: Detecta se gastou quase todas as moedas
         if (playerBoughtSomething && GameManager.Instance?.CurrencySystem != null)
         {
             int coinsLeft = GameManager.Instance.CurrencySystem.CurrentCoins;
         
-            // Usa uma estimativa: se tem <30 moedas, provavelmente gastou muito
             if (coinsLeft < 30)
             {
-                // Calcula percentual gasto (estimativa)
-                float percentageSpent = 0.8f; // Placeholder: pelo menos 80%
+                float percentageSpent = 0.8f;
             
-                // Registra observação
                 if (PlayerBehaviorAnalyzer.Instance != null)
                 {
                     var observation = new BehaviorObservation(
@@ -458,8 +470,6 @@ public class ShopManager : MonoBehaviour
         playerActions.RemoveAll(action => action == null);
     }
     
-    // --- MÉTODOS DE REMOÇÃO DE ITENS (INSERÇÃO NOVA) ---
-
     /// <summary>
     /// Remove um item da loja de forma mais robusta.
     /// </summary>
@@ -476,55 +486,44 @@ public class ShopManager : MonoBehaviour
         
         Debug.Log($"Iniciando remoção do item: {itemName} (índice {itemIndex})");
 
-        // Passo 1: Desativa o objeto imediatamente para sumir da tela
         if (buttonToRemove != null)
         {
             buttonToRemove.SetActive(false);
             Debug.Log($"Botão do {itemName} desativado.");
         }
 
-        // Passo 2: Remove das listas de controle
         shopButtonObjects.RemoveAt(itemIndex);
         shopActions.RemoveAt(itemIndex);
+        shopModifiedPrices.RemoveAt(itemIndex); // NOVO: Remove preço também
         Debug.Log($"Item {itemName} removido das listas de dados.");
 
-        // Passo 3: Destrói o objeto (usando corrotina para segurança)
         if (buttonToRemove != null)
         {
             StartCoroutine(DestroyButtonDelayed(buttonToRemove, itemName));
         }
 
-        // Passo 4: Reordena os índices dos botões restantes
         UpdateShopButtonIndices();
-        
-        // Passo 5: Força a atualização visual do layout
         ForceShopRefresh();
         
         Debug.Log($"Remoção de {itemName} concluída. Restam {shopButtonObjects.Count} itens na loja.");
     }
 
-    /// <summary>
-    /// Corrotina para destruir o botão com um pequeno delay, evitando problemas de frame.
-    /// </summary>
     private IEnumerator DestroyButtonDelayed(GameObject buttonToDestroy, string itemName)
     {
         yield return new WaitForEndOfFrame();
         
         if (buttonToDestroy != null)
         {
-            Destroy(buttonToDestroy); // Usar Destroy é geralmente mais seguro que DestroyImmediate
+            Destroy(buttonToDestroy);
             Debug.Log($"GameObject do botão de {itemName} destruído com sucesso.");
         }
         
-        // Opcional: Força outro refresh após a destruição para garantir
         yield return new WaitForEndOfFrame();
         ForceShopRefresh();
     }
 
-    // --- MÉTODOS AUXILIARES PARA REMOÇÃO (NOVOS) ---
-
     /// <summary>
-    /// Atualiza os listeners dos botões com os novos índices corretos após uma remoção.
+    /// CORRIGIDO: Atualiza os listeners dos botões com os novos índices E preços corretos
     /// </summary>
     private void UpdateShopButtonIndices()
     {
@@ -537,15 +536,15 @@ public class ShopManager : MonoBehaviour
 
                 int newIndex = i;
                 BattleAction action = shopActions[newIndex];
-                button.onClick.AddListener(() => OnShopItemSelected(action, newIndex));
+                int modifiedPrice = shopModifiedPrices[newIndex]; // NOVO: Pega o preço da lista
+                
+                // CORRIGIDO: Passa os 3 argumentos
+                button.onClick.AddListener(() => OnShopItemSelected(action, newIndex, modifiedPrice));
             }
         }
         Debug.Log("Índices dos botões da loja foram atualizados.");
     }
 
-    /// <summary>
-    /// Força a atualização do layout do contêiner da loja.
-    /// </summary>
     private void ForceShopRefresh()
     {
         if (shopItemsContainer != null)
@@ -554,8 +553,6 @@ public class ShopManager : MonoBehaviour
             Debug.Log("Layout da loja atualizado.");
         }
     }
-    
-    // --- FIM DOS MÉTODOS DE REMOÇÃO ---
 
     private void EndShopEvent()
     {
@@ -566,7 +563,6 @@ public class ShopManager : MonoBehaviour
         GameManager.Instance.ReturnToMap();
     }
 
-    // --- MÉTODOS DO TOOLTIP ---
     public void ShowTooltip(string name, string description)
     {
         if (tooltipUI != null && tooltipAnchor != null)
