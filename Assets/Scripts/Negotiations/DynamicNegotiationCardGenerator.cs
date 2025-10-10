@@ -99,53 +99,98 @@ public class DynamicNegotiationCardGenerator : MonoBehaviour
     /// <summary>
     /// Gera cartas dinâmicas com tipos variados
     /// </summary>
+    /// <summary>
+    /// Gera cartas dinâmicas com tipos variados INTELIGENTEMENTE
+    /// </summary>
     public List<DynamicNegotiationCard> GenerateCards(int numberOfCards)
     {
         List<DynamicNegotiationCard> cards = new List<DynamicNegotiationCard>();
-        
+    
         int possibleCards = Mathf.Min(advantagePool.Count, disadvantagePool.Count);
         possibleCards = Mathf.Min(possibleCards, numberOfCards);
-        
+    
         DebugLog($"=== GERANDO {possibleCards} CARTAS ===");
-        
+    
         if (possibleCards == 0)
         {
             DebugLog("⚠️ Pools vazias - não é possível gerar cartas dinâmicas!");
             return cards;
         }
-        
+    
         for (int i = 0; i < possibleCards; i++)
         {
             NegotiationOffer advantage = advantagePool[i];
             NegotiationOffer disadvantage = disadvantagePool[i];
-            
-            // Escolhe tipo de carta aleatoriamente
-            NegotiationCardType cardType = ChooseRandomCardType();
-            
+        
+            // Escolhe tipo de carta INTELIGENTEMENTE baseado nos atributos
+            NegotiationCardType cardType = ChooseIntelligentCardType(advantage, disadvantage);
+        
             DynamicNegotiationCard card = new DynamicNegotiationCard(advantage, disadvantage, cardType);
             cards.Add(card);
-            
-            DebugLog($"Carta {i + 1} ({cardType}): {card.GetCardName()}");
-        }
         
+            DebugLog($"Carta {i + 1} ({cardType}): {card.GetCardName()}");
+            DebugLog($"  Vantagem: {advantage.offerName}");
+            DebugLog($"  Custo: {disadvantage.offerName}");
+        }
+    
         return cards;
     }
     
-    private NegotiationCardType ChooseRandomCardType()
+    /// <summary>
+    /// Escolhe tipo de carta baseado nos atributos das ofertas
+    /// </summary>
+    private NegotiationCardType ChooseIntelligentCardType(NegotiationOffer advantage, NegotiationOffer disadvantage)
     {
+        // Se os atributos são relacionados (mesma categoria), permite escolher
+        bool playerAttrsRelated = AreAttributesRelated(advantage.playerAttribute);
+        bool enemyAttrsRelated = AreAttributesRelated(disadvantage.enemyAttribute);
+    
         float roll = Random.value;
-        
-        if (roll < fixedProbability)
+    
+        // 40% AttributeAndIntensity (quando faz sentido)
+        if (roll < 0.4f && (playerAttrsRelated || enemyAttrsRelated))
         {
-            return NegotiationCardType.Fixed;
+            return NegotiationCardType.AttributeAndIntensity;
         }
-        else if (roll < fixedProbability + intensityOnlyProbability)
+        // 30% IntensityOnly
+        else if (roll < 0.7f)
         {
             return NegotiationCardType.IntensityOnly;
         }
+        // 30% Fixed
         else
         {
-            return NegotiationCardType.AttributeAndIntensity;
+            return NegotiationCardType.Fixed;
+        }
+    }
+    
+    /// <summary>
+    /// Verifica se um atributo tem outros relacionados que podem ser oferecidos
+    /// </summary>
+    private bool AreAttributesRelated(CardAttribute attr)
+    {
+        switch (attr)
+        {
+            case CardAttribute.PlayerMaxHP:
+            case CardAttribute.PlayerDefense:
+            case CardAttribute.PlayerMaxMP:
+                return true; // Stats defensivos
+            
+            case CardAttribute.PlayerActionPower:
+            case CardAttribute.PlayerSpeed:
+                return true; // Stats ofensivos
+            
+            case CardAttribute.EnemyMaxHP:
+            case CardAttribute.EnemyDefense:
+            case CardAttribute.EnemyMaxMP:
+                return true; // Stats defensivos inimigos
+            
+            case CardAttribute.EnemyActionPower:
+            case CardAttribute.EnemySpeed:
+                return true; // Stats ofensivos inimigos
+            
+            default:
+                return false;
         }
     }
     

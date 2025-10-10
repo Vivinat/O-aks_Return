@@ -12,6 +12,7 @@ public static class ObservationInterpreter
     /// <summary>
     /// Interpreta uma observação e gera ofertas (vantagens e desvantagens)
     /// </summary>
+
     public static List<NegotiationOffer> InterpretObservation(BehaviorObservation observation)
     {
         List<NegotiationOffer> offers = new List<NegotiationOffer>();
@@ -27,7 +28,7 @@ public static class ObservationInterpreter
                 break;
                 
             case BehaviorTriggerType.FrequentLowHP:
-                offers.AddRange(InterpretFrequentLowHP(observation));
+                offers.AddRange(InterpretFrequentLowHPFlexible(observation));
                 break;
                 
             case BehaviorTriggerType.WeakSkillIgnored:
@@ -85,7 +86,46 @@ public static class ObservationInterpreter
                 offers.AddRange(InterpretConsumableIssues(observation));
                 break;
                 
-            // Adicione mais casos conforme necessário
+            // NOVOS CASOS
+            case BehaviorTriggerType.NoDamageReceived:
+                offers.AddRange(InterpretNoDamageReceived(observation));
+                break;
+                
+            case BehaviorTriggerType.ItemExhausted:
+                offers.AddRange(InterpretItemExhausted(observation));
+                break;
+                
+            case BehaviorTriggerType.NoDefensiveSkills:
+                offers.AddRange(InterpretNoDefensiveSkills(observation));
+                break;
+                
+            case BehaviorTriggerType.RepeatedBossDeath:
+                offers.AddRange(InterpretRepeatedBossDeath(observation));
+                break;
+                
+            case BehaviorTriggerType.ShopIgnored:
+                offers.AddRange(InterpretShopIgnored(observation));
+                break;
+                
+            case BehaviorTriggerType.BattleEasyVictory:
+                offers.AddRange(InterpretEasyVictoryFlexible(observation));
+                break;
+                
+            case BehaviorTriggerType.ExpensiveSkillsOnly:
+                offers.AddRange(InterpretExpensiveSkillsOnly(observation));
+                break;
+                
+            case BehaviorTriggerType.NoAOEDamage:
+                offers.AddRange(InterpretNoAOEDamage(observation));
+                break;
+                
+            case BehaviorTriggerType.BrokeAfterShopping:
+                offers.AddRange(InterpretBrokeAfterShopping(observation));
+                break;
+                
+            case BehaviorTriggerType.LowCoinsUnvisitedShops:
+                offers.AddRange(InterpretLowCoinsUnvisitedShops(observation));
+                break;
         }
         
         return offers;
@@ -153,32 +193,36 @@ public static class ObservationInterpreter
         return offers;
     }
     
-    private static List<NegotiationOffer> InterpretFrequentLowHP(BehaviorObservation obs)
+    /// <summary>
+    /// VERSÃO FLEXÍVEL: Oferece escolha de atributo defensivo
+    /// </summary>
+    private static List<NegotiationOffer> InterpretFrequentLowHPFlexible(BehaviorObservation obs)
     {
         List<NegotiationOffer> offers = new List<NegotiationOffer>();
-        
-        // VANTAGEM: Aumentar HP máximo
-        offers.Add(new NegotiationOffer(
-            "Vitalidade Renovada",
-            "As forças cósmicas notam sua fragilidade e oferecem resistência.",
-            true,
+
+        // VANTAGEM: Escolha de stat defensivo
+        var flexibleOffer = new NegotiationOffer(
+            "Fortificação Adaptativa",
+            "Escolha como fortalecer suas defesas.",
+            true, // vantagem
             CardAttribute.PlayerMaxHP, 30,
             CardAttribute.EnemyMaxHP, 20,
             obs.triggerType,
             "HP crítico frequente"
-        ));
-        
-        // DESVANTAGEM: Defesa reduzida
+        );
+        offers.Add(flexibleOffer);
+
+        // DESVANTAGEM: Para balancear
         offers.Add(new NegotiationOffer(
-            "Armadura Frágil",
-            "Suas defesas enfraquecem sob pressão constante.",
-            false,
+            "Fragilidade Persistente",
+            "Seus problemas defensivos deixam marcas permanentes.",
+            false, // desvantagem
             CardAttribute.PlayerDefense, -8,
             CardAttribute.EnemyDefense, -5,
             obs.triggerType,
             "HP crítico frequente"
         ));
-        
+
         return offers;
     }
     
@@ -562,5 +606,341 @@ public static class ObservationInterpreter
         return offers;
     }
     
+    #endregion
+    
+    // Assets/Scripts/Difficulty_System/ObservationInterpreter.cs (CONTINUAÇÃO)
+
+    #region Interpretation Methods - PARTE 2
+
+    /// <summary>
+    /// Detecta quando o jogador não recebeu dano (vitória perfeita)
+    /// </summary>
+    private static List<NegotiationOffer> InterpretNoDamageReceived(BehaviorObservation obs)
+    {
+        List<NegotiationOffer> offers = new List<NegotiationOffer>();
+        string enemyName = obs.GetData<string>("randomEnemy", "Inimigo");
+        
+        // VANTAGEM: Você está muito forte - menos recursos
+        offers.Add(new NegotiationOffer(
+            "Confiança Absoluta",
+            "Sua força é inquestionável. Você não precisa de tantos recursos.",
+            true, // vantagem
+            CardAttribute.PlayerActionPower, 25,
+            CardAttribute.CoinsEarned, -15,
+            obs.triggerType,
+            $"Vitória perfeita vs {enemyName}"
+        ));
+        
+        // DESVANTAGEM: Inimigos aprendem com a derrota
+        offers.Add(new NegotiationOffer(
+            "Lição Aprendida",
+            "Seus inimigos estudam sua técnica e se fortalecem.",
+            false, // desvantagem
+            CardAttribute.PlayerMaxHP, -20,
+            CardAttribute.EnemyDefense, 20,
+            obs.triggerType,
+            $"Vitória perfeita vs {enemyName}"
+        ));
+        
+        return offers;
+    }
+
+    /// <summary>
+    /// Detecta quando um item foi totalmente esgotado
+    /// </summary>
+    private static List<NegotiationOffer> InterpretItemExhausted(BehaviorObservation obs)
+    {
+        List<NegotiationOffer> offers = new List<NegotiationOffer>();
+        string itemName = obs.GetData<string>("exhaustedItem", "Item");
+        
+        // VANTAGEM: Compensar com stats permanentes
+        offers.Add(new NegotiationOffer(
+            "Força Interior",
+            $"Ao esgotar '{itemName}', você desenvolve resistência própria.",
+            true,
+            CardAttribute.PlayerMaxHP, 30,
+            CardAttribute.EnemyMaxHP, 25,
+            obs.triggerType,
+            $"Item esgotado: {itemName}"
+        ));
+        
+        // DESVANTAGEM: Dependência de consumíveis
+        offers.Add(new NegotiationOffer(
+            "Dependência Crítica",
+            "Sua estratégia baseada em itens o enfraquece sem eles.",
+            false,
+            CardAttribute.PlayerDefense, -12,
+            CardAttribute.EnemyActionPower, -10,
+            obs.triggerType,
+            $"Item esgotado: {itemName}"
+        ));
+        
+        return offers;
+    }
+
+    /// <summary>
+    /// Detecta quando o jogador não tem skills defensivas
+    /// </summary>
+    private static List<NegotiationOffer> InterpretNoDefensiveSkills(BehaviorObservation obs)
+    {
+        List<NegotiationOffer> offers = new List<NegotiationOffer>();
+        
+        // VANTAGEM: Especialização ofensiva
+        offers.Add(new NegotiationOffer(
+            "A Melhor Defesa",
+            "Puro foco ofensivo. Ataque é a sua defesa.",
+            true,
+            CardAttribute.PlayerActionPower, 30,
+            CardAttribute.EnemyActionPower, 20,
+            obs.triggerType,
+            "Build sem skills defensivas"
+        ));
+        
+        // DESVANTAGEM: Fragilidade compensada
+        offers.Add(new NegotiationOffer(
+            "Vidro e Canhão",
+            "Sem defesas, você precisa de mais vida para sobreviver.",
+            false,
+            CardAttribute.PlayerMaxHP, 40,
+            CardAttribute.EnemySpeed, 3,
+            obs.triggerType,
+            "Build sem skills defensivas"
+        ));
+        
+        return offers;
+    }
+
+    /// <summary>
+    /// Detecta morte repetida no mesmo boss
+    /// </summary>
+    private static List<NegotiationOffer> InterpretRepeatedBossDeath(BehaviorObservation obs)
+    {
+        List<NegotiationOffer> offers = new List<NegotiationOffer>();
+        string bossName = obs.GetData<string>("bossName", "Boss");
+        
+        // VANTAGEM: Buff específico contra esse boss
+        offers.Add(new NegotiationOffer(
+            "Vingança Direcionada",
+            $"As forças cósmicas concedem poder contra {bossName}.",
+            true,
+            CardAttribute.PlayerActionPower, 35,
+            CardAttribute.EnemyMaxHP, 30, // Todos os inimigos ficam mais fortes
+            obs.triggerType,
+            $"Mortes repetidas: {bossName}"
+        ));
+        
+        // DESVANTAGEM: Boss fica ainda mais forte
+        offers.Add(new NegotiationOffer(
+            "Sede por Sangue",
+            $"{bossName} se fortalece com cada vitória sobre você.",
+            false,
+            CardAttribute.PlayerMaxMP, -15,
+            CardAttribute.EnemyActionPower, 25,
+            obs.triggerType,
+            $"Mortes repetidas: {bossName}"
+        ));
+        
+        return offers;
+    }
+
+    /// <summary>
+    /// Detecta quando o jogador ignora a loja
+    /// </summary>
+    private static List<NegotiationOffer> InterpretShopIgnored(BehaviorObservation obs)
+    {
+        List<NegotiationOffer> offers = new List<NegotiationOffer>();
+        int playerCoins = obs.GetData<int>("playerCoins", 0);
+        
+        // VANTAGEM: Recompensa por economia
+        offers.Add(new NegotiationOffer(
+            "Guardião de Recursos",
+            "Sua disciplina financeira é recompensada com poder.",
+            true,
+            CardAttribute.CoinsEarned, 20,
+            CardAttribute.ShopPrices, 10,
+            obs.triggerType,
+            $"Loja ignorada com {playerCoins} moedas"
+        ));
+        
+        // DESVANTAGEM: Preços sobem
+        offers.Add(new NegotiationOffer(
+            "Inflação Galopante",
+            "Comerciantes aumentam os preços para compensar.",
+            false,
+            CardAttribute.ShopPrices, 25,
+            CardAttribute.EnemyMaxHP, -20,
+            obs.triggerType,
+            $"Loja ignorada com {playerCoins} moedas"
+        ));
+        
+        return offers;
+    }
+    
+    /// <summary>
+    /// VERSÃO FLEXÍVEL: Permite escolher qual stat ofensivo buffar
+    /// </summary>
+    private static List<NegotiationOffer> InterpretEasyVictoryFlexible(BehaviorObservation obs)
+    {
+        List<NegotiationOffer> offers = new List<NegotiationOffer>();
+
+        // VANTAGEM: Escolha de stat ofensivo
+        var flexibleOffer = new NegotiationOffer(
+            "Poder Crescente",
+            "Canalize sua confiança em poder ofensivo.",
+            true,
+            CardAttribute.PlayerActionPower, 25,
+            CardAttribute.EnemyActionPower, 15,
+            obs.triggerType,
+            "Vitória muito fácil"
+        );
+        offers.Add(flexibleOffer);
+
+        // DESVANTAGEM: Para balancear
+        offers.Add(new NegotiationOffer(
+            "Desafio Amplificado",
+            "O universo aumenta a dificuldade para te testar.",
+            false,
+            CardAttribute.PlayerMaxHP, -15,
+            CardAttribute.EnemyMaxHP, 35,
+            obs.triggerType,
+            "Vitória muito fácil"
+        ));
+
+        return offers;
+    }
+
+    /// <summary>
+    /// Detecta build com apenas skills caras
+    /// </summary>
+    private static List<NegotiationOffer> InterpretExpensiveSkillsOnly(BehaviorObservation obs)
+    {
+        List<NegotiationOffer> offers = new List<NegotiationOffer>();
+        float avgCost = obs.GetData<float>("averageManaCost", 20f);
+        
+        // VANTAGEM: Especialista em mana
+        offers.Add(new NegotiationOffer(
+            "Maestria Arcana",
+            "Domine o uso de magias poderosas com mais eficiência.",
+            true,
+            CardAttribute.PlayerMaxMP, 35,
+            CardAttribute.EnemyMaxMP, 20,
+            obs.triggerType,
+            $"Custo médio: {avgCost:F0} MP"
+        ));
+        
+        // DESVANTAGEM: Custo ainda maior
+        offers.Add(new NegotiationOffer(
+            "Fome Voraz",
+            "Suas magias poderosas drenam ainda mais energia.",
+            false,
+            CardAttribute.PlayerActionManaCost, 8,
+            CardAttribute.EnemyActionManaCost, 5,
+            obs.triggerType,
+            $"Custo médio: {avgCost:F0} MP"
+        ));
+        
+        return offers;
+    }
+
+    /// <summary>
+    /// Detecta falta de dano em área
+    /// </summary>
+    private static List<NegotiationOffer> InterpretNoAOEDamage(BehaviorObservation obs)
+    {
+        List<NegotiationOffer> offers = new List<NegotiationOffer>();
+        float avgEnemies = obs.GetData<float>("averageEnemyCount", 2f);
+        
+        // VANTAGEM: Single-target specialist
+        offers.Add(new NegotiationOffer(
+            "Assassino Preciso",
+            "Foco absoluto em alvos únicos resulta em dano devastador.",
+            true,
+            CardAttribute.PlayerActionPower, 40,
+            CardAttribute.EnemyDefense, 15,
+            obs.triggerType,
+            $"Sem AOE vs {avgEnemies:F0} inimigos"
+        ));
+        
+        // DESVANTAGEM: Mais inimigos para compensar
+        offers.Add(new NegotiationOffer(
+            "Números Crescentes",
+            "Sem AOE, você enfrenta hordas maiores.",
+            false,
+            CardAttribute.PlayerMaxHP, -15,
+            CardAttribute.EnemyMaxHP, -15, // Inimigos individualmente mais fracos, mas em maior número
+            obs.triggerType,
+            $"Sem AOE vs {avgEnemies:F0} inimigos"
+        ));
+        
+        return offers;
+    }
+
+    /// <summary>
+    /// Detecta quando o jogador fica sem dinheiro após compras
+    /// </summary>
+    private static List<NegotiationOffer> InterpretBrokeAfterShopping(BehaviorObservation obs)
+    {
+        List<NegotiationOffer> offers = new List<NegotiationOffer>();
+        int coinsLeft = obs.GetData<int>("coinsLeft", 0);
+        
+        // VANTAGEM: Investimento sábio
+        offers.Add(new NegotiationOffer(
+            "Tudo ou Nada",
+            "Gastar tudo mostra comprometimento. Seja recompensado.",
+            true,
+            CardAttribute.CoinsEarned, 30,
+            CardAttribute.EnemyActionPower, 12,
+            obs.triggerType,
+            $"Restaram apenas {coinsLeft} moedas"
+        ));
+        
+        // DESVANTAGEM: Dívida cósmica
+        offers.Add(new NegotiationOffer(
+            "Endividamento",
+            "Gastos excessivos têm consequências.",
+            false,
+            CardAttribute.ShopPrices, 20,
+            CardAttribute.EnemyMaxHP, -15,
+            obs.triggerType,
+            $"Restaram apenas {coinsLeft} moedas"
+        ));
+        
+        return offers;
+    }
+
+    /// <summary>
+    /// Detecta poucas moedas com lojas disponíveis
+    /// </summary>
+    private static List<NegotiationOffer> InterpretLowCoinsUnvisitedShops(BehaviorObservation obs)
+    {
+        List<NegotiationOffer> offers = new List<NegotiationOffer>();
+        int currentCoins = obs.GetData<int>("currentCoins", 0);
+        int shopsCount = obs.GetData<int>("unvisitedShopsCount", 1);
+        
+        // VANTAGEM: Boost de economia
+        offers.Add(new NegotiationOffer(
+            "Filantropia Cósmica",
+            "As forças do universo concedem moedas para aliviar sua pobreza.",
+            true,
+            CardAttribute.CoinsEarned, 25,
+            CardAttribute.EnemySpeed, 2,
+            obs.triggerType,
+            $"{currentCoins} moedas, {shopsCount} lojas disponíveis"
+        ));
+        
+        // DESVANTAGEM: Pobreza persistente
+        offers.Add(new NegotiationOffer(
+            "Círculo Vicioso",
+            "Sua escassez de recursos persiste.",
+            false,
+            CardAttribute.PlayerMaxMP, -10,
+            CardAttribute.ShopPrices, -20, // Preços menores para ajudar
+            obs.triggerType,
+            $"{currentCoins} moedas, {shopsCount} lojas disponíveis"
+        ));
+        
+        return offers;
+    }
+
     #endregion
 }
