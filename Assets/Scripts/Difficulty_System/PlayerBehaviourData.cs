@@ -52,7 +52,9 @@ public enum BehaviorTriggerType
     // NOVOS EVENTOS - RECURSOS
     BrokeAfterShopping,      // 26
     RanOutOfConsumables,     // 27
-    ConsumableDependency     // 28
+    ConsumableDependency,     // 28
+    
+    DefaultSessionOffer     //100
 }
 
 /// <summary>

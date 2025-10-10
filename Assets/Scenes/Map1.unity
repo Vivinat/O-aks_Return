@@ -1377,6 +1377,55 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f4688fdb7df04437aeb418b961361dc5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!1 &1041115055
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1041115057}
+  - component: {fileID: 1041115056}
+  m_Layer: 0
+  m_Name: DynamicNegotiationCardGenerator
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &1041115056
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1041115055}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 72f7eadb4ae46374daef350d6e27a1ba, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  maxObservationsToProcess: 10
+  clearProcessedObservations: 1
+  fixedProbability: 0.4
+  intensityOnlyProbability: 0.3
+  showDebugLogs: 1
+--- !u!4 &1041115057
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1041115055}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 2.4478698, y: 24.100344, z: -0.113545515}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1048656626
 GameObject:
   m_ObjectHideFlags: 0
@@ -1457,6 +1506,68 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f4688fdb7df04437aeb418b961361dc5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!1 &1282895008
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1282895010}
+  - component: {fileID: 1282895009}
+  m_Layer: 0
+  m_Name: DifficultSystem
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &1282895009
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1282895008}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: dc02f8120f1b759469f0d8b6ebcf3f49, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  saveModifiers: 1
+  saveFileName: difficulty_modifiers.json
+  showDebugLogs: 1
+  modifiers:
+    playerMaxHPModifier: 0
+    playerMaxMPModifier: 0
+    playerDefenseModifier: 0
+    playerSpeedModifier: 0
+    playerActionPowerModifier: 0
+    playerActionManaCostModifier: 0
+    enemyMaxHPModifier: 0
+    enemyMaxMPModifier: 0
+    enemyDefenseModifier: 0
+    enemySpeedModifier: 0
+    enemyActionPowerModifier: 0
+    enemyActionManaCostModifier: 0
+    coinsEarnedModifier: 0
+    shopPricesModifier: 0
+--- !u!4 &1282895010
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1282895008}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 2.4478698, y: 24.100344, z: -0.113545515}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1312772704
 GameObject:
   m_ObjectHideFlags: 0
@@ -16854,7 +16965,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   connectedNodes: []
   isLocked: 1
-  eventType: {fileID: 11400000, guid: 2e0c96beca99f2c4a839e33534fee06a, type: 2}
+  eventType: {fileID: 11400000, guid: 700cdbbc678e62b44945bddfe6ec3c45, type: 2}
   eventMusic: {fileID: 8300000, guid: 8a2dd0a7e0a5a714db5403c79753f496, type: 3}
   battleBackgroundOverride: {fileID: 21300000, guid: f6c71d42837820b4ba213ecad75672e5, type: 3}
 --- !u!61 &1737705168
@@ -17504,3 +17615,5 @@ SceneRoots:
   - {fileID: 2026001520}
   - {fileID: 822390320}
   - {fileID: 740120916}
+  - {fileID: 1282895010}
+  - {fileID: 1041115057}

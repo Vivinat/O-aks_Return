@@ -50,6 +50,27 @@ public class DynamicNegotiationCardGenerator : MonoBehaviour
         advantagePool.Clear();
         disadvantagePool.Clear();
         
+        // NOVO: Adiciona ofertas padrão PRIMEIRO
+        if (DefaultNegotiationOffers.Instance != null)
+        {
+            List<NegotiationOffer> defaultOffers = DefaultNegotiationOffers.Instance.GenerateDefaultOffers();
+            
+            foreach (var offer in defaultOffers)
+            {
+                if (offer.isAdvantage)
+                {
+                    advantagePool.Add(offer);
+                    DebugLog($"  ✓ Vantagem padrão: {offer.offerName}");
+                }
+                else
+                {
+                    disadvantagePool.Add(offer);
+                    DebugLog($"  ✗ Desvantagem padrão: {offer.offerName}");
+                }
+            }
+        }
+        
+        // Resto do código original (processa observações comportamentais)
         var observations = PlayerBehaviorAnalyzer.Instance.GetUnresolvedNegotiationTriggers(maxObservationsToProcess);
         
         DebugLog($"=== PROCESSANDO {observations.Count} OBSERVAÇÕES ===");
@@ -69,12 +90,12 @@ public class DynamicNegotiationCardGenerator : MonoBehaviour
                     if (offer.isAdvantage)
                     {
                         advantagePool.Add(offer);
-                        DebugLog($"  ✓ Vantagem: {offer.offerName}");
+                        DebugLog($"  ✓ Vantagem comportamental: {offer.offerName}");
                     }
                     else
                     {
                         disadvantagePool.Add(offer);
-                        DebugLog($"  ✗ Desvantagem: {offer.offerName}");
+                        DebugLog($"  ✗ Desvantagem comportamental: {offer.offerName}");
                     }
                 }
                 
