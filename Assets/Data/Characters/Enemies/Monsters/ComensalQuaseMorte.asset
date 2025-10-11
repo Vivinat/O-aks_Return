@@ -15,11 +15,12 @@ MonoBehaviour:
   characterName: Comensal da Quase-Morte
   team: 1
   characterSprite: {fileID: 21300000, guid: 01f2ce28e5a53024d9b86772cbf730c5, type: 3}
-  maxHp: 108
-  maxMp: 37
-  defense: 14
-  speed: 1.0195804
+  maxHp: 90
+  maxMp: 100
+  defense: 12
+  speed: 0.9
+  deathSound: {fileID: 0}
   battleActions:
-  - {fileID: 11400000, guid: 8fecc7f7fdf6ede46bf10520a1edae55, type: 2}
-  - {fileID: 11400000, guid: 7d3885c5e2b855d46bf54260a45667f5, type: 2}
-  - {fileID: 11400000, guid: 42af41ce3c6c9fd4b86e0ce3da94b225, type: 2}
+  - {fileID: 11400000, guid: d6f12f8449a69e6439861ceb55211d88, type: 2}
+  - {fileID: 11400000, guid: c9f245a0dc124ce41ae899fdc485b40c, type: 2}
+  - {fileID: 11400000, guid: fd2185eac5ce59d40a6129af997a4632, type: 2}

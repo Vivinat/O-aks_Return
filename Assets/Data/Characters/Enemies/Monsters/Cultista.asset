@@ -15,11 +15,12 @@ MonoBehaviour:
   characterName: Cultista
   team: 1
   characterSprite: {fileID: 21300000, guid: b042987c17c8fdd458c61064fca449e0, type: 3}
-  maxHp: 72
-  maxMp: 50
-  defense: 7
-  speed: 1.5076785
+  maxHp: 70
+  maxMp: 140
+  defense: 6
+  speed: 1.5
+  deathSound: {fileID: 0}
   battleActions:
-  - {fileID: 11400000, guid: 0060d794505e9224388cb6ec5fd4069d, type: 2}
-  - {fileID: 11400000, guid: cd771e387f0689d4ea06e46767972381, type: 2}
-  - {fileID: 11400000, guid: 2c5dac40f7a583d4e9049f5696b29fa6, type: 2}
+  - {fileID: 11400000, guid: b2b4db6655f9b5f42b81f2493aa1aacf, type: 2}
+  - {fileID: 11400000, guid: b5dc8173e7ff3ce48a0e3f9fd86fad60, type: 2}
+  - {fileID: 11400000, guid: 672323a3de648284386543a1432479cc, type: 2}

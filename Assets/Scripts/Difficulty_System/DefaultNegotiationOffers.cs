@@ -158,13 +158,13 @@ public class DefaultNegotiationOffers : MonoBehaviour
         
         string bossName = GetBossNameFromMap(mapName);
         
-        // VANTAGEM: Enfraquece boss em velocidade
+        // ✅ CORRIGIDO: "Enfraquecimento do Chefe" - Removido speed
         offers.Add(new NegotiationOffer(
-            "Lentidão do Chefe",
-            $"O boss {bossName} perde velocidade.",
+            "Enfraquecimento do Chefe",
+            $"Você ganha força contra o boss {bossName}, mas ele se defende melhor.",
             true,
-            CardAttribute.PlayerSpeed, 2,
-            CardAttribute.EnemySpeed, 3, // Boss também fica mais rápido mas menos que o jogador ganha
+            CardAttribute.PlayerActionPower, 12,
+            CardAttribute.EnemyDefense, 10,
             BehaviorTriggerType.DefaultSessionOffer,
             $"Boss: {bossName}"
         ));

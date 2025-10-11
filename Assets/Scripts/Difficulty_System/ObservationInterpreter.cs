@@ -260,24 +260,24 @@ public static class ObservationInterpreter
     {
         List<NegotiationOffer> offers = new List<NegotiationOffer>();
         
-        // VANTAGEM: Aumentar velocidade do jogador
+        // ✅ CORRIGIDO: "Primeiro Golpe" - Removido speed, adicionado ActionPower e HP
         offers.Add(new NegotiationOffer(
-            "Reflexos Aprimorados",
-            "As forças cósmicas aceleram seus movimentos.",
+            "Primeiro Golpe",
+            "Compense agir depois com ataques mais fortes.",
             true,
-            CardAttribute.PlayerSpeed, 3,
-            CardAttribute.EnemySpeed, 2,
+            CardAttribute.PlayerActionPower, 15,
+            CardAttribute.EnemyMaxHP, 15,
             obs.triggerType,
             "Sempre age por último"
         ));
         
-        // DESVANTAGEM: Inimigos ainda mais rápidos
+        // ✅ CORRIGIDO: "Corrida Perdida" - Speed virou ActionPower
         offers.Add(new NegotiationOffer(
             "Corrida Perdida",
-            "Seus adversários aprendem a se mover ainda mais rápido.",
+            "Seus adversários se tornam ainda mais letais.",
             false,
             CardAttribute.PlayerMaxMP, -10,
-            CardAttribute.EnemySpeed, 4,
+            CardAttribute.EnemyActionPower, 15,
             obs.triggerType,
             "Sempre age por último"
         ));
@@ -289,12 +289,12 @@ public static class ObservationInterpreter
     {
         List<NegotiationOffer> offers = new List<NegotiationOffer>();
         
-        // VANTAGEM: Aumentar ainda mais a velocidade (domínio total)
+        // ✅ CORRIGIDO: "Domínio Tático" - Speed virou MaxMP
         offers.Add(new NegotiationOffer(
-            "Domínio Temporal",
-            "Sua velocidade esmagadora esmaga qualquer resistência.",
+            "Domínio Tático",
+            "Mais recursos para aproveitar sua vantagem inicial.",
             true,
-            CardAttribute.PlayerSpeed, 2,
+            CardAttribute.PlayerMaxMP, 20,
             CardAttribute.EnemyActionPower, 15,
             obs.triggerType,
             "Sempre age primeiro"
@@ -347,24 +347,24 @@ public static class ObservationInterpreter
     {
         List<NegotiationOffer> offers = new List<NegotiationOffer>();
         
-        // VANTAGEM: Aumentar velocidade ou defesa
+        // ✅ CORRIGIDO: "Antecipação" - Speed virou Defense
         offers.Add(new NegotiationOffer(
-            "Reação Instantânea",
-            "Aprenda a lidar com adversários velozes.",
+            "Antecipação",
+            "Aprenda a se defender contra adversários velozes.",
             true,
-            CardAttribute.PlayerSpeed, 2,
+            CardAttribute.PlayerDefense, 10,
             CardAttribute.EnemyMaxHP, 15,
             obs.triggerType,
             "Dificuldade vs Rápidos"
         ));
         
-        // DESVANTAGEM: Inimigos ainda mais rápidos
+        // ✅ CORRIGIDO: "Velocidade Cegante" - Speed virou ActionPower
         offers.Add(new NegotiationOffer(
             "Velocidade Cegante",
-            "Seus inimigos se tornam impossíveis de acompanhar.",
+            "Seus inimigos se tornam impossíveis de acompanhar e mais fortes.",
             false,
             CardAttribute.PlayerDefense, -7,
-            CardAttribute.EnemySpeed, 3,
+            CardAttribute.EnemyActionPower, 12,
             obs.triggerType,
             "Dificuldade vs Rápidos"
         ));
@@ -475,13 +475,13 @@ public static class ObservationInterpreter
             "Morte por dano acumulado"
         ));
         
-        // DESVANTAGEM: Mais ataques rápidos
+        // ✅ CORRIGIDO: "Mil Cortes" - Speed virou Defense/ActionPower
         offers.Add(new NegotiationOffer(
             "Mil Cortes",
-            "Seus inimigos aprendem a atacar com mais frequência.",
+            "Seus inimigos aprendem a atacar com mais força e frequência.",
             false,
-            CardAttribute.PlayerSpeed, -2,
-            CardAttribute.EnemySpeed, 3,
+            CardAttribute.PlayerDefense, -8,
+            CardAttribute.EnemyActionPower, 10,
             obs.triggerType,
             "Morte por dano acumulado"
         ));
@@ -608,8 +608,6 @@ public static class ObservationInterpreter
     
     #endregion
     
-    // Assets/Scripts/Difficulty_System/ObservationInterpreter.cs (CONTINUAÇÃO)
-
     #region Interpretation Methods - PARTE 2
 
     /// <summary>
@@ -696,13 +694,13 @@ public static class ObservationInterpreter
             "Build sem skills defensivas"
         ));
         
-        // DESVANTAGEM: Fragilidade compensada
+        // ✅ CORRIGIDO: "Vidro e Canhão" - Speed virou ActionPower
         offers.Add(new NegotiationOffer(
             "Vidro e Canhão",
-            "Sem defesas, você precisa de mais vida para sobreviver.",
+            "Sem defesas, você precisa de mais vida mas enfrenta adversários mais fortes.",
             false,
             CardAttribute.PlayerMaxHP, 40,
-            CardAttribute.EnemySpeed, 3,
+            CardAttribute.EnemyActionPower, 15,
             obs.triggerType,
             "Build sem skills defensivas"
         ));

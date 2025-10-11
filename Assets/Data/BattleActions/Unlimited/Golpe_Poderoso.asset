@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   actionName: Golpe Poderoso
   description: Causa 40 de dano, mas reduz defesa por 2 turnos. Sem custo
-  icon: {fileID: 21300000, guid: 826481e86feaaaf42904e091cfe3172c, type: 3}
+  icon: {fileID: 21300000, guid: 2984f4026e3e5f8428bd03c39076fb04, type: 3}
   targetType: 0
   effects:
   - effectType: 0

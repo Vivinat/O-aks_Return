@@ -15,11 +15,12 @@ MonoBehaviour:
   characterName: "Mercen\xE1rio"
   team: 1
   characterSprite: {fileID: 21300000, guid: 5e35a5ad5c6d502459cf1fd0fb61dfa9, type: 3}
-  maxHp: 78
-  maxMp: 27
+  maxHp: 100
+  maxMp: 100
   defense: 10
-  speed: 1.3296276
+  speed: 1.4
+  deathSound: {fileID: 0}
   battleActions:
-  - {fileID: 11400000, guid: 0060d794505e9224388cb6ec5fd4069d, type: 2}
-  - {fileID: 11400000, guid: aefdae9b07600d1448948b8ee092ee4f, type: 2}
-  - {fileID: 11400000, guid: 8fecc7f7fdf6ede46bf10520a1edae55, type: 2}
+  - {fileID: 11400000, guid: eecf9978c867f9b44b11d1353540a502, type: 2}
+  - {fileID: 11400000, guid: d6f12f8449a69e6439861ceb55211d88, type: 2}
+  - {fileID: 11400000, guid: 0d55325cd13e71a46931e27623093640, type: 2}

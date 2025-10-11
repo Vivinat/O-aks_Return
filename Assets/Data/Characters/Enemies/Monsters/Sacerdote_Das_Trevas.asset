@@ -15,11 +15,13 @@ MonoBehaviour:
   characterName: Sacerdote das Trevas
   team: 1
   characterSprite: {fileID: 21300000, guid: 000ceb08991929145968f84d9668c1f3, type: 3}
-  maxHp: 79
-  maxMp: 41
-  defense: 7
-  speed: 1.261787
+  maxHp: 160
+  maxMp: 200
+  defense: 12
+  speed: 1.3
+  deathSound: {fileID: 0}
   battleActions:
-  - {fileID: 11400000, guid: 0060d794505e9224388cb6ec5fd4069d, type: 2}
-  - {fileID: 11400000, guid: cd771e387f0689d4ea06e46767972381, type: 2}
-  - {fileID: 11400000, guid: 2c5dac40f7a583d4e9049f5696b29fa6, type: 2}
+  - {fileID: 11400000, guid: bec52a74a10454847812ebe5c69edafd, type: 2}
+  - {fileID: 11400000, guid: 33d59545410dcf84281d5900e44cf203, type: 2}
+  - {fileID: 11400000, guid: 30a70e5b0f245064397b92585ad4db96, type: 2}
+  - {fileID: 11400000, guid: 847fb2ec48e0cb14b9b57826e6d6a45f, type: 2}

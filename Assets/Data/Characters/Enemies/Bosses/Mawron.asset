@@ -15,12 +15,13 @@ MonoBehaviour:
   characterName: Mawron, o Senhor do Escuro
   team: 1
   characterSprite: {fileID: 21300000, guid: f735f7a207029754982788fb3205d73b, type: 3}
-  maxHp: 300
-  maxMp: 80
+  maxHp: 500
+  maxMp: 200
   defense: 25
   speed: 1.1
+  deathSound: {fileID: 0}
   battleActions:
   - {fileID: 11400000, guid: 8fecc7f7fdf6ede46bf10520a1edae55, type: 2}
+  - {fileID: 11400000, guid: b25d6e923e5095041b6d4e7600c8c18e, type: 2}
+  - {fileID: 11400000, guid: 3a218628599ebc9428b630b2e807db95, type: 2}
   - {fileID: 11400000, guid: 7d3885c5e2b855d46bf54260a45667f5, type: 2}
-  - {fileID: 11400000, guid: 28cee2fc757fdd6489b60abbe2e6d7fd, type: 2}
-  - {fileID: 11400000, guid: 8a97ebfee39fce549a3dd702d83523b4, type: 2}

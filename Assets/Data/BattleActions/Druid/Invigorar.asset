@@ -1,0 +1,35 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3b28a35cc03f4464295db8452ec8fc55, type: 3}
+  m_Name: Invigorar
+  m_EditorClassIdentifier: 
+  actionName: Invigorar
+  description: 'Aumenta drasticamente a defesa de um aliado por 3 turnos. Custo:
+    14 MP'
+  icon: {fileID: 21300000, guid: cc08243445f84cf4697f77fd53025039, type: 3}
+  targetType: 1
+  effects:
+  - effectType: 2
+    power: 0
+    statusEffect: 3
+    statusDuration: 3
+    statusPower: 25
+    hasSelfEffect: 0
+    selfEffectType: 0
+    selfEffectPower: 0
+    selfStatusEffect: 0
+    selfStatusDuration: 0
+    selfStatusPower: 0
+  manaCost: 14
+  isConsumable: 0
+  maxUses: 1
+  shopPrice: 10

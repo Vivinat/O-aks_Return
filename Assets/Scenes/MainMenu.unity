@@ -360,6 +360,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 863784cfa5b852a4b8dde876b5bfcdfa, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  enableDefaultOffers: 1
+  numberOfDefaultOffers: 5
+  showDebugLogs: 1
 --- !u!4 &761700060
 Transform:
   m_ObjectHideFlags: 0
@@ -930,8 +933,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   musicSource: {fileID: 0}
   sfxSource: {fileID: 0}
-  defaultMapMusic: {fileID: 8300000, guid: 093617ec03826524bb8b5f6e136c5354, type: 3}
-  musicVolume: 0.7
+  defaultMapMusic: {fileID: 8300000, guid: 313e2777cab06754c8ba4876f1f43e20, type: 3}
+  musicVolume: 0.6
   sfxVolume: 1
   musicFadeTime: 1
 --- !u!4 &1931188754

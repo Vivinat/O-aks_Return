@@ -15,12 +15,13 @@ MonoBehaviour:
   characterName: Valdemor, Senhor das Trevas
   team: 1
   characterSprite: {fileID: 21300000, guid: a74ddd1e03418ef449c493363209dd46, type: 3}
-  maxHp: 250
-  maxMp: 150
-  defense: 15
+  maxHp: 700
+  maxMp: 300
+  defense: 20
   speed: 1.3
+  deathSound: {fileID: 0}
   battleActions:
-  - {fileID: 11400000, guid: 0060d794505e9224388cb6ec5fd4069d, type: 2}
-  - {fileID: 11400000, guid: cd771e387f0689d4ea06e46767972381, type: 2}
-  - {fileID: 11400000, guid: 2c5dac40f7a583d4e9049f5696b29fa6, type: 2}
-  - {fileID: 11400000, guid: 8a019ceea5aee9c488a6e99ebc688ad0, type: 2}
+  - {fileID: 11400000, guid: b2b4db6655f9b5f42b81f2493aa1aacf, type: 2}
+  - {fileID: 11400000, guid: ad5ddba0759830247b5d10a16e27d4af, type: 2}
+  - {fileID: 11400000, guid: c9f245a0dc124ce41ae899fdc485b40c, type: 2}
+  - {fileID: 11400000, guid: 847fb2ec48e0cb14b9b57826e6d6a45f, type: 2}

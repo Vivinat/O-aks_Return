@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   actionName: Tempestade Espectral
   description: 'Causa 50 de dano a todos os inimigos. Custo: 35 MP'
-  icon: {fileID: 21300000, guid: ac6345bf5164bae4594466c8e138c9ab, type: 3}
+  icon: {fileID: 21300000, guid: fa8798eb9b66845499a6028bfd9c079a, type: 3}
   targetType: 3
   effects:
   - effectType: 0

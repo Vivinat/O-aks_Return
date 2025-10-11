@@ -15,7 +15,7 @@ MonoBehaviour:
   actionName: Tiro Incapacitante
   description: 'Causa 25 de dano e reduz a velocidade do alvo por 3 turnos. Custo:
     12 MP'
-  icon: {fileID: 21300000, guid: ccf3db461ed974d47917da0fe82693f6, type: 3}
+  icon: {fileID: 21300000, guid: 65be22b5f3c4b5e408d84ca42ce675ee, type: 3}
   targetType: 0
   effects:
   - effectType: 0

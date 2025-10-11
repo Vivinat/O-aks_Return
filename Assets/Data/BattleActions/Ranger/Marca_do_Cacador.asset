@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   actionName: "Marca do Ca\xE7ador"
   description: 'Marca um inimigo, reduzindo sua defesa por 3 turnos. Custo: 10 MP'
-  icon: {fileID: 21300000, guid: 013856641259a1549bd33f3aaf212f86, type: 3}
+  icon: {fileID: 21300000, guid: 66c48985452897643910759d8be4cba6, type: 3}
   targetType: 0
   effects:
   - effectType: 3

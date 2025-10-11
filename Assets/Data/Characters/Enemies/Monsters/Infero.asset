@@ -15,11 +15,13 @@ MonoBehaviour:
   characterName: "\xCDnfero"
   team: 1
   characterSprite: {fileID: 21300000, guid: 4165ff2f8fe28bf49ac46fdfbad404eb, type: 3}
-  maxHp: 112
-  maxMp: 47
-  defense: 19
-  speed: 0.84756
+  maxHp: 250
+  maxMp: 120
+  defense: 24
+  speed: 0.8
+  deathSound: {fileID: 0}
   battleActions:
-  - {fileID: 11400000, guid: 8fecc7f7fdf6ede46bf10520a1edae55, type: 2}
-  - {fileID: 11400000, guid: 7d3885c5e2b855d46bf54260a45667f5, type: 2}
-  - {fileID: 11400000, guid: 42af41ce3c6c9fd4b86e0ce3da94b225, type: 2}
+  - {fileID: 11400000, guid: fd2185eac5ce59d40a6129af997a4632, type: 2}
+  - {fileID: 11400000, guid: 847fb2ec48e0cb14b9b57826e6d6a45f, type: 2}
+  - {fileID: 11400000, guid: 498f18df2521f034b93f9c886510745f, type: 2}
+  - {fileID: 11400000, guid: 0060d794505e9224388cb6ec5fd4069d, type: 2}

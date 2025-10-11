@@ -1,0 +1,1700 @@
+{
+    "paladinActions": [
+        {
+            "actionName": "Aura da Devoção",
+            "assetPath": "Assets/Data/BattleActions/Paladin/Aura_da_Devocao.asset",
+            "description": "Cura 25 de vida de todos os aliados. Custo: 20 MP",
+            "targetType": "AllAllies",
+            "manaCost": 20,
+            "isConsumable": false,
+            "maxUses": 1,
+            "shopPrice": 10,
+            "effects": [
+                {
+                    "effectType": "Heal",
+                    "power": 25,
+                    "statusEffect": "None",
+                    "statusDuration": 0,
+                    "statusPower": 0,
+                    "hasSelfEffect": false,
+                    "selfEffectType": "Attack",
+                    "selfEffectPower": 0,
+                    "selfStatusEffect": "None",
+                    "selfStatusDuration": 0,
+                    "selfStatusPower": 0
+                }
+            ]
+        },
+        {
+            "actionName": "Benção da Resistência",
+            "assetPath": "Assets/Data/BattleActions/Paladin/Bencao_da_Resistencia.asset",
+            "description": "Concede proteção e regeneração a um aliado por 3 turnos. Custo: 16 MP",
+            "targetType": "SingleAlly",
+            "manaCost": 16,
+            "isConsumable": false,
+            "maxUses": 1,
+            "shopPrice": 10,
+            "effects": [
+                {
+                    "effectType": "Buff",
+                    "power": 0,
+                    "statusEffect": "Protected",
+                    "statusDuration": 3,
+                    "statusPower": 20,
+                    "hasSelfEffect": false,
+                    "selfEffectType": "Attack",
+                    "selfEffectPower": 0,
+                    "selfStatusEffect": "None",
+                    "selfStatusDuration": 0,
+                    "selfStatusPower": 0
+                },
+                {
+                    "effectType": "Buff",
+                    "power": 0,
+                    "statusEffect": "Regeneration",
+                    "statusDuration": 3,
+                    "statusPower": 12,
+                    "hasSelfEffect": false,
+                    "selfEffectType": "Attack",
+                    "selfEffectPower": 0,
+                    "selfStatusEffect": "None",
+                    "selfStatusDuration": 0,
+                    "selfStatusPower": 0
+                }
+            ]
+        },
+        {
+            "actionName": "Bênção dos Reis",
+            "assetPath": "Assets/Data/BattleActions/Paladin/Bencao_dos_Reis.asset",
+            "description": "Aumenta o ataque e a defesa de um aliado por 4 turnos. Custo: 18 MP",
+            "targetType": "SingleAlly",
+            "manaCost": 18,
+            "isConsumable": false,
+            "maxUses": 1,
+            "shopPrice": 10,
+            "effects": [
+                {
+                    "effectType": "Buff",
+                    "power": 0,
+                    "statusEffect": "AttackUp",
+                    "statusDuration": 4,
+                    "statusPower": 10,
+                    "hasSelfEffect": false,
+                    "selfEffectType": "Attack",
+                    "selfEffectPower": 0,
+                    "selfStatusEffect": "None",
+                    "selfStatusDuration": 0,
+                    "selfStatusPower": 0
+                },
+                {
+                    "effectType": "Buff",
+                    "power": 0,
+                    "statusEffect": "DefenseUp",
+                    "statusDuration": 4,
+                    "statusPower": 10,
+                    "hasSelfEffect": false,
+                    "selfEffectType": "Attack",
+                    "selfEffectPower": 0,
+                    "selfStatusEffect": "None",
+                    "selfStatusDuration": 0,
+                    "selfStatusPower": 0
+                }
+            ]
+        },
+        {
+            "actionName": "Escudo da Fé",
+            "assetPath": "Assets/Data/BattleActions/Paladin/Escudo_da_Fe.asset",
+            "description": "Aplica 'Protegido' em si mesmo, reduzindo o dano recebido por 3 turnos. Custo: 12 MP",
+            "targetType": "Self",
+            "manaCost": 12,
+            "isConsumable": false,
+            "maxUses": 1,
+            "shopPrice": 10,
+            "effects": [
+                {
+                    "effectType": "Buff",
+                    "power": 0,
+                    "statusEffect": "Protected",
+                    "statusDuration": 3,
+                    "statusPower": 25,
+                    "hasSelfEffect": false,
+                    "selfEffectType": "Attack",
+                    "selfEffectPower": 0,
+                    "selfStatusEffect": "None",
+                    "selfStatusDuration": 0,
+                    "selfStatusPower": 0
+                }
+            ]
+        },
+        {
+            "actionName": "Golpe Divino",
+            "assetPath": "Assets/Data/BattleActions/Paladin/Golpe_Divino.asset",
+            "description": "Causa 35 de dano sagrado. Custo: 0 MP",
+            "targetType": "SingleEnemy",
+            "manaCost": 0,
+            "isConsumable": false,
+            "maxUses": 1,
+            "shopPrice": 10,
+            "effects": [
+                {
+                    "effectType": "Attack",
+                    "power": 35,
+                    "statusEffect": "None",
+                    "statusDuration": 0,
+                    "statusPower": 0,
+                    "hasSelfEffect": false,
+                    "selfEffectType": "Attack",
+                    "selfEffectPower": 0,
+                    "selfStatusEffect": "None",
+                    "selfStatusDuration": 0,
+                    "selfStatusPower": 0
+                }
+            ]
+        },
+        {
+            "actionName": "Julgamento",
+            "assetPath": "Assets/Data/BattleActions/Paladin/Julgamento.asset",
+            "description": "Causa 60 de dano e deixa o alvo Vulnerável por 2 turnos. Custo: 15 MP",
+            "targetType": "SingleEnemy",
+            "manaCost": 15,
+            "isConsumable": false,
+            "maxUses": 1,
+            "shopPrice": 10,
+            "effects": [
+                {
+                    "effectType": "Attack",
+                    "power": 60,
+                    "statusEffect": "Vulnerable",
+                    "statusDuration": 2,
+                    "statusPower": 15,
+                    "hasSelfEffect": false,
+                    "selfEffectType": "Attack",
+                    "selfEffectPower": 0,
+                    "selfStatusEffect": "None",
+                    "selfStatusDuration": 0,
+                    "selfStatusPower": 0
+                }
+            ]
+        },
+        {
+            "actionName": "Luz Sagrada",
+            "assetPath": "Assets/Data/BattleActions/Paladin/Luz_Sagrada.asset",
+            "description": "Cura 50 de vida de um aliado. Custo: 10 MP",
+            "targetType": "SingleAlly",
+            "manaCost": 10,
+            "isConsumable": false,
+            "maxUses": 1,
+            "shopPrice": 10,
+            "effects": [
+                {
+                    "effectType": "Heal",
+                    "power": 50,
+                    "statusEffect": "None",
+                    "statusDuration": 0,
+                    "statusPower": 0,
+                    "hasSelfEffect": false,
+                    "selfEffectType": "Attack",
+                    "selfEffectPower": 0,
+                    "selfStatusEffect": "None",
+                    "selfStatusDuration": 0,
+                    "selfStatusPower": 0
+                }
+            ]
+        },
+        {
+            "actionName": "Martelo Divino",
+            "assetPath": "Assets/Data/BattleActions/Paladin/Martelo_Divino.asset",
+            "description": "Ataque devastador que causa 65 de dano e reduz velocidade drasticamente. Custo: 20 MP",
+            "targetType": "SingleEnemy",
+            "manaCost": 20,
+            "isConsumable": false,
+            "maxUses": 1,
+            "shopPrice": 10,
+            "effects": [
+                {
+                    "effectType": "Attack",
+                    "power": 65,
+                    "statusEffect": "SpeedDown",
+                    "statusDuration": 2,
+                    "statusPower": 40,
+                    "hasSelfEffect": false,
+                    "selfEffectType": "Attack",
+                    "selfEffectPower": 0,
+                    "selfStatusEffect": "None",
+                    "selfStatusDuration": 0,
+                    "selfStatusPower": 0
+                }
+            ]
+        },
+        {
+            "actionName": "Retribuição Divina",
+            "assetPath": "Assets/Data/BattleActions/Paladin/Retribuicao_Divina.asset",
+            "description": "Causa 130 de dano massivo, mas sacrifica 25 de sua vida. Custo: 30 MP",
+            "targetType": "SingleEnemy",
+            "manaCost": 30,
+            "isConsumable": false,
+            "maxUses": 1,
+            "shopPrice": 10,
+            "effects": [
+                {
+                    "effectType": "Attack",
+                    "power": 130,
+                    "statusEffect": "None",
+                    "statusDuration": 0,
+                    "statusPower": 0,
+                    "hasSelfEffect": true,
+                    "selfEffectType": "Attack",
+                    "selfEffectPower": 25,
+                    "selfStatusEffect": "None",
+                    "selfStatusDuration": 0,
+                    "selfStatusPower": 0
+                }
+            ]
+        }
+    ],
+    "rangerActions": [
+        {
+            "actionName": "Chuva de Flechas",
+            "assetPath": "Assets/Data/BattleActions/Ranger/Chuva_de_Flechas.asset",
+            "description": "Causa 30 de dano a todos os inimigos. Custo: 22 MP",
+            "targetType": "AllEnemies",
+            "manaCost": 22,
+            "isConsumable": false,
+            "maxUses": 1,
+            "shopPrice": 10,
+            "effects": [
+                {
+                    "effectType": "Attack",
+                    "power": 30,
+                    "statusEffect": "None",
+                    "statusDuration": 0,
+                    "statusPower": 0,
+                    "hasSelfEffect": false,
+                    "selfEffectType": "Attack",
+                    "selfEffectPower": 0,
+                    "selfStatusEffect": "None",
+                    "selfStatusDuration": 0,
+                    "selfStatusPower": 0
+                }
+            ]
+        },
+        {
+            "actionName": "Golpe Preciso",
+            "assetPath": "Assets/Data/BattleActions/Ranger/Golpe_Preciso.asset",
+            "description": "Um tiro rápido que causa 30 de dano. Custo: 0 MP",
+            "targetType": "SingleEnemy",
+            "manaCost": 0,
+            "isConsumable": false,
+            "maxUses": 1,
+            "shopPrice": 10,
+            "effects": [
+                {
+                    "effectType": "Attack",
+                    "power": 30,
+                    "statusEffect": "None",
+                    "statusDuration": 0,
+                    "statusPower": 0,
+                    "hasSelfEffect": false,
+                    "selfEffectType": "Attack",
+                    "selfEffectPower": 0,
+                    "selfStatusEffect": "None",
+                    "selfStatusDuration": 0,
+                    "selfStatusPower": 0
+                }
+            ]
+        },
+        {
+            "actionName": "Jato Venenoso",
+            "assetPath": "Assets/Data/BattleActions/Ranger/Jato_Venenoso.asset",
+            "description": "Causa 20 de dano e envenena o alvo por 4 turnos. Custo: 10 MP",
+            "targetType": "SingleEnemy",
+            "manaCost": 10,
+            "isConsumable": false,
+            "maxUses": 1,
+            "shopPrice": 10,
+            "effects": [
+                {
+                    "effectType": "Attack",
+                    "power": 20,
+                    "statusEffect": "Poison",
+                    "statusDuration": 4,
+                    "statusPower": 10,
+                    "hasSelfEffect": false,
+                    "selfEffectType": "Attack",
+                    "selfEffectPower": 0,
+                    "selfStatusEffect": "None",
+                    "selfStatusDuration": 0,
+                    "selfStatusPower": 0
+                }
+            ]
+        },
+        {
+            "actionName": "Marca do Caçador",
+            "assetPath": "Assets/Data/BattleActions/Ranger/Marca_do_Cacador.asset",
+            "description": "Marca um inimigo, reduzindo sua defesa por 3 turnos. Custo: 10 MP",
+            "targetType": "SingleEnemy",
+            "manaCost": 10,
+            "isConsumable": false,
+            "maxUses": 1,
+            "shopPrice": 10,
+            "effects": [
+                {
+                    "effectType": "Debuff",
+                    "power": 0,
+                    "statusEffect": "DefenseDown",
+                    "statusDuration": 3,
+                    "statusPower": 15,
+                    "hasSelfEffect": false,
+                    "selfEffectType": "Attack",
+                    "selfEffectPower": 0,
+                    "selfStatusEffect": "None",
+                    "selfStatusDuration": 0,
+                    "selfStatusPower": 0
+                }
+            ]
+        },
+        {
+            "actionName": "Presas de Caça",
+            "assetPath": "Assets/Data/BattleActions/Ranger/Presas_de_Caca.asset",
+            "description": "Causa 15 de dano e deixa o alvo extremamente vulnerável por 3 turnos. Custo: 14 MP",
+            "targetType": "SingleEnemy",
+            "manaCost": 14,
+            "isConsumable": false,
+            "maxUses": 1,
+            "shopPrice": 10,
+            "effects": [
+                {
+                    "effectType": "Attack",
+                    "power": 15,
+                    "statusEffect": "Vulnerable",
+                    "statusDuration": 3,
+                    "statusPower": 25,
+                    "hasSelfEffect": false,
+                    "selfEffectType": "Attack",
+                    "selfEffectPower": 0,
+                    "selfStatusEffect": "None",
+                    "selfStatusDuration": 0,
+                    "selfStatusPower": 0
+                }
+            ]
+        },
+        {
+            "actionName": "Primeiros Socorros",
+            "assetPath": "Assets/Data/BattleActions/Ranger/Primeiros_Socorros.asset",
+            "description": "Restaura 30 de sua própria vida. Custo: 5 MP",
+            "targetType": "Self",
+            "manaCost": 5,
+            "isConsumable": false,
+            "maxUses": 1,
+            "shopPrice": 10,
+            "effects": [
+                {
+                    "effectType": "Heal",
+                    "power": 30,
+                    "statusEffect": "None",
+                    "statusDuration": 0,
+                    "statusPower": 0,
+                    "hasSelfEffect": false,
+                    "selfEffectType": "Attack",
+                    "selfEffectPower": 0,
+                    "selfStatusEffect": "None",
+                    "selfStatusDuration": 0,
+                    "selfStatusPower": 0
+                }
+            ]
+        },
+        {
+            "actionName": "Tiro Incapacitante",
+            "assetPath": "Assets/Data/BattleActions/Ranger/Tiro_Incapacitante.asset",
+            "description": "Causa 25 de dano e reduz a velocidade do alvo por 3 turnos. Custo: 12 MP",
+            "targetType": "SingleEnemy",
+            "manaCost": 12,
+            "isConsumable": false,
+            "maxUses": 1,
+            "shopPrice": 10,
+            "effects": [
+                {
+                    "effectType": "Attack",
+                    "power": 25,
+                    "statusEffect": "SpeedDown",
+                    "statusDuration": 3,
+                    "statusPower": 20,
+                    "hasSelfEffect": false,
+                    "selfEffectType": "Attack",
+                    "selfEffectPower": 0,
+                    "selfStatusEffect": "None",
+                    "selfStatusDuration": 0,
+                    "selfStatusPower": 0
+                }
+            ]
+        }
+    ],
+    "druidActions": [
+        {
+            "actionName": "Decadência",
+            "assetPath": "Assets/Data/BattleActions/Druid/Circulo_da_Decadencia.asset",
+            "description": "Amaldiçoa todos os inimigos com deterioração severa por 4 turnos. Custo: 22 MP",
+            "targetType": "AllEnemies",
+            "manaCost": 22,
+            "isConsumable": false,
+            "maxUses": 1,
+            "shopPrice": 10,
+            "effects": [
+                {
+                    "effectType": "Debuff",
+                    "power": 0,
+                    "statusEffect": "Cursed",
+                    "statusDuration": 4,
+                    "statusPower": 15,
+                    "hasSelfEffect": false,
+                    "selfEffectType": "Attack",
+                    "selfEffectPower": 0,
+                    "selfStatusEffect": "None",
+                    "selfStatusDuration": 0,
+                    "selfStatusPower": 0
+                }
+            ]
+        },
+        {
+            "actionName": "Desintegrar",
+            "assetPath": "Assets/Data/BattleActions/Druid/Desintegrar.asset",
+            "description": "Causa 28 de dano perfurante. Custo: 0 MP",
+            "targetType": "SingleEnemy",
+            "manaCost": 0,
+            "isConsumable": false,
+            "maxUses": 1,
+            "shopPrice": 10,
+            "effects": [
+                {
+                    "effectType": "Attack",
+                    "power": 28,
+                    "statusEffect": "None",
+                    "statusDuration": 0,
+                    "statusPower": 0,
+                    "hasSelfEffect": false,
+                    "selfEffectType": "Attack",
+                    "selfEffectPower": 0,
+                    "selfStatusEffect": "None",
+                    "selfStatusDuration": 0,
+                    "selfStatusPower": 0
+                }
+            ]
+        },
+        {
+            "actionName": "Mártir",
+            "assetPath": "Assets/Data/BattleActions/Druid/Espinhos_Venenosos.asset",
+            "description": "Aumenta defesa por 4 turnos e aplica veneno em si mesmo que será refletido aos atacantes. Custo: 16 MP",
+            "targetType": "Self",
+            "manaCost": 16,
+            "isConsumable": false,
+            "maxUses": 1,
+            "shopPrice": 10,
+            "effects": [
+                {
+                    "effectType": "Buff",
+                    "power": 0,
+                    "statusEffect": "DefenseUp",
+                    "statusDuration": 4,
+                    "statusPower": 20,
+                    "hasSelfEffect": false,
+                    "selfEffectType": "Attack",
+                    "selfEffectPower": 0,
+                    "selfStatusEffect": "None",
+                    "selfStatusDuration": 0,
+                    "selfStatusPower": 0
+                },
+                {
+                    "effectType": "Buff",
+                    "power": 0,
+                    "statusEffect": "Protected",
+                    "statusDuration": 4,
+                    "statusPower": 15,
+                    "hasSelfEffect": false,
+                    "selfEffectType": "Attack",
+                    "selfEffectPower": 0,
+                    "selfStatusEffect": "None",
+                    "selfStatusDuration": 0,
+                    "selfStatusPower": 0
+                }
+            ]
+        },
+        {
+            "actionName": "Familiar",
+            "assetPath": "Assets/Data/BattleActions/Druid/Familiar.asset",
+            "description": "Amaldiçoa todos os inimigos, causando dano por 3 turnos. Custo: 18 MP",
+            "targetType": "AllEnemies",
+            "manaCost": 18,
+            "isConsumable": false,
+            "maxUses": 1,
+            "shopPrice": 10,
+            "effects": [
+                {
+                    "effectType": "Debuff",
+                    "power": 0,
+                    "statusEffect": "Cursed",
+                    "statusDuration": 3,
+                    "statusPower": 12,
+                    "hasSelfEffect": false,
+                    "selfEffectType": "Attack",
+                    "selfEffectPower": 0,
+                    "selfStatusEffect": "None",
+                    "selfStatusDuration": 0,
+                    "selfStatusPower": 0
+                }
+            ]
+        },
+        {
+            "actionName": "Invigorar",
+            "assetPath": "Assets/Data/BattleActions/Druid/Invigorar.asset",
+            "description": "Aumenta drasticamente a defesa de um aliado por 3 turnos. Custo: 14 MP",
+            "targetType": "SingleAlly",
+            "manaCost": 14,
+            "isConsumable": false,
+            "maxUses": 1,
+            "shopPrice": 10,
+            "effects": [
+                {
+                    "effectType": "Buff",
+                    "power": 0,
+                    "statusEffect": "DefenseUp",
+                    "statusDuration": 3,
+                    "statusPower": 25,
+                    "hasSelfEffect": false,
+                    "selfEffectType": "Attack",
+                    "selfEffectPower": 0,
+                    "selfStatusEffect": "None",
+                    "selfStatusDuration": 0,
+                    "selfStatusPower": 0
+                }
+            ]
+        },
+        {
+            "actionName": "Maldição",
+            "assetPath": "Assets/Data/BattleActions/Druid/Maldicao.asset",
+            "description": "Causa 15 de dano e reduz a velocidade do alvo por 4 turnos. Custo: 12 MP",
+            "targetType": "SingleEnemy",
+            "manaCost": 12,
+            "isConsumable": false,
+            "maxUses": 1,
+            "shopPrice": 10,
+            "effects": [
+                {
+                    "effectType": "Attack",
+                    "power": 15,
+                    "statusEffect": "SpeedDown",
+                    "statusDuration": 4,
+                    "statusPower": 25,
+                    "hasSelfEffect": false,
+                    "selfEffectType": "Attack",
+                    "selfEffectPower": 0,
+                    "selfStatusEffect": "None",
+                    "selfStatusDuration": 0,
+                    "selfStatusPower": 0
+                }
+            ]
+        },
+        {
+            "actionName": "Semente da Vida",
+            "assetPath": "Assets/Data/BattleActions/Druid/Semente_da_Vida.asset",
+            "description": "Aplica 'Abençoado' a um aliado, curando-o por 4 turnos. Custo: 15 MP",
+            "targetType": "SingleAlly",
+            "manaCost": 15,
+            "isConsumable": false,
+            "maxUses": 1,
+            "shopPrice": 10,
+            "effects": [
+                {
+                    "effectType": "Buff",
+                    "power": 0,
+                    "statusEffect": "Blessed",
+                    "statusDuration": 4,
+                    "statusPower": 15,
+                    "hasSelfEffect": false,
+                    "selfEffectType": "Attack",
+                    "selfEffectPower": 0,
+                    "selfStatusEffect": "None",
+                    "selfStatusDuration": 0,
+                    "selfStatusPower": 0
+                }
+            ]
+        },
+        {
+            "actionName": "Toque Restaurador",
+            "assetPath": "Assets/Data/BattleActions/Druid/Toque_Restaurador.asset",
+            "description": "Cura 45 de vida de um alvo. Custo: 9 MP",
+            "targetType": "SingleAlly",
+            "manaCost": 9,
+            "isConsumable": false,
+            "maxUses": 1,
+            "shopPrice": 10,
+            "effects": [
+                {
+                    "effectType": "Heal",
+                    "power": 45,
+                    "statusEffect": "None",
+                    "statusDuration": 0,
+                    "statusPower": 0,
+                    "hasSelfEffect": false,
+                    "selfEffectType": "Attack",
+                    "selfEffectPower": 0,
+                    "selfStatusEffect": "None",
+                    "selfStatusDuration": 0,
+                    "selfStatusPower": 0
+                }
+            ]
+        },
+        {
+            "actionName": "Tranquilidade",
+            "assetPath": "Assets/Data/BattleActions/Druid/Tranquilidade.asset",
+            "description": "Cura 20 de vida e aplica Regeneração a todos os aliados por 2 turnos. Custo: 28 MP",
+            "targetType": "AllAllies",
+            "manaCost": 28,
+            "isConsumable": false,
+            "maxUses": 1,
+            "shopPrice": 10,
+            "effects": [
+                {
+                    "effectType": "Heal",
+                    "power": 20,
+                    "statusEffect": "None",
+                    "statusDuration": 0,
+                    "statusPower": 0,
+                    "hasSelfEffect": false,
+                    "selfEffectType": "Attack",
+                    "selfEffectPower": 0,
+                    "selfStatusEffect": "None",
+                    "selfStatusDuration": 0,
+                    "selfStatusPower": 0
+                },
+                {
+                    "effectType": "Buff",
+                    "power": 0,
+                    "statusEffect": "Regeneration",
+                    "statusDuration": 2,
+                    "statusPower": 10,
+                    "hasSelfEffect": false,
+                    "selfEffectType": "Attack",
+                    "selfEffectPower": 0,
+                    "selfStatusEffect": "None",
+                    "selfStatusDuration": 0,
+                    "selfStatusPower": 0
+                }
+            ]
+        }
+    ],
+    "consumableItems": [],
+    "otherActions": [
+        {
+            "actionName": "Alma em Trevas",
+            "assetPath": "Assets/Data/BattleActions/Items/Alma_Em_Trevas.asset",
+            "description": "Restaura 80 de vida. Usos: 2",
+            "targetType": "Self",
+            "manaCost": 0,
+            "isConsumable": true,
+            "maxUses": 2,
+            "shopPrice": 50,
+            "effects": [
+                {
+                    "effectType": "Heal",
+                    "power": 80,
+                    "statusEffect": "None",
+                    "statusDuration": 0,
+                    "statusPower": 0,
+                    "hasSelfEffect": false,
+                    "selfEffectType": "Attack",
+                    "selfEffectPower": 0,
+                    "selfStatusEffect": "None",
+                    "selfStatusDuration": 0,
+                    "selfStatusPower": 0
+                }
+            ]
+        },
+        {
+            "actionName": "Apócrifo de Mana",
+            "assetPath": "Assets/Data/BattleActions/Items/Apocrifo_de_Mana.asset",
+            "description": "Restaura 35 de mana. Usos: 2",
+            "targetType": "Self",
+            "manaCost": 0,
+            "isConsumable": true,
+            "maxUses": 2,
+            "shopPrice": 30,
+            "effects": [
+                {
+                    "effectType": "Heal",
+                    "power": 35,
+                    "statusEffect": "None",
+                    "statusDuration": 0,
+                    "statusPower": 0,
+                    "hasSelfEffect": false,
+                    "selfEffectType": "Attack",
+                    "selfEffectPower": 0,
+                    "selfStatusEffect": "None",
+                    "selfStatusDuration": 0,
+                    "selfStatusPower": 0
+                }
+            ]
+        },
+        {
+            "actionName": "Barreira Divina",
+            "assetPath": "Assets/Data/BattleActions/Items/Barreira_Divina.asset",
+            "description": "Imunidade total a dano por 1 turno. Usos: 1",
+            "targetType": "Self",
+            "manaCost": 0,
+            "isConsumable": true,
+            "maxUses": 1,
+            "shopPrice": 90,
+            "effects": [
+                {
+                    "effectType": "Buff",
+                    "power": 0,
+                    "statusEffect": "Protected",
+                    "statusDuration": 1,
+                    "statusPower": 100,
+                    "hasSelfEffect": false,
+                    "selfEffectType": "Attack",
+                    "selfEffectPower": 0,
+                    "selfStatusEffect": "None",
+                    "selfStatusDuration": 0,
+                    "selfStatusPower": 0
+                }
+            ]
+        },
+        {
+            "actionName": "Bênção Completa",
+            "assetPath": "Assets/Data/BattleActions/Items/Bencao_Completa.asset",
+            "description": "Aumenta ataque, defesa e velocidade simultaneamente por 3 turnos. Usos: 1",
+            "targetType": "Self",
+            "manaCost": 0,
+            "isConsumable": true,
+            "maxUses": 1,
+            "shopPrice": 80,
+            "effects": [
+                {
+                    "effectType": "Buff",
+                    "power": 0,
+                    "statusEffect": "AttackUp",
+                    "statusDuration": 3,
+                    "statusPower": 10,
+                    "hasSelfEffect": false,
+                    "selfEffectType": "Attack",
+                    "selfEffectPower": 0,
+                    "selfStatusEffect": "None",
+                    "selfStatusDuration": 0,
+                    "selfStatusPower": 0
+                },
+                {
+                    "effectType": "Buff",
+                    "power": 0,
+                    "statusEffect": "DefenseUp",
+                    "statusDuration": 3,
+                    "statusPower": 10,
+                    "hasSelfEffect": false,
+                    "selfEffectType": "Attack",
+                    "selfEffectPower": 0,
+                    "selfStatusEffect": "None",
+                    "selfStatusDuration": 0,
+                    "selfStatusPower": 0
+                },
+                {
+                    "effectType": "Buff",
+                    "power": 0,
+                    "statusEffect": "SpeedUp",
+                    "statusDuration": 3,
+                    "statusPower": 15,
+                    "hasSelfEffect": false,
+                    "selfEffectType": "Attack",
+                    "selfEffectPower": 0,
+                    "selfStatusEffect": "None",
+                    "selfStatusDuration": 0,
+                    "selfStatusPower": 0
+                }
+            ]
+        },
+        {
+            "actionName": "Causalidade",
+            "assetPath": "Assets/Data/BattleActions/Items/Causalidade.asset",
+            "description": "Efeito aleatório: pode curar 50 HP, causar 50 de dano, dar +20 ataque ou envenenar inimigos. Usos: 3",
+            "targetType": "Self",
+            "manaCost": 0,
+            "isConsumable": true,
+            "maxUses": 3,
+            "shopPrice": 40,
+            "effects": [
+                {
+                    "effectType": "Heal",
+                    "power": 50,
+                    "statusEffect": "None",
+                    "statusDuration": 0,
+                    "statusPower": 0,
+                    "hasSelfEffect": false,
+                    "selfEffectType": "Attack",
+                    "selfEffectPower": 0,
+                    "selfStatusEffect": "None",
+                    "selfStatusDuration": 0,
+                    "selfStatusPower": 0
+                }
+            ]
+        },
+        {
+            "actionName": "Contrato Diabólico",
+            "assetPath": "Assets/Data/BattleActions/Items/Contrato_Diabolico.asset",
+            "description": "Aumenta ataque em +15 por 4 turnos. Usos: 2",
+            "targetType": "Self",
+            "manaCost": 0,
+            "isConsumable": true,
+            "maxUses": 2,
+            "shopPrice": 45,
+            "effects": [
+                {
+                    "effectType": "Buff",
+                    "power": 0,
+                    "statusEffect": "AttackUp",
+                    "statusDuration": 4,
+                    "statusPower": 15,
+                    "hasSelfEffect": false,
+                    "selfEffectType": "Attack",
+                    "selfEffectPower": 0,
+                    "selfStatusEffect": "None",
+                    "selfStatusDuration": 0,
+                    "selfStatusPower": 0
+                }
+            ]
+        },
+        {
+            "actionName": "Égide",
+            "assetPath": "Assets/Data/BattleActions/Items/Egide.asset",
+            "description": "Reduz dano recebido em 20% por 3 turnos. Usos: 2",
+            "targetType": "Self",
+            "manaCost": 0,
+            "isConsumable": true,
+            "maxUses": 2,
+            "shopPrice": 40,
+            "effects": [
+                {
+                    "effectType": "Buff",
+                    "power": 0,
+                    "statusEffect": "Protected",
+                    "statusDuration": 3,
+                    "statusPower": 20,
+                    "hasSelfEffect": false,
+                    "selfEffectType": "Attack",
+                    "selfEffectPower": 0,
+                    "selfStatusEffect": "None",
+                    "selfStatusDuration": 0,
+                    "selfStatusPower": 0
+                }
+            ]
+        },
+        {
+            "actionName": "Oferenda",
+            "assetPath": "Assets/Data/BattleActions/Items/Elixir_da_Duplicacao.asset",
+            "description": "Sua próxima habilidade tem seu efeito DOBRADO. Usos: 1",
+            "targetType": "Self",
+            "manaCost": 0,
+            "isConsumable": true,
+            "maxUses": 1,
+            "shopPrice": 95,
+            "effects": [
+                {
+                    "effectType": "Buff",
+                    "power": 0,
+                    "statusEffect": "AttackUp",
+                    "statusDuration": 1,
+                    "statusPower": 100,
+                    "hasSelfEffect": false,
+                    "selfEffectType": "Attack",
+                    "selfEffectPower": 0,
+                    "selfStatusEffect": "None",
+                    "selfStatusDuration": 0,
+                    "selfStatusPower": 0
+                }
+            ]
+        },
+        {
+            "actionName": "Éter",
+            "assetPath": "Assets/Data/BattleActions/Items/Eter.asset",
+            "description": "Restaura 50 de mana. Usos: 2",
+            "targetType": "Self",
+            "manaCost": 0,
+            "isConsumable": true,
+            "maxUses": 2,
+            "shopPrice": 50,
+            "effects": [
+                {
+                    "effectType": "Heal",
+                    "power": 50,
+                    "statusEffect": "None",
+                    "statusDuration": 0,
+                    "statusPower": 0,
+                    "hasSelfEffect": false,
+                    "selfEffectType": "Attack",
+                    "selfEffectPower": 0,
+                    "selfStatusEffect": "None",
+                    "selfStatusDuration": 0,
+                    "selfStatusPower": 0
+                }
+            ]
+        },
+        {
+            "actionName": "Explosivos",
+            "assetPath": "Assets/Data/BattleActions/Items/Explosivos.asset",
+            "description": "Causa 60 de dano a um inimigo. Usos: 3",
+            "targetType": "SingleEnemy",
+            "manaCost": 0,
+            "isConsumable": true,
+            "maxUses": 3,
+            "shopPrice": 30,
+            "effects": [
+                {
+                    "effectType": "Attack",
+                    "power": 60,
+                    "statusEffect": "None",
+                    "statusDuration": 0,
+                    "statusPower": 0,
+                    "hasSelfEffect": false,
+                    "selfEffectType": "Attack",
+                    "selfEffectPower": 0,
+                    "selfStatusEffect": "None",
+                    "selfStatusDuration": 0,
+                    "selfStatusPower": 0
+                }
+            ]
+        },
+        {
+            "actionName": "Fonte de Mana",
+            "assetPath": "Assets/Data/BattleActions/Items/Frasco_de_Mana.asset",
+            "description": "Restaura 25 de mana. Usos: 3",
+            "targetType": "Self",
+            "manaCost": 0,
+            "isConsumable": true,
+            "maxUses": 3,
+            "shopPrice": 30,
+            "effects": [
+                {
+                    "effectType": "Heal",
+                    "power": 25,
+                    "statusEffect": "None",
+                    "statusDuration": 0,
+                    "statusPower": 0,
+                    "hasSelfEffect": false,
+                    "selfEffectType": "Attack",
+                    "selfEffectPower": 0,
+                    "selfStatusEffect": "None",
+                    "selfStatusDuration": 0,
+                    "selfStatusPower": 0
+                }
+            ]
+        },
+        {
+            "actionName": "Grimório da Vida",
+            "assetPath": "Assets/Data/BattleActions/Items/Grimorio_da_Vida.asset",
+            "description": "Restaura 70 de vida. Usos: 2",
+            "targetType": "Self",
+            "manaCost": 0,
+            "isConsumable": true,
+            "maxUses": 2,
+            "shopPrice": 40,
+            "effects": [
+                {
+                    "effectType": "Heal",
+                    "power": 70,
+                    "statusEffect": "None",
+                    "statusDuration": 0,
+                    "statusPower": 0,
+                    "hasSelfEffect": false,
+                    "selfEffectType": "Attack",
+                    "selfEffectPower": 0,
+                    "selfStatusEffect": "None",
+                    "selfStatusDuration": 0,
+                    "selfStatusPower": 0
+                }
+            ]
+        },
+        {
+            "actionName": "Lâmina do Executor",
+            "assetPath": "Assets/Data/BattleActions/Items/Lamina_do_Executor.asset",
+            "description": "Causa dano igual a 20% do HP máximo do alvo. Extremamente efetivo contra tanques. Usos: 2",
+            "targetType": "SingleEnemy",
+            "manaCost": 0,
+            "isConsumable": true,
+            "maxUses": 2,
+            "shopPrice": 75,
+            "effects": [
+                {
+                    "effectType": "Attack",
+                    "power": 100,
+                    "statusEffect": "None",
+                    "statusDuration": 0,
+                    "statusPower": 0,
+                    "hasSelfEffect": false,
+                    "selfEffectType": "Attack",
+                    "selfEffectPower": 0,
+                    "selfStatusEffect": "None",
+                    "selfStatusDuration": 0,
+                    "selfStatusPower": 0
+                }
+            ]
+        },
+        {
+            "actionName": "Aracna",
+            "assetPath": "Assets/Data/BattleActions/Items/Nevoa_Toxica.asset",
+            "description": "Envenena todos os inimigos, causando 12 de dano por turno durante 3 turnos. Usos: 2",
+            "targetType": "AllEnemies",
+            "manaCost": 0,
+            "isConsumable": true,
+            "maxUses": 2,
+            "shopPrice": 60,
+            "effects": [
+                {
+                    "effectType": "Debuff",
+                    "power": 0,
+                    "statusEffect": "Poison",
+                    "statusDuration": 3,
+                    "statusPower": 12,
+                    "hasSelfEffect": false,
+                    "selfEffectType": "Attack",
+                    "selfEffectPower": 0,
+                    "selfStatusEffect": "None",
+                    "selfStatusDuration": 0,
+                    "selfStatusPower": 0
+                }
+            ]
+        },
+        {
+            "actionName": "Orbe da Vida",
+            "assetPath": "Assets/Data/BattleActions/Items/Orbe_da_Vida.asset",
+            "description": "Restaura 40 de vida. Usos: 3",
+            "targetType": "Self",
+            "manaCost": 0,
+            "isConsumable": true,
+            "maxUses": 3,
+            "shopPrice": 25,
+            "effects": [
+                {
+                    "effectType": "Heal",
+                    "power": 40,
+                    "statusEffect": "None",
+                    "statusDuration": 0,
+                    "statusPower": 0,
+                    "hasSelfEffect": false,
+                    "selfEffectType": "Attack",
+                    "selfEffectPower": 0,
+                    "selfStatusEffect": "None",
+                    "selfStatusDuration": 0,
+                    "selfStatusPower": 0
+                }
+            ]
+        },
+        {
+            "actionName": "Purificação Total",
+            "assetPath": "Assets/Data/BattleActions/Items/Purificacao_Total.asset",
+            "description": "Remove TODOS os efeitos negativos de você instantaneamente. Usos: 2",
+            "targetType": "Self",
+            "manaCost": 0,
+            "isConsumable": true,
+            "maxUses": 2,
+            "shopPrice": 55,
+            "effects": [
+                {
+                    "effectType": "Buff",
+                    "power": 0,
+                    "statusEffect": "Blessed",
+                    "statusDuration": 1,
+                    "statusPower": 1,
+                    "hasSelfEffect": false,
+                    "selfEffectType": "Attack",
+                    "selfEffectPower": 0,
+                    "selfStatusEffect": "None",
+                    "selfStatusDuration": 0,
+                    "selfStatusPower": 0
+                }
+            ]
+        },
+        {
+            "actionName": "Ritual de Sangue",
+            "assetPath": "Assets/Data/BattleActions/Items/Ritual_de_Sangue.asset",
+            "description": "Sacrifica 40 de vida para restaurar 60 de mana. Usos: 2",
+            "targetType": "Self",
+            "manaCost": 0,
+            "isConsumable": true,
+            "maxUses": 2,
+            "shopPrice": 50,
+            "effects": [
+                {
+                    "effectType": "Heal",
+                    "power": 60,
+                    "statusEffect": "None",
+                    "statusDuration": 0,
+                    "statusPower": 0,
+                    "hasSelfEffect": true,
+                    "selfEffectType": "Attack",
+                    "selfEffectPower": 40,
+                    "selfStatusEffect": "None",
+                    "selfStatusDuration": 0,
+                    "selfStatusPower": 0
+                }
+            ]
+        },
+        {
+            "actionName": "Selo Explosivo",
+            "assetPath": "Assets/Data/BattleActions/Items/Selo_Explosivo.asset",
+            "description": "Causa 35 de dano a todos os inimigos. Usos: 2",
+            "targetType": "AllEnemies",
+            "manaCost": 0,
+            "isConsumable": true,
+            "maxUses": 2,
+            "shopPrice": 50,
+            "effects": [
+                {
+                    "effectType": "Attack",
+                    "power": 35,
+                    "statusEffect": "None",
+                    "statusDuration": 0,
+                    "statusPower": 0,
+                    "hasSelfEffect": false,
+                    "selfEffectType": "Attack",
+                    "selfEffectPower": 0,
+                    "selfStatusEffect": "None",
+                    "selfStatusDuration": 0,
+                    "selfStatusPower": 0
+                }
+            ]
+        },
+        {
+            "actionName": "Selo Amaldiçoado",
+            "assetPath": "Assets/Data/BattleActions/Items/SeloAmaldicoado.asset",
+            "description": "Causa 35 de dano a todos os inimigos. Usos: 2",
+            "targetType": "AllEnemies",
+            "manaCost": 0,
+            "isConsumable": true,
+            "maxUses": 2,
+            "shopPrice": 45,
+            "effects": [
+                {
+                    "effectType": "Attack",
+                    "power": 35,
+                    "statusEffect": "None",
+                    "statusDuration": 0,
+                    "statusPower": 0,
+                    "hasSelfEffect": false,
+                    "selfEffectType": "Attack",
+                    "selfEffectPower": 0,
+                    "selfStatusEffect": "None",
+                    "selfStatusDuration": 0,
+                    "selfStatusPower": 0
+                }
+            ]
+        },
+        {
+            "actionName": "Ébano",
+            "assetPath": "Assets/Data/BattleActions/Items/Ébano.asset",
+            "description": "Restaura 120 de vida. Usos: 1",
+            "targetType": "Self",
+            "manaCost": 0,
+            "isConsumable": true,
+            "maxUses": 1,
+            "shopPrice": 70,
+            "effects": [
+                {
+                    "effectType": "Heal",
+                    "power": 120,
+                    "statusEffect": "None",
+                    "statusDuration": 0,
+                    "statusPower": 0,
+                    "hasSelfEffect": false,
+                    "selfEffectType": "Attack",
+                    "selfEffectPower": 0,
+                    "selfStatusEffect": "None",
+                    "selfStatusDuration": 0,
+                    "selfStatusPower": 0
+                }
+            ]
+        },
+        {
+            "actionName": "Aniquilação da Alma",
+            "assetPath": "Assets/Data/BattleActions/Mana/Aniquilacao_da_Alma.asset",
+            "description": "Causa 120 de dano, mas drena 20 de sua vida. Custo: 40 MP",
+            "targetType": "SingleEnemy",
+            "manaCost": 40,
+            "isConsumable": false,
+            "maxUses": 1,
+            "shopPrice": 10,
+            "effects": [
+                {
+                    "effectType": "Attack",
+                    "power": 120,
+                    "statusEffect": "None",
+                    "statusDuration": 0,
+                    "statusPower": 0,
+                    "hasSelfEffect": true,
+                    "selfEffectType": "Attack",
+                    "selfEffectPower": 20,
+                    "selfStatusEffect": "None",
+                    "selfStatusDuration": 0,
+                    "selfStatusPower": 0
+                }
+            ]
+        },
+        {
+            "actionName": "Benção da Alma",
+            "assetPath": "Assets/Data/BattleActions/Mana/Benção_da_Alma.asset",
+            "description": "Cura 25 de vida e ganha regeneração por 4 turnos. Custo: 12 MP",
+            "targetType": "Self",
+            "manaCost": 12,
+            "isConsumable": false,
+            "maxUses": 1,
+            "shopPrice": 10,
+            "effects": [
+                {
+                    "effectType": "Heal",
+                    "power": 25,
+                    "statusEffect": "Blessed",
+                    "statusDuration": 4,
+                    "statusPower": 8,
+                    "hasSelfEffect": false,
+                    "selfEffectType": "Attack",
+                    "selfEffectPower": 0,
+                    "selfStatusEffect": "None",
+                    "selfStatusDuration": 0,
+                    "selfStatusPower": 0
+                }
+            ]
+        },
+        {
+            "actionName": "Drenar Alma",
+            "assetPath": "Assets/Data/BattleActions/Mana/Drenar_Alma.asset",
+            "description": "Causa 50 de dano e cura 25 de vida. Custo: 18 MP",
+            "targetType": "SingleEnemy",
+            "manaCost": 18,
+            "isConsumable": false,
+            "maxUses": 1,
+            "shopPrice": 10,
+            "effects": [
+                {
+                    "effectType": "Attack",
+                    "power": 50,
+                    "statusEffect": "None",
+                    "statusDuration": 0,
+                    "statusPower": 0,
+                    "hasSelfEffect": true,
+                    "selfEffectType": "Heal",
+                    "selfEffectPower": 25,
+                    "selfStatusEffect": "None",
+                    "selfStatusDuration": 0,
+                    "selfStatusPower": 0
+                }
+            ]
+        },
+        {
+            "actionName": "Drenar Espírito",
+            "assetPath": "Assets/Data/BattleActions/Mana/Drenar_Espirito.asset",
+            "description": "Restaura 35 de vida. Custo: 10 MP",
+            "targetType": "Self",
+            "manaCost": 10,
+            "isConsumable": false,
+            "maxUses": 1,
+            "shopPrice": 10,
+            "effects": [
+                {
+                    "effectType": "Heal",
+                    "power": 35,
+                    "statusEffect": "None",
+                    "statusDuration": 0,
+                    "statusPower": 0,
+                    "hasSelfEffect": false,
+                    "selfEffectType": "Attack",
+                    "selfEffectPower": 0,
+                    "selfStatusEffect": "None",
+                    "selfStatusDuration": 0,
+                    "selfStatusPower": 0
+                }
+            ]
+        },
+        {
+            "actionName": "Explosão Sombria",
+            "assetPath": "Assets/Data/BattleActions/Mana/Explosao_Sombria.asset",
+            "description": "Causa 35 de dano a todos os inimigos. Custo: 25 MP",
+            "targetType": "AllEnemies",
+            "manaCost": 25,
+            "isConsumable": false,
+            "maxUses": 1,
+            "shopPrice": 10,
+            "effects": [
+                {
+                    "effectType": "Attack",
+                    "power": 35,
+                    "statusEffect": "None",
+                    "statusDuration": 0,
+                    "statusPower": 0,
+                    "hasSelfEffect": false,
+                    "selfEffectType": "Attack",
+                    "selfEffectPower": 0,
+                    "selfStatusEffect": "None",
+                    "selfStatusDuration": 0,
+                    "selfStatusPower": 0
+                }
+            ]
+        },
+        {
+            "actionName": "Fúria",
+            "assetPath": "Assets/Data/BattleActions/Mana/Furia.asset",
+            "description": "Aumenta ataque por 3 turnos, mas reduz defesa. Custo: 8 MP",
+            "targetType": "Self",
+            "manaCost": 8,
+            "isConsumable": false,
+            "maxUses": 1,
+            "shopPrice": 10,
+            "effects": [
+                {
+                    "effectType": "Buff",
+                    "power": 0,
+                    "statusEffect": "AttackUp",
+                    "statusDuration": 3,
+                    "statusPower": 15,
+                    "hasSelfEffect": true,
+                    "selfEffectType": "Debuff",
+                    "selfEffectPower": 0,
+                    "selfStatusEffect": "DefenseDown",
+                    "selfStatusDuration": 3,
+                    "selfStatusPower": 8
+                }
+            ]
+        },
+        {
+            "actionName": "Golpe das Sombras",
+            "assetPath": "Assets/Data/BattleActions/Mana/Golpe_das_Sombras.asset",
+            "description": "Causa 55 de dano. Custo: 12 MP",
+            "targetType": "SingleEnemy",
+            "manaCost": 12,
+            "isConsumable": false,
+            "maxUses": 1,
+            "shopPrice": 10,
+            "effects": [
+                {
+                    "effectType": "Attack",
+                    "power": 55,
+                    "statusEffect": "None",
+                    "statusDuration": 0,
+                    "statusPower": 0,
+                    "hasSelfEffect": false,
+                    "selfEffectType": "Attack",
+                    "selfEffectPower": 0,
+                    "selfStatusEffect": "None",
+                    "selfStatusDuration": 0,
+                    "selfStatusPower": 0
+                }
+            ]
+        },
+        {
+            "actionName": "Lâmina Fantasma",
+            "assetPath": "Assets/Data/BattleActions/Mana/Lamina_Fantasma.asset",
+            "description": "Ataque espectral que causa 70 de dano. Inimigos com alta defesa sofrem mais. Custo: 16 MP",
+            "targetType": "SingleEnemy",
+            "manaCost": 16,
+            "isConsumable": false,
+            "maxUses": 1,
+            "shopPrice": 10,
+            "effects": [
+                {
+                    "effectType": "Attack",
+                    "power": 70,
+                    "statusEffect": "DefenseDown",
+                    "statusDuration": 1,
+                    "statusPower": 8,
+                    "hasSelfEffect": false,
+                    "selfEffectType": "Attack",
+                    "selfEffectPower": 0,
+                    "selfStatusEffect": "None",
+                    "selfStatusDuration": 0,
+                    "selfStatusPower": 0
+                }
+            ]
+        },
+        {
+            "actionName": "Maldição da Fraqueza",
+            "assetPath": "Assets/Data/BattleActions/Mana/Maldição_da_Fraqueza.asset",
+            "description": "Reduz defesa do inimigo por 4 turnos. Custo: 10 MP",
+            "targetType": "SingleEnemy",
+            "manaCost": 10,
+            "isConsumable": false,
+            "maxUses": 1,
+            "shopPrice": 10,
+            "effects": [
+                {
+                    "effectType": "Debuff",
+                    "power": 0,
+                    "statusEffect": "DefenseDown",
+                    "statusDuration": 4,
+                    "statusPower": 12,
+                    "hasSelfEffect": false,
+                    "selfEffectType": "Attack",
+                    "selfEffectPower": 0,
+                    "selfStatusEffect": "None",
+                    "selfStatusDuration": 0,
+                    "selfStatusPower": 0
+                }
+            ]
+        },
+        {
+            "actionName": "Morcegos",
+            "assetPath": "Assets/Data/BattleActions/Mana/Morcegos.asset",
+            "description": "Envenena todos os inimigos por 3 turnos. Custo: 15 MP",
+            "targetType": "AllEnemies",
+            "manaCost": 15,
+            "isConsumable": false,
+            "maxUses": 1,
+            "shopPrice": 10,
+            "effects": [
+                {
+                    "effectType": "Debuff",
+                    "power": 0,
+                    "statusEffect": "Poison",
+                    "statusDuration": 3,
+                    "statusPower": 8,
+                    "hasSelfEffect": false,
+                    "selfEffectType": "Attack",
+                    "selfEffectPower": 0,
+                    "selfStatusEffect": "None",
+                    "selfStatusDuration": 0,
+                    "selfStatusPower": 0
+                }
+            ]
+        },
+        {
+            "actionName": "Pacto de Sangue",
+            "assetPath": "Assets/Data/BattleActions/Mana/Pacto_de_Sangue.asset",
+            "description": "Sacrifica 30 de vida para ganhar ataque massivo por 3 turnos. Custo: 15 MP",
+            "targetType": "Self",
+            "manaCost": 15,
+            "isConsumable": false,
+            "maxUses": 1,
+            "shopPrice": 10,
+            "effects": [
+                {
+                    "effectType": "Buff",
+                    "power": 0,
+                    "statusEffect": "AttackUp",
+                    "statusDuration": 3,
+                    "statusPower": 30,
+                    "hasSelfEffect": true,
+                    "selfEffectType": "Attack",
+                    "selfEffectPower": 30,
+                    "selfStatusEffect": "None",
+                    "selfStatusDuration": 0,
+                    "selfStatusPower": 0
+                }
+            ]
+        },
+        {
+            "actionName": "Raio Sombrio",
+            "assetPath": "Assets/Data/BattleActions/Mana/Raio_Sombrio.asset",
+            "description": "Causa 45 de dano. Custo: 8 MP",
+            "targetType": "SingleEnemy",
+            "manaCost": 8,
+            "isConsumable": false,
+            "maxUses": 1,
+            "shopPrice": 10,
+            "effects": [
+                {
+                    "effectType": "Attack",
+                    "power": 45,
+                    "statusEffect": "None",
+                    "statusDuration": 0,
+                    "statusPower": 0,
+                    "hasSelfEffect": false,
+                    "selfEffectType": "Attack",
+                    "selfEffectPower": 0,
+                    "selfStatusEffect": "None",
+                    "selfStatusDuration": 0,
+                    "selfStatusPower": 0
+                }
+            ]
+        },
+        {
+            "actionName": "Tempestade Espectral",
+            "assetPath": "Assets/Data/BattleActions/Mana/Tempestade_Espectral.asset",
+            "description": "Causa 50 de dano a todos os inimigos. Custo: 35 MP",
+            "targetType": "AllEnemies",
+            "manaCost": 35,
+            "isConsumable": false,
+            "maxUses": 1,
+            "shopPrice": 10,
+            "effects": [
+                {
+                    "effectType": "Attack",
+                    "power": 50,
+                    "statusEffect": "None",
+                    "statusDuration": 0,
+                    "statusPower": 0,
+                    "hasSelfEffect": false,
+                    "selfEffectType": "Attack",
+                    "selfEffectPower": 0,
+                    "selfStatusEffect": "None",
+                    "selfStatusDuration": 0,
+                    "selfStatusPower": 0
+                }
+            ]
+        },
+        {
+            "actionName": "Tufão",
+            "assetPath": "Assets/Data/BattleActions/Mana/Tufao.asset",
+            "description": "Causa 30 de dano a todos os inimigos. Custo: 20 MP",
+            "targetType": "AllEnemies",
+            "manaCost": 20,
+            "isConsumable": false,
+            "maxUses": 1,
+            "shopPrice": 10,
+            "effects": [
+                {
+                    "effectType": "Attack",
+                    "power": 30,
+                    "statusEffect": "None",
+                    "statusDuration": 0,
+                    "statusPower": 0,
+                    "hasSelfEffect": false,
+                    "selfEffectType": "Attack",
+                    "selfEffectPower": 0,
+                    "selfStatusEffect": "None",
+                    "selfStatusDuration": 0,
+                    "selfStatusPower": 0
+                }
+            ]
+        },
+        {
+            "actionName": "Agonia",
+            "assetPath": "Assets/Data/BattleActions/Mana/Vortice_de_Almas.asset",
+            "description": "Causa 40 de dano a todos inimigos e reduz velocidade por 2 turnos. Custo: 30 MP",
+            "targetType": "AllEnemies",
+            "manaCost": 30,
+            "isConsumable": false,
+            "maxUses": 1,
+            "shopPrice": 10,
+            "effects": [
+                {
+                    "effectType": "Attack",
+                    "power": 40,
+                    "statusEffect": "SpeedDown",
+                    "statusDuration": 2,
+                    "statusPower": 30,
+                    "hasSelfEffect": false,
+                    "selfEffectType": "Attack",
+                    "selfEffectPower": 0,
+                    "selfStatusEffect": "None",
+                    "selfStatusDuration": 0,
+                    "selfStatusPower": 0
+                }
+            ]
+        },
+        {
+            "actionName": "Ataque Sombrio",
+            "assetPath": "Assets/Data/BattleActions/Unlimited/Ataque_Sombrio.asset",
+            "description": "Causa 25 de dano. Sem custo",
+            "targetType": "SingleEnemy",
+            "manaCost": 0,
+            "isConsumable": false,
+            "maxUses": 1,
+            "shopPrice": 10,
+            "effects": [
+                {
+                    "effectType": "Attack",
+                    "power": 25,
+                    "statusEffect": "None",
+                    "statusDuration": 0,
+                    "statusPower": 0,
+                    "hasSelfEffect": false,
+                    "selfEffectType": "Attack",
+                    "selfEffectPower": 0,
+                    "selfStatusEffect": "None",
+                    "selfStatusDuration": 0,
+                    "selfStatusPower": 0
+                }
+            ]
+        },
+        {
+            "actionName": "Golpe da Execução",
+            "assetPath": "Assets/Data/BattleActions/Unlimited/Golpe_da_Execucao.asset",
+            "description": "Ataque que causa 35 de dano base, extremamente efetivo contra alvos feridos. Sem custo",
+            "targetType": "SingleEnemy",
+            "manaCost": 0,
+            "isConsumable": false,
+            "maxUses": 1,
+            "shopPrice": 10,
+            "effects": [
+                {
+                    "effectType": "Attack",
+                    "power": 35,
+                    "statusEffect": "None",
+                    "statusDuration": 0,
+                    "statusPower": 0,
+                    "hasSelfEffect": false,
+                    "selfEffectType": "Attack",
+                    "selfEffectPower": 0,
+                    "selfStatusEffect": "None",
+                    "selfStatusDuration": 0,
+                    "selfStatusPower": 0
+                }
+            ]
+        },
+        {
+            "actionName": "Golpe Poderoso",
+            "assetPath": "Assets/Data/BattleActions/Unlimited/Golpe_Poderoso.asset",
+            "description": "Causa 40 de dano, mas reduz defesa por 2 turnos. Sem custo",
+            "targetType": "SingleEnemy",
+            "manaCost": 0,
+            "isConsumable": false,
+            "maxUses": 1,
+            "shopPrice": 10,
+            "effects": [
+                {
+                    "effectType": "Attack",
+                    "power": 40,
+                    "statusEffect": "None",
+                    "statusDuration": 0,
+                    "statusPower": 0,
+                    "hasSelfEffect": true,
+                    "selfEffectType": "Debuff",
+                    "selfEffectPower": 0,
+                    "selfStatusEffect": "DefenseDown",
+                    "selfStatusDuration": 2,
+                    "selfStatusPower": 5
+                }
+            ]
+        },
+        {
+            "actionName": "Transcender",
+            "assetPath": "Assets/Data/BattleActions/Unlimited/Transcender.asset",
+            "description": "Restaura 15 de vida. Sem custo",
+            "targetType": "Self",
+            "manaCost": 0,
+            "isConsumable": false,
+            "maxUses": 1,
+            "shopPrice": 10,
+            "effects": [
+                {
+                    "effectType": "Heal",
+                    "power": 15,
+                    "statusEffect": "None",
+                    "statusDuration": 0,
+                    "statusPower": 0,
+                    "hasSelfEffect": false,
+                    "selfEffectType": "Attack",
+                    "selfEffectPower": 0,
+                    "selfStatusEffect": "None",
+                    "selfStatusDuration": 0,
+                    "selfStatusPower": 0
+                }
+            ]
+        }
+    ],
+    "statistics": {
+        "totalActions": 64,
+        "consumableCount": 20,
+        "nonConsumableCount": 44,
+        "avgManaCost": 16.810810089111329,
+        "minManaCost": 5,
+        "maxManaCost": 40,
+        "avgPower": 46.65909194946289,
+        "minPower": 15,
+        "maxPower": 130
+    }
+}

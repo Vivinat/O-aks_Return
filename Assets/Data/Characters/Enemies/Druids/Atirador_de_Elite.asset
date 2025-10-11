@@ -15,12 +15,12 @@ MonoBehaviour:
   characterName: Atirador de Elite
   team: 1
   characterSprite: {fileID: 21300000, guid: 50d22889983887c4a9adc284f6252a6f, type: 3}
-  maxHp: 79
-  maxMp: 54
-  defense: 6
-  speed: 1.4573847
+  maxHp: 55
+  maxMp: 110
+  defense: 3
+  speed: 1.7
   deathSound: {fileID: 0}
   battleActions:
-  - {fileID: 11400000, guid: 0060d794505e9224388cb6ec5fd4069d, type: 2}
-  - {fileID: 11400000, guid: cd771e387f0689d4ea06e46767972381, type: 2}
-  - {fileID: 11400000, guid: 2c5dac40f7a583d4e9049f5696b29fa6, type: 2}
+  - {fileID: 11400000, guid: aefdae9b07600d1448948b8ee092ee4f, type: 2}
+  - {fileID: 11400000, guid: 2b9bf50d7d02eaf45931b3da843a718d, type: 2}
+  - {fileID: 11400000, guid: 0d8154578a77a174198049acbe133580, type: 2}

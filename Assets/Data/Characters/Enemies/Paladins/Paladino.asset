@@ -1,0 +1,27 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a3845463388303141a4721891b2fc23d, type: 3}
+  m_Name: Paladino
+  m_EditorClassIdentifier: 
+  characterName: Paladino
+  team: 1
+  characterSprite: {fileID: 21300000, guid: b019b87dc321b4840bfdcf849945250e, type: 3}
+  maxHp: 145
+  maxMp: 120
+  defense: 16
+  speed: 1
+  deathSound: {fileID: 0}
+  battleActions:
+  - {fileID: 11400000, guid: 8fecc7f7fdf6ede46bf10520a1edae55, type: 2}
+  - {fileID: 11400000, guid: d23e6ff57cbbc894cbd664e02d94cde3, type: 2}
+  - {fileID: 11400000, guid: 1556536c17997834fa0ab3640a84c7e1, type: 2}
+  - {fileID: 11400000, guid: 7d3885c5e2b855d46bf54260a45667f5, type: 2}

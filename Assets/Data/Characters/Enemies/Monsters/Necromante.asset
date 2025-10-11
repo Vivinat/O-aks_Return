@@ -15,11 +15,12 @@ MonoBehaviour:
   characterName: Necromante
   team: 1
   characterSprite: {fileID: 21300000, guid: cf743699162fc5642bfde74eeca573a0, type: 3}
-  maxHp: 84
-  maxMp: 37
-  defense: 10
-  speed: 1.0708039
+  maxHp: 110
+  maxMp: 160
+  defense: 9
+  speed: 1.1
+  deathSound: {fileID: 0}
   battleActions:
-  - {fileID: 11400000, guid: 0060d794505e9224388cb6ec5fd4069d, type: 2}
-  - {fileID: 11400000, guid: aefdae9b07600d1448948b8ee092ee4f, type: 2}
-  - {fileID: 11400000, guid: 8fecc7f7fdf6ede46bf10520a1edae55, type: 2}
+  - {fileID: 11400000, guid: b2b4db6655f9b5f42b81f2493aa1aacf, type: 2}
+  - {fileID: 11400000, guid: 17ab2ffe98f632e48ac7b4d97ed62dfb, type: 2}
+  - {fileID: 11400000, guid: ad5ddba0759830247b5d10a16e27d4af, type: 2}

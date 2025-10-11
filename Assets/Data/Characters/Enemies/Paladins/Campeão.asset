@@ -1,0 +1,26 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a3845463388303141a4721891b2fc23d, type: 3}
+  m_Name: "Campe\xE3o"
+  m_EditorClassIdentifier: 
+  characterName: "Campe\xE3o"
+  team: 1
+  characterSprite: {fileID: 21300000, guid: b3b408d263919024497cb7023d8b4302, type: 3}
+  maxHp: 130
+  maxMp: 100
+  defense: 18
+  speed: 0.9
+  deathSound: {fileID: 0}
+  battleActions:
+  - {fileID: 11400000, guid: eecf9978c867f9b44b11d1353540a502, type: 2}
+  - {fileID: 11400000, guid: 7d3885c5e2b855d46bf54260a45667f5, type: 2}
+  - {fileID: 11400000, guid: 02cb5cdc4f49bb743b4d343b48930bc8, type: 2}
