@@ -31,6 +31,12 @@ public class GameManager : MonoBehaviour
     // NOVO: Sistema para eventos de diálogo
     private MapManager currentMapManager;
     private MapNode pendingNodeToComplete;
+    
+    [Header("Player Current Stats")]
+    [SerializeField]
+    private int playerCurrentHP = -1; // -1 significa "não inicializado"
+    [SerializeField]
+    private int playerCurrentMP = -1; // -1 significa "não inicializado"
 
     private void Awake()
     {
@@ -360,5 +366,84 @@ public class GameManager : MonoBehaviour
     {
         currencySystem.AddCoins(coins);
         Debug.Log($"Recompensa de batalha: {coins} moedas");
+    }
+    
+    /// <summary>
+    /// Retorna o HP atual do jogador (ou HP máximo se não inicializado)
+    /// </summary>
+    public int GetPlayerCurrentHP()
+    {
+        if (playerCurrentHP < 0 && PlayerCharacterInfo != null)
+        {
+            playerCurrentHP = PlayerCharacterInfo.maxHp;
+        }
+        return playerCurrentHP;
+    }
+
+    /// <summary>
+    /// Define o HP atual do jogador
+    /// </summary>
+    public void SetPlayerCurrentHP(int value)
+    {
+        if (PlayerCharacterInfo != null)
+        {
+            playerCurrentHP = Mathf.Clamp(value, 0, PlayerCharacterInfo.maxHp);
+            Debug.Log($"HP do jogador atualizado: {playerCurrentHP}/{PlayerCharacterInfo.maxHp}");
+        }
+    }
+
+    /// <summary>
+    /// Retorna o MP atual do jogador (ou MP máximo se não inicializado)
+    /// </summary>
+    public int GetPlayerCurrentMP()
+    {
+        if (playerCurrentMP < 0 && PlayerCharacterInfo != null)
+        {
+            playerCurrentMP = PlayerCharacterInfo.maxMp;
+        }
+        return playerCurrentMP;
+    }
+
+    /// <summary>
+    /// Define o MP atual do jogador
+    /// </summary>
+    public void SetPlayerCurrentMP(int value)
+    {
+        if (PlayerCharacterInfo != null)
+        {
+            playerCurrentMP = Mathf.Clamp(value, 0, PlayerCharacterInfo.maxMp);
+            Debug.Log($"MP do jogador atualizado: {playerCurrentMP}/{PlayerCharacterInfo.maxMp}");
+        }
+    }
+
+    /// <summary>
+    /// Inicializa HP/MP atuais com base nos valores máximos
+    /// </summary>
+    public void InitializePlayerStats()
+    {
+        if (PlayerCharacterInfo != null)
+        {
+            if (playerCurrentHP < 0)
+            {
+                playerCurrentHP = PlayerCharacterInfo.maxHp;
+            }
+            if (playerCurrentMP < 0)
+            {
+                playerCurrentMP = PlayerCharacterInfo.maxMp;
+            }
+        }
+    }
+
+    /// <summary>
+    /// Reseta HP/MP para valores máximos
+    /// </summary>
+    public void ResetPlayerStats()
+    {
+        if (PlayerCharacterInfo != null)
+        {
+            playerCurrentHP = PlayerCharacterInfo.maxHp;
+            playerCurrentMP = PlayerCharacterInfo.maxMp;
+            Debug.Log("Stats do jogador resetados para máximos");
+        }
     }
 }

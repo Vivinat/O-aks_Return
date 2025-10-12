@@ -1,4 +1,4 @@
-// Assets/Scripts/UI/ShopItemUI.cs (Simplificado - sem estado vendido)
+// Assets/Scripts/UI/ShopItemUI.cs (UPDATED with Powerup support)
 
 using UnityEngine;
 using UnityEngine.EventSystems;
@@ -10,35 +10,45 @@ public class ShopItemUI : MonoBehaviour, IPointerEnterHandler, IPointerExitHandl
     [Header("UI Components")]
     public Image iconImage;
     public TextMeshProUGUI priceText;
-    public TextMeshProUGUI usesText; // Para mostrar usos de consumíveis
+    public TextMeshProUGUI usesText;
+    public Image typeIndicator; // NOVO: Indicador visual de tipo (opcional)
+    
+    [Header("Type Colors")]
+    public Color battleActionColor = new Color(0.8f, 0.8f, 1f);
+    public Color powerupColor = new Color(1f, 0.8f, 0.5f);
 
-    private BattleAction actionData;
+    private ShopItem shopItem;
     private ShopManager shopManager;
-    private bool isForSale; // Se true, mostra preço. Se false, é slot do jogador
+    private bool isForSale;
     private int displayPrice = 0;
 
-
     /// <summary>
-    /// Setup para itens à venda (mostra preço)
+    /// Setup para itens à venda usando ShopItem wrapper
     /// </summary>
-    public void SetupForSale(BattleAction action, ShopManager manager, int displayPrice = -1)
+    public void SetupForSale(ShopItem item, ShopManager manager, int displayPrice = -1)
     {
-        this.actionData = action;
+        this.shopItem = item;
         this.shopManager = manager;
         this.isForSale = true;
-    
-        // NOVO: Usa preço modificado se fornecido
-        this.displayPrice = displayPrice > 0 ? displayPrice : action.shopPrice;
-    
+        this.displayPrice = displayPrice > 0 ? displayPrice : item.Price;
+        
         SetupUI();
     }
 
     /// <summary>
-    /// Setup para slots do jogador (não mostra preço)
+    /// Setup para BattleAction à venda (compatibilidade)
+    /// </summary>
+    public void SetupForSale(BattleAction action, ShopManager manager, int displayPrice = -1)
+    {
+        SetupForSale(new ShopItem(action), manager, displayPrice);
+    }
+
+    /// <summary>
+    /// Setup para slots do jogador (apenas BattleActions)
     /// </summary>
     public void SetupPlayerSlot(BattleAction action, ShopManager manager)
     {
-        this.actionData = action;
+        this.shopItem = new ShopItem(action);
         this.shopManager = manager;
         this.isForSale = false;
         SetupUI();
@@ -46,19 +56,21 @@ public class ShopItemUI : MonoBehaviour, IPointerEnterHandler, IPointerExitHandl
 
     private void SetupUI()
     {
+        if (shopItem == null) return;
+        
         // Configura o ícone
-        if (iconImage != null && actionData != null)
+        if (iconImage != null)
         {
-            iconImage.sprite = actionData.icon;
-            iconImage.enabled = (actionData.icon != null);
+            iconImage.sprite = shopItem.Icon;
+            iconImage.enabled = (shopItem.Icon != null);
         }
 
         // Configura o preço (apenas para itens à venda)
         if (priceText != null)
         {
-            if (isForSale && actionData != null)
+            if (isForSale)
             {
-                int priceToShow = displayPrice > 0 ? displayPrice : actionData.shopPrice;
+                int priceToShow = displayPrice > 0 ? displayPrice : shopItem.Price;
                 priceText.text = $"{priceToShow}";
                 priceText.gameObject.SetActive(true);
             }
@@ -68,20 +80,20 @@ public class ShopItemUI : MonoBehaviour, IPointerEnterHandler, IPointerExitHandl
             }
         }
 
-        // Configura usos se for consumível
-        if (usesText != null && actionData != null)
+        // Configura usos (apenas para BattleActions consumíveis)
+        if (usesText != null)
         {
-            if (actionData.isConsumable)
+            if (shopItem.type == ShopItem.ItemType.BattleAction && 
+                shopItem.battleAction != null && 
+                shopItem.battleAction.isConsumable)
             {
                 if (isForSale)
                 {
-                    // Para itens à venda, mostra usos máximos
-                    usesText.text = $"{actionData.maxUses}/{actionData.maxUses}";
+                    usesText.text = $"{shopItem.battleAction.maxUses}/{shopItem.battleAction.maxUses}";
                 }
                 else
                 {
-                    // Para slots do jogador, mostra usos atuais
-                    usesText.text = $"{actionData.currentUses}/{actionData.maxUses}";
+                    usesText.text = $"{shopItem.battleAction.currentUses}/{shopItem.battleAction.maxUses}";
                 }
                 usesText.gameObject.SetActive(true);
             }
@@ -90,62 +102,58 @@ public class ShopItemUI : MonoBehaviour, IPointerEnterHandler, IPointerExitHandl
                 usesText.gameObject.SetActive(false);
             }
         }
-    }
-    
-    /// <summary>
-    /// Retorna a BattleAction associada a este botão
-    /// </summary>
-    public BattleAction GetAction()
-    {
-        return actionData;
-    }
-
-    // Quando o mouse entra na área do botão
-    public void OnPointerEnter(PointerEventData eventData)
-    {
-        if (shopManager != null && actionData != null)
+        
+        // NOVO: Configura indicador de tipo
+        if (typeIndicator != null && isForSale)
         {
-            string description = actionData.description;
-            
-            // Adiciona informações extras para consumíveis
-            if (actionData.isConsumable)
-            {
-                if (isForSale)
-                {
-                    // Para itens à venda, mostra usos máximos
-                    description += $"\n\nUsos: {actionData.maxUses}";
-                    description += "\n(Consumível - será removido quando esgotado)";
-                }
-                else
-                {
-                    // Para slots do jogador, mostra usos atuais
-                    description += $"\n\nUsos: {actionData.currentUses}/{actionData.maxUses}";
-                    description += "\n(Consumível - será removido quando esgotado)";
-                }
-            }
-            else if (actionData.manaCost > 0)
-            {
-                description += $"\n\nCusto de MP: {actionData.manaCost}";
-            }
-            
-            // Adiciona preço apenas para itens à venda
-            if (isForSale && actionData.shopPrice > 0)
-            {
-                if (GameManager.Instance.CurrencySystem.HasEnoughCoins(actionData.shopPrice))
-                {
-                    description += $"\n\nPreço: {actionData.shopPrice} moedas";
-                }
-                else
-                {
-                    description += $"\n\nPreço: {actionData.shopPrice} moedas (Moedas insuficientes!)";
-                }
-            }
-            
-            shopManager.ShowTooltip(actionData.actionName, description);
+            typeIndicator.gameObject.SetActive(true);
+            typeIndicator.color = shopItem.type == ShopItem.ItemType.Powerup 
+                ? powerupColor 
+                : battleActionColor;
+        }
+        else if (typeIndicator != null)
+        {
+            typeIndicator.gameObject.SetActive(false);
         }
     }
 
-    // Quando o mouse sai da área do botão
+    public ShopItem GetShopItem()
+    {
+        return shopItem;
+    }
+
+    // Compatibilidade - retorna BattleAction se for desse tipo
+    public BattleAction GetAction()
+    {
+        return shopItem?.battleAction;
+    }
+
+    public void OnPointerEnter(PointerEventData eventData)
+    {
+        if (shopManager != null && shopItem != null)
+        {
+            string description = shopItem.Description;
+            
+            // Adiciona informações de preço para itens à venda
+            if (isForSale)
+            {
+                if (GameManager.Instance.CurrencySystem.HasEnoughCoins(shopItem.Price))
+                {
+                    if (shopItem.type == ShopItem.ItemType.Powerup)
+                    {
+                        description += "\n\n(Clique para aplicar imediatamente)";
+                    }
+                }
+                else
+                {
+                    description += "\n\n<color=red>Moedas insuficientes!</color>";
+                }
+            }
+            
+            shopManager.ShowTooltip(shopItem.Name, description);
+        }
+    }
+
     public void OnPointerExit(PointerEventData eventData)
     {
         if (shopManager != null)

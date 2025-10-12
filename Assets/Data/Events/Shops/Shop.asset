@@ -15,7 +15,30 @@ MonoBehaviour:
   eventType: 2
   sceneToLoad: ShopScene
   actionsForSale:
-  - {fileID: 11400000, guid: c4c61c264b44d2a4bb125f2076b29f25, type: 2}
-  - {fileID: 11400000, guid: 0b99ff58355035a41ab9346d4e504d10, type: 2}
-  - {fileID: 11400000, guid: 8a019ceea5aee9c488a6e99ebc688ad0, type: 2}
+  - {fileID: 11400000, guid: c8c3f992a5ac07641a723b8ac1d555d5, type: 2}
+  - {fileID: 11400000, guid: bf2e921ba5c7c504481394e7aecb8bba, type: 2}
+  - {fileID: 11400000, guid: a5cc843120dafb34ebe69a6095e6dcea, type: 2}
+  - {fileID: 11400000, guid: ab1aaaec6c02dd04284d844aea197664, type: 2}
+  - {fileID: 11400000, guid: a1c98b94369d7ef4db39c9c52c1bda73, type: 2}
+  - {fileID: 11400000, guid: 9c1a16bed58d71d4099ab77e2aa3e4b8, type: 2}
+  - {fileID: 11400000, guid: c26c69bde7c30284c9b50f364374d880, type: 2}
+  - {fileID: 11400000, guid: 7e41ac4b5795bd1459765b7b3fc5f98d, type: 2}
+  - {fileID: 11400000, guid: 0e46b83a71a51234bb8b9d058535f709, type: 2}
+  - {fileID: 11400000, guid: c12b0cd68139e7547ae9aa997584c1de, type: 2}
+  - {fileID: 11400000, guid: 31fc176b6dc64e1429f546c037ba849e, type: 2}
+  - {fileID: 11400000, guid: b25d6e923e5095041b6d4e7600c8c18e, type: 2}
+  - {fileID: 11400000, guid: 4ea301412b60d164da864680493bb995, type: 2}
+  - {fileID: 11400000, guid: 7f1ad033b7d82914a83ae04cdbc6dc1a, type: 2}
+  - {fileID: 11400000, guid: e9661caf039ffb7469fc28c73aeb81d0, type: 2}
+  - {fileID: 11400000, guid: f1dbf1bdb90939a44a4458d16974cb81, type: 2}
+  - {fileID: 11400000, guid: 7c1319ec3e12e434683e9dcdeaa276dc, type: 2}
+  - {fileID: 11400000, guid: a4e180014f17cbb4c90181f3b4ab83e7, type: 2}
+  - {fileID: 11400000, guid: 3a218628599ebc9428b630b2e807db95, type: 2}
+  - {fileID: 11400000, guid: 9d204921e12fdc247b71f40c7c3c9e7a, type: 2}
+  powerupsForSale:
+  - {fileID: 11400000, guid: 971959d5d6ffe4f43a2c07d807cb9e77, type: 2}
+  - {fileID: 11400000, guid: ad64bce574d025448a09174683c3d79e, type: 2}
+  - {fileID: 11400000, guid: 80a0c9281a493a24ea4ae7241dd5fbc5, type: 2}
+  - {fileID: 11400000, guid: d17eab27d0e093641a23cd853a6cc812, type: 2}
   numberOfChoices: 3
+  powerupChance: 0.4

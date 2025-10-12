@@ -27,12 +27,15 @@ public class BattleManager : MonoBehaviour
 
     void Start()
     {
+        if (GameManager.Instance != null)
+        {
+            GameManager.Instance.InitializePlayerStats();
+        }
+    
         InitializeEnemyTeam();
         InitializePlayerTeam();
 
-        // Junta todos os personagens
         allCharacters = playerTeam.Concat(enemyTeam).ToList();
-
         currentState = BattleState.RUNNING;
         currentTurnNumber = 0;
     }
@@ -72,7 +75,26 @@ public class BattleManager : MonoBehaviour
 
     private void InitializePlayerTeam()
     {
-        playerTeam = FindObjectsOfType<BattleEntity>().Where(e => e.characterData.team == Team.Player).ToList();
+        playerTeam = FindObjectsOfType<BattleEntity>()
+            .Where(e => e.characterData.team == Team.Player)
+            .ToList();
+    
+        // NOVO: Carrega HP/MP atuais do GameManager
+        foreach (BattleEntity player in playerTeam)
+        {
+            if (GameManager.Instance != null)
+            {
+                // Usa os valores salvos no GameManager
+                typeof(BattleEntity)
+                    .GetField("currentHp", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance)
+                    ?.SetValue(player, GameManager.Instance.GetPlayerCurrentHP());
+                
+                player.currentMp = GameManager.Instance.GetPlayerCurrentMP();
+            
+                // Força update das barras
+                player.ForceUpdateValueTexts();
+            }
+        }
     }
     
     void Update()
@@ -431,16 +453,20 @@ public class BattleManager : MonoBehaviour
     private IEnumerator HandleBattleVictory(int rewardCoins)
     {
         yield return new WaitForSeconds(2f);
+    
         if (DifficultySystem.Instance != null)
         {
             rewardCoins = DifficultySystem.Instance.GetModifiedCoins(rewardCoins);
         }
-        
+    
         string victoryMessage = $"Vitória! Recebido {rewardCoins} moedas!";
         battleHUD.ShowEnemyAction(victoryMessage);
-        
+    
         yield return new WaitForSeconds(3f);
-        
+    
+        // NOVO: Salva stats antes de sair
+        SavePlayerStatsToGameManager();
+    
         GameManager.Instance.ReturnToMap();
     }
     
@@ -463,5 +489,24 @@ public class BattleManager : MonoBehaviour
         }
         
         currentState = BattleState.RUNNING;
+    }
+    
+    /// <summary>
+    /// Salva o HP/MP atual do jogador no GameManager quando a batalha termina
+    /// </summary>
+    private void SavePlayerStatsToGameManager()
+    {
+        if (GameManager.Instance == null) return;
+    
+        // Pega o primeiro jogador vivo (ou o primeiro se todos estão mortos)
+        BattleEntity player = playerTeam.FirstOrDefault();
+    
+        if (player != null)
+        {
+            GameManager.Instance.SetPlayerCurrentHP(player.GetCurrentHP());
+            GameManager.Instance.SetPlayerCurrentMP(player.GetCurrentMP());
+        
+            Debug.Log($"Stats do jogador salvos - HP: {player.GetCurrentHP()}/{player.GetMaxHP()}, MP: {player.GetCurrentMP()}/{player.GetMaxMP()}");
+        }
     }
 }
