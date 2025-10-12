@@ -22,3 +22,4 @@ MonoBehaviour:
   deathSound: {fileID: 0}
   battleActions:
   - {fileID: 11400000, guid: fd2185eac5ce59d40a6129af997a4632, type: 2}
+  - {fileID: 11400000, guid: 24a3f069b82739d4cbc531c24d6c29fb, type: 2}

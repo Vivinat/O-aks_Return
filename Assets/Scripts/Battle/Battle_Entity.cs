@@ -35,7 +35,7 @@ public class BattleEntity : MonoBehaviour
 
     // Controlador de animações
     private BattleAnimationController animationController;
-
+    
     void Awake()
     {
         animationController = GetComponent<BattleAnimationController>();
@@ -44,12 +44,31 @@ public class BattleEntity : MonoBehaviour
             animationController = gameObject.AddComponent<BattleAnimationController>();
         }
     }
-
+    
     void Start()
     {
+        if (characterData != null)
+        {
+            // CASO 1: É um personagem válido (jogador ou inimigo).
+            // Garante que a HUD esteja ligada e inicializa os status.
+            EnableHUDElements(); // Liga a HUD!
+
+            currentHp = characterData.maxHp; //
+            currentMp = characterData.maxMp; //
+            currentAtb = Random.Range(0, 20); //
+
+            UpdateATBBar(); //
+            UpdateHPBar(); //
+            UpdateMPBar(); //
+            UpdateValueTexts(); //
+        }
+        
         currentHp = characterData.maxHp;
         currentMp = characterData.maxMp;
         currentAtb = Random.Range(0, 20);
+
+        // Garante que a HUD esteja visível caso tenha sido desativada antes
+        EnableHUDElements();
 
         UpdateATBBar();
         UpdateHPBar();
@@ -342,20 +361,20 @@ public class BattleEntity : MonoBehaviour
         StartCoroutine(DeactivateSpriteAfterDelay());
     }
 
-    // Método para desativar elementos da HUD quando o personagem morre
+    // Método para desativar elementos da HUD quando o personagem morre OU quando não tem characterData
     private void DisableHUDElements()
     {
-        // Opção 1: Desativa completamente os sliders
+        // Desativa completamente os sliders
         if (atbBar != null)
         {
             atbBar.gameObject.SetActive(false);
         }
-        
+    
         if (hpBar != null)
         {
             hpBar.gameObject.SetActive(false);
         }
-        
+    
         if (mpBar != null)
         {
             mpBar.gameObject.SetActive(false);
@@ -366,13 +385,15 @@ public class BattleEntity : MonoBehaviour
         {
             hpValueText.gameObject.SetActive(false);
         }
-        
+    
         if (mpValueText != null)
         {
             mpValueText.gameObject.SetActive(false);
         }
 
-        Debug.Log($"HUD de {characterData.characterName} desativada");
+        // CORREÇÃO: Verifica se characterData existe antes de acessar
+        string entityName = characterData != null ? characterData.characterName : gameObject.name;
+        Debug.Log($"HUD de {entityName} desativada");
     }
 
     // Método alternativo para fazer fade dos sliders em vez de desativar
@@ -497,13 +518,13 @@ public class BattleEntity : MonoBehaviour
         // Atualiza texto de HP (para todos os personagens)
         if (hpValueText != null)
         {
-            hpValueText.text = $"{currentHp}/{characterData.maxHp}";
+            hpValueText.text = $"{currentHp}";
         }
 
         // Atualiza texto de MP (geralmente só para o player)
         if (mpValueText != null)
         {
-            mpValueText.text = $"{currentMp}/{characterData.maxMp}";
+            mpValueText.text = $"{currentMp}";
         }
     }
 
@@ -547,5 +568,22 @@ public class BattleEntity : MonoBehaviour
     public void ForceUpdateValueTexts()
     {
         UpdateValueTexts();
+    }
+    
+    /// <summary>
+    /// Retorna a defesa base do personagem
+    /// </summary>
+    public int GetBaseDefense()
+    {
+        if (characterData == null) return 0;
+        return characterData.defense;
+    }
+    
+    /// <summary>
+    /// Retorna a defesa atual (base + modificadores de status)
+    /// </summary>
+    public int GetCurrentDefense()
+    {
+        return GetBaseDefense() + GetDefenseModifier();
     }
 }

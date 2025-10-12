@@ -146,9 +146,43 @@ public class BattleEntityHover : MonoBehaviour
     {
         StringBuilder info = new StringBuilder();
         
-        info.AppendLine($"HP: {battleEntity.GetCurrentHP()}/{battleEntity.GetMaxHP()}");
+        // Linha 1: HP e MP (se tiver)
+        info.Append($"<b>HP:</b> {battleEntity.GetCurrentHP()}/{battleEntity.GetMaxHP()}");
+        
+        if (battleEntity.GetMaxMP() > 0)
+        {
+            info.Append($"  <b>MP:</b> {battleEntity.GetCurrentMP()}/{battleEntity.GetMaxMP()}");
+        }
+        info.AppendLine();
+        
+        // Linha 2: DEF
+        int currentDef = battleEntity.GetCurrentDefense();
+        int baseDef = battleEntity.GetBaseDefense();
+        
+        info.Append($"<b>DEF:</b> {FormatStatWithModifier(currentDef, baseDef)}");
         
         return info.ToString();
+    }
+    
+    /// <summary>
+    /// Formata uma stat mostrando modificadores em cores
+    /// </summary>
+    private string FormatStatWithModifier(int current, int baseValue)
+    {
+        if (current == baseValue)
+        {
+            return current.ToString();
+        }
+        else if (current > baseValue)
+        {
+            int diff = current - baseValue;
+            return $"{current} <color=#90EE90>(+{diff})</color>";
+        }
+        else
+        {
+            int diff = baseValue - current;
+            return $"{current} <color=#FF6B6B>(-{diff})</color>";
+        }
     }
     
     private string GetStatusEffectsDescription()
@@ -164,24 +198,27 @@ public class BattleEntityHover : MonoBehaviour
         
         // Informações básicas primeiro
         description.AppendLine(GetBasicInfo());
-        description.AppendLine("<b>Status Effects:</b>");
+        description.AppendLine();
+        description.AppendLine("<b>Status:</b>");
         
         foreach (var effect in activeEffects)
         {
-            string effectLine = GetStatusEffectDescription(effect);
+            string effectLine = GetStatusEffectDescriptionCompact(effect);
             description.AppendLine(effectLine);
         }
         
         return description.ToString();
     }
     
-    private string GetStatusEffectDescription(StatusEffect effect)
+    /// <summary>
+    /// Versão compacta da descrição de status effect
+    /// </summary>
+    private string GetStatusEffectDescriptionCompact(StatusEffect effect)
     {
         string icon = GetStatusEffectIcon(effect.type);
         string colorCode = GetStatusEffectColor(effect.type);
-        string shortDescription = GetShortEffectDescription(effect.type, effect.power);
         
-        return $"<color={colorCode}>{icon} {effect.effectName}</color> ({effect.remainingTurns} turnos)\n   {shortDescription}";
+        return $"<color={colorCode}>{icon} {effect.effectName} ({effect.remainingTurns}t)</color>";
     }
     
     private string GetStatusEffectIcon(StatusEffectType type)
@@ -228,51 +265,6 @@ public class BattleEntityHover : MonoBehaviour
             
             default:
                 return "#FFFFFF";
-        }
-    }
-    
-    private string GetShortEffectDescription(StatusEffectType type, int power)
-    {
-        switch (type)
-        {
-            case StatusEffectType.AttackUp:
-                return $"Ataque aumentado em +{power}";
-            
-            case StatusEffectType.AttackDown:
-                return $"Ataque reduzido em -{power}";
-            
-            case StatusEffectType.DefenseUp:
-                return $"Defesa aumentada em +{power}";
-            
-            case StatusEffectType.DefenseDown:
-                return $"Defesa reduzida em -{power}";
-            
-            case StatusEffectType.SpeedUp:
-                return $"Velocidade aumentada em {power}%";
-            
-            case StatusEffectType.SpeedDown:
-                return $"Velocidade reduzida em {power}%";
-            
-            case StatusEffectType.Poison:
-                return $"Perde {power} HP por turno";
-            
-            case StatusEffectType.Regeneration:
-                return $"Recupera {power} HP por turno";
-            
-            case StatusEffectType.Vulnerable:
-                return $"Recebe {power}% mais dano";
-            
-            case StatusEffectType.Protected:
-                return $"Recebe {power}% menos dano";
-            
-            case StatusEffectType.Blessed:
-                return $"Cura divina de {power} HP por turno";
-            
-            case StatusEffectType.Cursed:
-                return $"Maldição causa {power} de dano por turno";
-            
-            default:
-                return "Efeito desconhecido";
         }
     }
     
