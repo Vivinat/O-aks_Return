@@ -1,4 +1,4 @@
-// Assets/Scripts/Managers/TreasureManager.cs
+// Assets/Scripts/Managers/TreasureManager.cs (UPDATED with Individual Refresh)
 
 using UnityEngine;
 using UnityEngine.UI;
@@ -16,8 +16,9 @@ public class TreasureManager : MonoBehaviour
     [Header("UI References")]
     public Transform rewardOptionsContainer;
     public GameObject rewardChoicePrefab;
+    public GameObject refreshButtonPrefab; // NOVO: Prefab do botão de refresh
     public Button skipButton;
-    public TextMeshProUGUI skipButtonText; // Texto do botão skip/salvar
+    public TextMeshProUGUI skipButtonText;
 
     [Header("Player Actions UI")]
     public GameObject playerActionsPanel;
@@ -31,6 +32,9 @@ public class TreasureManager : MonoBehaviour
     public Color highlightColor = new Color(1f, 0.9f, 0.4f);
     public Color defaultColor = Color.white;
     public Color emptySlotColor = new Color(0.7f, 0.7f, 0.7f, 0.8f);
+    
+    [Header("Refresh Settings")]
+    public Color refreshUsedColor = new Color(0.5f, 0.5f, 0.5f, 0.5f);
 
     // --- Estado Interno ---
     private List<BattleAction> playerActions;
@@ -41,6 +45,11 @@ public class TreasureManager : MonoBehaviour
     // Listas para gerenciar os botões criados
     private List<GameObject> rewardButtonObjects = new List<GameObject>();
     private List<GameObject> playerSlotObjects = new List<GameObject>();
+    
+    // NOVO: Sistema de refresh
+    private List<BattleAction> currentRewardChoices = new List<BattleAction>();
+    private List<GameObject> refreshButtonObjects = new List<GameObject>();
+    private List<bool> refreshButtonUsed = new List<bool>();
 
     void Start()
     {
@@ -79,18 +88,12 @@ public class TreasureManager : MonoBehaviour
         PopulatePlayerActionsPanel();
     }
 
-    /// <summary>
-    /// Reseta o botão skip para o estado inicial
-    /// </summary>
     private void ResetSkipButton()
     {
         if (skipButtonText != null)
             skipButtonText.text = "Sair";
     }
 
-    /// <summary>
-    /// Muda o botão skip para modo salvar
-    /// </summary>
     private void SetSaveMode()
     {
         if (skipButtonText != null)
@@ -98,44 +101,219 @@ public class TreasureManager : MonoBehaviour
     }
 
     /// <summary>
-    /// Cria e exibe os 3 botões de recompensa.
+    /// MODIFICADO: Gera escolhas evitando skills que o jogador já tem
     /// </summary>
     private void GenerateRewardChoices()
     {
         Debug.Log("Gerando escolhas de recompensa...");
         
         ClearRewardButtons();
-        List<BattleAction> choices = rewardPool.GetRandomRewards(numberOfChoices);
-        Debug.Log($"Geradas {choices.Count} escolhas");
+        
+        // Gera recompensas excluindo as que o jogador já tem
+        List<BattleAction> choices = rewardPool.GetRandomRewards(numberOfChoices, playerActions);
+        
+        if (choices.Count < numberOfChoices)
+        {
+            Debug.LogWarning($"Apenas {choices.Count} recompensas únicas disponíveis (menos que {numberOfChoices})");
+        }
+        
+        currentRewardChoices = choices;
+        Debug.Log($"Geradas {choices.Count} escolhas únicas");
+        
+        // Inicializa lista de refresh buttons usados
+        refreshButtonUsed.Clear();
+        for (int i = 0; i < choices.Count; i++)
+        {
+            refreshButtonUsed.Add(false);
+        }
         
         for (int i = 0; i < choices.Count; i++)
         {
-            BattleAction action = choices[i];
-            if (action == null)
-            {
-                Debug.LogWarning("BattleAction null encontrada na pool!");
-                continue;
-            }
+            CreateRewardSlot(choices[i], i);
+        }
+    }
+    
+    /// <summary>
+    /// NOVO: Cria um slot de recompensa com botão de refresh
+    /// </summary>
+    private void CreateRewardSlot(BattleAction action, int index)
+    {
+        if (action == null)
+        {
+            Debug.LogWarning("BattleAction null encontrada!");
+            return;
+        }
 
-            int buttonIndex = i;
-            
-            GameObject choiceInstance = Instantiate(rewardChoicePrefab, rewardOptionsContainer);
-            RewardButtonUI rewardButton = choiceInstance.GetComponent<RewardButtonUI>();
-            
-            if (rewardButton == null)
-            {
-                Debug.LogError("RewardButtonUI não encontrado no prefab!");
-                continue;
-            }
-            
+        // Cria container vertical para skill + botão refresh
+        GameObject containerObj = new GameObject($"RewardSlot_{index}");
+        containerObj.transform.SetParent(rewardOptionsContainer);
+        
+        VerticalLayoutGroup verticalLayout = containerObj.AddComponent<VerticalLayoutGroup>();
+        verticalLayout.childAlignment = TextAnchor.MiddleCenter;
+        verticalLayout.spacing = 5f;
+        verticalLayout.childControlHeight = false;
+        verticalLayout.childControlWidth = false;
+        verticalLayout.childForceExpandHeight = false;
+        verticalLayout.childForceExpandWidth = false;
+
+        // Cria o botão de skill
+        GameObject choiceInstance = Instantiate(rewardChoicePrefab, containerObj.transform);
+        RewardButtonUI rewardButton = choiceInstance.GetComponent<RewardButtonUI>();
+        
+        if (rewardButton != null)
+        {
             rewardButton.Setup(action, this);
-            rewardButtonObjects.Add(choiceInstance);
+        }
+        
+        Button buttonComponent = choiceInstance.GetComponent<Button>();
+        if (buttonComponent != null)
+        {
+            int buttonIndex = index;
+            buttonComponent.onClick.AddListener(() => OnRewardSelected(action, buttonIndex));
+        }
+        
+        rewardButtonObjects.Add(choiceInstance);
 
-            Button buttonComponent = choiceInstance.GetComponent<Button>();
+        // Cria o botão de refresh
+        if (refreshButtonPrefab != null)
+        {
+            GameObject refreshObj = Instantiate(refreshButtonPrefab, containerObj.transform);
+            Button refreshBtn = refreshObj.GetComponent<Button>();
+            
+            if (refreshBtn != null)
+            {
+                int refreshIndex = index;
+                refreshBtn.onClick.AddListener(() => OnRefreshClicked(refreshIndex));
+                
+                // Configura texto do botão
+                TextMeshProUGUI btnText = refreshBtn.GetComponentInChildren<TextMeshProUGUI>();
+                if (btnText != null)
+                {
+                    btnText.text = "Refresh";
+                }
+            }
+            
+            refreshButtonObjects.Add(refreshObj);
+        }
+        else
+        {
+            Debug.LogWarning("refreshButtonPrefab não foi atribuído!");
+        }
+    }
+    
+    /// <summary>
+    /// NOVO: Chamado quando um botão de refresh é clicado
+    /// </summary>
+    private void OnRefreshClicked(int slotIndex)
+    {
+        // Verifica se já foi usado
+        if (refreshButtonUsed[slotIndex])
+        {
+            Debug.Log($"Botão de refresh {slotIndex} já foi usado!");
+            AudioConstants.PlayCannotSelect();
+            return;
+        }
+        
+        Debug.Log($"Refresh solicitado para slot {slotIndex}");
+        AudioConstants.PlayButtonSelect();
+        
+        // Marca como usado
+        refreshButtonUsed[slotIndex] = true;
+        
+        // Desabilita visualmente o botão
+        if (slotIndex < refreshButtonObjects.Count)
+        {
+            Button refreshBtn = refreshButtonObjects[slotIndex].GetComponent<Button>();
+            if (refreshBtn != null)
+            {
+                refreshBtn.interactable = false;
+                
+                Image btnImage = refreshBtn.GetComponent<Image>();
+                if (btnImage != null)
+                {
+                    btnImage.color = refreshUsedColor;
+                }
+            }
+        }
+        
+        // Gera nova recompensa
+        RefreshRewardSlot(slotIndex);
+    }
+    
+    /// <summary>
+    /// NOVO: Atualiza uma recompensa específica
+    /// </summary>
+    private void RefreshRewardSlot(int slotIndex)
+    {
+        if (slotIndex < 0 || slotIndex >= currentRewardChoices.Count)
+        {
+            Debug.LogError($"Índice de slot inválido: {slotIndex}");
+            return;
+        }
+        
+        // Cria lista de exclusões: jogador + outras escolhas atuais
+        List<BattleAction> excludeList = new List<BattleAction>(playerActions);
+        
+        // Adiciona as outras escolhas atuais (incluindo a que vai ser substituída)
+        excludeList.AddRange(currentRewardChoices);
+        
+        // Tenta pegar uma nova recompensa
+        BattleAction newReward = rewardPool.GetSingleRandomReward(excludeList);
+        
+        if (newReward == null)
+        {
+            Debug.LogWarning("Não há mais recompensas únicas disponíveis para refresh!");
+            AudioConstants.PlayCannotSelect();
+            
+            // Reverte o botão de refresh
+            refreshButtonUsed[slotIndex] = false;
+            if (slotIndex < refreshButtonObjects.Count)
+            {
+                Button refreshBtn = refreshButtonObjects[slotIndex].GetComponent<Button>();
+                if (refreshBtn != null)
+                {
+                    refreshBtn.interactable = true;
+                    Image btnImage = refreshBtn.GetComponent<Image>();
+                    if (btnImage != null)
+                    {
+                        btnImage.color = Color.white;
+                    }
+                }
+            }
+            return;
+        }
+        
+        Debug.Log($"Slot {slotIndex}: '{currentRewardChoices[slotIndex]?.actionName}' → '{newReward.actionName}'");
+        
+        // Atualiza a lista interna
+        currentRewardChoices[slotIndex] = newReward;
+        
+        // Atualiza o botão de recompensa
+        if (slotIndex < rewardButtonObjects.Count)
+        {
+            RewardButtonUI rewardButton = rewardButtonObjects[slotIndex].GetComponent<RewardButtonUI>();
+            if (rewardButton != null)
+            {
+                rewardButton.Setup(newReward, this);
+            }
+            
+            // Atualiza o listener do botão
+            Button buttonComponent = rewardButtonObjects[slotIndex].GetComponent<Button>();
             if (buttonComponent != null)
             {
-                buttonComponent.onClick.AddListener(() => OnRewardSelected(action, buttonIndex));
+                buttonComponent.onClick.RemoveAllListeners();
+                int buttonIndex = slotIndex;
+                buttonComponent.onClick.AddListener(() => OnRewardSelected(newReward, buttonIndex));
             }
+        }
+        
+        // Se a recompensa refreshada estava selecionada, desseleciona
+        if (selectedRewardButtonIndex == slotIndex)
+        {
+            selectedReward = null;
+            selectedRewardButtonIndex = -1;
+            UpdateRewardHighlights();
+            ResetSkipButton();
         }
     }
 
@@ -155,7 +333,6 @@ public class TreasureManager : MonoBehaviour
         playerActionsPanel.SetActive(true);
         ClearPlayerSlots();
 
-        // Sempre cria 4 slots
         for (int i = 0; i < MAX_PLAYER_ACTIONS; i++)
         {
             int slotIndex = i;
@@ -169,7 +346,6 @@ public class TreasureManager : MonoBehaviour
                 continue;
             }
 
-            // Se existe uma ação neste slot, configura normalmente
             if (i < playerActions.Count && playerActions[i] != null)
             {
                 slotButton.Setup(playerActions[i], this);
@@ -177,7 +353,6 @@ public class TreasureManager : MonoBehaviour
             }
             else
             {
-                // Slot vazio
                 SetupEmptySlot(slotButton, slotIndex);
             }
 
@@ -191,9 +366,6 @@ public class TreasureManager : MonoBehaviour
         }
     }
 
-    /// <summary>
-    /// Configura um slot vazio
-    /// </summary>
     private void SetupEmptySlot(RewardButtonUI buttonUI, int slotIndex)
     {
         if (buttonUI.iconImage != null)
@@ -210,14 +382,11 @@ public class TreasureManager : MonoBehaviour
         Debug.Log($"Slot {slotIndex}: vazio");
     }
 
-    /// <summary>
-    /// Chamado quando o jogador clica em uma recompensa
-    /// </summary>
     private void OnRewardSelected(BattleAction chosenAction, int buttonIndex)
     {
         selectedReward = chosenAction;
         selectedRewardButtonIndex = buttonIndex;
-        selectedPlayerSlotIndex = -1; // Reset seleção do slot
+        selectedPlayerSlotIndex = -1;
         
         UpdateRewardHighlights();
         UpdatePlayerSlotHighlights();
@@ -226,9 +395,6 @@ public class TreasureManager : MonoBehaviour
         Debug.Log($"Recompensa selecionada: {chosenAction.actionName} (botão {buttonIndex})");
     }
 
-    /// <summary>
-    /// Chamado quando o jogador clica em um slot de habilidade
-    /// </summary>
     private void OnPlayerSlotSelected(int slotIndex)
     {
         if (selectedReward == null)
@@ -254,9 +420,6 @@ public class TreasureManager : MonoBehaviour
         AudioConstants.PlayItemBuy();
     }
 
-    /// <summary>
-    /// Atualiza o highlight dos botões de recompensa
-    /// </summary>
     private void UpdateRewardHighlights()
     {
         for (int i = 0; i < rewardButtonObjects.Count; i++)
@@ -270,9 +433,6 @@ public class TreasureManager : MonoBehaviour
         }
     }
 
-    /// <summary>
-    /// Atualiza o highlight dos slots do jogador
-    /// </summary>
     private void UpdatePlayerSlotHighlights()
     {
         for (int i = 0; i < playerSlotObjects.Count; i++)
@@ -288,14 +448,13 @@ public class TreasureManager : MonoBehaviour
                 }
                 else
                 {
-                    // Volta à cor original (normal ou slot vazio)
                     if (i >= playerActions.Count)
                     {
-                        buttonImage.color = emptySlotColor; // Slot vazio
+                        buttonImage.color = emptySlotColor;
                     }
                     else
                     {
-                        buttonImage.color = defaultColor; // Slot com habilidade
+                        buttonImage.color = defaultColor;
                     }
                 }
             }
@@ -303,20 +462,37 @@ public class TreasureManager : MonoBehaviour
     }
 
     /// <summary>
-    /// Limpa os botões de recompensa
+    /// MODIFICADO: Limpa também os botões de refresh
     /// </summary>
     private void ClearRewardButtons()
     {
         foreach (GameObject obj in rewardButtonObjects)
         {
-            if (obj != null) Destroy(obj);
+            if (obj != null)
+            {
+                // Destrói o container pai se existir
+                if (obj.transform.parent != null && obj.transform.parent != rewardOptionsContainer)
+                {
+                    Destroy(obj.transform.parent.gameObject);
+                }
+                else
+                {
+                    Destroy(obj);
+                }
+            }
         }
         rewardButtonObjects.Clear();
+        
+        foreach (GameObject obj in refreshButtonObjects)
+        {
+            if (obj != null) Destroy(obj);
+        }
+        refreshButtonObjects.Clear();
+        
+        currentRewardChoices.Clear();
+        refreshButtonUsed.Clear();
     }
 
-    /// <summary>
-    /// Limpa os slots do jogador
-    /// </summary>
     private void ClearPlayerSlots()
     {
         foreach (GameObject obj in playerSlotObjects)
@@ -326,15 +502,11 @@ public class TreasureManager : MonoBehaviour
         playerSlotObjects.Clear();
     }
 
-    /// <summary>
-    /// Função principal do botão Skip/Salvar
-    /// </summary>
     public void SkipSelection()
     {
         if (tooltipUI != null)
             tooltipUI.Hide();
 
-        // Se temos uma seleção completa (recompensa + slot), salva a mudança
         if (selectedReward != null && selectedPlayerSlotIndex >= 0)
         {
             SaveSelection();
@@ -343,15 +515,10 @@ public class TreasureManager : MonoBehaviour
         EndTreasureEvent();
     }
 
-    /// <summary>
-    /// Salva a seleção do jogador
-    /// </summary>
     private void SaveSelection()
     {
         if (selectedPlayerSlotIndex >= playerActions.Count)
         {
-            // Adicionar a uma posição vazia
-            // Precisa expandir a lista até a posição necessária
             while (playerActions.Count <= selectedPlayerSlotIndex)
             {
                 playerActions.Add(null);
@@ -361,19 +528,14 @@ public class TreasureManager : MonoBehaviour
         }
         else
         {
-            // Substituir habilidade existente
             string oldAction = playerActions[selectedPlayerSlotIndex]?.actionName ?? "vazio";
             playerActions[selectedPlayerSlotIndex] = selectedReward;
             Debug.Log($"Substituída '{oldAction}' por '{selectedReward.actionName}' no slot {selectedPlayerSlotIndex}");
         }
 
-        // Remove nulls da lista para manter consistência
         playerActions.RemoveAll(action => action == null);
     }
 
-    /// <summary>
-    /// Finaliza o evento e retorna ao mapa
-    /// </summary>
     private void EndTreasureEvent()
     {
         if (GameManager.Instance.PlayerCharacterInfo != null)
@@ -384,7 +546,6 @@ public class TreasureManager : MonoBehaviour
         GameManager.Instance.ReturnToMap();
     }
 
-    // --- MÉTODOS DO TOOLTIP ---
     public void ShowTooltip(string name, string description)
     {
         if (tooltipUI != null && tooltipAnchor != null)

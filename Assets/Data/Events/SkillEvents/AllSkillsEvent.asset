@@ -10,7 +10,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: f8a051ceb155a1a4c8cec8fd82f99c6e, type: 3}
-  m_Name: New Treasure Event SO
+  m_Name: AllSkillsEvent
   m_EditorClassIdentifier: 
   eventType: 1
   sceneToLoad: SkillScene
