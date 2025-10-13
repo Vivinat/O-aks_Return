@@ -13,23 +13,22 @@ MonoBehaviour:
   m_Name: Retribuicao_Divina
   m_EditorClassIdentifier: 
   actionName: "Retribui\xE7\xE3o Divina"
-  description: 'Causa 130 de dano massivo, mas sacrifica 25 de sua vida. Custo: 30
-    MP'
+  description: 'Causa 150 de dano massivo. Custo: 100 MP'
   icon: {fileID: 21300000, guid: 454df06223642e943aaa0de0473537dc, type: 3}
   targetType: 0
   effects:
   - effectType: 0
-    power: 130
+    power: 150
     statusEffect: 0
     statusDuration: 0
     statusPower: 0
-    hasSelfEffect: 1
+    hasSelfEffect: 0
     selfEffectType: 0
-    selfEffectPower: 25
+    selfEffectPower: 0
     selfStatusEffect: 0
     selfStatusDuration: 0
     selfStatusPower: 0
-  manaCost: 30
+  manaCost: 100
   isConsumable: 0
   maxUses: 1
   shopPrice: 10

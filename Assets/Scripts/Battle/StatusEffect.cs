@@ -83,8 +83,8 @@ public class StatusEffect
         {
             case StatusEffectType.Poison:
             case StatusEffectType.Cursed:
-                entity.TakeDamage(power);
-                Debug.Log($"{entity.characterData.characterName} takes {power} damage from {effectName}");
+                entity.TakeDamage(power, null, true); 
+                Debug.Log($"{entity.characterData.characterName} takes {power} damage from {effectName} (ignores defense)");
                 break;
                 
             case StatusEffectType.Regeneration:

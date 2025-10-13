@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Jato_Venenoso
   m_EditorClassIdentifier: 
   actionName: Jato Venenoso
-  description: 'Causa 20 de dano e envenena o alvo por 4 turnos. Custo: 10 MP'
+  description: 'Poder:20. Envenena o alvo por 4 turnos. Custo: 10 MP'
   icon: {fileID: 21300000, guid: c8d3a35455135ba42be459d5bb1e48be, type: 3}
   targetType: 0
   effects:

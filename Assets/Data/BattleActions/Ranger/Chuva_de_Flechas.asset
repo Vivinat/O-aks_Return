@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Chuva_de_Flechas
   m_EditorClassIdentifier: 
   actionName: Chuva de Flechas
-  description: 'Causa 30 de dano a todos os inimigos. Custo: 22 MP'
+  description: 'Dano a todos os inimigos. Poder:30. Custo: 22 MP'
   icon: {fileID: 21300000, guid: f08d5261dd3679b40a43a78dc02f8b1e, type: 3}
   targetType: 3
   effects:

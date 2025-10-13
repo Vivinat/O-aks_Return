@@ -13,12 +13,23 @@ MonoBehaviour:
   m_Name: Transcender
   m_EditorClassIdentifier: 
   actionName: Transcender
-  description: Restaura 15 de vida. Sem custo
-  icon: {fileID: 21300000, guid: 4b128a3e77ce4414ebe845ba2dfbaa7b, type: 3}
+  description: Restaura 15 de vida e 1 de Mana. Sem custo
+  icon: {fileID: 21300000, guid: 27ec3cc63e1039e43966c7c2c5e0e512, type: 3}
   targetType: 2
   effects:
   - effectType: 1
     power: 15
+    statusEffect: 0
+    statusDuration: 0
+    statusPower: 0
+    hasSelfEffect: 0
+    selfEffectType: 0
+    selfEffectPower: 0
+    selfStatusEffect: 0
+    selfStatusDuration: 0
+    selfStatusPower: 0
+  - effectType: 2
+    power: 1
     statusEffect: 0
     statusDuration: 0
     statusPower: 0

@@ -13,8 +13,7 @@ MonoBehaviour:
   m_Name: Lamina_do_Executor
   m_EditorClassIdentifier: 
   actionName: "L\xE2mina do Executor"
-  description: "Causa dano igual a 20% do HP m\xE1ximo do alvo. Extremamente efetivo
-    contra tanques. Usos: 2"
+  description: 'Causa 100 de dano a um alvo. Uso: 1'
   icon: {fileID: 21300000, guid: 6b813875d7969424eb17746ba33a0689, type: 3}
   targetType: 0
   effects:
@@ -31,5 +30,5 @@ MonoBehaviour:
     selfStatusPower: 0
   manaCost: 0
   isConsumable: 1
-  maxUses: 2
+  maxUses: 1
   shopPrice: 75

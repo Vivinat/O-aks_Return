@@ -167,48 +167,21 @@ public class StatusPanel : MonoBehaviour
             characterNameText.text = playerData.characterName;
 
         if (hpText != null)
-            hpText.text = $"HP: {playerData.maxHp}";
+            hpText.text = $"HP: {GameManager.Instance.GetPlayerCurrentHP()}/{playerData.maxHp}";
         
         if (mpText != null)
-            mpText.text = $"MP: {playerData.maxMp}";
-        
-        if (attackText != null)
-        {
-            int totalAttack = CalculateTotalAttack();
-            attackText.text = $"Attack: {totalAttack}";
-        }
+            mpText.text = $"MP: {GameManager.Instance.GetPlayerCurrentMP()}/{playerData.maxMp}";
         
         if (defenseText != null)
-            defenseText.text = $"Defense: {playerData.defense}";
+            defenseText.text = $"Defesa: {playerData.defense}";
         
         if (speedText != null)
-            speedText.text = $"Speed: {playerData.speed:F1}";
+            speedText.text = $"Velocidade: {playerData.speed:F1}";
 
         if (coinsText != null && GameManager.Instance.CurrencySystem != null)
-            coinsText.text = $"Souls: {GameManager.Instance.CurrencySystem.CurrentCoins}";
+            coinsText.text = $"Moedas: {GameManager.Instance.CurrencySystem.CurrentCoins}";
     }
-
-    private int CalculateTotalAttack()
-    {
-        int totalAttack = 0;
-        
-        if (GameManager.Instance?.PlayerBattleActions != null)
-        {
-            foreach (var action in GameManager.Instance.PlayerBattleActions)
-            {
-                if (action != null)
-                {
-                    ActionType actionType = action.GetPrimaryActionType();
-                    if (actionType == ActionType.Attack && action.effects.Count > 0)
-                    {
-                        totalAttack = Mathf.Max(totalAttack, action.effects[0].power);
-                    }
-                }
-            }
-        }
-
-        return totalAttack > 0 ? totalAttack : 10;
-    }
+    
 
     private void UpdateSkillsList()
     {

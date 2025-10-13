@@ -12,16 +12,16 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3b28a35cc03f4464295db8452ec8fc55, type: 3}
   m_Name: SeloAmaldicoado
   m_EditorClassIdentifier: 
-  actionName: "Selo Amaldi\xE7oado"
-  description: 'Causa 35 de dano a todos os inimigos. Usos: 2'
-  icon: {fileID: 21300000, guid: 15c1d5e75fa69404381909e31555c28d, type: 3}
-  targetType: 3
+  actionName: "Trov\xE3o do T\xE1rtaro"
+  description: Aumenta agilidade em 3 por 3 turnos.
+  icon: {fileID: 21300000, guid: db75f13b762a221408c595864134bbc1, type: 3}
+  targetType: 2
   effects:
-  - effectType: 0
-    power: 35
-    statusEffect: 0
-    statusDuration: 0
-    statusPower: 0
+  - effectType: 3
+    power: 0
+    statusEffect: 5
+    statusDuration: 3
+    statusPower: 50
     hasSelfEffect: 0
     selfEffectType: 0
     selfEffectPower: 0
@@ -31,4 +31,4 @@ MonoBehaviour:
   manaCost: 0
   isConsumable: 1
   maxUses: 2
-  shopPrice: 45
+  shopPrice: 75

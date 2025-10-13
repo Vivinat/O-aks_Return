@@ -8,6 +8,7 @@ public enum ActionType
 {
     Attack,
     Heal,
+    RestoreMana,
     Buff,
     Debuff,
     Mixed // Para ações que fazem múltiplos efeitos

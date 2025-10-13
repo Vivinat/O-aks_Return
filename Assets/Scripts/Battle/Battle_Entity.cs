@@ -108,15 +108,23 @@ public class BattleEntity : MonoBehaviour
         UpdateATBBar();
     }
 
-    public void TakeDamage(int damageAmount, BattleEntity attacker = null)
+    public void TakeDamage(int damageAmount, BattleEntity attacker = null, bool ignoresDefense = false)
     {
         if (isDead) return;
 
-        // Apply defense modifiers from status effects
-        int effectiveDefense = characterData.defense + GetDefenseModifier();
-        int baseDamage = Mathf.Max(1, damageAmount - effectiveDefense);
+        int baseDamage;
+        if (ignoresDefense)
+        {
+            baseDamage = damageAmount; // Dano direto, sem cálculo de defesa
+        }
+        else
+        {
+            // Cálculo de dano normal com defesa
+            int effectiveDefense = characterData.defense + GetDefenseModifier();
+            baseDamage = Mathf.Max(1, damageAmount - effectiveDefense);
+        }
         
-        // Apply damage multipliers from status effects
+        // Aplica multiplicadores de dano (Vulnerable, Protected)
         float damageMultiplier = GetDamageMultiplier();
         int finalDamage = Mathf.RoundToInt(baseDamage * damageMultiplier);
         
@@ -156,6 +164,7 @@ public class BattleEntity : MonoBehaviour
         UpdateValueTexts();
     }
 
+
     public void Heal(int healAmount)
     {
         if (isDead) return;
@@ -183,7 +192,10 @@ public class BattleEntity : MonoBehaviour
         currentMp = Mathf.Min(currentMp + manaAmount, characterData.maxMp);
         int actualManaRestore = currentMp - oldMp;
         
-        Debug.Log($"{characterData.characterName} restored {actualManaRestore} MP!");
+        if (DamageNumberController.Instance != null && actualManaRestore >= 0)
+        {
+            DamageNumberController.Instance.ShowManaRestore(transform.position, actualManaRestore);
+        }
         
         UpdateMPBar();
         UpdateValueTexts();
@@ -233,27 +245,26 @@ public class BattleEntity : MonoBehaviour
     {
         if (isDead) return;
 
-        List<StatusEffect> effectsToRemove = new List<StatusEffect>();
-
-        foreach (StatusEffect effect in activeStatusEffects)
+        // Loop reverso de 'for'
+        for (int i = activeStatusEffects.Count - 1; i >= 0; i--)
         {
+            StatusEffect effect = activeStatusEffects[i];
+        
             bool shouldRemove = effect.ProcessTurnEffect(this);
+
+            // Se o personagem morreu durante o efeito, paramos tudo
+            if (isDead) break;
+
+            // Se o efeito expirou, removemos diretamente da lista
             if (shouldRemove)
             {
-                effectsToRemove.Add(effect);
                 Debug.Log($"{characterData.characterName} loses {effect.effectName}");
-                
                 if (DamageNumberController.Instance != null)
                 {
                     DamageNumberController.Instance.ShowStatusEffect(transform.position, effect.type, 0, true);
                 }
+                activeStatusEffects.RemoveAt(i);
             }
-        }
-
-        // Remove expired effects
-        foreach (StatusEffect effect in effectsToRemove)
-        {
-            activeStatusEffects.Remove(effect);
         }
     }
 

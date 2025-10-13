@@ -19,6 +19,7 @@ public class DamageNumberController : MonoBehaviour
     [Header("Colors")]
     [SerializeField] private Color damageColor = new Color(1f, 0.3f, 0.3f); // Vermelho
     [SerializeField] private Color healColor = new Color(0.3f, 1f, 0.3f);   // Verde
+    [SerializeField] private Color manaColor = new Color(0.25f, 0.1f, 1);   // Azul
     [SerializeField] private Color criticalColor = new Color(1f, 1f, 0.3f); // Amarelo
     [SerializeField] private Color statusPositiveColor = new Color(0.5f, 0.8f, 1f); // Azul claro
     [SerializeField] private Color statusNegativeColor = new Color(1f, 0.5f, 0f);   // Laranja
@@ -87,6 +88,14 @@ public class DamageNumberController : MonoBehaviour
         float fontSize = CalculateDamageFontSize(healAmount, false);
 
         CreateFloatingText(position, text, healColor, fontSize);
+    }
+    
+    public void ShowManaRestore(Vector3 position, int manaRestored)
+    {
+        string text = $"+{manaRestored}"; // Isso vai gerar o texto "+0"
+        float fontSize = CalculateDamageFontSize(manaRestored, false);
+
+        CreateFloatingText(position, text, manaColor, fontSize);
     }
 
     /// <summary>

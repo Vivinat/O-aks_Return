@@ -13,12 +13,12 @@ MonoBehaviour:
   m_Name: Aniquilacao_da_Alma
   m_EditorClassIdentifier: 
   actionName: "Aniquila\xE7\xE3o da Alma"
-  description: 'Causa 120 de dano, mas drena 20 de sua vida. Custo: 40 MP'
+  description: 'Causa 100 de dano, mas drena 20 de sua vida. Custo: 40 MP'
   icon: {fileID: 21300000, guid: f294177cb8f0d2a4aa3857d474f3da2c, type: 3}
   targetType: 0
   effects:
   - effectType: 0
-    power: 120
+    power: 100
     statusEffect: 0
     statusDuration: 0
     statusPower: 0

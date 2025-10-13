@@ -17,7 +17,7 @@ MonoBehaviour:
   icon: {fileID: 21300000, guid: 117f77960f9d9a849833f413aaaf2336, type: 3}
   targetType: 2
   effects:
-  - effectType: 2
+  - effectType: 3
     power: 0
     statusEffect: 10
     statusDuration: 1

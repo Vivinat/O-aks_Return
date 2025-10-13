@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Pacto_de_Sangue
   m_EditorClassIdentifier: 
   actionName: Pacto de Sangue
-  description: 'Sacrifica 30 de vida para ganhar ataque massivo por 3 turnos. Custo:
+  description: 'Sacrifica 40 de vida para ganhar ataque massivo por 3 turnos. Custo:
     15 MP'
   icon: {fileID: 21300000, guid: b94d2dcdcb60bbe4087d16aa1934ae83, type: 3}
   targetType: 2
@@ -25,7 +25,7 @@ MonoBehaviour:
     statusPower: 30
     hasSelfEffect: 1
     selfEffectType: 0
-    selfEffectPower: 30
+    selfEffectPower: 40
     selfStatusEffect: 0
     selfStatusDuration: 0
     selfStatusPower: 0

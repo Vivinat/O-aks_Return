@@ -14,11 +14,11 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   actionName: "Decad\xEAncia"
   description: "Amaldi\xE7oa todos os inimigos com deteriora\xE7\xE3o severa por
-    4 turnos. Custo: 22 MP"
+    4 turnos. Poder:15. Custo: 22 MP"
   icon: {fileID: 21300000, guid: 714ba3c7b3d0d064c9d1c5df9cdb5ad1, type: 3}
   targetType: 3
   effects:
-  - effectType: 3
+  - effectType: 4
     power: 0
     statusEffect: 12
     statusDuration: 4

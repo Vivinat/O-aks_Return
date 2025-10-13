@@ -10,25 +10,25 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 3b28a35cc03f4464295db8452ec8fc55, type: 3}
-  m_Name: Drenar_Espirito
+  m_Name: Ebano
   m_EditorClassIdentifier: 
-  actionName: "Drenar Esp\xEDrito"
-  description: 'Restaura 35 de vida. Custo: 10 MP'
-  icon: {fileID: 21300000, guid: 62b7bb5cd8087dd4980ccdeb9c81532e, type: 3}
+  actionName: "\xC9bano"
+  description: 'Restaura 120 de vida. Aumenta agildade em 1. Usos: 1'
+  icon: {fileID: 21300000, guid: 176d97d8f6fc2d446b3c88f2d5b8f33a, type: 3}
   targetType: 2
   effects:
   - effectType: 1
-    power: 35
+    power: 120
     statusEffect: 0
     statusDuration: 0
     statusPower: 0
-    hasSelfEffect: 0
-    selfEffectType: 0
+    hasSelfEffect: 1
+    selfEffectType: 3
     selfEffectPower: 0
-    selfStatusEffect: 0
-    selfStatusDuration: 0
-    selfStatusPower: 0
-  manaCost: 10
-  isConsumable: 0
+    selfStatusEffect: 5
+    selfStatusDuration: 3
+    selfStatusPower: 30
+  manaCost: 0
+  isConsumable: 1
   maxUses: 1
-  shopPrice: 10
+  shopPrice: 70

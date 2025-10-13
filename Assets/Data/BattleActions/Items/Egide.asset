@@ -13,11 +13,11 @@ MonoBehaviour:
   m_Name: Egide
   m_EditorClassIdentifier: 
   actionName: "\xC9gide"
-  description: 'Reduz dano recebido em 20% por 3 turnos. Usos: 2'
+  description: 'Aumenta defesa por 3 turnos. Usos: 2'
   icon: {fileID: 21300000, guid: f501274873652494a8daa65aad82ea39, type: 3}
   targetType: 2
   effects:
-  - effectType: 2
+  - effectType: 3
     power: 0
     statusEffect: 10
     statusDuration: 3

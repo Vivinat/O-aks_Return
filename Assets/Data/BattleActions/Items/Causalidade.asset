@@ -13,23 +13,23 @@ MonoBehaviour:
   m_Name: Causalidade
   m_EditorClassIdentifier: 
   actionName: Causalidade
-  description: "Efeito aleat\xF3rio: pode curar 50 HP, causar 50 de dano, dar +20
-    ataque ou envenenar inimigos. Usos: 3"
+  description: "Cura 30 HP, Causa 30 de dano em todos os inimigos e os amaldi\xE7oa
+    por 2 turnos. Usos: 1"
   icon: {fileID: 21300000, guid: 05174b1d516b2b747a0efb823e2e4c79, type: 3}
-  targetType: 2
+  targetType: 3
   effects:
-  - effectType: 1
-    power: 50
-    statusEffect: 0
-    statusDuration: 0
-    statusPower: 0
-    hasSelfEffect: 0
-    selfEffectType: 0
-    selfEffectPower: 0
+  - effectType: 0
+    power: 30
+    statusEffect: 12
+    statusDuration: 2
+    statusPower: 25
+    hasSelfEffect: 1
+    selfEffectType: 1
+    selfEffectPower: 30
     selfStatusEffect: 0
     selfStatusDuration: 0
     selfStatusPower: 0
   manaCost: 0
   isConsumable: 1
-  maxUses: 3
-  shopPrice: 40
+  maxUses: 1
+  shopPrice: 50

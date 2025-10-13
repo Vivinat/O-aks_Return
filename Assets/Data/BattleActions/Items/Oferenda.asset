@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Oferenda
   m_EditorClassIdentifier: 
   actionName: Oferenda
-  description: "Sua pr\xF3xima habilidade tem seu efeito DOBRADO. Usos: 1"
+  description: 'Aumenta ataque em 100 por um turno. Usos: 1'
   icon: {fileID: 21300000, guid: ec15a626b26f1c1498ee4b14110391d6, type: 3}
   targetType: 2
   effects:

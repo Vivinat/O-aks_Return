@@ -13,8 +13,7 @@ MonoBehaviour:
   m_Name: Presas_de_Caca
   m_EditorClassIdentifier: 
   actionName: "Presas de Ca\xE7a"
-  description: "Causa 15 de dano e deixa o alvo extremamente vulner\xE1vel por 3
-    turnos. Custo: 14 MP"
+  description: "Poder:15. Deixa o alvo vulner\xE1vel por 3 turnos. Custo: 14 MP"
   icon: {fileID: 21300000, guid: e4425c609668a5b4e8899c7e80a8ef90, type: 3}
   targetType: 0
   effects:
@@ -22,7 +21,7 @@ MonoBehaviour:
     power: 15
     statusEffect: 9
     statusDuration: 3
-    statusPower: 25
+    statusPower: 15
     hasSelfEffect: 0
     selfEffectType: 0
     selfEffectPower: 0

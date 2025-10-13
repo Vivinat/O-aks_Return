@@ -261,6 +261,10 @@ public class BattleManager : MonoBehaviour
                 case ActionType.Heal:
                     target.Heal(effect.power);
                     break;
+                
+                case ActionType.RestoreMana:
+                    target.RestoreMana(effect.power);
+                    break;
                     
                 case ActionType.Buff:
                 case ActionType.Debuff:
@@ -317,28 +321,37 @@ public class BattleManager : MonoBehaviour
     {
         yield return new WaitForSeconds(1.0f);
     
-        BattleAction chosenAction = activeCharacter.characterData.battleActions
-            .Where(a => activeCharacter.currentMp >= a.manaCost && (!a.isConsumable || a.CanUse()))
-            .OrderBy(a => Random.value)
-            .FirstOrDefault();
+        // Pega o único jogador
+        BattleEntity player = playerTeam.FirstOrDefault(p => !p.isDead);
+    
+        if (player == null)
+        {
+            // Jogador morreu, batalha já deve ter terminado
+            activeCharacter.ResetATB();
+            currentState = BattleState.RUNNING;
+            yield break;
+        }
+    
+        // ========== USA A IA ==========
+        BattleAction chosenAction = EnemyAI.ChooseBestAction(activeCharacter, player, enemyTeam);
 
         if (chosenAction == null)
         {
-            Debug.Log($"{activeCharacter.characterData.characterName} has no available actions!");
+            Debug.Log($"{activeCharacter.characterData.characterName} não tem ações disponíveis!");
             activeCharacter.ResetATB();
             currentState = BattleState.RUNNING;
             yield break;
         }
 
-        // Show enemy action
-        string enemyActionText = $"{activeCharacter.characterData.characterName} uses {chosenAction.actionName}!";
+        // Mostra a ação do inimigo
+        string enemyActionText = $"{activeCharacter.characterData.characterName} usa {chosenAction.actionName}!";
         battleHUD.ShowEnemyAction(enemyActionText);
-        
+    
         yield return new WaitForSeconds(enemyActionDisplayTime);
         battleHUD.HideEnemyAction();
 
-        // Choose targets based on action
-        List<BattleEntity> targets = GetTargetsForAction(chosenAction, activeCharacter);
+        // Escolhe os alvos
+        List<BattleEntity> targets = EnemyAI.ChooseBestTargets(chosenAction, activeCharacter, player, enemyTeam);
 
         if (targets.Any())
         {
@@ -346,80 +359,10 @@ public class BattleManager : MonoBehaviour
         }
         else
         {
-            Debug.Log($"{activeCharacter.characterData.characterName} found no valid targets!");
+            Debug.Log($"{activeCharacter.characterData.characterName} não encontrou alvos válidos!");
             activeCharacter.ResetATB();
             currentState = BattleState.RUNNING;
         }
-    }
-
-    private List<BattleEntity> GetTargetsForAction(BattleAction action, BattleEntity caster)
-    {
-        List<BattleEntity> targets = new List<BattleEntity>();
-        
-        switch (action.targetType)
-        {
-            case TargetType.SingleEnemy:
-                if (caster.characterData.team == Team.Player)
-                {
-                    var aliveEnemies = enemyTeam.Where(e => !e.isDead).ToList();
-                    if (aliveEnemies.Any())
-                        targets.Add(aliveEnemies[Random.Range(0, aliveEnemies.Count)]);
-                }
-                else
-                {
-                    var alivePlayers = playerTeam.Where(p => !p.isDead).ToList();
-                    if (alivePlayers.Any())
-                        targets.Add(alivePlayers[Random.Range(0, alivePlayers.Count)]);
-                }
-                break;
-                
-            case TargetType.SingleAlly:
-                if (caster.characterData.team == Team.Player)
-                {
-                    var alivePlayers = playerTeam.Where(p => !p.isDead).ToList();
-                    if (alivePlayers.Any())
-                        targets.Add(alivePlayers[Random.Range(0, alivePlayers.Count)]);
-                }
-                else
-                {
-                    var aliveEnemies = enemyTeam.Where(e => !e.isDead).ToList();
-                    if (aliveEnemies.Any())
-                        targets.Add(aliveEnemies[Random.Range(0, aliveEnemies.Count)]);
-                }
-                break;
-                
-            case TargetType.Self:
-                targets.Add(caster);
-                break;
-                
-            case TargetType.AllEnemies:
-                if (caster.characterData.team == Team.Player)
-                {
-                    targets.AddRange(enemyTeam.Where(e => !e.isDead));
-                }
-                else
-                {
-                    targets.AddRange(playerTeam.Where(p => !p.isDead));
-                }
-                break;
-                
-            case TargetType.AllAllies:
-                if (caster.characterData.team == Team.Player)
-                {
-                    targets.AddRange(playerTeam.Where(p => !p.isDead));
-                }
-                else
-                {
-                    targets.AddRange(enemyTeam.Where(e => !e.isDead));
-                }
-                break;
-                
-            case TargetType.Everyone:
-                targets.AddRange(allCharacters.Where(c => !c.isDead));
-                break;
-        }
-
-        return targets;
     }
     
     private void CheckBattleEnd()

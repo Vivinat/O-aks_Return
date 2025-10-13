@@ -10,15 +10,15 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 3b28a35cc03f4464295db8452ec8fc55, type: 3}
-  m_Name: "\xC9bano"
+  m_Name: Espiritismo
   m_EditorClassIdentifier: 
-  actionName: "\xC9bano"
-  description: 'Restaura 120 de vida. Usos: 1'
-  icon: {fileID: 21300000, guid: 176d97d8f6fc2d446b3c88f2d5b8f33a, type: 3}
+  actionName: Espiritismo
+  description: 'Restaura 35 de vida. Custo: 10 MP'
+  icon: {fileID: 21300000, guid: 62b7bb5cd8087dd4980ccdeb9c81532e, type: 3}
   targetType: 2
   effects:
   - effectType: 1
-    power: 120
+    power: 35
     statusEffect: 0
     statusDuration: 0
     statusPower: 0
@@ -28,7 +28,7 @@ MonoBehaviour:
     selfStatusEffect: 0
     selfStatusDuration: 0
     selfStatusPower: 0
-  manaCost: 0
-  isConsumable: 1
+  manaCost: 10
+  isConsumable: 0
   maxUses: 1
-  shopPrice: 70
+  shopPrice: 10

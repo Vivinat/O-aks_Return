@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Desintegrar
   m_EditorClassIdentifier: 
   actionName: Desintegrar
-  description: 'Causa 28 de dano perfurante. Custo: 0 MP'
+  description: 'Poder:28. Custo: 0 MP'
   icon: {fileID: 21300000, guid: 55a5659876d6d4a4f976491162a536be, type: 3}
   targetType: 0
   effects:

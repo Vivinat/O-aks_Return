@@ -13,12 +13,12 @@ MonoBehaviour:
   m_Name: Familiar
   m_EditorClassIdentifier: 
   actionName: Familiar
-  description: "Amaldi\xE7oa todos os inimigos, causando dano por 3 turnos. Custo:
-    18 MP"
+  description: "Amaldi\xE7oa todos os inimigos, causando dano por 3 turnos de Poder:12.
+    Custo: 18 MP"
   icon: {fileID: 21300000, guid: 45389a81cb9ccde41b4f50c65dd3c9f2, type: 3}
   targetType: 3
   effects:
-  - effectType: 3
+  - effectType: 4
     power: 0
     statusEffect: 12
     statusDuration: 3

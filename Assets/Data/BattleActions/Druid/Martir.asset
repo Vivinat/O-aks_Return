@@ -13,30 +13,19 @@ MonoBehaviour:
   m_Name: Martir
   m_EditorClassIdentifier: 
   actionName: "M\xE1rtir"
-  description: "Aumenta defesa por 4 turnos e aplica veneno em si mesmo que ser\xE1
-    refletido aos atacantes. Custo: 16 MP"
-  icon: {fileID: 21300000, guid: 0f9bdbd33b670b44696cd3f2b4891fd0, type: 3}
+  description: 'Aumenta defesa por 4 turnos, recupere 50 de Mana mas cause dano a
+    si mesmo de Poder:50. Custo: 16 MP'
+  icon: {fileID: 21300000, guid: 55a5659876d6d4a4f976491162a536be, type: 3}
   targetType: 2
   effects:
   - effectType: 2
-    power: 0
-    statusEffect: 3
-    statusDuration: 4
-    statusPower: 20
-    hasSelfEffect: 0
-    selfEffectType: 0
-    selfEffectPower: 0
-    selfStatusEffect: 0
-    selfStatusDuration: 0
-    selfStatusPower: 0
-  - effectType: 2
-    power: 0
+    power: 50
     statusEffect: 10
     statusDuration: 4
     statusPower: 15
-    hasSelfEffect: 0
+    hasSelfEffect: 1
     selfEffectType: 0
-    selfEffectPower: 0
+    selfEffectPower: 50
     selfStatusEffect: 0
     selfStatusDuration: 0
     selfStatusPower: 0
