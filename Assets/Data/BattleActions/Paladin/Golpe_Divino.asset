@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Golpe_Divino
   m_EditorClassIdentifier: 
   actionName: Golpe Divino
-  description: 'Causa 35 de dano sagrado. Custo: 0 MP'
+  description: 'Causa dano com Poder:35. Custo: 0 MP'
   icon: {fileID: 21300000, guid: 072e0ae8625e80446b168b28ee219b51, type: 3}
   targetType: 0
   effects:

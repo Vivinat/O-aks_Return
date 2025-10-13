@@ -268,7 +268,7 @@ GameObject:
   - component: {fileID: 95644502}
   - component: {fileID: 95644501}
   m_Layer: 5
-  m_Name: Text (TMP) (1)
+  m_Name: DeathMessageText
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -290,8 +290,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0}
   m_AnchorMax: {x: 0.5, y: 0}
-  m_AnchoredPosition: {x: 0.0001, y: 92}
-  m_SizeDelta: {x: 783.8715, y: 50}
+  m_AnchoredPosition: {x: 0.0001, y: 132.3299}
+  m_SizeDelta: {x: 783.8715, y: 130.6598}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &95644501
 MonoBehaviour:
@@ -340,8 +340,8 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 36
-  m_fontSizeBase: 36
+  m_fontSize: 24
+  m_fontSizeBase: 24
   m_fontWeight: 400
   m_enableAutoSizing: 0
   m_fontSizeMin: 18
@@ -504,7 +504,7 @@ Camera:
   m_Enabled: 1
   serializedVersion: 2
   m_ClearFlags: 1
-  m_BackGroundColor: {r: 0.19215687, g: 0.3019608, b: 0.4745098, a: 0}
+  m_BackGroundColor: {r: 0, g: 0, b: 0, a: 0}
   m_projectionMatrixMode: 1
   m_GateFitMode: 2
   m_FOVAxisMode: 0
@@ -572,6 +572,7 @@ GameObject:
   - component: {fileID: 619838757}
   - component: {fileID: 619838756}
   - component: {fileID: 619838755}
+  - component: {fileID: 619838759}
   m_Layer: 5
   m_Name: Canvas
   m_TagString: Untagged
@@ -662,6 +663,18 @@ RectTransform:
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0, y: 0}
+--- !u!225 &619838759
+CanvasGroup:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 619838754}
+  m_Enabled: 1
+  m_Alpha: 1
+  m_Interactable: 1
+  m_BlocksRaycasts: 1
+  m_IgnoreParentGroups: 0
 --- !u!1 &780181034
 GameObject:
   m_ObjectHideFlags: 0
@@ -877,7 +890,7 @@ GameObject:
   - component: {fileID: 1877963894}
   - component: {fileID: 1877963893}
   m_Layer: 5
-  m_Name: Button
+  m_Name: ReturnToMainMenuButton
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -985,6 +998,65 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1877963891}
   m_CullTransparentMesh: 1
+--- !u!1 &1927785420
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1927785422}
+  - component: {fileID: 1927785421}
+  m_Layer: 0
+  m_Name: DeathScreenManager
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &1927785421
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1927785420}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1af3aa147653d644fb5dc271f1555f83, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  deathMessageText: {fileID: 95644501}
+  returnToMenuButton: {fileID: 1877963893}
+  canvasGroup: {fileID: 619838759}
+  fadeInDuration: 1.5
+  messageDelay: 0.5
+  deathMessages:
+  - Derrotado novamente? Que novidade!
+  - "Volta pro asilo, vov\xF4!"
+  - Ave, Logrif! Teu lugar de direito lhe espera!
+  - "N\xE3o se fazem mais arquidem\xF4nios como antigamente..."
+  - "A parte boa de ser imortal \xE9 que pode perder pra sempre!"
+  - "Voc\xEA vem sempre aqui?"
+  - "*Insira gargalhadas incompreens\xEDveis de seres al\xE9m de sua compreens\xE3o*"
+  - Um senhor do escuro jovem nunca passaria por essa vergonha!
+  - O universo vai se lembrar de sua morte. Para bem, e para mal.
+--- !u!4 &1927785422
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1927785420}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 484.28363, y: 216.955, z: 2.083865}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0
@@ -992,3 +1064,4 @@ SceneRoots:
   - {fileID: 380358279}
   - {fileID: 619838758}
   - {fileID: 1163263084}
+  - {fileID: 1927785422}

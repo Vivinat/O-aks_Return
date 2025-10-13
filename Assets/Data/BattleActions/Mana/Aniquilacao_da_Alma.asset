@@ -13,22 +13,23 @@ MonoBehaviour:
   m_Name: Aniquilacao_da_Alma
   m_EditorClassIdentifier: 
   actionName: "Aniquila\xE7\xE3o da Alma"
-  description: 'Causa 100 de dano, mas drena 20 de sua vida. Custo: 40 MP'
+  description: 'Causa dano a si mesmo e a um inimigo com poder Poder:50. Custo: 30
+    MP'
   icon: {fileID: 21300000, guid: f294177cb8f0d2a4aa3857d474f3da2c, type: 3}
   targetType: 0
   effects:
   - effectType: 0
-    power: 100
+    power: 50
     statusEffect: 0
     statusDuration: 0
     statusPower: 0
     hasSelfEffect: 1
     selfEffectType: 0
-    selfEffectPower: 20
+    selfEffectPower: 50
     selfStatusEffect: 0
     selfStatusDuration: 0
     selfStatusPower: 0
-  manaCost: 40
+  manaCost: 30
   isConsumable: 0
   maxUses: 1
   shopPrice: 10

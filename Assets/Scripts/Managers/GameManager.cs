@@ -37,6 +37,10 @@ public class GameManager : MonoBehaviour
     private int playerCurrentHP = -1; // -1 significa "não inicializado"
     [SerializeField]
     private int playerCurrentMP = -1; // -1 significa "não inicializado"
+    
+    [Header("Initial Setup")]
+    [Tooltip("Skill inicial que o jogador sempre começa (Ataque_Sombrio)")]
+    [SerializeField] private BattleAction initialPlayerSkill;
 
     private void Awake()
     {
@@ -445,5 +449,10 @@ public class GameManager : MonoBehaviour
             playerCurrentMP = PlayerCharacterInfo.maxMp;
             Debug.Log("Stats do jogador resetados para máximos");
         }
+    }
+
+    public BattleAction GetInitialPlayerSkill()
+    {
+        return initialPlayerSkill;
     }
 }

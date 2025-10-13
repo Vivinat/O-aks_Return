@@ -13,8 +13,7 @@ MonoBehaviour:
   m_Name: Lamina_Fantasma
   m_EditorClassIdentifier: 
   actionName: "L\xE2mina Fantasma"
-  description: 'Ataque espectral que causa 70 de dano. Reduz defesa do alvo. Custo:
-    16 MP'
+  description: 'Causa dano com Poder:70. Reduz defesa do alvo. Custo: 16 MP'
   icon: {fileID: 21300000, guid: cb7b2ba0715ad81448730df51e685d3b, type: 3}
   targetType: 0
   effects:

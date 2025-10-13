@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Raio_Sombrio
   m_EditorClassIdentifier: 
   actionName: Raio Sombrio
-  description: 'Causa 45 de dano. Custo: 8 MP'
+  description: 'Causa dano. Poder:45 Custo: 8 MP'
   icon: {fileID: 21300000, guid: 159001a0f9a738f4f8c108ef8cb17f66, type: 3}
   targetType: 0
   effects:

@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Lamina_do_Executor
   m_EditorClassIdentifier: 
   actionName: "L\xE2mina do Executor"
-  description: 'Causa 100 de dano a um alvo. Uso: 1'
+  description: 'Causa dano a um alvo. Poder:100. Uso: 1'
   icon: {fileID: 21300000, guid: 6b813875d7969424eb17746ba33a0689, type: 3}
   targetType: 0
   effects:

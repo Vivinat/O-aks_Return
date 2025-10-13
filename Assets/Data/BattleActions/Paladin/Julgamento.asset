@@ -13,8 +13,8 @@ MonoBehaviour:
   m_Name: Julgamento
   m_EditorClassIdentifier: 
   actionName: Julgamento
-  description: "Causa 60 de dano e deixa o alvo Vulner\xE1vel por 2 turnos. Custo:
-    15 MP"
+  description: "Causa dano com Poder:60 e deixa o alvo Vulner\xE1vel por 2 turnos.
+    Custo: 15 MP"
   icon: {fileID: 21300000, guid: 0085937b002cb6547b77f650495379d5, type: 3}
   targetType: 0
   effects:

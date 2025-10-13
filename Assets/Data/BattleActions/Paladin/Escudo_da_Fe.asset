@@ -13,8 +13,7 @@ MonoBehaviour:
   m_Name: Escudo_da_Fe
   m_EditorClassIdentifier: 
   actionName: "Escudo da F\xE9"
-  description: 'Aplica ''Protegido'' em si mesmo, reduzindo o dano recebido por 3
-    turnos. Custo: 12 MP'
+  description: 'Reduz o dano recebido por 3 turnos. Custo: 12 MP'
   icon: {fileID: 21300000, guid: a8c571e5d986fa04cbbd4f3b223e64f6, type: 3}
   targetType: 2
   effects:

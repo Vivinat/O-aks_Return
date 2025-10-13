@@ -4,6 +4,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public enum BattleState { START, RUNNING, ACTION_PENDING, PERFORMING_ACTION, WON, LOST }
 
@@ -386,11 +387,30 @@ public class BattleManager : MonoBehaviour
         {
             currentState = BattleState.LOST;
             Debug.Log("DEFEAT!");
+            StartCoroutine(HandleBattleDefeat());
         }
         else
         {
             currentState = BattleState.RUNNING;
         }
+    }
+    
+    /// <summary>
+    /// NOVO: Trata derrota e vai para tela de morte
+    /// </summary>
+    private IEnumerator HandleBattleDefeat()
+    {
+        yield return new WaitForSeconds(2f);
+    
+        string defeatMessage = "Você foi derrotado...";
+        battleHUD.ShowEnemyAction(defeatMessage);
+    
+        yield return new WaitForSeconds(3f);
+    
+        Debug.Log("=== JOGADOR MORREU - INDO PARA TELA DE MORTE ===");
+    
+        // Carrega a cena de morte
+        SceneManager.LoadScene("Defeat_Scene");
     }
 
     private IEnumerator HandleBattleVictory(int rewardCoins)

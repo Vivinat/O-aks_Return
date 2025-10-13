@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Retribuicao_Divina
   m_EditorClassIdentifier: 
   actionName: "Retribui\xE7\xE3o Divina"
-  description: 'Causa 150 de dano massivo. Custo: 100 MP'
+  description: 'Causa dano com Poder:150. Custo: 100 MP'
   icon: {fileID: 21300000, guid: 454df06223642e943aaa0de0473537dc, type: 3}
   targetType: 0
   effects:

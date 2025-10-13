@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Tufao
   m_EditorClassIdentifier: 
   actionName: "Tuf\xE3o"
-  description: 'Causa 30 de dano a todos os inimigos. Custo: 20 MP'
+  description: 'Causa dano a todos os inimigos. Poder:30. Custo: 20 MP'
   icon: {fileID: 21300000, guid: 88cb25c5f90a82e4c9208986d733501a, type: 3}
   targetType: 3
   effects:

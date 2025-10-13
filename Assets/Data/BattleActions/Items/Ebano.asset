@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Ebano
   m_EditorClassIdentifier: 
   actionName: "\xC9bano"
-  description: 'Restaura 120 de vida. Aumenta agildade em 1. Usos: 1'
+  description: 'Restaura 120 de vida. Aumenta agildade. Usos: 1'
   icon: {fileID: 21300000, guid: 176d97d8f6fc2d446b3c88f2d5b8f33a, type: 3}
   targetType: 2
   effects:

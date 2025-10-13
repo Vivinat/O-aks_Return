@@ -13,8 +13,8 @@ MonoBehaviour:
   m_Name: Martelo_Divino
   m_EditorClassIdentifier: 
   actionName: Martelo Divino
-  description: 'Ataque devastador que causa 65 de dano e reduz velocidade drasticamente.
-    Custo: 20 MP'
+  description: 'Ataque que causa dano com Poder:65 e reduz velocidade. Custo: 20
+    MP'
   icon: {fileID: 21300000, guid: 2984f4026e3e5f8428bd03c39076fb04, type: 3}
   targetType: 0
   effects:

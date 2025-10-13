@@ -33595,9 +33595,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   PlayerCharacterInfo: {fileID: 11400000, guid: b1f225f259b3eb44a846e2a4c4696b0f, type: 2}
   currencySystem:
-    currentCoins: 100
+    currentCoins: 0
   playerCurrentHP: -1
   playerCurrentMP: -1
+  initialPlayerSkill: {fileID: 11400000, guid: fd2185eac5ce59d40a6129af997a4632, type: 2}
 --- !u!4 &1544972947
 Transform:
   m_ObjectHideFlags: 0

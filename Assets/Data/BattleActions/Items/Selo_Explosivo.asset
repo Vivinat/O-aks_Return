@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Selo_Explosivo
   m_EditorClassIdentifier: 
   actionName: Selo Explosivo
-  description: 'Causa 35 de dano a todos os inimigos. Usos: 2'
+  description: 'Causa dano a todos os inimigos. Poder:35. Usos: 2'
   icon: {fileID: 21300000, guid: c5ae4e2355d08024db385e06d3e94eb6, type: 3}
   targetType: 3
   effects:

@@ -13,8 +13,8 @@ MonoBehaviour:
   m_Name: Agonia
   m_EditorClassIdentifier: 
   actionName: Agonia
-  description: 'Causa 40 de dano a todos inimigos e reduz velocidade por 2 turnos.
-    Custo: 30 MP'
+  description: 'Causa dano a todos inimigos com Poder:40 e reduz velocidade por 2
+    turnos. Custo: 30 MP'
   icon: {fileID: 21300000, guid: 252fbdbe4e8e8004aa061ce27827983f, type: 3}
   targetType: 3
   effects:
