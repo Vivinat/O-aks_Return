@@ -1,10 +1,12 @@
-// Assets/Scripts/Difficulty_System/DifficultySystem.cs
+// Assets/Scripts/Difficulty_System/DifficultySystem.cs (ENHANCED)
 
 using UnityEngine;
 using System.IO;
+using System.Linq;
 
 /// <summary>
 /// Sistema central de dificuldade que aplica modificadores de negociações
+/// MELHORADO: Suporta modificadores específicos de tipos de ações
 /// </summary>
 public class DifficultySystem : MonoBehaviour
 {
@@ -47,35 +49,37 @@ public class DifficultySystem : MonoBehaviour
     }
     
     /// <summary>
-    /// Aplica uma negociação aos modificadores
+    /// Aplica uma negociação aos modificadores (usando valores escalados)
     /// </summary>
-    public void ApplyNegotiation(CardAttribute playerAttr, CardAttribute enemyAttr, int value)
+    public void ApplyNegotiation(CardAttribute playerAttr, CardAttribute enemyAttr, int intensity)
     {
-        DebugLog($"=== APLICANDO NEGOCIAÇÃO ===");
-        DebugLog($"Jogador: {playerAttr} {FormatValue(value)}");
-        DebugLog($"Inimigo: {enemyAttr} {FormatValue(value)}");
+        // NOVO: Usa valores escalados do IntensityHelper
+        int playerValue = IntensityHelper.GetScaledValue((CardIntensity)intensity, playerAttr);
+        int enemyValue = IntensityHelper.GetScaledValue((CardIntensity)intensity, enemyAttr);
         
-        // Aplica modificador do jogador
-        if (playerAttr != CardAttribute.PlayerMaxHP || value != 0) // Verifica se não é um placeholder
+        DebugLog($"=== APLICANDO NEGOCIAÇÃO ===");
+        DebugLog($"Jogador: {playerAttr} {FormatValue(playerValue)}");
+        DebugLog($"Inimigo: {enemyAttr} {FormatValue(enemyValue)}");
+        
+        if (playerAttr != CardAttribute.PlayerMaxHP || playerValue != 0)
         {
-            modifiers.ApplyModifier(playerAttr, value);
-            DebugLog($"✅ Aplicado ao jogador: {AttributeHelper.GetDisplayName(playerAttr)} {FormatValue(value)}");
+            modifiers.ApplyModifier(playerAttr, playerValue);
+            DebugLog($"✅ Aplicado ao jogador: {AttributeHelper.GetDisplayName(playerAttr)} {FormatValue(playerValue)}");
         }
         
-        // Aplica modificador do inimigo
-        if (enemyAttr != CardAttribute.EnemyMaxHP || value != 0) // Verifica se não é um placeholder
+        if (enemyAttr != CardAttribute.EnemyMaxHP || enemyValue != 0)
         {
-            modifiers.ApplyModifier(enemyAttr, value);
-            DebugLog($"✅ Aplicado aos inimigos: {AttributeHelper.GetDisplayName(enemyAttr)} {FormatValue(value)}");
+            modifiers.ApplyModifier(enemyAttr, enemyValue);
+            DebugLog($"✅ Aplicado aos inimigos: {AttributeHelper.GetDisplayName(enemyAttr)} {FormatValue(enemyValue)}");
         }
         
         SaveModifiers();
-        
         DebugLog("\n" + modifiers.GetSummary());
     }
     
     /// <summary>
     /// Aplica modificadores a um Character (inimigo)
+    /// MELHORADO: Suporta modificadores específicos de ações
     /// </summary>
     public void ApplyToEnemy(Character enemy)
     {
@@ -83,32 +87,44 @@ public class DifficultySystem : MonoBehaviour
         
         DebugLog($"Aplicando modificadores ao inimigo: {enemy.characterName}");
         
-        // Aplica modificadores de stats
+        // Stats básicos
         enemy.maxHp = Mathf.Max(1, enemy.maxHp + modifiers.enemyMaxHPModifier);
         enemy.maxMp = Mathf.Max(0, enemy.maxMp + modifiers.enemyMaxMPModifier);
         enemy.defense = Mathf.Max(0, enemy.defense + modifiers.enemyDefenseModifier);
         enemy.speed = Mathf.Max(0.1f, enemy.speed + modifiers.enemySpeedModifier);
         
-        // Aplica modificadores nas ações
+        // Aplica modificadores nas ações (MELHORADO)
         if (enemy.battleActions != null)
         {
             foreach (var action in enemy.battleActions)
             {
-                if (action == null) continue;
+                if (action == null || action.effects == null) continue;
                 
-                // Modifica poder das ações
-                if (modifiers.enemyActionPowerModifier != 0)
+                foreach (var effect in action.effects)
                 {
-                    foreach (var effect in action.effects)
+                    // Modificador geral de poder
+                    if (modifiers.enemyActionPowerModifier != 0 && effect.effectType == ActionType.Attack)
+                    {
+                        effect.power = Mathf.Max(1, effect.power + modifiers.enemyActionPowerModifier);
+                    }
+                    
+                    // NOVO: Modificador específico de ataques ofensivos
+                    if (modifiers.enemyOffensiveActionPowerModifier != 0 && effect.effectType == ActionType.Attack)
+                    {
+                        effect.power = Mathf.Max(1, effect.power + modifiers.enemyOffensiveActionPowerModifier);
+                    }
+                    
+                    // NOVO: Modificador específico de AOE
+                    if (modifiers.enemyAOEActionPowerModifier != 0 && IsAOEAction(action))
                     {
                         if (effect.effectType == ActionType.Attack)
                         {
-                            effect.power = Mathf.Max(1, effect.power + modifiers.enemyActionPowerModifier);
+                            effect.power = Mathf.Max(1, effect.power + modifiers.enemyAOEActionPowerModifier);
                         }
                     }
                 }
                 
-                // Modifica custo de mana
+                // Modificador de custo de mana
                 if (modifiers.enemyActionManaCostModifier != 0)
                 {
                     action.manaCost = Mathf.Max(0, action.manaCost + modifiers.enemyActionManaCostModifier);
@@ -121,6 +137,7 @@ public class DifficultySystem : MonoBehaviour
     
     /// <summary>
     /// Aplica modificadores ao jogador
+    /// MELHORADO: Suporta modificadores específicos de ações
     /// </summary>
     public void ApplyToPlayer(Character player)
     {
@@ -128,32 +145,62 @@ public class DifficultySystem : MonoBehaviour
         
         DebugLog($"Aplicando modificadores ao jogador: {player.characterName}");
         
-        // Aplica modificadores de stats
+        // Stats básicos
         player.maxHp = Mathf.Max(1, player.maxHp + modifiers.playerMaxHPModifier);
         player.maxMp = Mathf.Max(0, player.maxMp + modifiers.playerMaxMPModifier);
         player.defense = Mathf.Max(0, player.defense + modifiers.playerDefenseModifier);
         player.speed = Mathf.Max(0.1f, player.speed + modifiers.playerSpeedModifier);
         
-        // Aplica modificadores nas ações
+        // Aplica modificadores nas ações (MELHORADO)
         if (player.battleActions != null)
         {
             foreach (var action in player.battleActions)
             {
-                if (action == null) continue;
+                if (action == null || action.effects == null) continue;
                 
-                // Modifica poder das ações
-                if (modifiers.playerActionPowerModifier != 0)
+                foreach (var effect in action.effects)
                 {
-                    foreach (var effect in action.effects)
+                    // Modificador geral de poder (ataque)
+                    if (modifiers.playerActionPowerModifier != 0 && effect.effectType == ActionType.Attack)
+                    {
+                        effect.power = Mathf.Max(1, effect.power + modifiers.playerActionPowerModifier);
+                    }
+                    
+                    // NOVO: Modificador específico de ataques ofensivos
+                    if (modifiers.playerOffensiveActionPowerModifier != 0 && effect.effectType == ActionType.Attack)
+                    {
+                        effect.power = Mathf.Max(1, effect.power + modifiers.playerOffensiveActionPowerModifier);
+                    }
+                    
+                    // NOVO: Modificador específico de habilidades defensivas (cura/buff)
+                    if (modifiers.playerDefensiveActionPowerModifier != 0)
+                    {
+                        if (effect.effectType == ActionType.Heal || effect.effectType == ActionType.Buff)
+                        {
+                            effect.power = Mathf.Max(1, effect.power + modifiers.playerDefensiveActionPowerModifier);
+                        }
+                    }
+                    
+                    // NOVO: Modificador específico de AOE
+                    if (modifiers.playerAOEActionPowerModifier != 0 && IsAOEAction(action))
                     {
                         if (effect.effectType == ActionType.Attack)
                         {
-                            effect.power = Mathf.Max(1, effect.power + modifiers.playerActionPowerModifier);
+                            effect.power = Mathf.Max(1, effect.power + modifiers.playerAOEActionPowerModifier);
+                        }
+                    }
+                    
+                    // NOVO: Modificador específico de single-target
+                    if (modifiers.playerSingleTargetActionPowerModifier != 0 && IsSingleTargetAction(action))
+                    {
+                        if (effect.effectType == ActionType.Attack)
+                        {
+                            effect.power = Mathf.Max(1, effect.power + modifiers.playerSingleTargetActionPowerModifier);
                         }
                     }
                 }
                 
-                // Modifica custo de mana
+                // Modificador de custo de mana
                 if (modifiers.playerActionManaCostModifier != 0)
                 {
                     action.manaCost = Mathf.Max(0, action.manaCost + modifiers.playerActionManaCostModifier);
@@ -162,6 +209,26 @@ public class DifficultySystem : MonoBehaviour
         }
         
         DebugLog($"✅ {player.characterName} modificado - HP: {player.maxHp}, Speed: {player.speed}");
+    }
+    
+    /// <summary>
+    /// NOVO: Verifica se uma ação é AOE
+    /// </summary>
+    private bool IsAOEAction(BattleAction action)
+    {
+        return action.targetType == TargetType.AllEnemies || 
+               action.targetType == TargetType.AllAllies || 
+               action.targetType == TargetType.Everyone;
+    }
+    
+    /// <summary>
+    /// NOVO: Verifica se uma ação é single-target
+    /// </summary>
+    private bool IsSingleTargetAction(BattleAction action)
+    {
+        return action.targetType == TargetType.SingleEnemy || 
+               action.targetType == TargetType.SingleAlly || 
+               action.targetType == TargetType.Self;
     }
     
     /// <summary>
@@ -194,9 +261,6 @@ public class DifficultySystem : MonoBehaviour
         return modified;
     }
     
-    /// <summary>
-    /// Reseta todos os modificadores
-    /// </summary>
     [ContextMenu("Reset All Modifiers")]
     public void ResetModifiers()
     {
@@ -205,9 +269,6 @@ public class DifficultySystem : MonoBehaviour
         DebugLog("✅ Todos os modificadores foram resetados!");
     }
     
-    /// <summary>
-    /// Salva modificadores em arquivo
-    /// </summary>
     private void SaveModifiers()
     {
         if (!saveModifiers) return;
@@ -226,9 +287,6 @@ public class DifficultySystem : MonoBehaviour
         }
     }
     
-    /// <summary>
-    /// Carrega modificadores do arquivo
-    /// </summary>
     private void LoadModifiers()
     {
         if (!saveModifiers) return;

@@ -540,8 +540,16 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cardsContainer: {fileID: 951116676}
   cardPrefab: {fileID: 2572035762614286032, guid: 0c091f4ea64871a4e981daeaf335cb28, type: 3}
+  refreshButtonPrefab: {fileID: 5616344737243570658, guid: d5be43d65a1e5384cb74d473a075398f, type: 3}
   confirmButton: {fileID: 594070856}
-  confirmButtonText: {fileID: 2001524851}
+  declineButton: {fileID: 0}
+  titleText: {fileID: 0}
+  infoText: {fileID: 0}
+  numberOfCards: 3
+  useDynamicCards: 1
+  fallbackCards: []
+  refreshUsedColor: {r: 0.5, g: 0.5, b: 0.5, a: 0.5}
+  showDebugLogs: 1
 --- !u!4 &980272055
 Transform:
   m_ObjectHideFlags: 0

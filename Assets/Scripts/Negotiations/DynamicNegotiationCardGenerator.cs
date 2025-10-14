@@ -1,4 +1,4 @@
-// Assets/Scripts/Negotiation/DynamicNegotiationCardGenerator.cs
+// Assets/Scripts/Negotiation/DynamicNegotiationCardGenerator.cs (UPDATED - Smart Matching)
 
 using UnityEngine;
 using System.Collections.Generic;
@@ -18,13 +18,16 @@ public class DynamicNegotiationCardGenerator : MonoBehaviour
     
     [Tooltip("Probabilidade de carta IntensityOnly (0-1)")]
     [SerializeField] [Range(0f, 1f)] private float intensityOnlyProbability = 0.3f;
-    // AttributeAndIntensity será o resto (1 - fixed - intensity)
     
     [Header("Debug")]
     [SerializeField] private bool showDebugLogs = true;
     
     private List<NegotiationOffer> advantagePool = new List<NegotiationOffer>();
     private List<NegotiationOffer> disadvantagePool = new List<NegotiationOffer>();
+    
+    // NOVO: Pools usados para evitar repetição em refresh
+    private List<NegotiationOffer> usedAdvantages = new List<NegotiationOffer>();
+    private List<NegotiationOffer> usedDisadvantages = new List<NegotiationOffer>();
     
     void Awake()
     {
@@ -49,8 +52,10 @@ public class DynamicNegotiationCardGenerator : MonoBehaviour
         
         advantagePool.Clear();
         disadvantagePool.Clear();
+        usedAdvantages.Clear();
+        usedDisadvantages.Clear();
         
-        // NOVO: Adiciona ofertas padrão PRIMEIRO
+        // Adiciona ofertas padrão PRIMEIRO
         if (DefaultNegotiationOffers.Instance != null)
         {
             List<NegotiationOffer> defaultOffers = DefaultNegotiationOffers.Instance.GenerateDefaultOffers();
@@ -70,7 +75,7 @@ public class DynamicNegotiationCardGenerator : MonoBehaviour
             }
         }
         
-        // Resto do código original (processa observações comportamentais)
+        // Processa observações comportamentais
         var observations = PlayerBehaviorAnalyzer.Instance.GetUnresolvedNegotiationTriggers(maxObservationsToProcess);
         
         DebugLog($"=== PROCESSANDO {observations.Count} OBSERVAÇÕES ===");
@@ -118,76 +123,279 @@ public class DynamicNegotiationCardGenerator : MonoBehaviour
     }
     
     /// <summary>
-    /// Gera cartas dinâmicas com tipos variados
-    /// </summary>
-    /// <summary>
-    /// Gera cartas dinâmicas com tipos variados INTELIGENTEMENTE
+    /// NOVO: Gera cartas com casamento inteligente de vantagens/desvantagens
     /// </summary>
     public List<DynamicNegotiationCard> GenerateCards(int numberOfCards)
     {
         List<DynamicNegotiationCard> cards = new List<DynamicNegotiationCard>();
-    
+        
         int possibleCards = Mathf.Min(advantagePool.Count, disadvantagePool.Count);
         possibleCards = Mathf.Min(possibleCards, numberOfCards);
-    
-        DebugLog($"=== GERANDO {possibleCards} CARTAS ===");
-    
+        
+        DebugLog($"=== GERANDO {possibleCards} CARTAS COM CASAMENTO INTELIGENTE ===");
+        
         if (possibleCards == 0)
         {
             DebugLog("⚠️ Pools vazias - não é possível gerar cartas dinâmicas!");
             return cards;
         }
-    
+        
+        // NOVO: Cria pools temporárias para matching
+        List<NegotiationOffer> availableAdvantages = new List<NegotiationOffer>(advantagePool);
+        List<NegotiationOffer> availableDisadvantages = new List<NegotiationOffer>(disadvantagePool);
+        
         for (int i = 0; i < possibleCards; i++)
         {
-            NegotiationOffer advantage = advantagePool[i];
-            NegotiationOffer disadvantage = disadvantagePool[i];
-        
-            // Escolhe tipo de carta INTELIGENTEMENTE baseado nos atributos
+            if (availableAdvantages.Count == 0 || availableDisadvantages.Count == 0)
+                break;
+            
+            // Pega uma vantagem aleatória
+            int advIndex = Random.Range(0, availableAdvantages.Count);
+            NegotiationOffer advantage = availableAdvantages[advIndex];
+            availableAdvantages.RemoveAt(advIndex);
+            
+            // NOVO: Encontra a melhor desvantagem para casar com esta vantagem
+            NegotiationOffer disadvantage = FindBestMatch(advantage, availableDisadvantages);
+            availableDisadvantages.Remove(disadvantage);
+            
+            // Marca como usadas
+            usedAdvantages.Add(advantage);
+            usedDisadvantages.Add(disadvantage);
+            
+            // Escolhe tipo de carta inteligentemente
             NegotiationCardType cardType = ChooseIntelligentCardType(advantage, disadvantage);
-        
+            
             DynamicNegotiationCard card = new DynamicNegotiationCard(advantage, disadvantage, cardType);
             cards.Add(card);
-        
+            
             DebugLog($"Carta {i + 1} ({cardType}): {card.GetCardName()}");
-            DebugLog($"  Vantagem: {advantage.offerName}");
-            DebugLog($"  Custo: {disadvantage.offerName}");
+            DebugLog($"  Vantagem: {advantage.offerName} ({advantage.playerAttribute}, valor: {advantage.playerValue})");
+            DebugLog($"  Custo: {disadvantage.offerName} ({disadvantage.enemyAttribute}, valor: {disadvantage.enemyValue})");
+            DebugLog($"  Score de match: {CalculateMatchScore(advantage, disadvantage):F2}");
         }
-    
+        
         return cards;
     }
     
     /// <summary>
-    /// Escolhe tipo de carta baseado nos atributos das ofertas
+    /// NOVO: Encontra a melhor desvantagem para casar com uma vantagem
     /// </summary>
+    private NegotiationOffer FindBestMatch(NegotiationOffer advantage, List<NegotiationOffer> disadvantages)
+    {
+        if (disadvantages.Count == 0)
+            return null;
+        
+        if (disadvantages.Count == 1)
+            return disadvantages[0];
+        
+        // Calcula score para cada desvantagem
+        Dictionary<NegotiationOffer, float> scores = new Dictionary<NegotiationOffer, float>();
+        
+        foreach (var disadvantage in disadvantages)
+        {
+            float score = CalculateMatchScore(advantage, disadvantage);
+            scores[disadvantage] = score;
+        }
+        
+        // Ordena por score (maior = melhor match)
+        var sorted = scores.OrderByDescending(kvp => kvp.Value).ToList();
+        
+        // Pega um dos 3 melhores aleatoriamente (para variedade)
+        int topCount = Mathf.Min(3, sorted.Count);
+        int selectedIndex = Random.Range(0, topCount);
+        
+        return sorted[selectedIndex].Key;
+    }
+    
+    /// <summary>
+    /// NOVO: Calcula score de compatibilidade entre vantagem e desvantagem
+    /// </summary>
+    private float CalculateMatchScore(NegotiationOffer advantage, NegotiationOffer disadvantage)
+    {
+        float score = 0f;
+        
+        // 1. Categoria de atributo similar (+30 pontos)
+        if (GetAttributeCategory(advantage.playerAttribute) == GetAttributeCategory(disadvantage.enemyAttribute))
+        {
+            score += 30f;
+        }
+        
+        // 2. Valores similares (+20 pontos se diferença < 10)
+        int valueDiff = Mathf.Abs(advantage.playerValue - disadvantage.enemyValue);
+        if (valueDiff < 10)
+        {
+            score += 20f - valueDiff;
+        }
+        
+        // 3. Mesmo tipo de observação (+25 pontos)
+        if (advantage.sourceObservationType == disadvantage.sourceObservationType)
+        {
+            score += 25f;
+        }
+        
+        // 4. Atributos complementares (+15 pontos)
+        if (AreAttributesComplementary(advantage.playerAttribute, disadvantage.enemyAttribute))
+        {
+            score += 15f;
+        }
+        
+        // 5. Balance check: vantagem não deve ser muito maior que custo (+10 pontos se balanceado)
+        float balance = (float)advantage.playerValue / Mathf.Max(1, disadvantage.enemyValue);
+        if (balance >= 0.8f && balance <= 1.2f)
+        {
+            score += 10f;
+        }
+        
+        return score;
+    }
+    
+    /// <summary>
+    /// NOVO: Retorna categoria do atributo para matching
+    /// </summary>
+    private AttributeCategory GetAttributeCategory(CardAttribute attr)
+    {
+        switch (attr)
+        {
+            case CardAttribute.PlayerMaxHP:
+            case CardAttribute.EnemyMaxHP:
+                return AttributeCategory.Health;
+            
+            case CardAttribute.PlayerMaxMP:
+            case CardAttribute.EnemyMaxMP:
+            case CardAttribute.PlayerActionManaCost:
+            case CardAttribute.EnemyActionManaCost:
+                return AttributeCategory.Mana;
+            
+            case CardAttribute.PlayerDefense:
+            case CardAttribute.EnemyDefense:
+                return AttributeCategory.Defense;
+            
+            case CardAttribute.PlayerSpeed:
+            case CardAttribute.EnemySpeed:
+                return AttributeCategory.Speed;
+            
+            case CardAttribute.PlayerActionPower:
+            case CardAttribute.EnemyActionPower:
+                return AttributeCategory.Power;
+            
+            case CardAttribute.CoinsEarned:
+            case CardAttribute.ShopPrices:
+                return AttributeCategory.Economy;
+            
+            default:
+                return AttributeCategory.Other;
+        }
+    }
+    
+    /// <summary>
+    /// NOVO: Verifica se atributos são complementares (exemplo: HP com Defesa)
+    /// </summary>
+    private bool AreAttributesComplementary(CardAttribute attr1, CardAttribute attr2)
+    {
+        // HP complementa Defesa
+        if ((attr1 == CardAttribute.PlayerMaxHP && attr2 == CardAttribute.EnemyDefense) ||
+            (attr1 == CardAttribute.PlayerDefense && attr2 == CardAttribute.EnemyMaxHP))
+            return true;
+        
+        // Poder complementa Defesa
+        if ((attr1 == CardAttribute.PlayerActionPower && attr2 == CardAttribute.EnemyDefense) ||
+            (attr1 == CardAttribute.PlayerDefense && attr2 == CardAttribute.EnemyActionPower))
+            return true;
+        
+        // MP complementa custo de mana
+        if ((attr1 == CardAttribute.PlayerMaxMP && attr2 == CardAttribute.EnemyActionManaCost) ||
+            (attr1 == CardAttribute.PlayerActionManaCost && attr2 == CardAttribute.EnemyMaxMP))
+            return true;
+        
+        // Speed é complementar a tudo (timing)
+        if (attr1 == CardAttribute.PlayerSpeed || attr2 == CardAttribute.EnemySpeed)
+            return true;
+        
+        return false;
+    }
+    
+    /// <summary>
+    /// NOVO: Gera uma carta única para refresh
+    /// </summary>
+    public DynamicNegotiationCard GenerateSingleCard()
+    {
+        // Remove ofertas já usadas das pools disponíveis
+        List<NegotiationOffer> availableAdvantages = advantagePool
+            .Where(a => !usedAdvantages.Contains(a))
+            .ToList();
+        
+        List<NegotiationOffer> availableDisadvantages = disadvantagePool
+            .Where(d => !usedDisadvantages.Contains(d))
+            .ToList();
+        
+        if (availableAdvantages.Count == 0 || availableDisadvantages.Count == 0)
+        {
+            DebugLog("⚠️ Não há ofertas suficientes disponíveis para refresh!");
+            return null;
+        }
+        
+        // Pega uma vantagem aleatória
+        int advIndex = Random.Range(0, availableAdvantages.Count);
+        NegotiationOffer advantage = availableAdvantages[advIndex];
+        
+        // Encontra melhor match
+        NegotiationOffer disadvantage = FindBestMatch(advantage, availableDisadvantages);
+        
+        if (disadvantage == null)
+        {
+            DebugLog("⚠️ Não foi possível encontrar match para refresh!");
+            return null;
+        }
+        
+        // Marca como usadas
+        usedAdvantages.Add(advantage);
+        usedDisadvantages.Add(disadvantage);
+        
+        NegotiationCardType cardType = ChooseIntelligentCardType(advantage, disadvantage);
+        
+        DynamicNegotiationCard card = new DynamicNegotiationCard(advantage, disadvantage, cardType);
+        
+        DebugLog($"Carta de refresh gerada: {card.GetCardName()}");
+        DebugLog($"  Score de match: {CalculateMatchScore(advantage, disadvantage):F2}");
+        
+        return card;
+    }
+    
+    /// <summary>
+    /// NOVO: Libera ofertas de uma carta para a pool (quando carta é refreshada)
+    /// </summary>
+    public void ReleaseCardOffers(DynamicNegotiationCard card)
+    {
+        if (card == null) return;
+        
+        // Remove as ofertas da carta das listas de "usadas"
+        usedAdvantages.Remove(card.playerBenefit);
+        usedDisadvantages.Remove(card.playerCost);
+        
+        DebugLog($"Ofertas da carta '{card.GetCardName()}' liberadas de volta para a pool");
+    }
+    
     private NegotiationCardType ChooseIntelligentCardType(NegotiationOffer advantage, NegotiationOffer disadvantage)
     {
-        // Se os atributos são relacionados (mesma categoria), permite escolher
         bool playerAttrsRelated = AreAttributesRelated(advantage.playerAttribute);
         bool enemyAttrsRelated = AreAttributesRelated(disadvantage.enemyAttribute);
-    
+        
         float roll = Random.value;
-    
-        // 40% AttributeAndIntensity (quando faz sentido)
+        
         if (roll < 0.4f && (playerAttrsRelated || enemyAttrsRelated))
         {
             return NegotiationCardType.AttributeAndIntensity;
         }
-        // 30% IntensityOnly
         else if (roll < 0.7f)
         {
             return NegotiationCardType.IntensityOnly;
         }
-        // 30% Fixed
         else
         {
             return NegotiationCardType.Fixed;
         }
     }
     
-    /// <summary>
-    /// Verifica se um atributo tem outros relacionados que podem ser oferecidos
-    /// </summary>
     private bool AreAttributesRelated(CardAttribute attr)
     {
         switch (attr)
@@ -195,20 +403,20 @@ public class DynamicNegotiationCardGenerator : MonoBehaviour
             case CardAttribute.PlayerMaxHP:
             case CardAttribute.PlayerDefense:
             case CardAttribute.PlayerMaxMP:
-                return true; // Stats defensivos
+                return true;
             
             case CardAttribute.PlayerActionPower:
             case CardAttribute.PlayerSpeed:
-                return true; // Stats ofensivos
+                return true;
             
             case CardAttribute.EnemyMaxHP:
             case CardAttribute.EnemyDefense:
             case CardAttribute.EnemyMaxMP:
-                return true; // Stats defensivos inimigos
+                return true;
             
             case CardAttribute.EnemyActionPower:
             case CardAttribute.EnemySpeed:
-                return true; // Stats ofensivos inimigos
+                return true;
             
             default:
                 return false;
@@ -249,4 +457,18 @@ public class DynamicNegotiationCardGenerator : MonoBehaviour
     {
         ProcessObservations();
     }
+}
+
+/// <summary>
+/// Categoria de atributo para matching
+/// </summary>
+public enum AttributeCategory
+{
+    Health,
+    Mana,
+    Defense,
+    Speed,
+    Power,
+    Economy,
+    Other
 }

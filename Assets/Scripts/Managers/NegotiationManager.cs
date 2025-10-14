@@ -1,395 +1,468 @@
-// Assets/Scripts/Managers/NegotiationManager.cs (UPDATED - Dynamic Cards)
+// Assets/Scripts/Negotiation/NegotiationManager.cs (UPDATED - With Refresh System)
 
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
 using System.Collections.Generic;
+using System.Linq;
 
-/// <summary>
-/// Gerencia a cena de negociação usando cartas dinâmicas
-/// </summary>
 public class NegotiationManager : MonoBehaviour
 {
     [Header("UI References")]
     [SerializeField] private Transform cardsContainer;
     [SerializeField] private GameObject cardPrefab;
+    [SerializeField] private GameObject refreshButtonPrefab; // NOVO: Prefab do botão de refresh
     [SerializeField] private Button confirmButton;
-    [SerializeField] private TextMeshProUGUI confirmButtonText;
+    [SerializeField] private Button declineButton;
+    [SerializeField] private TextMeshProUGUI titleText;
+    [SerializeField] private TextMeshProUGUI infoText;
     
-    [Header("Dynamic Card Generation")]
+    [Header("Configuration")]
     [SerializeField] private int numberOfCards = 3;
+    [SerializeField] private bool useDynamicCards = true; // Se false, usa SOs
+    [SerializeField] private List<NegotiationCardSO> fallbackCards; // Cards SO para fallback
     
-    [Header("Fallback - Se não houver observações suficientes")]
-    [SerializeField] private NegotiationEventSO fallbackEvent;
+    [Header("Refresh Settings")]
+    [SerializeField] private Color refreshUsedColor = new Color(0.5f, 0.5f, 0.5f, 0.5f);
+    
+    [Header("Debug")]
+    [SerializeField] private bool showDebugLogs = true;
     
     // Estado interno
+    private List<GameObject> cardContainers = new List<GameObject>(); // Containers (carta + botão)
     private List<NegotiationCardUI> cardUIList = new List<NegotiationCardUI>();
+    private List<GameObject> refreshButtonObjects = new List<GameObject>();
+    private List<bool> refreshButtonUsed = new List<bool>();
+    
     private NegotiationCardUI selectedCard;
-    private bool cardsVisible = true;
-    private bool usingDynamicCards = false;
+    private List<DynamicNegotiationCard> currentDynamicCards = new List<DynamicNegotiationCard>();
     
     void Start()
     {
-        if (GameManager.Instance == null)
-        {
-            Debug.LogError("GameManager não encontrado!");
-            return;
-        }
-        
-        SetupUI();
-        GenerateAndDisplayCards();
+        DebugLog("=== NEGOTIATION MANAGER INICIANDO ===");
         
         if (confirmButton != null)
-        {
-            confirmButton.onClick.AddListener(ConfirmSelection);
-            confirmButton.interactable = false;
-        }
+            confirmButton.onClick.AddListener(OnConfirmClicked);
+        
+        if (declineButton != null)
+            declineButton.onClick.AddListener(OnDeclineClicked);
+        
+        SetupNegotiation();
     }
     
-    void Update()
+    private void SetupNegotiation()
     {
-        CheckMenuStates();
-        
-        if (Input.GetKeyDown(KeyCode.E))
+        if (useDynamicCards)
         {
-            ToggleStatusPanel();
+            SetupDynamicNegotiation();
         }
-    }
-    
-    private void CheckMenuStates()
-    {
-        bool shouldHideCards = false;
-        
-        if (OptionsMenu.Instance != null && OptionsMenu.Instance.IsMenuOpen())
+        else
         {
-            shouldHideCards = true;
+            SetupStaticNegotiation();
         }
         
-        if (StatusPanel.Instance != null && StatusPanel.Instance.IsOpen())
-        {
-            shouldHideCards = true;
-        }
-        
-        if (shouldHideCards && cardsVisible)
-        {
-            HideCards();
-        }
-        else if (!shouldHideCards && !cardsVisible)
-        {
-            ShowCards();
-        }
-    }
-    
-    private void HideCards()
-    {
-        if (cardsContainer != null)
-        {
-            cardsContainer.gameObject.SetActive(false);
-            cardsVisible = false;
-            Debug.Log("Cartas escondidas - menu aberto");
-        }
-    }
-    
-    private void ShowCards()
-    {
-        if (cardsContainer != null)
-        {
-            cardsContainer.gameObject.SetActive(true);
-            cardsVisible = true;
-            Debug.Log("Cartas visíveis - menu fechado");
-        }
-    }
-    
-    private void ToggleStatusPanel()
-    {
-        if (StatusPanel.Instance == null)
-        {
-            Debug.LogWarning("StatusPanel não encontrado!");
-            return;
-        }
-        
-        if (OptionsMenu.Instance != null && OptionsMenu.Instance.IsMenuOpen())
-        {
-            Debug.Log("OptionsMenu está aberto - StatusPanel bloqueado");
-            return;
-        }
-        
-        StatusPanel.Instance.TogglePanel();
-        Debug.Log($"StatusPanel toggled - Aberto: {StatusPanel.Instance.IsOpen()}");
-    }
-    
-    private void SetupUI()
-    {
-        if (confirmButtonText != null)
-        {
-            confirmButtonText.text = "Selecione uma Carta";
-        }
+        UpdateConfirmButton();
     }
     
     /// <summary>
-    /// Gera cartas dinâmicas ou usa fallback
+    /// Configura negociação com cartas dinâmicas (sistema novo)
     /// </summary>
-    private void GenerateAndDisplayCards()
-    {
-        if (cardsContainer == null || cardPrefab == null)
-        {
-            Debug.LogError("cardsContainer ou cardPrefab não configurados!");
-            return;
-        }
-        
-        ClearCards();
-        
-        // Tenta gerar cartas dinâmicas
-        bool success = TryGenerateDynamicCards();
-        
-        if (!success)
-        {
-            Debug.LogWarning("Não foi possível gerar cartas dinâmicas - usando fallback");
-            GenerateFallbackCards();
-        }
-    }
-    
-    /// <summary>
-    /// Tenta gerar cartas dinâmicas a partir de observações
-    /// </summary>
-    private bool TryGenerateDynamicCards()
+    private void SetupDynamicNegotiation()
     {
         if (DynamicNegotiationCardGenerator.Instance == null)
         {
-            Debug.LogWarning("DynamicNegotiationCardGenerator não encontrado!");
-            return false;
+            DebugLog("⚠️ DynamicNegotiationCardGenerator não encontrado! Usando cartas estáticas.");
+            SetupStaticNegotiation();
+            return;
         }
         
-        // Processa observações
+        // Processa observações e gera pool de ofertas
         DynamicNegotiationCardGenerator.Instance.ProcessObservations();
         
         // Verifica se há ofertas suficientes
         if (!DynamicNegotiationCardGenerator.Instance.HasEnoughOffers(numberOfCards))
         {
-            int maxPossible = DynamicNegotiationCardGenerator.Instance.GetMaxPossibleCards();
-            Debug.LogWarning($"Ofertas insuficientes. Máximo possível: {maxPossible}, Necessário: {numberOfCards}");
-            return false;
-        }
-        
-        // Gera cartas
-        List<DynamicNegotiationCard> cards = DynamicNegotiationCardGenerator.Instance.GenerateCards(numberOfCards);
-        
-        if (cards.Count == 0)
-        {
-            Debug.LogWarning("Nenhuma carta dinâmica foi gerada!");
-            return false;
-        }
-        
-        Debug.Log($"✅ Gerando {cards.Count} cartas DINÂMICAS");
-        
-        // Cria UI para cada carta dinâmica
-        foreach (var cardData in cards)
-        {
-            GameObject cardObj = Instantiate(cardPrefab, cardsContainer);
-            NegotiationCardUI cardUI = cardObj.GetComponent<NegotiationCardUI>();
+            int maxCards = DynamicNegotiationCardGenerator.Instance.GetMaxPossibleCards();
             
-            if (cardUI != null)
+            if (maxCards == 0)
             {
-                cardUI.SetupDynamic(cardData, this);
-                cardUIList.Add(cardUI);
+                DebugLog("⚠️ Nenhuma oferta disponível! Usando cartas estáticas.");
+                SetupStaticNegotiation();
+                return;
             }
+            
+            DebugLog($"⚠️ Apenas {maxCards} ofertas disponíveis (pedido: {numberOfCards})");
+            numberOfCards = maxCards;
         }
         
-        usingDynamicCards = true;
-        return true;
+        // Gera cartas com matching inteligente
+        currentDynamicCards = DynamicNegotiationCardGenerator.Instance.GenerateCards(numberOfCards);
+        
+        if (currentDynamicCards.Count == 0)
+        {
+            DebugLog("⚠️ Falha ao gerar cartas dinâmicas! Usando cartas estáticas.");
+            SetupStaticNegotiation();
+            return;
+        }
+        
+        DebugLog($"✓ {currentDynamicCards.Count} cartas dinâmicas geradas");
+        
+        // Cria UI das cartas
+        CreateDynamicCardUI();
     }
     
     /// <summary>
-    /// Gera cartas do fallback SO (sistema antigo)
+    /// Configura negociação com cartas estáticas (sistema antigo - fallback)
     /// </summary>
-    private void GenerateFallbackCards()
+    private void SetupStaticNegotiation()
     {
-        if (fallbackEvent == null)
+        if (fallbackCards == null || fallbackCards.Count == 0)
         {
-            Debug.LogError("Nenhum fallbackEvent configurado!");
+            DebugLog("⚠️ Nenhuma carta de fallback disponível!");
             return;
         }
         
-        List<NegotiationCardSO> cards = fallbackEvent.GetRandomCards();
+        // Embaralha e pega N cartas
+        List<NegotiationCardSO> shuffled = new List<NegotiationCardSO>(fallbackCards);
+        ShuffleList(shuffled);
         
-        if (cards.Count == 0)
+        int cardsToUse = Mathf.Min(numberOfCards, shuffled.Count);
+        
+        DebugLog($"Usando {cardsToUse} cartas estáticas (fallback)");
+        
+        for (int i = 0; i < cardsToUse; i++)
         {
-            Debug.LogError("Nenhuma carta foi gerada do fallback!");
-            return;
+            CreateStaticCardSlot(shuffled[i], i);
+        }
+    }
+    
+    /// <summary>
+    /// NOVO: Cria UI para cartas dinâmicas com botões de refresh
+    /// </summary>
+    private void CreateDynamicCardUI()
+    {
+        ClearCards();
+        
+        refreshButtonUsed.Clear();
+        
+        for (int i = 0; i < currentDynamicCards.Count; i++)
+        {
+            CreateDynamicCardSlot(currentDynamicCards[i], i);
+            refreshButtonUsed.Add(false);
+        }
+    }
+    
+    /// <summary>
+    /// NOVO: Cria um slot com carta dinâmica + botão de refresh
+    /// </summary>
+    private void CreateDynamicCardSlot(DynamicNegotiationCard card, int index)
+    {
+        // Cria container vertical para carta + botão refresh
+        GameObject containerObj = new GameObject($"CardSlot_{index}");
+        containerObj.transform.SetParent(cardsContainer);
+        containerObj.transform.localScale = Vector3.one;
+        
+        VerticalLayoutGroup verticalLayout = containerObj.AddComponent<VerticalLayoutGroup>();
+        verticalLayout.childAlignment = TextAnchor.UpperCenter;
+        verticalLayout.spacing = 10f;
+        verticalLayout.childControlHeight = false;
+        verticalLayout.childControlWidth = false;
+        verticalLayout.childForceExpandHeight = false;
+        verticalLayout.childForceExpandWidth = false;
+        
+        // Cria a carta
+        GameObject cardObj = Instantiate(cardPrefab, containerObj.transform);
+        cardObj.transform.localScale = Vector3.one;
+        
+        NegotiationCardUI cardUI = cardObj.GetComponent<NegotiationCardUI>();
+        if (cardUI != null)
+        {
+            cardUI.SetupDynamic(card, this);
+            cardUIList.Add(cardUI);
+        }
+        else
+        {
+            DebugLog("⚠️ NegotiationCardUI não encontrado no prefab!");
         }
         
-        Debug.Log($"📋 Gerando {cards.Count} cartas de FALLBACK (SO)");
-        
-        foreach (var cardData in cards)
+        // Cria o botão de refresh
+        if (refreshButtonPrefab != null)
         {
-            GameObject cardObj = Instantiate(cardPrefab, cardsContainer);
-            NegotiationCardUI cardUI = cardObj.GetComponent<NegotiationCardUI>();
+            GameObject refreshObj = Instantiate(refreshButtonPrefab, containerObj.transform);
+            refreshObj.transform.localScale = Vector3.one;
             
-            if (cardUI != null)
+            Button refreshBtn = refreshObj.GetComponent<Button>();
+            if (refreshBtn != null)
             {
-                cardUI.Setup(cardData, this);
-                cardUIList.Add(cardUI);
+                int refreshIndex = index;
+                refreshBtn.onClick.AddListener(() => OnRefreshClicked(refreshIndex));
+                
+                // Configura texto do botão
+                TextMeshProUGUI btnText = refreshBtn.GetComponentInChildren<TextMeshProUGUI>();
+                if (btnText != null)
+                {
+                    btnText.text = "🔄 Refresh";
+                }
+            }
+            
+            refreshButtonObjects.Add(refreshObj);
+        }
+        
+        cardContainers.Add(containerObj);
+    }
+    
+    /// <summary>
+    /// Cria um slot com carta estática (sem refresh)
+    /// </summary>
+    private void CreateStaticCardSlot(NegotiationCardSO card, int index)
+    {
+        GameObject cardObj = Instantiate(cardPrefab, cardsContainer);
+        cardObj.transform.localScale = Vector3.one;
+        
+        NegotiationCardUI cardUI = cardObj.GetComponent<NegotiationCardUI>();
+        if (cardUI != null)
+        {
+            cardUI.Setup(card, this);
+            cardUIList.Add(cardUI);
+        }
+        
+        cardContainers.Add(cardObj);
+    }
+    
+    /// <summary>
+    /// NOVO: Chamado quando um botão de refresh é clicado
+    /// </summary>
+    private void OnRefreshClicked(int slotIndex)
+    {
+        // Verifica se já foi usado
+        if (refreshButtonUsed[slotIndex])
+        {
+            DebugLog($"Botão de refresh {slotIndex} já foi usado!");
+            return;
+        }
+        
+        DebugLog($"Refresh solicitado para slot {slotIndex}");
+        
+        // Marca como usado
+        refreshButtonUsed[slotIndex] = true;
+        
+        // Desabilita visualmente o botão
+        if (slotIndex < refreshButtonObjects.Count)
+        {
+            Button refreshBtn = refreshButtonObjects[slotIndex].GetComponent<Button>();
+            if (refreshBtn != null)
+            {
+                refreshBtn.interactable = false;
+                
+                Image btnImage = refreshBtn.GetComponent<Image>();
+                if (btnImage != null)
+                {
+                    btnImage.color = refreshUsedColor;
+                }
             }
         }
         
-        usingDynamicCards = false;
+        // Gera nova carta
+        RefreshCardSlot(slotIndex);
     }
     
+    /// <summary>
+    /// NOVO: Atualiza uma carta específica
+    /// </summary>
+    private void RefreshCardSlot(int slotIndex)
+    {
+        if (slotIndex < 0 || slotIndex >= currentDynamicCards.Count)
+        {
+            DebugLog($"⚠️ Índice de slot inválido: {slotIndex}");
+            return;
+        }
+        
+        // IMPORTANTE: Libera as ofertas da carta antiga de volta para a pool
+        DynamicNegotiationCard oldCard = currentDynamicCards[slotIndex];
+        if (oldCard != null && DynamicNegotiationCardGenerator.Instance != null)
+        {
+            DynamicNegotiationCardGenerator.Instance.ReleaseCardOffers(oldCard);
+        }
+        
+        // Gera nova carta única
+        DynamicNegotiationCard newCard = DynamicNegotiationCardGenerator.Instance.GenerateSingleCard();
+        
+        if (newCard == null)
+        {
+            DebugLog("⚠️ Não há mais cartas únicas disponíveis para refresh!");
+            
+            // Reverte o botão de refresh
+            refreshButtonUsed[slotIndex] = false;
+            if (slotIndex < refreshButtonObjects.Count)
+            {
+                Button refreshBtn = refreshButtonObjects[slotIndex].GetComponent<Button>();
+                if (refreshBtn != null)
+                {
+                    refreshBtn.interactable = true;
+                    Image btnImage = refreshBtn.GetComponent<Image>();
+                    if (btnImage != null)
+                    {
+                        btnImage.color = Color.white;
+                    }
+                }
+            }
+            
+            // Devolve as ofertas que acabamos de liberar
+            if (oldCard != null && DynamicNegotiationCardGenerator.Instance != null)
+            {
+                // Re-marca como usadas já que não conseguimos substituir
+                var generator = DynamicNegotiationCardGenerator.Instance;
+                // Não há método público para isso, então apenas deixamos
+            }
+            
+            return;
+        }
+        
+        DebugLog($"Slot {slotIndex}: '{oldCard?.GetCardName()}' → '{newCard.GetCardName()}'");
+        
+        // Atualiza a lista interna
+        currentDynamicCards[slotIndex] = newCard;
+        
+        // Atualiza a UI da carta
+        if (slotIndex < cardUIList.Count)
+        {
+            NegotiationCardUI cardUI = cardUIList[slotIndex];
+            if (cardUI != null)
+            {
+                cardUI.SetupDynamic(newCard, this);
+            }
+        }
+        
+        // Se a carta refreshada estava selecionada, desseleciona
+        if (selectedCard != null && cardUIList.IndexOf(selectedCard) == slotIndex)
+        {
+            selectedCard.SetSelected(false);
+            selectedCard = null;
+            UpdateConfirmButton();
+        }
+    }
+    
+    /// <summary>
+    /// Chamado quando uma carta é selecionada
+    /// </summary>
     public void SelectCard(NegotiationCardUI card)
     {
-        if (card == null) return;
-        
-        if (StatusPanel.Instance != null && StatusPanel.Instance.IsOpen())
-        {
-            Debug.Log("StatusPanel está aberto - seleção bloqueada");
-            return;
-        }
-        
-        if (OptionsMenu.Instance != null && OptionsMenu.Instance.IsMenuOpen())
-        {
-            Debug.Log("OptionsMenu está aberto - seleção bloqueada");
-            return;
-        }
-        
-        AudioConstants.PlayButtonSelect();
-        
-        if (selectedCard != null && selectedCard != card)
+        // Desseleciona carta anterior
+        if (selectedCard != null)
         {
             selectedCard.SetSelected(false);
         }
         
+        // Seleciona nova carta
         selectedCard = card;
         selectedCard.SetSelected(true);
         
-        if (confirmButton != null)
-        {
-            confirmButton.interactable = true;
-        }
+        UpdateConfirmButton();
         
-        if (confirmButtonText != null)
-        {
-            confirmButtonText.text = "Confirmar Negociação";
-        }
-        
-        Debug.Log($"✅ Carta selecionada");
+        DebugLog($"Carta selecionada: {GetSelectedCardName()}");
     }
     
-    private void ConfirmSelection()
+    private string GetSelectedCardName()
     {
-        if (selectedCard == null)
-        {
-            Debug.LogWarning("Nenhuma carta foi selecionada!");
-            AudioConstants.PlayCannotSelect();
-            return;
-        }
+        if (selectedCard == null) return "Nenhuma";
         
-        AudioConstants.PlayButtonSelect();
-        
-        if (usingDynamicCards)
+        if (useDynamicCards)
         {
-            ProcessDynamicCard();
+            return selectedCard.GetDynamicCardData()?.GetCardName() ?? "Desconhecida";
         }
         else
         {
-            ProcessStaticCard();
+            return selectedCard.GetCardData()?.cardName ?? "Desconhecida";
+        }
+    }
+    
+    private void OnConfirmClicked()
+    {
+        if (selectedCard == null)
+        {
+            DebugLog("⚠️ Nenhuma carta selecionada!");
+            return;
+        }
+        
+        DebugLog($"=== CONFIRMANDO NEGOCIAÇÃO ===");
+        
+        if (useDynamicCards)
+        {
+            ApplyDynamicCard(selectedCard);
+        }
+        else
+        {
+            ApplyStaticCard(selectedCard);
         }
         
         ReturnToMap();
     }
     
-    private void ProcessDynamicCard()
+    private void OnDeclineClicked()
     {
-        DynamicNegotiationCard cardData = selectedCard.GetDynamicCardData();
-        CardAttribute playerAttr = selectedCard.GetSelectedPlayerAttribute();
-        CardAttribute enemyAttr = selectedCard.GetSelectedEnemyAttribute();
-        int value = selectedCard.GetSelectedValue();
+        DebugLog("Negociação recusada - retornando ao mapa");
+        ReturnToMap();
+    }
+    
+    /// <summary>
+    /// Aplica efeitos de uma carta dinâmica
+    /// </summary>
+    private void ApplyDynamicCard(NegotiationCardUI cardUI)
+    {
+        DynamicNegotiationCard card = cardUI.GetDynamicCardData();
         
-        Debug.Log($"=== CARTA DINÂMICA CONFIRMADA ===");
-        Debug.Log($"Tipo: {cardData.cardType}");
-        Debug.Log($"Jogador: {playerAttr} = {value}");
-        Debug.Log($"Inimigo: {enemyAttr} = {value}");
+        if (card == null)
+        {
+            DebugLog("⚠️ Dados da carta dinâmica inválidos!");
+            return;
+        }
         
-        // Aplica no sistema de dificuldade
+        CardAttribute playerAttr = cardUI.GetSelectedPlayerAttribute();
+        CardAttribute enemyAttr = cardUI.GetSelectedEnemyAttribute();
+        int value = cardUI.GetSelectedValue();
+        
+        DebugLog($"Aplicando carta: {card.GetCardName()}");
+        DebugLog($"  Jogador: {playerAttr} {FormatValue(value)}");
+        DebugLog($"  Inimigos: {enemyAttr} {FormatValue(value)}");
+        
         if (DifficultySystem.Instance != null)
         {
-            // Extrai valores reais das ofertas (benefício e custo)
-            int playerValue = cardData.playerBenefit.playerValue;
-            int enemyValue = cardData.playerCost.enemyValue;
-            int playerCostValue = cardData.playerCost.playerValue;
-            
-            // Se é tipo Fixed, usa os valores fixos
-            if (cardData.cardType == NegotiationCardType.Fixed)
-            {
-                // Aplica benefício ao jogador
-                if (playerValue != 0)
-                {
-                    DifficultySystem.Instance.ApplyNegotiation(playerAttr, CardAttribute.PlayerMaxHP, playerValue);
-                }
-                
-                // Aplica custo ao jogador (se houver)
-                if (playerCostValue != 0)
-                {
-                    DifficultySystem.Instance.ApplyNegotiation(
-                        cardData.playerCost.playerAttribute, 
-                        CardAttribute.PlayerMaxHP, 
-                        playerCostValue
-                    );
-                }
-                
-                // Aplica buff nos inimigos
-                if (enemyValue != 0)
-                {
-                    DifficultySystem.Instance.ApplyNegotiation(CardAttribute.PlayerMaxHP, enemyAttr, enemyValue);
-                }
-            }
-            else
-            {
-                // Para IntensityOnly e AttributeAndIntensity, usa o valor selecionado
-                // Benefício ao jogador
-                DifficultySystem.Instance.ApplyNegotiation(playerAttr, CardAttribute.PlayerMaxHP, value);
-                
-                // Custo ao jogador ou buff nos inimigos
-                if (playerCostValue != 0)
-                {
-                    // Se tem debuff no jogador
-                    DifficultySystem.Instance.ApplyNegotiation(
-                        cardData.playerCost.playerAttribute, 
-                        CardAttribute.PlayerMaxHP, 
-                        -value // Inverte porque é custo
-                    );
-                }
-                
-                if (enemyValue != 0 || cardData.playerCost.enemyValue != 0)
-                {
-                    // Se tem buff nos inimigos
-                    DifficultySystem.Instance.ApplyNegotiation(CardAttribute.PlayerMaxHP, enemyAttr, value);
-                }
-            }
-        }
-        else
-        {
-            Debug.LogError("DifficultySystem não encontrado!");
-        }
-        
-        if (GameManager.Instance != null)
-        {
-            GameManager.Instance.CompleteNegotiationEvent(null, playerAttr, enemyAttr, value);
+            DifficultySystem.Instance.ApplyNegotiation(playerAttr, enemyAttr, value);
         }
     }
     
-    private void ProcessStaticCard()
+    /// <summary>
+    /// Aplica efeitos de uma carta estática
+    /// </summary>
+    private void ApplyStaticCard(NegotiationCardUI cardUI)
     {
-        NegotiationCardSO cardData = selectedCard.GetCardData();
-        CardAttribute playerAttr = selectedCard.GetSelectedPlayerAttribute();
-        CardAttribute enemyAttr = selectedCard.GetSelectedEnemyAttribute();
-        int value = selectedCard.GetSelectedValue();
+        NegotiationCardSO card = cardUI.GetCardData();
         
-        Debug.Log($"=== CARTA ESTÁTICA CONFIRMADA ===");
-        Debug.Log($"Tipo: {cardData.cardType}");
-        
-        if (GameManager.Instance != null)
+        if (card == null)
         {
-            GameManager.Instance.CompleteNegotiationEvent(cardData, playerAttr, enemyAttr, value);
+            DebugLog("⚠️ Dados da carta estática inválidos!");
+            return;
+        }
+        
+        CardAttribute playerAttr = cardUI.GetSelectedPlayerAttribute();
+        CardAttribute enemyAttr = cardUI.GetSelectedEnemyAttribute();
+        int value = cardUI.GetSelectedValue();
+        
+        DebugLog($"Aplicando carta: {card.cardName}");
+        DebugLog($"  Jogador: {playerAttr} {FormatValue(value)}");
+        DebugLog($"  Inimigos: {enemyAttr} {FormatValue(value)}");
+        
+        if (DifficultySystem.Instance != null)
+        {
+            DifficultySystem.Instance.ApplyNegotiation(playerAttr, enemyAttr, value);
+        }
+    }
+    
+    private void UpdateConfirmButton()
+    {
+        if (confirmButton != null)
+        {
+            confirmButton.interactable = (selectedCard != null);
         }
     }
     
@@ -399,29 +472,57 @@ public class NegotiationManager : MonoBehaviour
         {
             GameManager.Instance.ReturnToMap();
         }
+        else
+        {
+            DebugLog("⚠️ GameManager não encontrado!");
+        }
     }
     
     private void ClearCards()
     {
-        foreach (var card in cardUIList)
+        foreach (GameObject container in cardContainers)
         {
-            if (card != null)
-            {
-                Destroy(card.gameObject);
-            }
+            if (container != null)
+                Destroy(container);
         }
+        
+        cardContainers.Clear();
         cardUIList.Clear();
+        refreshButtonObjects.Clear();
+        refreshButtonUsed.Clear();
+        selectedCard = null;
     }
     
-    void OnValidate()
+    private void ShuffleList<T>(List<T> list)
     {
-        if (cardsContainer == null)
-            Debug.LogWarning("NegotiationManager: cardsContainer não foi atribuído!");
+        for (int i = 0; i < list.Count; i++)
+        {
+            int randomIndex = Random.Range(i, list.Count);
+            T temp = list[i];
+            list[i] = list[randomIndex];
+            list[randomIndex] = temp;
+        }
+    }
+    
+    private string FormatValue(int value)
+    {
+        return value > 0 ? $"+{value}" : value.ToString();
+    }
+    
+    private void DebugLog(string message)
+    {
+        if (showDebugLogs)
+        {
+            Debug.Log($"<color=cyan>[NegotiationManager]</color> {message}");
+        }
+    }
+    
+    void OnDestroy()
+    {
+        if (confirmButton != null)
+            confirmButton.onClick.RemoveAllListeners();
         
-        if (cardPrefab == null)
-            Debug.LogWarning("NegotiationManager: cardPrefab não foi atribuído!");
-        
-        if (confirmButton == null)
-            Debug.LogWarning("NegotiationManager: confirmButton não foi atribuído!");
+        if (declineButton != null)
+            declineButton.onClick.RemoveAllListeners();
     }
 }
