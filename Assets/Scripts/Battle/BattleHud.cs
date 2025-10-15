@@ -33,6 +33,7 @@ public class BattleHUD : MonoBehaviour
     private Coroutine timerCoroutine;
     private float currentTurnTime;
     private bool isTimerActive = false;
+    private float decisionTimeMultiplier = 1f;
 
     void Start()
     {
@@ -500,5 +501,11 @@ public class BattleHUD : MonoBehaviour
     {
         // O timer continua automaticamente quando Time.timeScale volta a 1
         Debug.Log("BattleHUD: Jogo retomado");
+    }
+    
+    public void SetDecisionTimeMultiplier(float multiplier)
+    {
+        decisionTimeMultiplier = multiplier;
+        Debug.Log($"Tempo de decisão multiplicado por {multiplier}");
     }
 }

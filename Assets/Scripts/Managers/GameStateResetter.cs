@@ -16,6 +16,9 @@ public static class GameStateResetter
     {
         Debug.Log("=== INICIANDO RESET COMPLETO DO ESTADO DO JOGO ===");
         
+        // 0. NOVO: Restaura BattleActions aos valores originais PRIMEIRO
+        RestoreBattleActions();
+        
         // 1. Reseta PlayerBehaviorAnalyzer (mantém só observações de morte)
         ResetPlayerBehaviorAnalyzer();
         
@@ -35,6 +38,27 @@ public static class GameStateResetter
         ResetCurrency();
         
         Debug.Log("✅ Reset completo do jogo finalizado!");
+    }
+    
+    /// <summary>
+    /// NOVO: Restaura BattleActions aos valores originais usando JSON
+    /// </summary>
+    private static void RestoreBattleActions()
+    {
+        Debug.Log("Restaurando BattleActions aos valores originais...");
+        
+        try
+        {
+            // Restaura TODAS as BattleActions do jogo
+            BattleActionRestorer.RestoreAllBattleActions();
+            
+            Debug.Log("✅ BattleActions restauradas com sucesso");
+        }
+        catch (System.Exception e)
+        {
+            Debug.LogError($"❌ Erro ao restaurar BattleActions: {e.Message}");
+            Debug.LogError("As ações podem estar em estado inconsistente!");
+        }
     }
     
     /// <summary>

@@ -1,12 +1,14 @@
 // Assets/Scripts/Battle/DamageNumberController.cs
-// VERSÃO CANVAS UI - Funciona com FloatingTextAdvanced
+// VERSÃO COM EMPILHAMENTO AUTOMÁTICO DE TEXTOS
 
 using UnityEngine;
 using TMPro;
+using System.Collections;
+using System.Collections.Generic;
 
 /// <summary>
 /// Controlador central para criar números de dano e textos de status flutuantes
-/// VERSÃO CANVAS UI
+/// VERSÃO CANVAS UI com sistema de empilhamento para múltiplos efeitos
 /// </summary>
 public class DamageNumberController : MonoBehaviour
 {
@@ -17,13 +19,13 @@ public class DamageNumberController : MonoBehaviour
     [SerializeField] private GameObject floatingTextPrefab;
 
     [Header("Colors")]
-    [SerializeField] private Color damageColor = new Color(1f, 0.3f, 0.3f); // Vermelho
-    [SerializeField] private Color healColor = new Color(0.3f, 1f, 0.3f);   // Verde
-    [SerializeField] private Color manaColor = new Color(0.25f, 0.1f, 1);   // Azul
-    [SerializeField] private Color criticalColor = new Color(1f, 1f, 0.3f); // Amarelo
-    [SerializeField] private Color statusPositiveColor = new Color(0.5f, 0.8f, 1f); // Azul claro
-    [SerializeField] private Color statusNegativeColor = new Color(1f, 0.5f, 0f);   // Laranja
-    [SerializeField] private Color statusRemoveColor = new Color(0.7f, 0.7f, 0.7f); // Cinza
+    [SerializeField] private Color damageColor = new Color(1f, 0.3f, 0.3f);
+    [SerializeField] private Color healColor = new Color(0.3f, 1f, 0.3f);
+    [SerializeField] private Color manaColor = new Color(0.25f, 0.1f, 1);
+    [SerializeField] private Color criticalColor = new Color(1f, 1f, 0.3f);
+    [SerializeField] private Color statusPositiveColor = new Color(0.5f, 0.8f, 1f);
+    [SerializeField] private Color statusNegativeColor = new Color(1f, 0.5f, 0f);
+    [SerializeField] private Color statusRemoveColor = new Color(0.7f, 0.7f, 0.7f);
 
     [Header("Font Sizes")]
     [SerializeField] private float baseFontSize = 36f;
@@ -38,8 +40,19 @@ public class DamageNumberController : MonoBehaviour
     [Header("Spawn Settings")]
     [SerializeField] private float verticalOffset = 50f;
     [SerializeField] private float horizontalSpread = 20f;
+    
+    [Header("Stacking Settings")]
+    [Tooltip("Distância vertical entre textos empilhados")]
+    [SerializeField] private float stackingVerticalSpacing = 45f;
+    
+    [Tooltip("Tempo para resetar o contador de empilhamento")]
+    [SerializeField] private float stackResetTime = 0.5f;
 
     private Camera mainCamera;
+    
+    // Sistema de empilhamento: rastreia quantos textos foram criados recentemente para cada posição
+    private Dictionary<Vector3, int> positionStackCount = new Dictionary<Vector3, int>();
+    private Dictionary<Vector3, Coroutine> stackResetCoroutines = new Dictionary<Vector3, Coroutine>();
 
     void Awake()
     {
@@ -54,7 +67,6 @@ public class DamageNumberController : MonoBehaviour
 
         mainCamera = Camera.main;
         
-        // Se não tiver canvas atribuído, tenta encontrar
         if (targetCanvas == null)
         {
             targetCanvas = FindObjectOfType<Canvas>();
@@ -84,7 +96,9 @@ public class DamageNumberController : MonoBehaviour
     /// </summary>
     public void ShowHealing(Vector3 position, int healAmount)
     {
-        string text = $"+{healAmount}"; // Isso vai gerar o texto "+0"
+        if (healAmount <= 0) return;
+        
+        string text = $"+{healAmount}";
         float fontSize = CalculateDamageFontSize(healAmount, false);
 
         CreateFloatingText(position, text, healColor, fontSize);
@@ -92,7 +106,9 @@ public class DamageNumberController : MonoBehaviour
     
     public void ShowManaRestore(Vector3 position, int manaRestored)
     {
-        string text = $"+{manaRestored}"; // Isso vai gerar o texto "+0"
+        if (manaRestored <= 0) return;
+        
+        string text = $"+{manaRestored}";
         float fontSize = CalculateDamageFontSize(manaRestored, false);
 
         CreateFloatingText(position, text, manaColor, fontSize);
@@ -132,7 +148,6 @@ public class DamageNumberController : MonoBehaviour
     {
         float size = baseFontSize;
 
-        // Aumenta o tamanho baseado no valor do dano
         if (amount >= largeDamageThreshold)
         {
             size *= 1.8f;
@@ -146,7 +161,6 @@ public class DamageNumberController : MonoBehaviour
             size *= 1.2f;
         }
 
-        // Críticos são ainda maiores
         if (isCritical)
         {
             size *= criticalFontMultiplier;
@@ -156,8 +170,7 @@ public class DamageNumberController : MonoBehaviour
     }
 
     /// <summary>
-    /// Cria o texto flutuante na posição especificada
-    /// VERSÃO CANVAS UI - Converte world position para screen position
+    /// Cria o texto flutuante na posição especificada COM EMPILHAMENTO AUTOMÁTICO
     /// </summary>
     private void CreateFloatingText(Vector3 worldPosition, string text, Color color, float fontSize)
     {
@@ -169,9 +182,19 @@ public class DamageNumberController : MonoBehaviour
 
         if (targetCanvas == null)
         {
-            Debug.LogError("DamageNumberController: Canvas não encontrado! Crie um Canvas na cena ou atribua um no Inspector.");
+            Debug.LogError("DamageNumberController: Canvas não encontrado!");
             return;
         }
+
+        // Arredonda a posição para agrupar textos do mesmo alvo
+        Vector3 roundedPosition = new Vector3(
+            Mathf.Round(worldPosition.x * 10f) / 10f,
+            Mathf.Round(worldPosition.y * 10f) / 10f,
+            Mathf.Round(worldPosition.z * 10f) / 10f
+        );
+
+        // Obtém o índice de empilhamento atual para esta posição
+        int stackIndex = GetStackIndex(roundedPosition);
 
         // Converte posição do mundo (3D) para posição na tela
         Vector2 screenPosition = mainCamera.WorldToScreenPoint(worldPosition);
@@ -190,21 +213,80 @@ public class DamageNumberController : MonoBehaviour
                 out Vector2 localPoint
             );
             
-            // Adiciona offset vertical e horizontal aleatório
+            // Adiciona offset vertical BASE
             localPoint.y += verticalOffset;
+            
+            // NOVO: Adiciona empilhamento vertical baseado no índice
+            localPoint.y += stackIndex * stackingVerticalSpacing;
+            
+            // Adiciona offset horizontal aleatório
             localPoint.x += Random.Range(-horizontalSpread, horizontalSpread);
             
             rectTransform.anchoredPosition = localPoint;
         }
         
-        FloatingTextAdvanced floatingText = textObj.GetComponentInChildren<FloatingTextAdvanced>(); // Usar GetInChildren aqui também é uma boa prática
+        FloatingTextAdvanced floatingText = textObj.GetComponentInChildren<FloatingTextAdvanced>();
         if (floatingText != null)
         {
             floatingText.Setup(text, color, fontSize);
         }
         else
         {
-            Debug.LogError("O script FloatingTextAdvanced não foi encontrado no prefab instanciado!", textObj);
+            Debug.LogError("O script FloatingTextAdvanced não foi encontrado no prefab!", textObj);
+        }
+
+        // Agenda o reset do contador de empilhamento para esta posição
+        ScheduleStackReset(roundedPosition);
+    }
+
+    /// <summary>
+    /// Obtém o índice de empilhamento para uma posição e incrementa o contador
+    /// </summary>
+    private int GetStackIndex(Vector3 position)
+    {
+        if (!positionStackCount.ContainsKey(position))
+        {
+            positionStackCount[position] = 0;
+        }
+
+        int currentIndex = positionStackCount[position];
+        positionStackCount[position]++;
+        
+        return currentIndex;
+    }
+
+    /// <summary>
+    /// Agenda o reset do contador de empilhamento após um delay
+    /// </summary>
+    private void ScheduleStackReset(Vector3 position)
+    {
+        // Se já existe uma coroutine de reset para esta posição, cancela
+        if (stackResetCoroutines.ContainsKey(position) && stackResetCoroutines[position] != null)
+        {
+            StopCoroutine(stackResetCoroutines[position]);
+        }
+
+        // Inicia nova coroutine de reset
+        stackResetCoroutines[position] = StartCoroutine(ResetStackCounterAfterDelay(position));
+    }
+
+    /// <summary>
+    /// Coroutine que reseta o contador de empilhamento após um delay
+    /// </summary>
+    private IEnumerator ResetStackCounterAfterDelay(Vector3 position)
+    {
+        yield return new WaitForSeconds(stackResetTime);
+        
+        // Reseta o contador
+        if (positionStackCount.ContainsKey(position))
+        {
+            positionStackCount[position] = 0;
+        }
+
+        // Remove a referência da coroutine
+        if (stackResetCoroutines.ContainsKey(position))
+        {
+            stackResetCoroutines.Remove(position);
         }
     }
 
@@ -294,7 +376,7 @@ public class DamageNumberController : MonoBehaviour
         
         if (targetCanvas == null)
         {
-            Debug.LogWarning("DamageNumberController: targetCanvas não foi atribuído! Tentarei encontrar automaticamente.");
+            Debug.LogWarning("DamageNumberController: targetCanvas não foi atribuído!");
         }
     }
 }

@@ -29,6 +29,21 @@ public class CurrencySystem
     }
     
     /// <summary>
+    /// Remove moedas forçadamente (para penalidades)
+    /// Diferente de SpendCoins que retorna false se não tiver saldo suficiente,
+    /// este método sempre remove até o limite disponível
+    /// </summary>
+    /// <param name="amount">Quantidade a remover</param>
+    /// <returns>Quantidade realmente removida</returns>
+    public int RemoveCoins(int amount)
+    {
+        int coinsToRemove = Mathf.Min(amount, currentCoins);
+        currentCoins -= coinsToRemove;
+        Debug.Log($"Perdeu {coinsToRemove} moedas. Restam: {currentCoins}");
+        return coinsToRemove;
+    }
+    
+    /// <summary>
     /// Adiciona moedas ao jogador
     /// </summary>
     /// <param name="amount">Quantidade a adicionar</param>

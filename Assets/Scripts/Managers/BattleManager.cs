@@ -32,6 +32,12 @@ public class BattleManager : MonoBehaviour
         {
             GameManager.Instance.InitializePlayerStats();
         }
+        
+        // NOVO: Reseta sistema de segunda chance no início da batalha
+        if (DeathNegotiationManager.Instance != null)
+        {
+            DeathNegotiationManager.Instance.ResetForNewBattle();
+        }
     
         InitializeEnemyTeam();
         InitializePlayerTeam();

@@ -362,6 +362,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   enableDefaultOffers: 1
   numberOfDefaultOffers: 5
+  fixedOfferProbability: 0.3
+  intensityOnlyProbability: 0.5
   showDebugLogs: 1
 --- !u!4 &761700060
 Transform:

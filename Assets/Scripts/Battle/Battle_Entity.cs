@@ -354,6 +354,88 @@ public class BattleEntity : MonoBehaviour
         // Clear all status effects on death
         ClearAllStatusEffects();
 
+        // NOVO: Se for jogador, tenta ativar segunda chance
+        if (characterData.team == Team.Player)
+        {
+            TryActivateSecondChance();
+            return; // Não continua o processo de morte se a segunda chance for ativada
+        }
+
+        // Desativa os sliders da HUD imediatamente (apenas inimigos chegam aqui)
+        DisableHUDElements();
+    
+        if (characterData.deathSound != null)
+        {
+            AudioConstants.PlayDeathSound(characterData.deathSound);
+        }
+
+        // Aciona a animação de morte
+        if (animationController != null)
+        {
+            animationController.OnDeath();
+        }
+
+        // Desativa o sprite após um delay para a animação tocar
+        StartCoroutine(DeactivateSpriteAfterDelay());
+    }
+    
+    /// <summary>
+    /// NOVO: Tenta ativar o sistema de segunda chance
+    /// </summary>
+    private void TryActivateSecondChance()
+    {
+        if (DeathNegotiationManager.Instance == null)
+        {
+            Debug.LogWarning("DeathNegotiationManager não encontrado! Prosseguindo com morte normal.");
+            CompleteDeath();
+            return;
+        }
+        
+        if (DeathNegotiationManager.Instance.HasUsedSecondChance())
+        {
+            Debug.Log("Segunda chance já foi usada. Morte definitiva.");
+            CompleteDeath();
+            return;
+        }
+        
+        // Encontra o BattleManager
+        BattleManager battleManager = FindObjectOfType<BattleManager>();
+        if (battleManager == null)
+        {
+            Debug.LogWarning("BattleManager não encontrado!");
+            CompleteDeath();
+            return;
+        }
+        
+        Debug.Log("=== ATIVANDO SISTEMA DE SEGUNDA CHANCE ===");
+        
+        // Inicia negociação
+        DeathNegotiationManager.Instance.StartNegotiation(this, battleManager, (accepted) =>
+        {
+            if (!accepted)
+            {
+                // Jogador recusou ou não conseguiu negociar
+                Debug.Log("Negociação falhou. Morte confirmada.");
+                CompleteDeath();
+            }
+            else
+            {
+                // Jogador aceitou - já foi revivido pelo manager
+                Debug.Log("Negociação aceita! Jogador revivido.");
+                // Precisa resetar o estado da batalha
+                if (battleManager != null)
+                {
+                    battleManager.currentState = BattleState.RUNNING;
+                }
+            }
+        });
+    }
+
+    /// <summary>
+    /// NOVO: Completa o processo de morte (separado para reutilização)
+    /// </summary>
+    private void CompleteDeath()
+    {
         // Desativa os sliders da HUD imediatamente
         DisableHUDElements();
         
@@ -362,7 +444,7 @@ public class BattleEntity : MonoBehaviour
             AudioConstants.PlayDeathSound(characterData.deathSound);
         }
 
-        // Aciona a animação de morte no jogador
+        // Aciona a animação de morte
         if (animationController != null)
         {
             animationController.OnDeath();
