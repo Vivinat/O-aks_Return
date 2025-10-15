@@ -91,7 +91,7 @@ public class TreasureManager : MonoBehaviour
     private void ResetSkipButton()
     {
         if (skipButtonText != null)
-            skipButtonText.text = "Sair";
+            skipButtonText.text = "Descansar";
     }
 
     private void SetSaveMode()
@@ -510,6 +510,22 @@ public class TreasureManager : MonoBehaviour
         if (selectedReward != null && selectedPlayerSlotIndex >= 0)
         {
             SaveSelection();
+        }
+        else
+        {
+            // Caso não tenha escolhido nada: cura 50 HP e 50 MP
+            if (GameManager.Instance != null && GameManager.Instance.PlayerCharacterInfo != null)
+            {
+                int hpAtual = GameManager.Instance.GetPlayerCurrentHP();
+                int mpAtual = GameManager.Instance.GetPlayerCurrentMP();
+                int maxHP = GameManager.Instance.PlayerCharacterInfo.maxHp;
+                int maxMP = GameManager.Instance.PlayerCharacterInfo.maxMp;
+
+                GameManager.Instance.SetPlayerCurrentHP(Mathf.Min(hpAtual + 50, maxHP));
+                GameManager.Instance.SetPlayerCurrentMP(Mathf.Min(mpAtual + 50, maxMP));
+
+                Debug.Log($"Descansando... HP curado para {GameManager.Instance.GetPlayerCurrentHP()}, MP restaurado para {GameManager.Instance.GetPlayerCurrentMP()}");
+            }
         }
         
         EndTreasureEvent();

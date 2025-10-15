@@ -268,9 +268,9 @@ public class TutorialManager : MonoBehaviour
         
         var tutorial = DialogueUtils.CreateBuilder()
             .AddNarration(
-                "Há muito tempo atrás, o arquidemônio Logrif, desgraçado pelo próprio universo, traído pelos seus aliados foi selado.")  
+                "Há muito tempo atrás, o arquidemônio Logrif, após ser traído pelos seus aliados, foi selado.")  
             .AddNarration(
-                "O mundo dos humanos o esqueceu, mas ele seguiu trancafiado. Até o dia em que o caos que assola o mundo finalmente rompeu seu selo...")  
+                "O mundo dos humanos o esqueceu, mas ele seguiu trancafiado. Até o dia em que o caos que assola o mundo finalmente romperia seu selo...")  
             .AddLine("Logrif",
                 "Humph. O mundo mudou muito desde minha última aparição. Quando foi que meus dominíos ficaram tão enxutos assim?!")
             .AddNarration(
@@ -279,7 +279,6 @@ public class TutorialManager : MonoBehaviour
                 "Carcaça e Carnificina! E quem são esses moleques?! Tudo isso era mato antes de eu chegar aqui!")
             .AddNarration(
                 "Ao norte, os patrulheiros e druidas enfrentam as forças de um Senhor do Escuro. Flecha e fogo rugem pela mata")
-            .AddLine("Logrif", "Homem ou demônio, pouco importa! Todos morrerão!")
             .AddNarration("Avance sob os pontos em marrom para prosseguir")
             .AddNarration("Nós vermelhos estão trancados e nós escuros já foram completados.")
             .AddNarration("Arraste a tela segurando o botão esquerdo do mouse para explorar o mapa.")
@@ -299,13 +298,12 @@ public class TutorialManager : MonoBehaviour
         
         var tutorial = DialogueUtils.CreateBuilder()
             .AddLine("Logrif", "VOCÊS SE ATREVEM?! Vão todos morrer!")
-            .AddNarration("Inimigos se colocam diante do arquidemônio.")
             .AddNarration("O sistema de batalha usa ATB (Active Time Battle). Cada personagem tem uma barra que enche ao longo do tempo.")
             .AddNarration("Quando sua barra estiver cheia, você poderá escolher uma ação.")
             .AddNarration("Selecione uma habilidade dos botões disponíveis na parte inferior da tela.")
             .AddNarration("Passe o mouse sobre as habilidades para ver seus efeitos!")
             .AddNarration("Após selecionar uma habilidade, clique no alvo desejado (se necessário).")
-            .AddNarration("Cuidado com seu HP e MP!")
+            .AddNarration("Cuidado com seu HP e MP! Inspecione os inimigos passando o mouse acima deles!")
             .AddNarration("Lembre-se: você pode pressionar 'E' para ver suas estatísticas durante a batalha!")
             .AddNarration("Derrote todos os inimigos para vencer!");
         
@@ -329,7 +327,7 @@ public class TutorialManager : MonoBehaviour
                 "Elas o observam em sua guerra solitária. E a partir de seus atos, criam os mais diabólicos planos...")
             .AddLine("Logrif", "Ei! Esta palavra é minha!")
             .AddNarration("Os acordos sempre estarão amarrados em grandeza e atributo. ")
-            .AddNarration("Cada carta oferece um benefício para VOCÊ e um benefício para seus INIMIGOS ou um malefício para VOCÊ.")
+            .AddNarration("Cada carta oferece um benefício para VOCÊ e um benefício para seus INIMIGOS.")
             .AddNarration("Algumas cartas permitem escolher qual atributo será afetado.")
             .AddNarration("Enquanto outras permitem escolher a intensidade da mudança.")
             .AddNarration("Você pode pressionar 'E' para ver suas estatísticas atuais antes de decidir!")
@@ -377,7 +375,7 @@ public class TutorialManager : MonoBehaviour
             .AddNarration("Depois, clique em um dos seus 4 slots para substituir uma habilidade existente.")
             .AddNarration("Passe o mouse sobre as habilidades para ver seus efeitos!")
             .AddNarration("Você pode pressionar 'E' para ver suas habilidades atuais antes de decidir!")
-            .AddNarration("Se não quiser nenhuma das opções, você pode clicar em 'Sair'.");
+            .AddNarration("Se não quiser nenhuma das opções, você pode Descansar e curar 50 HP e 50 MP.");
         
         DebugLog("✅ Tutorial construído, chamando Show()...");
         tutorial.Show(onComplete);

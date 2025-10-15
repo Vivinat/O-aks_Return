@@ -384,8 +384,12 @@ public class BattleManager : MonoBehaviour
             currentState = BattleState.WON;
             Debug.Log("VICTORY!");
             
-            int rewardCoins = Random.Range(10, 31);
-            GameManager.Instance.AddBattleReward(rewardCoins);
+            int baseReward = Random.Range(10, 31);
+            // Multiplica pela quantidade de inimigos
+            int totalEnemies = enemyTeam.Count;
+            int rewardCoins = baseReward * totalEnemies;
+            // Garante que não passe de 100 moedas
+            rewardCoins = Mathf.Min(rewardCoins, 100);
             
             StartCoroutine(HandleBattleVictory(rewardCoins));
         }

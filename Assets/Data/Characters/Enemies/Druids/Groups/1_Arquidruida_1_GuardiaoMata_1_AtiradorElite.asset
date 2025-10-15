@@ -10,10 +10,12 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: c45c94b250bd7634b9db87d78aa3bda4, type: 3}
-  m_Name: 1_Cacador_Elite
+  m_Name: 1_Arquidruida_1_GuardiaoMata_1_AtiradorElite
   m_EditorClassIdentifier: 
   eventType: 0
   sceneToLoad: BattleScene
   enemies:
+  - {fileID: 11400000, guid: 62aa2b259fb5a8846bc33856c37f0c91, type: 2}
+  - {fileID: 11400000, guid: f145aea1e67e47a488f18a9f1aaff455, type: 2}
   - {fileID: 11400000, guid: 0612fb2d6b38b004b9188d58497d8b40, type: 2}
   battleBackground: {fileID: 0}

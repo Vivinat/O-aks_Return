@@ -1,0 +1,34 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d20f0df1dbbcccb48abf69dbcc5cc4f7, type: 3}
+  m_Name: WorldExposureDialogue
+  m_EditorClassIdentifier: 
+  dialogueTitle: Intro
+  dialogueEntries:
+  - speakerName: Logrif
+    text: "De fato, sinto a presen\xE7a de outras for\xE7as. Incomuns, hostis e jovens.
+      Pelo visto, algumas crian\xE7as se levantaram do submundo e agora querem tomar
+      o que \xE9 meu por direito."
+    customDelay: 0
+    customSound: {fileID: 0}
+  - speakerName: Logrif
+    text: "Meus concorrentes e meus inimigos se matam justamente quando retorno das
+      profundezas! \xC9 a oportunidade perfeita! Ca\xE7arei esses farsantes e destruirei
+      os humanos no processo!"
+    customDelay: 0
+    customSound: {fileID: 0}
+  - speakerName: Logrif
+    text: "Todos morrer\xE3o!"
+    customDelay: 0
+    customSound: {fileID: 0}
+  backgroundMusic: {fileID: 8300000, guid: 093617ec03826524bb8b5f6e136c5354, type: 3}
+  stopCurrentMusicWhenPlaying: 1

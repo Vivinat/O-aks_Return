@@ -10,13 +10,13 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: d20f0df1dbbcccb48abf69dbcc5cc4f7, type: 3}
-  m_Name: IntroData
+  m_Name: MawronExposureDialogue
   m_EditorClassIdentifier: 
   dialogueTitle: Intro
   dialogueEntries:
   - speakerName: 
     text: "Logrif paira diante de um patrulheiro ferido. O \xFAnico sobrevivente.
-      Mas este patrulheiro n\xE3o foui abatido pelo arquidem\xF4nio. Seus ferimentos
+      Mas este patrulheiro n\xE3o foi abatido pelo arquidem\xF4nio. Seus ferimentos
       s\xE3o mais potentes. Viscerais. Mortais. Impec\xE1veis. Logrif, barbeiro como
       \xE9, jamais... "
     customDelay: 0

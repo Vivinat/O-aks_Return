@@ -10,12 +10,10 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: c45c94b250bd7634b9db87d78aa3bda4, type: 3}
-  m_Name: 1Necro_2Morto
+  m_Name: 1_Atirador_Elite
   m_EditorClassIdentifier: 
   eventType: 0
   sceneToLoad: BattleScene
   enemies:
-  - {fileID: 11400000, guid: 2f910201109fe5e419dee39ff9a1f628, type: 2}
-  - {fileID: 11400000, guid: 3f48084d13c2288499fac36fb3a6b291, type: 2}
-  - {fileID: 11400000, guid: 3f48084d13c2288499fac36fb3a6b291, type: 2}
+  - {fileID: 11400000, guid: 0612fb2d6b38b004b9188d58497d8b40, type: 2}
   battleBackground: {fileID: 0}
