@@ -62,7 +62,7 @@ public class ActionButtonUI : MonoBehaviour, IPointerEnterHandler, IPointerExitH
                 description += $"\n\nCusto de MP: {actionData.manaCost}";
             }
             
-            battleHUD.ShowTooltip(actionData.actionName, description);
+            battleHUD.ShowTooltip(actionData.actionName, actionData.GetDynamicDescription());
         }
     }
 

@@ -63,6 +63,15 @@ public class EnemyDataExporter : EditorWindow
             "O JSON gerado pode ser usado para balanceamento e análise.",
             MessageType.Info
         );
+        
+        if (!File.Exists(outputPath))
+        {
+            EditorGUILayout.HelpBox("❌ Arquivo JSON não encontrado!", MessageType.Warning);
+        }
+        else
+        {
+            EditorGUILayout.HelpBox("✅ Arquivo JSON pronto.", MessageType.None);
+        }
     }
 
     void ExportEnemyData()
@@ -84,6 +93,12 @@ public class EnemyDataExporter : EditorWindow
         // Salva arquivo
         try
         {
+            string directory = Path.GetDirectoryName(outputPath);
+            if (!Directory.Exists(directory))
+            {
+                Directory.CreateDirectory(directory);
+            }
+            
             File.WriteAllText(outputPath, json);
             AssetDatabase.Refresh();
             
@@ -92,7 +107,7 @@ public class EnemyDataExporter : EditorWindow
             
             EditorUtility.DisplayDialog(
                 "Export Successful", 
-                $"Successfully exported {totalEnemies} enemies to:\n{outputPath}", 
+                $"✅ Exported {totalEnemies} enemies to:\n{outputPath}", 
                 "OK"
             );
             
@@ -227,61 +242,4 @@ public class EnemyDataExporter : EditorWindow
         
         return stats;
     }
-}
-
-// ========== DATA STRUCTURES ==========
-
-[System.Serializable]
-public class EnemyDatabase
-{
-    public List<EnemyData> druids = new List<EnemyData>();
-    public List<EnemyData> warriors = new List<EnemyData>();
-    public List<EnemyData> monsters = new List<EnemyData>();
-    public List<EnemyData> bosses = new List<EnemyData>();
-    public StatisticsData statistics;
-}
-
-[System.Serializable]
-public class EnemyData
-{
-    public string name;
-    public string assetPath;
-    public int maxHp;
-    public int maxMp;
-    public int defense;
-    public float speed;
-    public List<ActionData> actions = new List<ActionData>();
-}
-
-[System.Serializable]
-public class ActionData
-{
-    public string name;
-    public int manaCost;
-    public string targetType;
-    public int effectCount;
-    public string primaryEffectType;
-    public int power;
-    public string statusEffect;
-    public int statusDuration;
-    public int statusPower;
-}
-
-[System.Serializable]
-public class StatisticsData
-{
-    public CategoryStats normalEnemies;
-    public CategoryStats bosses;
-}
-
-[System.Serializable]
-public class CategoryStats
-{
-    public int count;
-    public float avgHp;
-    public float avgMp;
-    public float avgDefense;
-    public float avgSpeed;
-    public int minHp;
-    public int maxHp;
 }

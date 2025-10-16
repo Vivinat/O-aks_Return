@@ -25,51 +25,51 @@ public class StatusEffect
         switch (type)
         {
             case StatusEffectType.AttackUp:
-                effectName = "Attack Boost";
+                effectName = "Ataque Aumentado";
                 description = $"Attack increased by {power}";
                 break;
             case StatusEffectType.AttackDown:
-                effectName = "Attack Reduction";
+                effectName = "Ataque Reduzido";
                 description = $"Attack decreased by {power}";
                 break;
             case StatusEffectType.DefenseUp:
-                effectName = "Defense Boost";
+                effectName = "Defesa Aumentada";
                 description = $"Defense increased by {power}";
                 break;
             case StatusEffectType.DefenseDown:
-                effectName = "Defense Reduction";
+                effectName = "Defesa Reduzida";
                 description = $"Defense decreased by {power}";
                 break;
             case StatusEffectType.SpeedUp:
-                effectName = "Speed Boost";
+                effectName = "Velocidade Aumentada";
                 description = $"Speed increased by {power}%";
                 break;
             case StatusEffectType.SpeedDown:
-                effectName = "Speed Reduction";
+                effectName = "Velocidade Reduzida";
                 description = $"Speed decreased by {power}%";
                 break;
             case StatusEffectType.Poison:
-                effectName = "Poison";
+                effectName = "Veneno";
                 description = $"Takes {power} damage per turn";
                 break;
             case StatusEffectType.Regeneration:
-                effectName = "Regeneration";
+                effectName = "Regeneração";
                 description = $"Heals {power} HP per turn";
                 break;
             case StatusEffectType.Vulnerable:
-                effectName = "Vulnerable";
+                effectName = "Vulnerável";
                 description = $"Takes {power}% more damage";
                 break;
             case StatusEffectType.Protected:
-                effectName = "Protected";
+                effectName = "Protegido";
                 description = $"Takes {power}% less damage";
                 break;
             case StatusEffectType.Blessed:
-                effectName = "Blessed";
+                effectName = "Abençoado";
                 description = $"Divine protection heals {power} HP per turn";
                 break;
             case StatusEffectType.Cursed:
-                effectName = "Cursed";
+                effectName = "Amaldiçoado";
                 description = $"Dark curse deals {power} damage per turn";
                 break;
         }

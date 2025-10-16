@@ -16,6 +16,9 @@ public static class GameStateResetter
     {
         Debug.Log("=== INICIANDO RESET COMPLETO DO ESTADO DO JOGO ===");
         
+        // 0. NOVO: Restaura Characters de inimigos aos valores originais PRIMEIRO
+        RestoreEnemyCharacters();
+        
         // 0. NOVO: Restaura BattleActions aos valores originais PRIMEIRO
         RestoreBattleActions();
         
@@ -228,5 +231,24 @@ public static class GameStateResetter
         }
         
         Debug.Log("Moedas resetadas para 0");
+    }
+    
+    /// <summary>
+    /// NOVO: Restaura Characters de inimigos aos valores originais usando JSON
+    /// </summary>
+    private static void RestoreEnemyCharacters()
+    {
+        Debug.Log("Restaurando Characters de inimigos aos valores originais...");
+    
+        try
+        {
+            EnemyCharacterRestorer.RestoreAllEnemyCharacters();
+            Debug.Log("Characters de inimigos restaurados com sucesso");
+        }
+        catch (System.Exception e)
+        {
+            Debug.LogError($"Erro ao restaurar Characters de inimigos: {e.Message}");
+            Debug.LogError("Os inimigos podem estar em estado inconsistente!");
+        }
     }
 }

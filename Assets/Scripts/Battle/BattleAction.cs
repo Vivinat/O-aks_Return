@@ -1,9 +1,9 @@
-// Assets/Scripts/Battle/BattleAction.cs (Enhanced Version)
+// Assets/Scripts/Battle/BattleAction.cs (Com Descrição Dinâmica)
 
 using UnityEngine;
 using System.Collections.Generic;
+using System.Text;
 
-// Define o que a ação faz fundamentalmente
 public enum ActionType
 {
     Attack,
@@ -11,10 +11,9 @@ public enum ActionType
     RestoreMana,
     Buff,
     Debuff,
-    Mixed // Para ações que fazem múltiplos efeitos
+    Mixed
 }
 
-// Define quem a ação pode ter como alvo
 public enum TargetType
 {
     SingleEnemy,
@@ -22,10 +21,9 @@ public enum TargetType
     Self,
     AllEnemies,
     AllAllies,
-    Everyone // Afeta todos os personagens na batalha
+    Everyone
 }
 
-// Tipos de status temporários
 public enum StatusEffectType
 {
     None,
@@ -37,10 +35,10 @@ public enum StatusEffectType
     SpeedDown,
     Poison,
     Regeneration,
-    Vulnerable, // Toma mais dano
-    Protected,  // Toma menos dano
-    Blessed,    // Cura a cada turno
-    Cursed      // Perde vida a cada turno
+    Vulnerable,
+    Protected,
+    Blessed,
+    Cursed
 }
 
 [System.Serializable]
@@ -48,12 +46,12 @@ public class ActionEffect
 {
     [Header("Primary Effect")]
     public ActionType effectType;
-    public int power; // Dano, cura, ou intensidade do buff/debuff
+    public int power;
     
     [Header("Status Effect (Optional)")]
     public StatusEffectType statusEffect = StatusEffectType.None;
-    public int statusDuration = 0; // Turnos que o efeito dura
-    public int statusPower = 0;    // Intensidade do status (ex: +5 defesa)
+    public int statusDuration = 0;
+    public int statusPower = 0;
     
     [Header("Self Effect (Optional)")]
     public bool hasSelfEffect = false;
@@ -71,7 +69,8 @@ public class BattleAction : ScriptableObject
     public string actionName;
     
     [TextArea]
-    public string description;
+    [Tooltip("NÃO USADO - A descrição é gerada dinamicamente")]
+    public string description; // Mantido por compatibilidade, mas não será usado
     public Sprite icon;
 
     [Header("Action Logic")]
@@ -104,6 +103,158 @@ public class BattleAction : ScriptableObject
         if (isConsumable && currentUses <= 0)
         {
             currentUses = maxUses;
+        }
+    }
+    
+    // ... (métodos anteriores permanecem iguais)
+    
+    /// <summary>
+    /// Gera a descrição completa da ação baseada nos valores atuais (versão compacta)
+    /// </summary>
+    public string GetDynamicDescription()
+    {
+        StringBuilder sb = new StringBuilder();
+        
+        // Linha 1: Alvo + MP + Usos/Preço
+        sb.Append(GetTargetTypeText(targetType));
+        sb.Append(" | MP:");
+        sb.Append(manaCost);
+        
+        if (isConsumable)
+        {
+            sb.Append(" | Usos:");
+            sb.Append(currentUses);
+            sb.Append("/");
+            sb.Append(maxUses);
+        }
+        
+        if (shopPrice > 0)
+        {
+            sb.Append(" | $");
+            sb.Append(shopPrice);
+        }
+        
+        // Efeitos
+        if (effects != null && effects.Count > 0)
+        {
+            sb.Append(" || ");
+            
+            for (int i = 0; i < effects.Count; i++)
+            {
+                ActionEffect effect = effects[i];
+                
+                if (i > 0) sb.Append(" + ");
+                
+                // Efeito Principal
+                sb.Append(GetEffectText(effect));
+                
+                // Status Effect
+                if (effect.statusEffect != StatusEffectType.None)
+                {
+                    sb.Append(" [");
+                    sb.Append(GetStatusEffectText(effect.statusEffect));
+                    sb.Append(":");
+                    sb.Append(effect.statusPower);
+                    sb.Append("/");
+                    sb.Append(effect.statusDuration);
+                    sb.Append("t]");
+                }
+                
+                // Self Effect
+                if (effect.hasSelfEffect)
+                {
+                    sb.Append(" (Si:");
+                    sb.Append(GetEffectTypeText(effect.selfEffectType));
+                    sb.Append(":");
+                    sb.Append(effect.selfEffectPower);
+                    
+                    if (effect.selfStatusEffect != StatusEffectType.None)
+                    {
+                        sb.Append("+");
+                        sb.Append(GetStatusEffectText(effect.selfStatusEffect));
+                        sb.Append(":");
+                        sb.Append(effect.selfStatusPower);
+                        sb.Append("/");
+                        sb.Append(effect.selfStatusDuration);
+                        sb.Append("t");
+                    }
+                    
+                    sb.Append(")");
+                }
+            }
+        }
+        
+        return sb.ToString();
+    }
+    
+    /// <summary>
+    /// Converte TargetType para texto em português
+    /// </summary>
+    private string GetTargetTypeText(TargetType type)
+    {
+        switch (type)
+        {
+            case TargetType.SingleEnemy: return "Inimigo";
+            case TargetType.SingleAlly: return "Aliado";
+            case TargetType.Self: return "Si Mesmo";
+            case TargetType.AllEnemies: return "Todos Inimigos";
+            case TargetType.AllAllies: return "Todos Aliados";
+            case TargetType.Everyone: return "Todos";
+            default: return type.ToString();
+        }
+    }
+    
+    /// <summary>
+    /// Converte ActionType para texto em português
+    /// </summary>
+    private string GetEffectTypeText(ActionType type)
+    {
+        switch (type)
+        {
+            case ActionType.Attack: return "Dano";
+            case ActionType.Heal: return "Cura";
+            case ActionType.RestoreMana: return "Restaura MP";
+            case ActionType.Buff: return "Buff";
+            case ActionType.Debuff: return "Debuff";
+            case ActionType.Mixed: return "Misto";
+            default: return type.ToString();
+        }
+    }
+    
+    /// <summary>
+    /// Gera texto do efeito com poder
+    /// </summary>
+    private string GetEffectText(ActionEffect effect)
+    {
+        StringBuilder sb = new StringBuilder();
+        
+        sb.Append(GetEffectTypeText(effect.effectType));
+        sb.Append(" ");
+        sb.Append(effect.power);
+        
+        return sb.ToString();
+    }
+    
+    /// <summary>
+    /// Converte StatusEffectType para texto em português
+    /// </summary>
+    private string GetStatusEffectText(StatusEffectType type)
+    {
+        switch (type)
+        {
+            case StatusEffectType.AttackUp: return "Atq+";
+            case StatusEffectType.AttackDown: return "Atq-";
+            case StatusEffectType.DefenseUp: return "Def+";
+            case StatusEffectType.DefenseDown: return "Def-";
+            case StatusEffectType.SpeedUp: return "Vel+";
+            case StatusEffectType.SpeedDown: return "Vel-";
+            case StatusEffectType.Poison: return "Veneno";
+            case StatusEffectType.Regeneration: return "Regen";
+            case StatusEffectType.Vulnerable: return "Vulnerável";
+            case StatusEffectType.Protected: return "Protegido";
+            case StatusEffectType.Blessed: return "Abençoado";
+            case StatusEffectType.Cursed: return "Amaldiçoado";
+            default: return type.ToString();
         }
     }
     
@@ -154,7 +305,6 @@ public class BattleAction : ScriptableObject
         return instance;
     }
 
-    // Helper method to determine primary action type for UI
     public ActionType GetPrimaryActionType()
     {
         if (effects.Count == 0) return ActionType.Attack;

@@ -1,4 +1,4 @@
-// Assets/Scripts/UI/ShopItemUI.cs (UPDATED with Powerup support)
+// Assets/Scripts/UI/ShopItemUI.cs (FIXED - Com Tooltips Dinâmicos)
 
 using UnityEngine;
 using UnityEngine.EventSystems;
@@ -17,6 +17,7 @@ public class ShopItemUI : MonoBehaviour, IPointerEnterHandler, IPointerExitHandl
     public Color battleActionColor = new Color(0.8f, 0.8f, 1f);
     public Color powerupColor = new Color(1f, 0.8f, 0.5f);
 
+    // Variáveis internas organizadas
     private ShopItem shopItem;
     private ShopManager shopManager;
     private bool isForSale;
@@ -130,27 +131,41 @@ public class ShopItemUI : MonoBehaviour, IPointerEnterHandler, IPointerExitHandl
 
     public void OnPointerEnter(PointerEventData eventData)
     {
-        if (shopManager != null && shopItem != null)
+        if (shopManager == null || shopItem == null) return;
+        
+        // ===== USA DESCRIÇÃO DINÂMICA PARA BATTLEACTIONS =====
+        if (shopItem.type == ShopItem.ItemType.BattleAction && shopItem.battleAction != null)
         {
-            string description = shopItem.Description;
+            string description = shopItem.battleAction.GetDynamicDescription();
             
-            // Adiciona informações de preço para itens à venda
+            // Adiciona informações extras se for item à venda
             if (isForSale)
             {
-                if (GameManager.Instance.CurrencySystem.HasEnoughCoins(shopItem.Price))
+                if (!GameManager.Instance.CurrencySystem.HasEnoughCoins(displayPrice))
                 {
-                    if (shopItem.type == ShopItem.ItemType.Powerup)
-                    {
-                        description += "\n\n(Clique para aplicar imediatamente)";
-                    }
-                }
-                else
-                {
-                    description += "\n\n<color=red>Moedas insuficientes!</color>";
+                    description += " | <color=red>Moedas insuficientes!</color>";
                 }
             }
             
-            shopManager.ShowTooltip(shopItem.Name, description);
+            shopManager.ShowTooltip(shopItem.battleAction.actionName, description);
+        }
+        // ===== POWERUPS USAM DESCRIÇÃO FORMATADA =====
+        else if (shopItem.type == ShopItem.ItemType.Powerup && shopItem.powerup != null)
+        {
+            string description = shopItem.powerup.GetFormattedDescription();
+            
+            // Adiciona informações extras se for item à venda
+            if (isForSale)
+            {
+                description += "\n\n(Clique para aplicar imediatamente)";
+                
+                if (!GameManager.Instance.CurrencySystem.HasEnoughCoins(displayPrice))
+                {
+                    description += "\n<color=red>Moedas insuficientes!</color>";
+                }
+            }
+            
+            shopManager.ShowTooltip(shopItem.powerup.powerupName, description);
         }
     }
 

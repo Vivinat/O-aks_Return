@@ -42,7 +42,7 @@ public class RewardButtonUI : MonoBehaviour, IPointerEnterHandler, IPointerExitH
     {
         if (treasureManager != null && actionData != null)
         {
-            treasureManager.ShowTooltip(actionData.actionName, actionData.description);
+            treasureManager.ShowTooltip(actionData.actionName, actionData.GetDynamicDescription());
         }
     }
 

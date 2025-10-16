@@ -1,4 +1,4 @@
-// Assets/Scripts/Shop/ShopItem.cs
+// Assets/Scripts/Shop/ShopItem.cs (UPDATED - Com Descrições Dinâmicas)
 
 using UnityEngine;
 
@@ -33,7 +33,8 @@ public class ShopItem
         powerup = powerupData;
     }
     
-    // Propriedades úteis
+    // ===== PROPRIEDADES ÚTEIS =====
+    
     public string Name
     {
         get
@@ -46,12 +47,15 @@ public class ShopItem
         }
     }
     
+    /// <summary>
+    /// ATUALIZADO: Retorna descrição dinâmica para BattleActions
+    /// </summary>
     public string Description
     {
         get
         {
             if (type == ItemType.BattleAction && battleAction != null)
-                return battleAction.description;
+                return battleAction.GetDynamicDescription(); // USA DESCRIÇÃO DINÂMICA
             if (type == ItemType.Powerup && powerup != null)
                 return powerup.GetFormattedDescription();
             return "";
