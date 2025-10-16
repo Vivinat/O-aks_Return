@@ -13,8 +13,8 @@ MonoBehaviour:
   m_Name: Dedo_Carnudo
   m_EditorClassIdentifier: 
   powerupName: Dedo Carnudo
-  description: "Que del\xEDcia!\nRecupera 20 HP"
+  description: "Que del\xEDcia!\nRecupera 50 HP"
   icon: {fileID: 21300000, guid: f92e1930f407f08458549288aa7f552c, type: 3}
   powerupType: 4
   value: 20
-  shopPrice: 30
+  shopPrice: 10

@@ -13,8 +13,8 @@ MonoBehaviour:
   m_Name: Joia_Cobalto
   m_EditorClassIdentifier: 
   powerupName: Joia de Cobalto
-  description: "Aumenta MP M\xE1ximo em 10 HP"
+  description: "Aumenta MP M\xE1ximo em 20"
   icon: {fileID: 21300000, guid: c7df5d0de6ce0d1449eeb566d5fe059f, type: 3}
   powerupType: 1
-  value: 10
-  shopPrice: 50
+  value: 20
+  shopPrice: 30
