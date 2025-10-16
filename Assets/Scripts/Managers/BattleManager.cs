@@ -24,6 +24,11 @@ public class BattleManager : MonoBehaviour
     [SerializeField] private float postActionDelay = 1.0f;
     [SerializeField] private float enemyActionDisplayTime = 2.0f;
     
+    [Header("Boss Dialogues")]
+    public DialogueSO boss1Dialogue; // MAWRON
+    public DialogueSO boss2Dialogue; // VALDEMOR
+    public DialogueSO boss3Dialogue; // FENTHO
+    
     private int currentTurnNumber = 0;
 
     void Start()
@@ -45,6 +50,7 @@ public class BattleManager : MonoBehaviour
         allCharacters = playerTeam.Concat(enemyTeam).ToList();
         currentState = BattleState.RUNNING;
         currentTurnNumber = 0;
+        StartCoroutine(CheckForBossDialogue());
     }
     
     private void InitializeEnemyTeam()
@@ -384,12 +390,13 @@ public class BattleManager : MonoBehaviour
             currentState = BattleState.WON;
             Debug.Log("VICTORY!");
             
-            int baseReward = Random.Range(10, 31);
+            int baseReward = Random.Range(20, 51);
             // Multiplica pela quantidade de inimigos
             int totalEnemies = enemyTeam.Count;
             int rewardCoins = baseReward * totalEnemies;
             // Garante que não passe de 100 moedas
-            rewardCoins = Mathf.Min(rewardCoins, 100);
+            rewardCoins = Mathf.Min(rewardCoins, 150);
+            Debug.Log("Acrescentado " + rewardCoins + " ao jogador. Fórmula usada:" + baseReward + " + " + totalEnemies );
             
             StartCoroutine(HandleBattleVictory(rewardCoins));
         }
@@ -433,6 +440,7 @@ public class BattleManager : MonoBehaviour
         }
     
         string victoryMessage = $"Vitória! Recebido {rewardCoins} moedas!";
+        GameManager.Instance.AddBattleReward(rewardCoins);
         battleHUD.ShowEnemyAction(victoryMessage);
     
         yield return new WaitForSeconds(3f);
@@ -482,4 +490,65 @@ public class BattleManager : MonoBehaviour
             Debug.Log($"Stats do jogador salvos - HP: {player.GetCurrentHP()}/{player.GetMaxHP()}, MP: {player.GetCurrentMP()}/{player.GetMaxMP()}");
         }
     }
+    
+    /// <summary>
+    /// Verifica se algum inimigo é um boss e executa o diálogo inicial.
+    /// Pausa a batalha enquanto o diálogo é exibido.
+    /// </summary>
+    private IEnumerator CheckForBossDialogue()
+    {
+        yield return new WaitForSeconds(0.5f); // pequeno delay após iniciar
+
+        if (GameManager.enemiesToBattle == null || GameManager.enemiesToBattle.Count == 0)
+            yield break;
+
+        // Normaliza nomes para comparação
+        var enemies = GameManager.enemiesToBattle.Select(e => e.characterName.ToLower()).ToList();
+
+        string bossFound = null;
+        DialogueSO dialogueToPlay = null;
+
+        // === Verificações de nome de boss ===
+        if (enemies.Any(n => n.Contains("mawron")))
+        {
+            bossFound = "Mawron";
+            dialogueToPlay = boss1Dialogue;
+        }
+        else if (enemies.Any(n => n.Contains("valdemor")))
+        {
+            bossFound = "Valdemor";
+            dialogueToPlay = boss2Dialogue;
+        }
+        else if (enemies.Any(n => n.Contains("fentho")))
+        {
+            bossFound = "Fentho";
+            dialogueToPlay = boss3Dialogue;
+        }
+
+        // Se nenhum boss encontrado, apenas continua
+        if (bossFound == null)
+            yield break;
+
+        Debug.Log($"[BattleManager] Boss detectado: {bossFound}");
+
+        // === Pausa a batalha ===
+        currentState = BattleState.START;
+
+        // === Exibe o diálogo ===
+        bool finished = false;
+
+        if (dialogueToPlay != null && DialogueManager.Instance != null)
+        {
+            DialogueUtils.ShowDialogue(dialogueToPlay, () => finished = true);
+        }
+
+        // Espera o diálogo terminar
+        while (!finished)
+            yield return null;
+
+        // === Retoma a batalha ===
+        currentState = BattleState.RUNNING;
+        Debug.Log($"[BattleManager] Diálogo do boss '{bossFound}' concluído. Batalha retomada.");
+    }
+
 }

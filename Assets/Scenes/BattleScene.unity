@@ -3928,6 +3928,9 @@ MonoBehaviour:
   actionDelay: 0.5
   postActionDelay: 1
   enemyActionDisplayTime: 2
+  boss1Dialogue: {fileID: 11400000, guid: 9974be8e78cc24b489549df5dc8f47ea, type: 2}
+  boss2Dialogue: {fileID: 11400000, guid: a4186f0540563514da00db27ca1c8cba, type: 2}
+  boss3Dialogue: {fileID: 11400000, guid: 853df6d8a60719042993d2034558da9e, type: 2}
 --- !u!4 &854426994
 Transform:
   m_ObjectHideFlags: 0

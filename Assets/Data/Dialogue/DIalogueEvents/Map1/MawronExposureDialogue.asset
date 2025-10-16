@@ -17,8 +17,7 @@ MonoBehaviour:
   - speakerName: 
     text: "Logrif paira diante de um patrulheiro ferido. O \xFAnico sobrevivente.
       Mas este patrulheiro n\xE3o foi abatido pelo arquidem\xF4nio. Seus ferimentos
-      s\xE3o mais potentes. Viscerais. Mortais. Impec\xE1veis. Logrif, barbeiro como
-      \xE9, jamais... "
+      s\xE3o mais potentes. Logrif, barbeiro como \xE9, jamais... "
     customDelay: 0
     customSound: {fileID: 0}
   - speakerName: Logrif

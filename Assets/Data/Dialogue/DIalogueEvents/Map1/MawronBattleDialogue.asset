@@ -1,0 +1,32 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d20f0df1dbbcccb48abf69dbcc5cc4f7, type: 3}
+  m_Name: MawronBattleDialogue
+  m_EditorClassIdentifier: 
+  dialogueTitle: Mawron_Battle
+  dialogueEntries:
+  - speakerName: Logrif
+    text: "VOC\xCA! Anabar! Trocou de nome depois de me trair, miser\xE1vel? "
+    customDelay: 0
+    customSound: {fileID: 0}
+  - speakerName: Mawron
+    text: "Logrif. H\xE1 quanto tempo. J\xE1 tive outros nomes ap\xF3s o norme servil
+      que me deste. N\xE3o mais. Agora tenho trono, manto e espada. E tu continua
+      sem nada, como sempre."
+    customDelay: 0
+    customSound: {fileID: 0}
+  - speakerName: Logrif
+    text: "Quanto atrevimento! Traidor maldito, pagar\xE1 pelo que fez!"
+    customDelay: 0
+    customSound: {fileID: 0}
+  backgroundMusic: {fileID: 0}
+  stopCurrentMusicWhenPlaying: 0

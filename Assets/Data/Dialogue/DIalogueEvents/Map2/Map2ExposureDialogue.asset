@@ -1,0 +1,32 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d20f0df1dbbcccb48abf69dbcc5cc4f7, type: 3}
+  m_Name: Map2ExposureDialogue
+  m_EditorClassIdentifier: 
+  dialogueTitle: Intro
+  dialogueEntries:
+  - speakerName: Logrif
+    text: "H\xE1 magia no ar. Ent\xE3o, o Sem-Nariz conseguiu o poder que tanto queria."
+    customDelay: 0
+    customSound: {fileID: 0}
+  - speakerName: Logrif
+    text: "Seus comensais est\xE3o pela mata e pelas cidades. O odor f\xE9tido dos
+      paladinos e sacerdotes tamb\xE9m est\xE1 por aqui. H\xE1 mortos caminhando
+      entre os vivos."
+    customDelay: 0
+    customSound: {fileID: 0}
+  - speakerName: Logrif
+    text: "Para o norte. Acabarei com ele e avan\xE7arei para a capital!"
+    customDelay: 0
+    customSound: {fileID: 0}
+  backgroundMusic: {fileID: 0}
+  stopCurrentMusicWhenPlaying: 0

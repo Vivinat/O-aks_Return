@@ -16,5 +16,5 @@ MonoBehaviour:
   sceneToLoad: 
   dialogueText: 
   speakerName: 
-  dialogueData: {fileID: 11400000, guid: 615b3240f91fcde4982c6760e0e5ea37, type: 2}
+  dialogueData: {fileID: 11400000, guid: 4f47f09fb9b86e04bb1e4809a564f21d, type: 2}
   dialogueSound: {fileID: 8300000, guid: 8358a45367c06df4da4c019c4909d732, type: 3}

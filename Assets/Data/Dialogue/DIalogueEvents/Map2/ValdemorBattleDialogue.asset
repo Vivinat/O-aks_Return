@@ -1,0 +1,37 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d20f0df1dbbcccb48abf69dbcc5cc4f7, type: 3}
+  m_Name: ValdemorBattleDialogue
+  m_EditorClassIdentifier: 
+  dialogueTitle: Valdemor_Battle
+  dialogueEntries:
+  - speakerName: Logrif
+    text: "Inacredit\xE1vel! Tanto poder, e mesmo assim, n\xE3o conseguiu consertar
+      seu nariz?!"
+    customDelay: 0
+    customSound: {fileID: 0}
+  - speakerName: Valdemor
+    text: "Logrif! Eu imaginei que a barulheira dos meus concorrentes te libertaria.
+      Mas n\xE3o se preocupe. J\xE1 fiz boas prepara\xE7\xF5es para nosso duelo."
+    customDelay: 0
+    customSound: {fileID: 0}
+  - speakerName: Logrif
+    text: "\"Seus\" concorrentes? Seus concorrentes s\xE3o meus concorrentes tamb\xE9m!"
+    customDelay: 0
+    customSound: {fileID: 0}
+  - speakerName: Valdemor
+    text: "Ah, milorde. Os tempos mudaram! Voc\xEA se tornou apenas um aspirante!
+      Um pequeno cascalho para ser pulverizado pela magia magia!"
+    customDelay: 0
+    customSound: {fileID: 0}
+  backgroundMusic: {fileID: 0}
+  stopCurrentMusicWhenPlaying: 0
