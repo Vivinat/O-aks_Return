@@ -233,7 +233,6 @@ public static class ObservationInterpreter
     
     /// <summary>
     /// Dependência de skill única - 4 vantagens + 4 desvantagens
-    /// CORRIGIDO: Modifica APENAS a skill específica dominante
     /// </summary>
     private static void GenerateSingleSkillCarryOffers(BehaviorObservation obs,
         List<NegotiationOffer> advantages, List<NegotiationOffer> disadvantages)
@@ -242,12 +241,11 @@ public static class ObservationInterpreter
         
         // === VANTAGENS (4 opções) - Todas modificam a SKILL ESPECÍFICA ===
         
-        // 1. Aumenta PODER da skill específica
         advantages.Add(CreateSpecificSkillPowerOffer(
             "Mestre de Uma Arte",
             $"'{skillName}' se torna devastadora.",
             skillName,
-            12, // +12 de poder na skill
+            10, 
             true,
             obs.triggerType
         ));
@@ -257,7 +255,7 @@ public static class ObservationInterpreter
             "Eficiência Aperfeiçoada",
             $"'{skillName}' consome menos energia.",
             skillName,
-            -4, // -4 de custo de mana
+            -5,
             true,
             obs.triggerType
         ));
@@ -267,62 +265,55 @@ public static class ObservationInterpreter
             "Domínio Absoluto",
             $"'{skillName}' atinge a perfeição.",
             skillName,
-            10,  // +10 de poder
-            -3,  // -3 de custo de mana
+            10, 
+            -5,  
             true,
             obs.triggerType
         ));
         
-        // 4. Apenas aumenta MUITO o poder da skill
         advantages.Add(CreateSpecificSkillPowerOffer(
             "Especialização Letal",
             $"Concentre todo seu poder em '{skillName}'.",
             skillName,
-            15, // +15 de poder (muito alto)
+            10, 
             true,
             obs.triggerType
         ));
-        
-        // === DESVANTAGENS (4 opções) - Metade na skill, metade gerais ===
-        
-        // 1. Aumenta CUSTO DE MANA da skill específica
+
         disadvantages.Add(CreateSpecificSkillManaCostOffer(
             "Dependência Custosa",
             $"'{skillName}' drena muito mais energia.",
             skillName,
-            5, // +5 de custo de mana
+            10,
             false,
             obs.triggerType
         ));
         
-        // 2. Reduz PODER da skill específica
         disadvantages.Add(CreateSpecificSkillPowerOffer(
             "Uso Excessivo",
             $"'{skillName}' perde eficácia pelo uso repetido.",
             skillName,
-            -8, // -8 de poder
+            -10, 
             false,
             obs.triggerType
         ));
         
-        // 3. Desvantagem geral - Inimigos ganham defesa
         disadvantages.Add(NegotiationOffer.CreateDisadvantage(
             "Adaptação Hostil",
             "Inimigos aprendem seus padrões.",
             CardAttribute.EnemyDefense,
             10,
-            false, // Afeta inimigos
+            false, 
             obs.triggerType,
             $"Skill dominante: {skillName}"
         ));
         
-        // 4. Desvantagem geral - Jogador perde MP máximo
         disadvantages.Add(NegotiationOffer.CreateDisadvantage(
             "Esgotamento Mental",
             "Uso excessivo drena suas reservas.",
             CardAttribute.PlayerMaxMP,
             -10,
-            true, // Afeta jogador
+            true, 
             obs.triggerType,
             $"Skill dominante: {skillName}"
         ));
@@ -370,42 +361,38 @@ public static class ObservationInterpreter
         ));
         
         // DESVANTAGENS
-        disadvantages.Add(new NegotiationOffer(
+        disadvantages.Add(NegotiationOffer.CreateDisadvantage(
             "Fragilidade Persistente",
             "Seus problemas defensivos deixam marcas.",
-            false,
             CardAttribute.PlayerDefense, -8,
-            CardAttribute.EnemyDefense, -6,
+            true,
             obs.triggerType,
             "HP crítico frequente"
         ));
         
-        disadvantages.Add(new NegotiationOffer(
+        disadvantages.Add(NegotiationOffer.CreateDisadvantage(
             "Vitalidade Comprometida",
             "Seu HP máximo é reduzido.",
-            false,
             CardAttribute.PlayerMaxHP, -20,
-            CardAttribute.EnemyMaxHP, -25,
+            true,
             obs.triggerType,
             "HP crítico frequente"
         ));
         
-        disadvantages.Add(new NegotiationOffer(
+        disadvantages.Add(NegotiationOffer.CreateDisadvantage(
             "Vulnerabilidade Crescente",
             "Você se torna mais fácil de ferir.",
-            false,
-            CardAttribute.PlayerDefense, -10,
             CardAttribute.EnemyActionPower, 8,
+            true,
             obs.triggerType,
             "HP crítico frequente"
         ));
         
-        disadvantages.Add(new NegotiationOffer(
+        disadvantages.Add(NegotiationOffer.CreateDisadvantage(
             "Cura Reduzida",
             "Suas habilidades de recuperação enfraquecem.",
-            false,
             CardAttribute.PlayerDefensiveActionPower, -12,
-            CardAttribute.EnemyDefense, -8,
+            true,
             obs.triggerType,
             "HP crítico frequente"
         ));
@@ -419,78 +406,79 @@ public static class ObservationInterpreter
     {
         string skillName = obs.GetData<string>("skillName", "Habilidade");
         
-        // VANTAGENS
-        advantages.Add(NegotiationOffer.CreateAdvantage(
-            "Eficiência Mágica",
-            "Aprenda a usar habilidades com menos mana.",
-            CardAttribute.PlayerActionManaCost, -8,
-            obs.triggerType,
-            $"Skill ignorada: {skillName}"
+          advantages.Add(CreateSpecificSkillPowerOffer(
+            "Chama Ardente",
+            $"'{skillName}' se torna mais poderosa.",
+            skillName,
+            12, 
+            true,
+            obs.triggerType
         ));
         
-        advantages.Add(NegotiationOffer.CreateAdvantage(
-            "Versatilidade Forçada",
-            "Melhore todas suas habilidades ofensivas.",
-            CardAttribute.PlayerActionPower, 8,
-            obs.triggerType,
-            $"Skill ignorada: {skillName}"
+        advantages.Add(CreateSpecificSkillManaCostOffer(
+            "Fênix de Mana",
+            $"'{skillName}' consome menos mana.",
+            skillName,
+            -12,
+            true,
+            obs.triggerType
         ));
         
-        advantages.Add(NegotiationOffer.CreateAdvantage(
-            "Reservas Expandidas",
-            "Compense com mais MP.",
-            CardAttribute.PlayerMaxMP, 15,
-            obs.triggerType,
-            $"Skill ignorada: {skillName}"
+        // 3. Aumenta PODER e reduz MANA da skill específica
+        advantages.Add(CreateSpecificSkillFullOffer(
+            "Ressurgência",
+            $"'{skillName}' se equipara as demais.",
+            skillName,
+            12, 
+            -12,  
+            true,
+            obs.triggerType
         ));
         
-        advantages.Add(new NegotiationOffer(
-            "Especialização Alternativa",
-            "Foque no que você realmente usa.",
-            CardAttribute.PlayerOffensiveActionPower, 16,
-            obs.triggerType,
-            $"Skill ignorada: {skillName}"
+        advantages.Add(CreateSpecificSkillPowerOffer(
+            "Competição",
+            $"Concentre todo seu poder em '{skillName}'.",
+            skillName,
+            15, 
+            true,
+            obs.triggerType
         ));
         
         // DESVANTAGENS
-        disadvantages.Add(new NegotiationOffer(
-            "Arsenal Limitado",
-            "Falta de versatilidade enfraquece você.",
-            false,
-            CardAttribute.PlayerActionPower, -10,
-            CardAttribute.EnemyMaxHP, -12,
+        disadvantages.Add(NegotiationOffer.CreateDisadvantage(
+            "Fragilidade Persistente",
+            "Seus problemas defensivos deixam marcas.",
+            CardAttribute.PlayerDefense, -8,
+            true,
             obs.triggerType,
-            $"Skill ignorada: {skillName}"
+            "HP crítico frequente"
         ));
         
-        disadvantages.Add(new NegotiationOffer(
-            "Desperdício Mágico",
-            "Suas habilidades custam mais mana.",
-            false,
-            CardAttribute.PlayerActionManaCost, 4,
-            CardAttribute.EnemyActionManaCost, 3,
+        disadvantages.Add(NegotiationOffer.CreateDisadvantage(
+            "Vitalidade Comprometida",
+            "Seu HP máximo é reduzido.",
+            CardAttribute.PlayerMaxHP, -20,
+            true,
             obs.triggerType,
-            $"Skill ignorada: {skillName}"
+            "HP crítico frequente"
         ));
         
-        disadvantages.Add(new NegotiationOffer(
-            "Poder Reduzido",
-            "Falta de treino enfraquece todas ações.",
-            false,
-            CardAttribute.PlayerActionPower, -8,
-            CardAttribute.EnemyActionPower, -6,
+        disadvantages.Add(NegotiationOffer.CreateDisadvantage(
+            "Vulnerabilidade Crescente",
+            "Você se torna mais fácil de ferir.",
+            CardAttribute.EnemyActionPower, 8,
+            true,
             obs.triggerType,
-            $"Skill ignorada: {skillName}"
+            "HP crítico frequente"
         ));
         
-        disadvantages.Add(new NegotiationOffer(
-            "Atrofia de Habilidade",
-            "Seus ataques especializados perdem força.",
-            false,
-            CardAttribute.PlayerOffensiveActionPower, -12,
-            CardAttribute.EnemyDefense, -8,
+        disadvantages.Add(NegotiationOffer.CreateDisadvantage(
+            "Cura Reduzida",
+            "Suas habilidades de recuperação enfraquecem.",
+            CardAttribute.PlayerDefensiveActionPower, -12,
+            true,
             obs.triggerType,
-            $"Skill ignorada: {skillName}"
+            "HP crítico frequente"
         ));
     }
     
@@ -501,83 +489,71 @@ public static class ObservationInterpreter
         List<NegotiationOffer> advantages, List<NegotiationOffer> disadvantages)
     {
         // VANTAGENS - Compensação pela lentidão
-        advantages.Add(new NegotiationOffer(
+        advantages.Add(NegotiationOffer.CreateAdvantage(
             "Primeiro Golpe Poderoso",
-            "Compense agir depois com ataques devastadores.",
-            true,
-            CardAttribute.PlayerOffensiveActionPower, 18,
-            CardAttribute.EnemyMaxHP, 15,
+            "Você se torna mais rápido.",
+            CardAttribute.PlayerSpeed, 2,
             obs.triggerType,
             "Sempre age por último"
         ));
         
-        advantages.Add(new NegotiationOffer(
+        advantages.Add(NegotiationOffer.CreateAdvantage(
             "Resistência Superior",
             "Se não pode ser rápido, seja resistente.",
-            true,
-            CardAttribute.PlayerMaxHP, 28,
-            CardAttribute.EnemyActionPower, 12,
+            CardAttribute.PlayerMaxHP, 15,
             obs.triggerType,
             "Sempre age por último"
         ));
         
-        advantages.Add(new NegotiationOffer(
+        advantages.Add(NegotiationOffer.CreateAdvantage(
             "Defesa Impenetrável",
             "Fortifique-se enquanto espera sua vez.",
-            true,
-            CardAttribute.PlayerDefense, 15,
-            CardAttribute.EnemyOffensiveActionPower, 10,
+            CardAttribute.PlayerDefense, 6,
             obs.triggerType,
             "Sempre age por último"
         ));
         
-        advantages.Add(new NegotiationOffer(
+        advantages.Add(NegotiationOffer.CreateAdvantage(
             "Contra-ataque Letal",
             "Transforme a desvantagem em oportunidade.",
-            true,
-            CardAttribute.PlayerSingleTargetActionPower, 22,
-            CardAttribute.EnemyDefense, 12,
+            CardAttribute.PlayerSingleTargetActionPower, 8,
             obs.triggerType,
             "Sempre age por último"
         ));
         
         // DESVANTAGENS
-        disadvantages.Add(new NegotiationOffer(
+        disadvantages.Add(NegotiationOffer.CreateDisadvantage(
             "Corrida Perdida",
-            "Seus adversários ficam ainda mais letais.",
+            "Seus adversários ficam ainda mais rápidos!",
+            CardAttribute.EnemySpeed, 2,
             false,
-            CardAttribute.PlayerMaxMP, -10,
-            CardAttribute.EnemyActionPower, 15,
             obs.triggerType,
             "Sempre age por último"
         ));
         
-        disadvantages.Add(new NegotiationOffer(
+        disadvantages.Add(NegotiationOffer.CreateDisadvantage(
             "Vulnerabilidade Exposta",
             "Agir por último te deixa vulnerável.",
-            false,
             CardAttribute.PlayerDefense, -8,
-            CardAttribute.EnemyOffensiveActionPower, 10,
+            true,
             obs.triggerType,
             "Sempre age por último"
         ));
         
-        disadvantages.Add(new NegotiationOffer(
+        disadvantages.Add(NegotiationOffer.CreateDisadvantage(
             "Lentidão Crítica",
             "Sua baixa velocidade afeta tudo.",
-            false,
             CardAttribute.PlayerActionPower, -10,
-            CardAttribute.EnemySpeed, 2,
+            true,
             obs.triggerType,
             "Sempre age por último"
         ));
         
-        disadvantages.Add(new NegotiationOffer(
+        disadvantages.Add(NegotiationOffer.CreateDisadvantage(
             "Desvantagem Tática",
             "Perder a iniciativa tem consequências.",
-            false,
-            CardAttribute.PlayerMaxHP, -15,
             CardAttribute.EnemyMaxHP, 12,
+            true,
             obs.triggerType,
             "Sempre age por último"
         ));
@@ -590,83 +566,73 @@ public static class ObservationInterpreter
         List<NegotiationOffer> advantages, List<NegotiationOffer> disadvantages)
     {
         // VANTAGENS - Aproveitar velocidade
-        advantages.Add(new NegotiationOffer(
+        advantages.Add(NegotiationOffer.CreateAdvantage(
             "Domínio Tático",
             "Mais recursos para sua vantagem inicial.",
-            true,
-            CardAttribute.PlayerMaxMP, 20,
-            CardAttribute.EnemyActionPower, 12,
+            CardAttribute.PlayerMaxMP, 10,
             obs.triggerType,
             "Sempre age primeiro"
         ));
         
-        advantages.Add(new NegotiationOffer(
+        advantages.Add(NegotiationOffer.CreateAdvantage(
             "Iniciativa Letal",
             "Transforme velocidade em poder destrutivo.",
-            true,
-            CardAttribute.PlayerOffensiveActionPower, 18,
-            CardAttribute.EnemyMaxHP, 16,
+            CardAttribute.PlayerOffensiveActionPower, 8,
             obs.triggerType,
             "Sempre age primeiro"
         ));
         
-        advantages.Add(new NegotiationOffer(
-            "Abertura Perfeita",
-            "Maximize o dano no primeiro turno.",
-            true,
-            CardAttribute.PlayerSingleTargetActionPower, 24,
-            CardAttribute.EnemyDefense, 15,
+        advantages.Add(NegotiationOffer.CreateAdvantage(
+            "Aguçado",
+            "Sua agilidade permite achar mais moedas!",
+            CardAttribute.CoinsEarned, 15,
             obs.triggerType,
             "Sempre age primeiro"
         ));
         
-        advantages.Add(new NegotiationOffer(
-            "Velocidade Esmagadora",
-            "Aproveite sua vantagem de velocidade.",
-            true,
-            CardAttribute.PlayerActionPower, 16,
-            CardAttribute.EnemySpeed, 2,
+        advantages.Add(NegotiationOffer.CreateDisadvantage(
+            "Distorção",
+            "Todos os inimigos parecem mais lentos.",
+            CardAttribute.EnemySpeed,   
+            -2,                              
+            false,                            
             obs.triggerType,
             "Sempre age primeiro"
         ));
         
         // DESVANTAGENS - Compensação por ser muito forte
-        disadvantages.Add(new NegotiationOffer(
+        disadvantages.Add(NegotiationOffer.CreateDisadvantage(
             "Força Bruta Inimiga",
             "Inimigos compensam com puro poder.",
+            CardAttribute.EnemyActionPower, 8,
             false,
-            CardAttribute.PlayerDefense, -6,
-            CardAttribute.EnemyActionPower, 18,
             obs.triggerType,
             "Sempre age primeiro"
         ));
         
-        disadvantages.Add(new NegotiationOffer(
-            "Fragilidade Veloz",
-            "Velocidade às custas de resistência.",
+        disadvantages.Add(NegotiationOffer.CreateDisadvantage(
+            "Supervelocidade",
+            "Inimigos se ajustam à sua velocidade.",
+            CardAttribute.EnemySpeed, 4,
             false,
-            CardAttribute.PlayerMaxHP, -20,
-            CardAttribute.EnemyMaxHP, 12,
             obs.triggerType,
             "Sempre age primeiro"
         ));
         
-        disadvantages.Add(new NegotiationOffer(
+        disadvantages.Add(NegotiationOffer.CreateDisadvantage(
             "Exaustão Rápida",
             "Agir primeiro drena sua energia.",
-            false,
             CardAttribute.PlayerMaxMP, -15,
-            CardAttribute.EnemyMaxMP, -8,
+            true,
             obs.triggerType,
             "Sempre age primeiro"
         ));
         
-        disadvantages.Add(new NegotiationOffer(
+        disadvantages.Add(NegotiationOffer.CreateDisadvantage(
             "Contra-medidas Aprendidas",
             "Inimigos se preparam para sua velocidade.",
-            false,
-            CardAttribute.PlayerActionPower, -8,
             CardAttribute.EnemyDefense, 12,
+            false,
             obs.triggerType,
             "Sempre age primeiro"
         ));
@@ -679,83 +645,75 @@ public static class ObservationInterpreter
         List<NegotiationOffer> advantages, List<NegotiationOffer> disadvantages)
     {
         // VANTAGENS - Anti-tank
-        advantages.Add(new NegotiationOffer(
+        advantages.Add(NegotiationOffer.CreateAdvantage(
             "Quebra-Couraças",
             "Perfure as defesas mais robustas.",
-            true,
-            CardAttribute.PlayerOffensiveActionPower, 22,
-            CardAttribute.EnemyDefense, 15,
+            CardAttribute.PlayerOffensiveActionPower, 8,
             obs.triggerType,
             "Dificuldade vs Tanks"
         ));
         
-        advantages.Add(new NegotiationOffer(
+        advantages.Add(NegotiationOffer.CreateAdvantage(
             "Perfuração Letal",
             "Seus ataques ignoram parte da defesa inimiga.",
-            true,
-            CardAttribute.PlayerSingleTargetActionPower, 25,
-            CardAttribute.EnemyMaxHP, 18,
+            CardAttribute.PlayerSingleTargetActionPower, 8,
             obs.triggerType,
             "Dificuldade vs Tanks"
         ));
         
-        advantages.Add(new NegotiationOffer(
-            "Atrito Eficiente",
-            "Cause dano constante em alvos resistentes.",
-            true,
-            CardAttribute.PlayerActionPower, 18,
-            CardAttribute.EnemyDefense, 12,
+        advantages.Add(NegotiationOffer.CreateAdvantage(
+            "Atrito Defensivo",
+            "Aumente suas defesas.",
+            CardAttribute.PlayerDefense, 8,
             obs.triggerType,
             "Dificuldade vs Tanks"
         ));
         
-        advantages.Add(new NegotiationOffer(
+        advantages.Add(NegotiationOffer.CreateAdvantage(
             "Fúria Persistente",
             "Batalhas longas favorecem você.",
-            true,
-            CardAttribute.PlayerMaxMP, 25,
-            CardAttribute.EnemyDefense, 10,
+            CardAttribute.PlayerMaxHP, 15,
             obs.triggerType,
             "Dificuldade vs Tanks"
         ));
         
-        // DESVANTAGENS
-        disadvantages.Add(new NegotiationOffer(
+        // DESVANTAGENS - CORRIGIDAS (apenas uma mudança cada, valores 4-12)
+        disadvantages.Add(NegotiationOffer.CreateDisadvantage(
             "Fortaleza Impenetrável",
             "Inimigos endurecem suas defesas.",
-            false,
-            CardAttribute.PlayerActionPower, -8,
-            CardAttribute.EnemyMaxHP, 28,
+            CardAttribute.EnemyMaxHP,
+            12,
+            false, // Afeta inimigos
             obs.triggerType,
             "Dificuldade vs Tanks"
         ));
-        
-        disadvantages.Add(new NegotiationOffer(
+    
+        disadvantages.Add(NegotiationOffer.CreateDisadvantage(
             "Muralha Crescente",
             "Defesas inimigas aumentam drasticamente.",
-            false,
-            CardAttribute.PlayerOffensiveActionPower, -10,
-            CardAttribute.EnemyDefense, 20,
+            CardAttribute.EnemyDefense,
+            10,
+            false, // Afeta inimigos
             obs.triggerType,
             "Dificuldade vs Tanks"
         ));
-        
-        disadvantages.Add(new NegotiationOffer(
+    
+        disadvantages.Add(NegotiationOffer.CreateDisadvantage(
             "Frustração Desgastante",
             "Sua incapacidade de penetrar defesas te esgota.",
-            false,
-            CardAttribute.PlayerMaxMP, -15,
-            CardAttribute.EnemyMaxHP, 15,
+            CardAttribute.PlayerMaxMP,
+            -8,
+            true, // Afeta jogador
             obs.triggerType,
             "Dificuldade vs Tanks"
         ));
-        
-        disadvantages.Add(new NegotiationOffer(
+    
+        disadvantages.Add(NegotiationOffer.CreateDisadvantage(
             "Impotência Ofensiva",
             "Seus ataques enfraquecem contra alvos resistentes.",
-            false,
-            CardAttribute.PlayerSingleTargetActionPower, -15,
-            CardAttribute.EnemyDefense, 8,
+            CardAttribute.PlayerSingleTargetActionPower,
+            -8,
+            true, // Afeta jogador
             obs.triggerType,
             "Dificuldade vs Tanks"
         ));
@@ -767,84 +725,81 @@ public static class ObservationInterpreter
     private static void GenerateStrugglesAgainstFastOffers(BehaviorObservation obs,
         List<NegotiationOffer> advantages, List<NegotiationOffer> disadvantages)
     {
-        // VANTAGENS - Anti-speed
-        advantages.Add(new NegotiationOffer(
+        // VANTAGENS - Anti-speed (apenas uma mudança cada, valores 4-12)
+        advantages.Add(NegotiationOffer.CreateAdvantage(
             "Antecipação",
             "Aprenda a se defender de adversários velozes.",
-            true,
-            CardAttribute.PlayerDefense, 12,
-            CardAttribute.EnemyMaxHP, 15,
+            CardAttribute.PlayerDefense, 
+            8,
             obs.triggerType,
             "Dificuldade vs Rápidos"
         ));
         
-        advantages.Add(new NegotiationOffer(
+        advantages.Add(NegotiationOffer.CreateAdvantage(
             "Contra-ataque Preciso",
             "Ataques mais fortes compensam falta de velocidade.",
-            true,
-            CardAttribute.PlayerOffensiveActionPower, 20,
-            CardAttribute.EnemySpeed, -2,
+            CardAttribute.PlayerOffensiveActionPower, 
+            8,
             obs.triggerType,
             "Dificuldade vs Rápidos"
         ));
         
-        advantages.Add(new NegotiationOffer(
+        advantages.Add(NegotiationOffer.CreateAdvantage(
             "Muralha Impenetrável",
             "Se não pode alcançá-los, seja impossível de ferir.",
-            true,
-            CardAttribute.PlayerMaxHP, 28,
-            CardAttribute.EnemyActionPower, 12,
+            CardAttribute.PlayerMaxHP, 
+            15,
             obs.triggerType,
             "Dificuldade vs Rápidos"
         ));
         
-        advantages.Add(new NegotiationOffer(
-            "Reflexos Aprimorados",
-            "Melhore sua capacidade defensiva.",
-            true,
-            CardAttribute.PlayerDefense, 15,
-            CardAttribute.EnemyOffensiveActionPower, 10,
+        advantages.Add(NegotiationOffer.CreateDisadvantage(
+            "Nivelar o Jogo",
+            "Reduza a velocidade dos inimigos",
+            CardAttribute.EnemySpeed, 
+            -2,
+            false,
             obs.triggerType,
             "Dificuldade vs Rápidos"
         ));
         
-        // DESVANTAGENS
-        disadvantages.Add(new NegotiationOffer(
+        // DESVANTAGENS (apenas uma mudança cada, valores 4-12)
+        disadvantages.Add(NegotiationOffer.CreateDisadvantage(
             "Velocidade Cegante",
             "Inimigos ficam impossíveis de acompanhar.",
-            false,
-            CardAttribute.PlayerDefense, -8,
-            CardAttribute.EnemyActionPower, 15,
+            CardAttribute.EnemyActionPower,
+            10,
+            false, // Afeta inimigos
             obs.triggerType,
             "Dificuldade vs Rápidos"
         ));
         
-        disadvantages.Add(new NegotiationOffer(
+        disadvantages.Add(NegotiationOffer.CreateDisadvantage(
             "Ataques Implacáveis",
             "Inimigos rápidos te acertam com mais frequência.",
-            false,
-            CardAttribute.PlayerMaxHP, -20,
-            CardAttribute.EnemyOffensiveActionPower, 12,
+            CardAttribute.EnemyOffensiveActionPower,
+            12,
+            false, // Afeta inimigos
             obs.triggerType,
             "Dificuldade vs Rápidos"
         ));
         
-        disadvantages.Add(new NegotiationOffer(
+        disadvantages.Add(NegotiationOffer.CreateDisadvantage(
             "Lentidão Crítica",
             "Sua baixa velocidade te prejudica ainda mais.",
-            false,
-            CardAttribute.PlayerActionPower, -10,
-            CardAttribute.EnemySpeed, 3,
+            CardAttribute.PlayerActionPower,
+            -8,
+            true, // Afeta jogador
             obs.triggerType,
             "Dificuldade vs Rápidos"
         ));
         
-        disadvantages.Add(new NegotiationOffer(
-            "Sobrecarga Defensiva",
-            "Tentar se defender esgota você.",
-            false,
-            CardAttribute.PlayerMaxMP, -15,
-            CardAttribute.EnemyActionPower, 10,
+        disadvantages.Add(NegotiationOffer.CreateDisadvantage(
+            "Fragilidade Exposta",
+            "Sua defesa enfraquece contra adversários velozes.",
+            CardAttribute.PlayerDefense,
+            -8,
+            true, // Afeta jogador
             obs.triggerType,
             "Dificuldade vs Rápidos"
         ));
@@ -858,84 +813,80 @@ public static class ObservationInterpreter
     {
         int enemyCount = obs.GetData<int>("enemyCount", 3);
         
-        // VANTAGENS - Anti-swarm
-        advantages.Add(new NegotiationOffer(
+        advantages.Add(NegotiationOffer.CreateAdvantage(
             "Destruição em Massa",
             "Habilidades de área ganham poder devastador.",
-            true,
-            CardAttribute.PlayerAOEActionPower, 25,
-            CardAttribute.EnemyActionPower, 10,
+            CardAttribute.PlayerAOEActionPower, 
+            12,
             obs.triggerType,
             $"Dificuldade vs {enemyCount} inimigos"
         ));
         
-        advantages.Add(new NegotiationOffer(
+        advantages.Add(NegotiationOffer.CreateAdvantage(
             "Tempestade de Lâminas",
             "Todos seus ataques ficam mais fortes contra grupos.",
-            true,
-            CardAttribute.PlayerActionPower, 18,
-            CardAttribute.EnemyMaxHP, 12,
+            CardAttribute.PlayerActionPower, 
+            8,
             obs.triggerType,
             $"Dificuldade vs {enemyCount} inimigos"
         ));
         
-        advantages.Add(new NegotiationOffer(
+        advantages.Add(NegotiationOffer.CreateAdvantage(
             "Resistência de Multidão",
             "Fortaleça-se para enfrentar números superiores.",
-            true,
-            CardAttribute.PlayerMaxHP, 32,
-            CardAttribute.EnemyActionPower, 12,
+            CardAttribute.PlayerMaxHP, 
+            15,
             obs.triggerType,
             $"Dificuldade vs {enemyCount} inimigos"
         ));
         
-        advantages.Add(new NegotiationOffer(
-            "Defesa Circular",
-            "Proteja-se de ataques de múltiplas direções.",
-            true,
-            CardAttribute.PlayerDefense, 16,
-            CardAttribute.EnemyOffensiveActionPower, 10,
+        advantages.Add(NegotiationOffer.CreateDisadvantage(
+            "Enfraquecer a Horda",
+            "Reduza a vida de cada inimigo no grupo.",
+            CardAttribute.EnemyMaxHP,
+            -10,
+            false, // Debuff nos inimigos = vantagem para o jogador
             obs.triggerType,
             $"Dificuldade vs {enemyCount} inimigos"
         ));
         
-        // DESVANTAGENS
-        disadvantages.Add(new NegotiationOffer(
+        // DESVANTAGENS (apenas uma mudança cada, valores 4-12)
+        disadvantages.Add(NegotiationOffer.CreateDisadvantage(
             "Horda Implacável",
             "Mais inimigos surgem, mais fortes.",
-            false,
-            CardAttribute.PlayerMaxHP, -15,
-            CardAttribute.EnemyMaxHP, 25,
+            CardAttribute.EnemyMaxHP,
+            15,
+            false, // Afeta inimigos
             obs.triggerType,
             $"Dificuldade vs {enemyCount} inimigos"
         ));
         
-        disadvantages.Add(new NegotiationOffer(
+        disadvantages.Add(NegotiationOffer.CreateDisadvantage(
             "Sobrecarga Numérica",
             "Números esmagadores te enfraquecem.",
-            false,
-            CardAttribute.PlayerActionPower, -12,
-            CardAttribute.EnemyActionPower, 10,
+            CardAttribute.PlayerActionPower,
+            -8,
+            true, // Afeta jogador
             obs.triggerType,
             $"Dificuldade vs {enemyCount} inimigos"
         ));
         
-        disadvantages.Add(new NegotiationOffer(
+        disadvantages.Add(NegotiationOffer.CreateDisadvantage(
             "Fadiga de Combate",
             "Lutar contra múltiplos te esgota.",
-            false,
-            CardAttribute.PlayerMaxMP, -15,
-            CardAttribute.EnemyMaxMP, -8,
+            CardAttribute.PlayerMaxMP,
+            -10,
+            true, // Afeta jogador
             obs.triggerType,
             $"Dificuldade vs {enemyCount} inimigos"
         ));
         
-        disadvantages.Add(new NegotiationOffer(
+        disadvantages.Add(NegotiationOffer.CreateDisadvantage(
             "Área Insuficiente",
             "Suas habilidades de área enfraquecem.",
-            false,
-            CardAttribute.PlayerAOEActionPower, -16,
-            CardAttribute.EnemyMaxHP, -12,
+            CardAttribute.PlayerAOEActionPower,
+            -8,
+            true, // Afeta jogador
             obs.triggerType,
             $"Dificuldade vs {enemyCount} inimigos"
         ));
@@ -947,84 +898,81 @@ public static class ObservationInterpreter
     private static void GenerateAlwaysDiesEarlyOffers(BehaviorObservation obs,
         List<NegotiationOffer> advantages, List<NegotiationOffer> disadvantages)
     {
-        // VANTAGENS - Sobrevivência inicial
-        advantages.Add(new NegotiationOffer(
+        // VANTAGENS - Sobrevivência inicial (apenas uma mudança cada, valores 4-12)
+        advantages.Add(NegotiationOffer.CreateAdvantage(
             "Início Fortificado",
             "Comece com defesas massivas.",
-            true,
-            CardAttribute.PlayerMaxHP, 35,
-            CardAttribute.EnemyActionPower, 15,
+            CardAttribute.PlayerMaxHP, 
+            10,
             obs.triggerType,
             "Morte precoce frequente"
         ));
         
-        advantages.Add(new NegotiationOffer(
+        advantages.Add(NegotiationOffer.CreateAdvantage(
             "Escudo Inicial",
             "Resistência aprimorada desde o começo.",
-            true,
-            CardAttribute.PlayerDefense, 18,
-            CardAttribute.EnemyOffensiveActionPower, 12,
+            CardAttribute.PlayerDefense, 
+            10,
             obs.triggerType,
             "Morte precoce frequente"
         ));
         
-        advantages.Add(new NegotiationOffer(
-            "Barreira Protetora",
-            "Proteção extra nos primeiros turnos.",
-            true,
-            CardAttribute.PlayerDefense, 15,
-            CardAttribute.EnemyActionPower, 16,
+        advantages.Add(NegotiationOffer.CreateDisadvantage(
+            "Enfraquecimento Inimigo",
+            "Reduza o poder ofensivo dos adversários.",
+            CardAttribute.EnemyOffensiveActionPower,
+            -8,
+            false, // Debuff nos inimigos = vantagem para o jogador
             obs.triggerType,
             "Morte precoce frequente"
         ));
         
-        advantages.Add(new NegotiationOffer(
+        advantages.Add(NegotiationOffer.CreateAdvantage(
             "Vitalidade Reforçada",
-            "HP e defesa aumentados.",
-            true,
-            CardAttribute.PlayerMaxHP, 28,
-            CardAttribute.EnemyMaxHP, 16,
+            "Aumente drasticamente seu HP máximo.",
+            CardAttribute.PlayerMaxHP, 
+            20,
             obs.triggerType,
             "Morte precoce frequente"
         ));
         
-        // DESVANTAGENS
-        disadvantages.Add(new NegotiationOffer(
+        // DESVANTAGENS (apenas uma mudança cada, valores 4-12)
+        disadvantages.Add(NegotiationOffer.CreateDisadvantage(
             "Assalto Inicial",
             "Inimigos investem tudo no início.",
-            false,
-            CardAttribute.PlayerDefense, -10,
-            CardAttribute.EnemyActionPower, 25,
+            CardAttribute.EnemyActionPower,
+            12,
+            false, // Afeta inimigos
             obs.triggerType,
             "Morte precoce frequente"
         ));
         
-        disadvantages.Add(new NegotiationOffer(
+        disadvantages.Add(NegotiationOffer.CreateDisadvantage(
             "Fragilidade Crítica",
             "Você começa mais vulnerável.",
-            false,
-            CardAttribute.PlayerMaxHP, -25,
-            CardAttribute.EnemyDefense, -12,
+            CardAttribute.PlayerMaxHP,
+            -12,
+            true, // Afeta jogador
             obs.triggerType,
             "Morte precoce frequente"
         ));
         
-        disadvantages.Add(new NegotiationOffer(
+        disadvantages.Add(NegotiationOffer.CreateDisadvantage(
             "Abertura Fatal",
             "Primeiros turnos são ainda mais perigosos.",
-            false,
-            CardAttribute.PlayerDefense, -12,
-            CardAttribute.EnemyOffensiveActionPower, 16,
+            CardAttribute.EnemyOffensiveActionPower,
+            6,
+            false, // Afeta inimigos
             obs.triggerType,
             "Morte precoce frequente"
         ));
         
-        disadvantages.Add(new NegotiationOffer(
-            "Início Desastroso",
-            "Tudo começa mal para você.",
-            false,
-            CardAttribute.PlayerMaxHP, -20,
-            CardAttribute.EnemyActionPower, 15,
+        disadvantages.Add(NegotiationOffer.CreateDisadvantage(
+            "Defesas Comprometidas",
+            "Sua defesa inicial é reduzida.",
+            CardAttribute.PlayerDefense,
+            -8,
+            true, // Afeta jogador
             obs.triggerType,
             "Morte precoce frequente"
         ));
@@ -1036,442 +984,349 @@ public static class ObservationInterpreter
     private static void GenerateAlwaysDiesLateOffers(BehaviorObservation obs,
         List<NegotiationOffer> advantages, List<NegotiationOffer> disadvantages)
     {
-        // VANTAGENS - Guerra de atrito
-        advantages.Add(new NegotiationOffer(
+        // VANTAGENS - Guerra de atrito (apenas uma mudança cada, valores 4-12)
+        advantages.Add(NegotiationOffer.CreateAdvantage(
             "Resistência Prolongada",
             "Ganhe fôlego para batalhas longas.",
-            true,
-            CardAttribute.PlayerMaxMP, 25,
-            CardAttribute.EnemyMaxHP, 20,
+            CardAttribute.PlayerMaxMP, 
+            10,
             obs.triggerType,
             "Morte tardia por atrito"
         ));
         
-        advantages.Add(new NegotiationOffer(
+        advantages.Add(NegotiationOffer.CreateAdvantage(
             "Regeneração Persistente",
             "Suas habilidades defensivas melhoram.",
-            true,
-            CardAttribute.PlayerDefensiveActionPower, 20,
-            CardAttribute.EnemyOffensiveActionPower, 12,
+            CardAttribute.PlayerDefensiveActionPower, 
+            6,
             obs.triggerType,
             "Morte tardia por atrito"
         ));
         
-        advantages.Add(new NegotiationOffer(
-            "Stamina Infinita",
-            "Batalhas longas favorecem você.",
-            true,
-            CardAttribute.PlayerMaxMP, 28,
-            CardAttribute.EnemyActionPower, 12,
+        advantages.Add(NegotiationOffer.CreateDisadvantage(
+            "Enfraquecimento Gradual",
+            "Reduza o poder ofensivo dos inimigos ao longo do tempo.",
+            CardAttribute.EnemyOffensiveActionPower,
+            -8,
+            false, // Debuff nos inimigos = vantagem para o jogador
             obs.triggerType,
             "Morte tardia por atrito"
         ));
         
-        advantages.Add(new NegotiationOffer(
+        advantages.Add(NegotiationOffer.CreateAdvantage(
             "Fortificação Crescente",
             "Você fica mais forte com o tempo.",
-            true,
-            CardAttribute.PlayerDefense, 16,
-            CardAttribute.EnemyDefense, 10,
+            CardAttribute.PlayerDefense, 
+            8,
             obs.triggerType,
             "Morte tardia por atrito"
         ));
         
-        // DESVANTAGENS
-        disadvantages.Add(new NegotiationOffer(
+        // DESVANTAGENS (apenas uma mudança cada, valores 4-12)
+        disadvantages.Add(NegotiationOffer.CreateDisadvantage(
             "Guerra de Atrito",
             "Batalhas longas favorecem adversários.",
-            false,
-            CardAttribute.PlayerActionManaCost, 5,
-            CardAttribute.EnemyDefense, 15,
+            CardAttribute.EnemyDefense,
+            6,
+            false, // Afeta inimigos
             obs.triggerType,
             "Morte tardia por atrito"
         ));
         
-        disadvantages.Add(new NegotiationOffer(
+        disadvantages.Add(NegotiationOffer.CreateDisadvantage(
             "Exaustão Inevitável",
             "Você se cansa em batalhas prolongadas.",
-            false,
-            CardAttribute.PlayerMaxMP, -20,
-            CardAttribute.EnemyMaxMP, 12,
+            CardAttribute.PlayerMaxMP,
+            -10,
+            true, // Afeta jogador
             obs.triggerType,
             "Morte tardia por atrito"
         ));
         
-        disadvantages.Add(new NegotiationOffer(
+        disadvantages.Add(NegotiationOffer.CreateDisadvantage(
             "Desgaste Acumulado",
             "Dano constante te enfraquece.",
-            false,
-            CardAttribute.PlayerDefense, -10,
-            CardAttribute.EnemyActionPower, 12,
+            CardAttribute.PlayerDefense,
+            -8,
+            true, // Afeta jogador
             obs.triggerType,
             "Morte tardia por atrito"
         ));
         
-        disadvantages.Add(new NegotiationOffer(
-            "Esgotamento Total",
-            "Longas batalhas drenam tudo de você.",
-            false,
-            CardAttribute.PlayerMaxHP, -16,
-            CardAttribute.EnemyMaxHP, 8,
+        disadvantages.Add(NegotiationOffer.CreateDisadvantage(
+            "Fadiga Crescente",
+            "Suas habilidades custam mais mana com o tempo.",
+            CardAttribute.PlayerActionManaCost,
+            10,
+            true, // Afeta jogador
             obs.triggerType,
             "Morte tardia por atrito"
         ));
     }
-    
+
     /// <summary>
-    /// Morte por chip damage - 4 vantagens + 4 desvantagens
+    /// Morte por chip damage - 3 vantagens + 3 desvantagens
     /// </summary>
     private static void GenerateDeathByChipDamageOffers(BehaviorObservation obs,
         List<NegotiationOffer> advantages, List<NegotiationOffer> disadvantages)
     {
-        // VANTAGENS - Anti-chip damage
-        advantages.Add(new NegotiationOffer(
+        // VANTAGENS - Anti-chip damage (apenas uma mudança cada, valores 4-12)
+        advantages.Add(NegotiationOffer.CreateAdvantage(
             "Pele de Aço",
             "Fortifique-se contra ataques menores.",
-            true,
-            CardAttribute.PlayerDefense, 16,
-            CardAttribute.EnemyActionPower, 12,
+            CardAttribute.PlayerDefense, 
+            8,
             obs.triggerType,
             "Morte por dano acumulado"
         ));
-        
-        advantages.Add(new NegotiationOffer(
+    
+        advantages.Add(NegotiationOffer.CreateAdvantage(
             "Regeneração Constante",
             "Curas mais eficazes.",
-            true,
-            CardAttribute.PlayerDefensiveActionPower, 22,
-            CardAttribute.EnemyOffensiveActionPower, 10,
+            CardAttribute.PlayerDefensiveActionPower, 
+            12,
             obs.triggerType,
             "Morte por dano acumulado"
         ));
-        
-        advantages.Add(new NegotiationOffer(
-            "Armadura Reforçada",
-            "Reduza todo dano recebido.",
-            true,
-            CardAttribute.PlayerDefense, 20,
-            CardAttribute.EnemyDefense, 10,
-            obs.triggerType,
-            "Morte por dano acumulado"
-        ));
-        
-        advantages.Add(new NegotiationOffer(
+    
+        advantages.Add(NegotiationOffer.CreateAdvantage(
             "Vitalidade Robusta",
             "Mais HP para aguentar o atrito.",
-            true,
-            CardAttribute.PlayerMaxHP, 32,
-            CardAttribute.EnemyActionPower, 15,
+            CardAttribute.PlayerMaxHP, 
+            12,
             obs.triggerType,
             "Morte por dano acumulado"
         ));
-        
-        // DESVANTAGENS
-        disadvantages.Add(new NegotiationOffer(
+    
+        // DESVANTAGENS (apenas uma mudança cada, valores 4-12)
+        disadvantages.Add(NegotiationOffer.CreateDisadvantage(
             "Mil Cortes",
             "Inimigos atacam com mais força e frequência.",
-            false,
-            CardAttribute.PlayerDefense, -10,
-            CardAttribute.EnemyActionPower, 15,
+            CardAttribute.EnemyActionPower,
+            10,
+            false, // Afeta inimigos
             obs.triggerType,
             "Morte por dano acumulado"
         ));
-        
-        disadvantages.Add(new NegotiationOffer(
-            "Sangramento Perpétuo",
-            "Dano acumulado aumenta.",
-            false,
-            CardAttribute.PlayerMaxHP, -20,
-            CardAttribute.EnemyOffensiveActionPower, 12,
-            obs.triggerType,
-            "Morte por dano acumulado"
-        ));
-        
-        disadvantages.Add(new NegotiationOffer(
+    
+        disadvantages.Add(NegotiationOffer.CreateDisadvantage(
             "Armadura Desgastada",
             "Sua defesa se deteriora.",
-            false,
-            CardAttribute.PlayerDefense, -12,
-            CardAttribute.EnemyActionPower, 10,
+            CardAttribute.PlayerDefense,
+            -10,
+            true, // Afeta jogador
             obs.triggerType,
             "Morte por dano acumulado"
         ));
-        
-        disadvantages.Add(new NegotiationOffer(
-            "Feridas Abertas",
-            "Cada hit dói mais.",
-            false,
-            CardAttribute.PlayerDefense, -8,
-            CardAttribute.EnemyOffensiveActionPower, 15,
+    
+        disadvantages.Add(NegotiationOffer.CreateDisadvantage(
+            "Feridas Acumuladas",
+            "Você perde vitalidade máxima.",
+            CardAttribute.PlayerMaxHP,
+            -8,
+            true, // Afeta jogador
             obs.triggerType,
             "Morte por dano acumulado"
         ));
     }
     
     /// <summary>
-    /// Vulnerável a one-shots - 4 vantagens + 4 desvantagens
+    /// Vulnerável a one-shots - 3 vantagens + 3 desvantagens
     /// </summary>
     private static void GenerateOneHitKOVulnerableOffers(BehaviorObservation obs,
         List<NegotiationOffer> advantages, List<NegotiationOffer> disadvantages)
     {
         int biggestHit = obs.GetData<int>("biggestHit", 50);
         
-        // VANTAGENS - Anti-burst
-        advantages.Add(new NegotiationOffer(
+        // VANTAGENS - Anti-burst (apenas uma mudança cada, valores 4-12)
+        advantages.Add(NegotiationOffer.CreateAdvantage(
             "Fortaleza Viva",
             "Torne-se resistente a ataques devastadores.",
-            true,
-            CardAttribute.PlayerMaxHP, 38,
-            CardAttribute.EnemyMaxHP, 28,
+            CardAttribute.PlayerMaxHP, 
+            10,
             obs.triggerType,
             $"Vulnerável a one-shots ({biggestHit} dano)"
         ));
         
-        advantages.Add(new NegotiationOffer(
+        advantages.Add(NegotiationOffer.CreateAdvantage(
             "Escudo Absoluto",
             "Defesa massiva contra golpes fortes.",
-            true,
-            CardAttribute.PlayerDefense, 20,
-            CardAttribute.EnemyActionPower, 16,
+            CardAttribute.PlayerDefense, 
+            8,
             obs.triggerType,
             $"Vulnerável a one-shots ({biggestHit} dano)"
         ));
         
-        advantages.Add(new NegotiationOffer(
-            "Barreira Suprema",
-            "Proteção contra dano explosivo.",
-            true,
-            CardAttribute.PlayerDefense, 18,
-            CardAttribute.EnemyOffensiveActionPower, 15,
+        advantages.Add(NegotiationOffer.CreateDisadvantage(
+            "Enfraquecimento Hostil",
+            "Reduza o poder ofensivo dos adversários.",
+            CardAttribute.EnemyOffensiveActionPower,
+            -6,
+            false, // Debuff nos inimigos = vantagem para o jogador
             obs.triggerType,
             $"Vulnerável a one-shots ({biggestHit} dano)"
         ));
         
-        advantages.Add(new NegotiationOffer(
-            "Corpo Adamantino",
-            "HP e defesa aumentados drasticamente.",
-            true,
-            CardAttribute.PlayerMaxHP, 35,
-            CardAttribute.EnemyDefense, 16,
-            obs.triggerType,
-            $"Vulnerável a one-shots ({biggestHit} dano)"
-        ));
-        
-        // DESVANTAGENS
-        disadvantages.Add(new NegotiationOffer(
+        // DESVANTAGENS (apenas uma mudança cada, valores 4-12)
+        disadvantages.Add(NegotiationOffer.CreateDisadvantage(
             "Golpe Executivo",
             "Adversários aperfeiçoam ataques letais.",
-            false,
-            CardAttribute.PlayerDefense, -12,
-            CardAttribute.EnemyActionPower, 28,
+            CardAttribute.EnemyActionPower,
+            12,
+            false, // Afeta inimigos
             obs.triggerType,
             $"Vulnerável a one-shots ({biggestHit} dano)"
         ));
         
-        disadvantages.Add(new NegotiationOffer(
+        disadvantages.Add(NegotiationOffer.CreateDisadvantage(
             "Fragilidade Extrema",
             "Você fica ainda mais vulnerável.",
-            false,
-            CardAttribute.PlayerMaxHP, -25,
-            CardAttribute.EnemyOffensiveActionPower, 20,
+            CardAttribute.PlayerMaxHP,
+            -12,
+            true, // Afeta jogador
             obs.triggerType,
             $"Vulnerável a one-shots ({biggestHit} dano)"
         ));
         
-        disadvantages.Add(new NegotiationOffer(
+        disadvantages.Add(NegotiationOffer.CreateDisadvantage(
             "Armadura de Papel",
             "Defesa drasticamente reduzida.",
-            false,
-            CardAttribute.PlayerDefense, -16,
-            CardAttribute.EnemyActionPower, 16,
-            obs.triggerType,
-            $"Vulnerável a one-shots ({biggestHit} dano)"
-        ));
-        
-        disadvantages.Add(new NegotiationOffer(
-            "Alvo Fácil",
-            "Inimigos miram em suas fraquezas.",
-            false,
-            CardAttribute.PlayerMaxHP, -20,
-            CardAttribute.EnemyOffensiveActionPower, 16,
+            CardAttribute.PlayerDefense,
+            -10,
+            true, // Afeta jogador
             obs.triggerType,
             $"Vulnerável a one-shots ({biggestHit} dano)"
         ));
     }
     
     /// <summary>
-    /// HP baixo sem cura - 4 vantagens + 4 desvantagens
+    /// HP baixo sem cura - 3 vantagens + 3 desvantagens
     /// </summary>
     private static void GenerateLowHealthNoCureOffers(BehaviorObservation obs,
         List<NegotiationOffer> advantages, List<NegotiationOffer> disadvantages)
     {
-        // VANTAGENS
-        advantages.Add(new NegotiationOffer(
+        // VANTAGENS (apenas uma mudança cada, valores 4-12)
+        advantages.Add(NegotiationOffer.CreateAdvantage(
             "Vitalidade Resiliente",
             "Compense falta de cura com mais resistência.",
-            true,
-            CardAttribute.PlayerMaxHP, 32,
-            CardAttribute.EnemyDefense, 12,
+            CardAttribute.PlayerMaxHP, 
+            12,
             obs.triggerType,
             "HP baixo sem itens de cura"
         ));
         
-        advantages.Add(new NegotiationOffer(
+        advantages.Add(NegotiationOffer.CreateAdvantage(
             "Regeneração Natural",
             "Habilidades defensivas melhoradas.",
-            true,
-            CardAttribute.PlayerDefensiveActionPower, 25,
-            CardAttribute.EnemyActionPower, 12,
+            CardAttribute.PlayerDefensiveActionPower, 
+            12,
             obs.triggerType,
             "HP baixo sem itens de cura"
         ));
         
-        advantages.Add(new NegotiationOffer(
+        advantages.Add(NegotiationOffer.CreateAdvantage(
             "Defesa Compensatória",
             "Mais defesa para evitar dano.",
-            true,
-            CardAttribute.PlayerDefense, 16,
-            CardAttribute.EnemyOffensiveActionPower, 10,
+            CardAttribute.PlayerDefense, 
+            8,
             obs.triggerType,
             "HP baixo sem itens de cura"
         ));
         
-        advantages.Add(new NegotiationOffer(
-            "Fortaleza Adaptativa",
-            "HP e defesa aumentados.",
-            true,
-            CardAttribute.PlayerMaxHP, 28,
-            CardAttribute.EnemyMaxHP, 16,
-            obs.triggerType,
-            "HP baixo sem itens de cura"
-        ));
-        
-        // DESVANTAGENS
-        disadvantages.Add(new NegotiationOffer(
+        // DESVANTAGENS (apenas uma mudança cada, valores 4-12)
+        disadvantages.Add(NegotiationOffer.CreateDisadvantage(
             "Feridas Abertas",
             "Feridas o tornam mais vulnerável.",
-            false,
-            CardAttribute.PlayerDefense, -10,
-            CardAttribute.EnemyMaxHP, -15,
+            CardAttribute.PlayerDefense,
+            -8,
+            true, // Afeta jogador
             obs.triggerType,
             "HP baixo sem itens de cura"
         ));
         
-        disadvantages.Add(new NegotiationOffer(
+        disadvantages.Add(NegotiationOffer.CreateDisadvantage(
             "Corpo Fragilizado",
             "Falta de cura te deixa fraco.",
-            false,
-            CardAttribute.PlayerMaxHP, -20,
-            CardAttribute.EnemyDefense, -12,
+            CardAttribute.PlayerMaxHP,
+            -12,
+            true, // Afeta jogador
             obs.triggerType,
             "HP baixo sem itens de cura"
         ));
         
-        disadvantages.Add(new NegotiationOffer(
+        disadvantages.Add(NegotiationOffer.CreateDisadvantage(
             "Hemorragia Perpétua",
-            "Feridas não cicatrizam.",
-            false,
-            CardAttribute.PlayerDefensiveActionPower, -16,
-            CardAttribute.EnemyActionPower, -8,
-            obs.triggerType,
-            "HP baixo sem itens de cura"
-        ));
-        
-        disadvantages.Add(new NegotiationOffer(
-            "Vulnerabilidade Crítica",
-            "Sem cura, você fica exposto.",
-            false,
-            CardAttribute.PlayerDefense, -12,
-            CardAttribute.EnemyOffensiveActionPower, 10,
+            "Feridas não cicatrizam adequadamente.",
+            CardAttribute.PlayerDefensiveActionPower,
+            -10,
+            true, // Afeta jogador
             obs.triggerType,
             "HP baixo sem itens de cura"
         ));
     }
     
     /// <summary>
-    /// Problemas de mana - 4 vantagens + 4 desvantagens
+    /// Problemas de mana - 3 vantagens + 3 desvantagens
     /// </summary>
     private static void GenerateManaIssuesOffers(BehaviorObservation obs,
         List<NegotiationOffer> advantages, List<NegotiationOffer> disadvantages)
     {
-        // VANTAGENS
-        advantages.Add(new NegotiationOffer(
+        // VANTAGENS (apenas uma mudança cada, valores 4-12)
+        advantages.Add(NegotiationOffer.CreateAdvantage(
             "Reservas Mágicas",
             "Amplie drasticamente suas reservas de mana.",
-            true,
-            CardAttribute.PlayerMaxMP, 28,
-            CardAttribute.EnemyMaxMP, 16,
+            CardAttribute.PlayerMaxMP, 
+            10,
             obs.triggerType,
             "Problemas de mana constantes"
         ));
         
-        advantages.Add(new NegotiationOffer(
+        advantages.Add(NegotiationOffer.CreateAdvantage(
             "Eficiência Arcana",
             "Reduza o custo de todas habilidades.",
-            true,
-            CardAttribute.PlayerActionManaCost, -5,
-            CardAttribute.EnemyActionPower, 10,
+            CardAttribute.PlayerActionManaCost, 
+            -5,
             obs.triggerType,
             "Problemas de mana constantes"
         ));
         
-        advantages.Add(new NegotiationOffer(
-            "Maestria Energética",
-            "Use mana com muito mais eficiência.",
-            true,
-            CardAttribute.PlayerActionManaCost, -4,
-            CardAttribute.EnemyMaxMP, 12,
+        advantages.Add(NegotiationOffer.CreateDisadvantage(
+            "Esgotamento Inimigo",
+            "Aumente o custo de mana das habilidades inimigas.",
+            CardAttribute.EnemyActionManaCost,
+            5,
+            false, // Afeta inimigos = vantagem para o jogador
             obs.triggerType,
             "Problemas de mana constantes"
         ));
         
-        advantages.Add(new NegotiationOffer(
-            "Poço Infinito",
-            "MP massivamente aumentado.",
-            true,
-            CardAttribute.PlayerMaxMP, 32,
-            CardAttribute.EnemyActionPower, 12,
-            obs.triggerType,
-            "Problemas de mana constantes"
-        ));
-        
-        // DESVANTAGENS
-        disadvantages.Add(new NegotiationOffer(
+        // DESVANTAGENS (apenas uma mudança cada, valores 4-12)
+        disadvantages.Add(NegotiationOffer.CreateDisadvantage(
             "Exaustão Mágica",
             "Habilidades drenam ainda mais energia.",
-            false,
-            CardAttribute.PlayerActionManaCost, 6,
-            CardAttribute.EnemyActionManaCost, -3,
+            CardAttribute.PlayerActionManaCost,
+            5,
+            true, // Afeta jogador
             obs.triggerType,
             "Problemas de mana constantes"
         ));
         
-        disadvantages.Add(new NegotiationOffer(
+        disadvantages.Add(NegotiationOffer.CreateDisadvantage(
             "Reservas Esgotadas",
             "Seu MP máximo diminui.",
-            false,
-            CardAttribute.PlayerMaxMP, -20,
-            CardAttribute.EnemyMaxMP, -12,
+            CardAttribute.PlayerMaxMP,
+            -10,
+            true, // Afeta jogador
             obs.triggerType,
             "Problemas de mana constantes"
         ));
         
-        disadvantages.Add(new NegotiationOffer(
+        disadvantages.Add(NegotiationOffer.CreateDisadvantage(
             "Dreno Arcano",
-            "Magia custa mais e você tem menos.",
-            false,
-            CardAttribute.PlayerMaxMP, -16,
-            CardAttribute.EnemyDefense, -10,
-            obs.triggerType,
-            "Problemas de mana constantes"
-        ));
-        
-        disadvantages.Add(new NegotiationOffer(
-            "Desperdício Mágico",
-            "Suas habilidades ficam muito caras.",
-            false,
-            CardAttribute.PlayerActionManaCost, 7,
-            CardAttribute.EnemyActionPower, -8,
+            "Suas reservas mágicas se deterioram.",
+            CardAttribute.PlayerMaxMP,
+            -12,
+            true, // Afeta jogador
             obs.triggerType,
             "Problemas de mana constantes"
         ));
@@ -1484,83 +1339,74 @@ public static class ObservationInterpreter
         List<NegotiationOffer> advantages, List<NegotiationOffer> disadvantages)
     {
         // VANTAGENS
-        advantages.Add(new NegotiationOffer(
+        advantages.Add(NegotiationOffer.CreateAdvantage(
             "Autossuficiência",
             "Troque dependência de itens por poder próprio.",
-            true,
-            CardAttribute.PlayerMaxHP, 28,
-            CardAttribute.EnemyMaxHP, 20,
+            CardAttribute.PlayerMaxHP, 15,
             obs.triggerType,
             "Dependência de consumíveis"
         ));
         
-        advantages.Add(new NegotiationOffer(
+        advantages.Add(NegotiationOffer.CreateAdvantage(
             "Força Interior",
             "Desenvolva poder independente.",
-            true,
-            CardAttribute.PlayerDefensiveActionPower, 25,
-            CardAttribute.EnemyActionPower, 12,
+            CardAttribute.PlayerDefensiveActionPower, 8,
             obs.triggerType,
             "Dependência de consumíveis"
         ));
         
-        advantages.Add(new NegotiationOffer(
+        advantages.Add(NegotiationOffer.CreateAdvantage(
             "Recursos Internos",
             "Mais MP para habilidades próprias.",
-            true,
-            CardAttribute.PlayerMaxMP, 28,
-            CardAttribute.EnemyDefense, 12,
+            CardAttribute.PlayerMaxMP, 10,
             obs.triggerType,
             "Dependência de consumíveis"
         ));
         
-        advantages.Add(new NegotiationOffer(
+        advantages.Add(NegotiationOffer.CreateAdvantage(
             "Independência Total",
             "Stats permanentes aumentados.",
-            true,
-            CardAttribute.PlayerActionPower, 16,
-            CardAttribute.EnemyActionPower, 12,
+            CardAttribute.PlayerActionPower, 8,
             obs.triggerType,
             "Dependência de consumíveis"
         ));
         
         // DESVANTAGENS
-        disadvantages.Add(new NegotiationOffer(
+        disadvantages.Add(NegotiationOffer.CreateDisadvantage(
             "Escassez Material",
             "Recursos se tornam ainda mais raros.",
-            false,
             CardAttribute.CoinsEarned, -12,
-            CardAttribute.EnemyDefense, -10,
+            true,
             obs.triggerType,
             "Dependência de consumíveis"
         ));
         
-        disadvantages.Add(new NegotiationOffer(
+        disadvantages.Add(NegotiationOffer.CreateDisadvantage(
             "Dependência Crítica",
             "Estratégia baseada em itens te enfraquece.",
-            false,
-            CardAttribute.PlayerDefense, -12,
-            CardAttribute.EnemyActionPower, -10,
+            CardAttribute.PlayerDefense, 
+            -8,
+            true,
             obs.triggerType,
             "Dependência de consumíveis"
         ));
         
-        disadvantages.Add(new NegotiationOffer(
+        disadvantages.Add(NegotiationOffer.CreateDisadvantage(
             "Fragilidade Sem Itens",
             "Sem consumíveis, você é fraco.",
+            CardAttribute.EnemyMaxMP, 
+            15,
             false,
-            CardAttribute.PlayerMaxHP, -20,
-            CardAttribute.EnemyMaxHP, -16,
             obs.triggerType,
             "Dependência de consumíveis"
         ));
         
-        disadvantages.Add(new NegotiationOffer(
+        disadvantages.Add(NegotiationOffer.CreateDisadvantage(
             "Vício Custoso",
             "Sua dependência cobra um preço alto.",
+            CardAttribute.EnemySpeed, 
+            3,
             false,
-            CardAttribute.PlayerActionPower, -10,
-            CardAttribute.EnemyDefense, -8,
             obs.triggerType,
             "Dependência de consumíveis"
         ));
@@ -1575,83 +1421,75 @@ public static class ObservationInterpreter
         string enemyName = obs.GetData<string>("randomEnemy", "Inimigo");
         
         // VANTAGENS
-        advantages.Add(new NegotiationOffer(
-            "Confiança Absoluta",
-            "Sua força é inquestionável.",
-            true,
-            CardAttribute.PlayerActionPower, 25,
-            CardAttribute.CoinsEarned, -15,
+        advantages.Add(NegotiationOffer.CreateAdvantage(
+            "Tributagem",
+            "Alguém com sua força merece recompensas.",
+            CardAttribute.CoinsEarned, 15,
             obs.triggerType,
             $"Vitória perfeita vs {enemyName}"
         ));
         
-        advantages.Add(new NegotiationOffer(
+        advantages.Add(NegotiationOffer.CreateAdvantage(
             "Domínio Total",
             "Você está além do desafio.",
-            true,
-            CardAttribute.PlayerOffensiveActionPower, 28,
-            CardAttribute.EnemyMaxHP, 25,
+            CardAttribute.PlayerOffensiveActionPower, 
+            8,
             obs.triggerType,
             $"Vitória perfeita vs {enemyName}"
         ));
         
-        advantages.Add(new NegotiationOffer(
-            "Superioridade Marcial",
-            "Todos seus ataques ficam mais fortes.",
-            true,
-            CardAttribute.PlayerActionPower, 22,
-            CardAttribute.EnemyActionPower, 16,
+        advantages.Add(NegotiationOffer.CreateDisadvantage(
+            "Temido",
+            "Seus inimigos te temem",
+            CardAttribute.EnemyActionManaCost, -8,
+            false,
             obs.triggerType,
             $"Vitória perfeita vs {enemyName}"
         ));
         
-        advantages.Add(new NegotiationOffer(
-            "Maestria Completa",
-            "Aumente seu poder ofensivo.",
-            true,
-            CardAttribute.PlayerOffensiveActionPower, 25,
-            CardAttribute.EnemyDefense, 16,
+        advantages.Add(NegotiationOffer.CreateDisadvantage(
+            "Paralisados de Medo",
+            "Seus inimigos hesitam ao agir",
+            CardAttribute.EnemySpeed, -3,
+            false,
             obs.triggerType,
             $"Vitória perfeita vs {enemyName}"
         ));
         
         // DESVANTAGENS
-        disadvantages.Add(new NegotiationOffer(
+        disadvantages.Add(NegotiationOffer.CreateDisadvantage(
             "Lição Aprendida",
             "Inimigos estudam sua técnica.",
+            CardAttribute.EnemyActionPower, 5,
             false,
-            CardAttribute.PlayerMaxHP, -20,
-            CardAttribute.EnemyDefense, 20,
             obs.triggerType,
             $"Vitória perfeita vs {enemyName}"
         ));
         
-        disadvantages.Add(new NegotiationOffer(
+        disadvantages.Add(NegotiationOffer.CreateDisadvantage(
             "Arrogância Fatal",
             "Confiança excessiva te enfraquece.",
-            false,
-            CardAttribute.PlayerDefense, -12,
-            CardAttribute.EnemyActionPower, 16,
+            CardAttribute.PlayerActionManaCost, -5,
+            true,
             obs.triggerType,
             $"Vitória perfeita vs {enemyName}"
         ));
         
-        disadvantages.Add(new NegotiationOffer(
+        disadvantages.Add(NegotiationOffer.CreateDisadvantage(
             "Desafio Amplificado",
             "Universo aumenta a dificuldade.",
+            CardAttribute.EnemyMaxHP, 20,
             false,
-            CardAttribute.PlayerMaxHP, -16,
-            CardAttribute.EnemyMaxHP, 32,
             obs.triggerType,
             $"Vitória perfeita vs {enemyName}"
         ));
         
-        disadvantages.Add(new NegotiationOffer(
+        disadvantages.Add(NegotiationOffer.CreateDisadvantage(
             "Contra-medidas Desenvolvidas",
             "Inimigos se preparam melhor.",
+            CardAttribute.EnemyMaxMP, 
+            10,
             false,
-            CardAttribute.PlayerActionPower, -12,
-            CardAttribute.EnemyDefense, 20,
             obs.triggerType,
             $"Vitória perfeita vs {enemyName}"
         ));
@@ -1666,7 +1504,7 @@ public static class ObservationInterpreter
         string itemName = obs.GetData<string>("exhaustedItem", "Item");
         
         // VANTAGENS
-        advantages.Add(new NegotiationOffer(
+        advantages.Add(NegotiationOffer.CreateDisadvantage(
             "Força Interior",
             $"Ao esgotar '{itemName}', desenvolve resistência própria.",
             true,
