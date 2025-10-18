@@ -113,94 +113,201 @@ public class BattleAction : ScriptableObject
     /// </summary>
     public string GetDynamicDescription()
     {
-        StringBuilder sb = new StringBuilder();
+        System.Text.StringBuilder desc = new System.Text.StringBuilder();
         
-        // Linha 1: Alvo + MP + Usos/Preço
-        sb.Append(GetTargetTypeText(targetType));
-        sb.Append(" | MP:");
-        sb.Append(manaCost);
+        // === PROCESSA EFEITOS PRINCIPAIS ===
+        bool hasMainEffects = false;
+        List<string> statusEffectsList = new List<string>();
         
-        if (isConsumable)
-        {
-            sb.Append(" | Usos:");
-            sb.Append(currentUses);
-            sb.Append("/");
-            sb.Append(maxUses);
-        }
-        
-        if (shopPrice > 0)
-        {
-            sb.Append(" | $");
-            sb.Append(shopPrice);
-        }
-        
-        // Efeitos
         if (effects != null && effects.Count > 0)
         {
-            sb.Append(" || ");
-            
-            for (int i = 0; i < effects.Count; i++)
+            foreach (var effect in effects)
             {
-                ActionEffect effect = effects[i];
-                
-                if (i > 0) sb.Append(" + ");
-                
-                // Efeito Principal
-                sb.Append(GetEffectText(effect));
-                
-                // Status Effect
-                if (effect.statusEffect != StatusEffectType.None)
+                // Efeito principal
+                switch (effect.effectType)
                 {
-                    sb.Append(" [");
-                    sb.Append(GetStatusEffectText(effect.statusEffect));
-                    sb.Append(":");
-                    sb.Append(effect.statusPower);
-                    sb.Append("/");
-                    sb.Append(effect.statusDuration);
-                    sb.Append("t]");
+                    case ActionType.Attack:
+                        desc.AppendLine($"<color=#ff6b6b>Dano: {effect.power}</color>");
+                        hasMainEffects = true;
+                        break;
+                        
+                    case ActionType.Heal:
+                        desc.AppendLine($"<color=#51cf66>Cura: {effect.power} HP</color>");
+                        hasMainEffects = true;
+                        break;
+                        
+                    case ActionType.RestoreMana:
+                        desc.AppendLine($"<color=#4dabf7>Restaura: {effect.power} MP</color>");
+                        hasMainEffects = true;
+                        break;
+                        
+                    case ActionType.Buff:
+                    case ActionType.Debuff:
+                        // Buffs/Debuffs são tratados via status effects
+                        break;
                 }
                 
-                // Self Effect
+                // Coleta status effects
+                if (effect.statusEffect != StatusEffectType.None)
+                {
+                    string statusDesc = GetStatusEffectDescriptionCompact(
+                        effect.statusEffect, 
+                        effect.statusPower, 
+                        effect.statusDuration
+                    );
+                    statusEffectsList.Add(statusDesc);
+                }
+                
+                // Efeito em si mesmo
                 if (effect.hasSelfEffect)
                 {
-                    sb.Append(" (Si:");
-                    sb.Append(GetEffectTypeText(effect.selfEffectType));
-                    sb.Append(":");
-                    sb.Append(effect.selfEffectPower);
+                    if (effect.selfEffectType == ActionType.Heal)
+                    {
+                        desc.AppendLine($"<color=#51cf66>Auto-Cura: {effect.selfEffectPower} HP</color>");
+                        hasMainEffects = true;
+                    }
                     
                     if (effect.selfStatusEffect != StatusEffectType.None)
                     {
-                        sb.Append("+");
-                        sb.Append(GetStatusEffectText(effect.selfStatusEffect));
-                        sb.Append(":");
-                        sb.Append(effect.selfStatusPower);
-                        sb.Append("/");
-                        sb.Append(effect.selfStatusDuration);
-                        sb.Append("t");
+                        string selfStatusDesc = GetStatusEffectDescriptionCompact(
+                            effect.selfStatusEffect, 
+                            effect.selfStatusPower, 
+                            effect.selfStatusDuration
+                        );
+                        statusEffectsList.Add($"{selfStatusDesc} (em você)");
                     }
-                    
-                    sb.Append(")");
                 }
             }
         }
         
-        return sb.ToString();
+        if (hasMainEffects)
+        {
+            desc.AppendLine(); // Linha em branco após efeitos principais
+        }
+        
+        // === EFEITOS DE STATUS (formato compacto) ===
+        if (statusEffectsList.Count > 0)
+        {
+            desc.AppendLine("<b>Efeitos:</b>");
+            foreach (var statusDesc in statusEffectsList)
+            {
+                desc.AppendLine($"  • {statusDesc}");
+            }
+            desc.AppendLine();
+        }
+        
+        // === INFORMAÇÕES DE CUSTO/USOS ===
+        List<string> metaInfo = new List<string>();
+        
+        if (isConsumable)
+        {
+            metaInfo.Add($"<color=#ffd43b>Usos: {currentUses}/{maxUses}</color>");
+        }
+        else if (manaCost > 0)
+        {
+            metaInfo.Add($"<color=#4dabf7>Custo: {manaCost} MP</color>");
+        }
+        
+        // Alvo
+        string targetText = GetTargetTypeText();
+        if (!string.IsNullOrEmpty(targetText))
+        {
+            metaInfo.Add($"<color=#a9a9a9>{targetText}</color>");
+        }
+        
+        // Junta informações meta em uma linha
+        if (metaInfo.Count > 0)
+        {
+            desc.Append(string.Join(" | ", metaInfo));
+        }
+        
+        return desc.ToString().TrimEnd();
     }
     
-    /// <summary>
-    /// Converte TargetType para texto em português
+    //// <summary>
+    /// Descrição compacta de efeitos de status
     /// </summary>
-    private string GetTargetTypeText(TargetType type)
+    private string GetStatusEffectDescriptionCompact(StatusEffectType type, int power, int duration)
     {
+        string colorTag = "";
+        string effectName = "";
+        
         switch (type)
         {
-            case TargetType.SingleEnemy: return "Inimigo";
-            case TargetType.SingleAlly: return "Aliado";
-            case TargetType.Self: return "Si Mesmo";
-            case TargetType.AllEnemies: return "Todos Inimigos";
-            case TargetType.AllAllies: return "Todos Aliados";
-            case TargetType.Everyone: return "Todos";
-            default: return type.ToString();
+            case StatusEffectType.AttackUp:
+                colorTag = "#ff6b6b";
+                effectName = $"+{power} ATK ({duration}t)";
+                break;
+            case StatusEffectType.AttackDown:
+                colorTag = "#ff6b6b";
+                effectName = $"-{power} ATK ({duration}t)";
+                break;
+            case StatusEffectType.DefenseUp:
+                colorTag = "#4dabf7";
+                effectName = $"+{power} DEF ({duration}t)";
+                break;
+            case StatusEffectType.DefenseDown:
+                colorTag = "#4dabf7";
+                effectName = $"-{power} DEF ({duration}t)";
+                break;
+            case StatusEffectType.SpeedUp:
+                colorTag = "#51cf66";
+                effectName = $"+{power}% VEL ({duration}t)";
+                break;
+            case StatusEffectType.SpeedDown:
+                colorTag = "#51cf66";
+                effectName = $"-{power}% VEL ({duration}t)";
+                break;
+            case StatusEffectType.Poison:
+                colorTag = "#a855f7";
+                effectName = $"Veneno {power}/turno ({duration}t)";
+                break;
+            case StatusEffectType.Regeneration:
+                colorTag = "#51cf66";
+                effectName = $"Regen {power}/turno ({duration}t)";
+                break;
+            case StatusEffectType.Vulnerable:
+                colorTag = "#ff6b6b";
+                effectName = $"+{power}% dano recebido ({duration}t)";
+                break;
+            case StatusEffectType.Protected:
+                colorTag = "#4dabf7";
+                effectName = $"-{power}% dano recebido ({duration}t)";
+                break;
+            case StatusEffectType.Blessed:
+                colorTag = "#ffd43b";
+                effectName = $"Bênção {power}/turno ({duration}t)";
+                break;
+            case StatusEffectType.Cursed:
+                colorTag = "#a855f7";
+                effectName = $"Maldição {power}/turno ({duration}t)";
+                break;
+            default:
+                return type.ToString();
+        }
+        
+        return $"<color={colorTag}>{effectName}</color>";
+    }
+
+    /// <summary>
+    /// Texto descritivo do tipo de alvo
+    /// </summary>
+    private string GetTargetTypeText()
+    {
+        switch (targetType)
+        {
+            case TargetType.Self:
+                return "Você";
+            case TargetType.SingleEnemy:
+                return "1 Inimigo";
+            case TargetType.SingleAlly:
+                return "1 Aliado";
+            case TargetType.AllEnemies:
+                return "Todos Inimigos";
+            case TargetType.AllAllies:
+                return "Todos Aliados";
+            default:
+                return "";
         }
     }
     
