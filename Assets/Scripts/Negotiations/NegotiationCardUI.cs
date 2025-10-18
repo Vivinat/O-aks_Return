@@ -142,9 +142,9 @@ public class NegotiationCardUI : MonoBehaviour, IPointerEnterHandler, IPointerEx
     {
         if (isDynamicCard)
         {
-            selectedPlayerAttribute = cardDataDynamic.playerBenefit.playerAttribute;
-            selectedEnemyAttribute = cardDataDynamic.playerCost.enemyAttribute;
-            selectedValue = cardDataDynamic.playerBenefit.playerValue;
+            selectedPlayerAttribute = cardDataDynamic.playerBenefit.targetAttribute;
+            selectedEnemyAttribute = cardDataDynamic.playerCost.targetAttribute;
+            selectedValue = cardDataDynamic.playerBenefit.value;
         }
         else
         {
@@ -164,8 +164,8 @@ public class NegotiationCardUI : MonoBehaviour, IPointerEnterHandler, IPointerEx
         
         if (isDynamicCard)
         {
-            selectedPlayerAttribute = cardDataDynamic.playerBenefit.playerAttribute;
-            selectedEnemyAttribute = cardDataDynamic.playerCost.enemyAttribute;
+            selectedPlayerAttribute = cardDataDynamic.playerBenefit.targetAttribute;
+            selectedEnemyAttribute = cardDataDynamic.playerCost.targetAttribute;
         }
         else
         {
@@ -259,7 +259,7 @@ public class NegotiationCardUI : MonoBehaviour, IPointerEnterHandler, IPointerEx
         foreach (var intensity in availableIntensities)
         {
             int val = IntensityHelper.GetValue(intensity);
-            options.Add($"{IntensityHelper.GetDisplayName(intensity)} (+{val})");
+            options.Add($"{IntensityHelper.GetIntensityDisplayName(intensity)} (+{val})");
         }
         
         intensityDropdown.AddOptions(options);

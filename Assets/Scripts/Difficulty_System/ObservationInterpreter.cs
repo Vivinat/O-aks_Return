@@ -157,83 +157,75 @@ public static class ObservationInterpreter
         string killerEnemy = obs.GetData<string>("killerEnemy", "Inimigo");
         
         // VANTAGENS (4 opções) - Valores moderados
-        advantages.Add(new NegotiationOffer(
+        advantages.Add(NegotiationOffer.CreateAdvantage(
             "Vingança Tardia",
             "Enfraqueça seus adversários após sua queda anterior.",
-            true,
-            CardAttribute.PlayerDefense, 12,
-            CardAttribute.EnemyMaxHP, -20,
+            CardAttribute.EnemyMaxHP, 
+            -20,
             obs.triggerType,
             $"Morreu para: {killerEnemy}"
         ));
         
-        advantages.Add(new NegotiationOffer(
+        advantages.Add(NegotiationOffer.CreateAdvantage(
             "Lição Aprendida",
             "Fortaleça-se com a experiência da derrota.",
-            true,
-            CardAttribute.PlayerMaxHP, 25,
-            CardAttribute.EnemyDefense, 12,
+            CardAttribute.PlayerMaxHP, 15,
             obs.triggerType,
             $"Morreu para: {killerEnemy}"
         ));
         
-        advantages.Add(new NegotiationOffer(
+        advantages.Add(NegotiationOffer.CreateAdvantage(
             "Retribuição Ofensiva",
             "Transforme sua dor em poder destrutivo.",
-            true,
-            CardAttribute.PlayerOffensiveActionPower, 15,
-            CardAttribute.EnemyMaxHP, 18,
+            CardAttribute.PlayerOffensiveActionPower, 8,
             obs.triggerType,
             $"Morreu para: {killerEnemy}"
         ));
         
-        advantages.Add(new NegotiationOffer(
+        advantages.Add(NegotiationOffer.CreateAdvantage(
             "Segunda Chance Fortalecida",
-            "Reviva com preparação melhor para o desafio.",
-            true,
+            "Mais mana para o desafio.",
             CardAttribute.PlayerMaxMP, 20,
-            CardAttribute.EnemySpeed, 2,
             obs.triggerType,
             $"Morreu para: {killerEnemy}"
         ));
         
         // DESVANTAGENS (4 opções) - Custo justo
-        disadvantages.Add(new NegotiationOffer(
+        disadvantages.Add(NegotiationOffer.CreateDisadvantage(
             "Sede de Sangue",
             "Seus inimigos se fortalecem com a memória de sua derrota.",
+            CardAttribute.EnemyOffensiveActionPower, 
+            -12,
             false,
-            CardAttribute.PlayerDefense, -8,
-            CardAttribute.EnemyActionPower, 12,
             obs.triggerType,
             $"Morreu para: {killerEnemy}"
         ));
         
-        disadvantages.Add(new NegotiationOffer(
+        disadvantages.Add(NegotiationOffer.CreateDisadvantage(
             "Trauma Persistente",
             "O medo da morte enfraquece seu corpo.",
-            false,
-            CardAttribute.PlayerMaxHP, -18,
-            CardAttribute.EnemyMaxHP, -12,
+            CardAttribute.PlayerDefense,
+            -8,
+            true,
             obs.triggerType,
             $"Morreu para: {killerEnemy}"
         ));
         
-        disadvantages.Add(new NegotiationOffer(
+        disadvantages.Add(NegotiationOffer.CreateDisadvantage(
             "Desmoralização",
             "Sua força de vontade diminui.",
-            false,
-            CardAttribute.PlayerOffensiveActionPower, -10,
-            CardAttribute.EnemyDefense, -8,
+            CardAttribute.PlayerOffensiveActionPower, 
+            -10,
+            true,
             obs.triggerType,
             $"Morreu para: {killerEnemy}"
         ));
         
-        disadvantages.Add(new NegotiationOffer(
+        disadvantages.Add(NegotiationOffer.CreateDisadvantage(
             "Exaustão Mental",
             "Seu MP sofre com o trauma.",
-            false,
             CardAttribute.PlayerMaxMP, -12,
-            CardAttribute.EnemyActionManaCost, -4,
+            true,
             obs.triggerType,
             $"Morreu para: {killerEnemy}"
         ));
@@ -241,94 +233,100 @@ public static class ObservationInterpreter
     
     /// <summary>
     /// Dependência de skill única - 4 vantagens + 4 desvantagens
+    /// CORRIGIDO: Modifica APENAS a skill específica dominante
     /// </summary>
     private static void GenerateSingleSkillCarryOffers(BehaviorObservation obs,
         List<NegotiationOffer> advantages, List<NegotiationOffer> disadvantages)
     {
         string skillName = obs.GetData<string>("skillName", "Habilidade");
         
-        // VANTAGENS
-        advantages.Add(new NegotiationOffer(
+        // === VANTAGENS (4 opções) - Todas modificam a SKILL ESPECÍFICA ===
+        
+        // 1. Aumenta PODER da skill específica
+        advantages.Add(CreateSpecificSkillPowerOffer(
             "Mestre de Uma Arte",
-            $"Especialize-se ainda mais em '{skillName}'.",
+            $"'{skillName}' se torna devastadora.",
+            skillName,
+            12, // +12 de poder na skill
             true,
-            CardAttribute.PlayerOffensiveActionPower, 18,
-            CardAttribute.EnemyDefense, 12,
-            obs.triggerType,
-            $"Skill dominante: {skillName}"
+            obs.triggerType
         ));
         
-        advantages.Add(new NegotiationOffer(
+        // 2. Reduz CUSTO DE MANA da skill específica
+        advantages.Add(CreateSpecificSkillManaCostOffer(
             "Eficiência Aperfeiçoada",
-            $"Reduza o custo de todas suas ações.",
+            $"'{skillName}' consome menos energia.",
+            skillName,
+            -4, // -4 de custo de mana
             true,
-            CardAttribute.PlayerActionManaCost, -4,
-            CardAttribute.EnemyMaxMP, 10,
-            obs.triggerType,
-            $"Skill dominante: {skillName}"
+            obs.triggerType
         ));
         
-        advantages.Add(new NegotiationOffer(
-            "Poder Concentrado",
-            $"Foque toda sua energia em seus ataques principais.",
+        // 3. Aumenta PODER e reduz MANA da skill específica
+        advantages.Add(CreateSpecificSkillFullOffer(
+            "Domínio Absoluto",
+            $"'{skillName}' atinge a perfeição.",
+            skillName,
+            10,  // +10 de poder
+            -3,  // -3 de custo de mana
             true,
-            CardAttribute.PlayerSingleTargetActionPower, 20,
-            CardAttribute.EnemyMaxHP, 15,
-            obs.triggerType,
-            $"Skill dominante: {skillName}"
+            obs.triggerType
         ));
         
-        advantages.Add(new NegotiationOffer(
-            "Domínio Técnico",
-            $"Compense a falta de variedade com maestria.",
+        // 4. Apenas aumenta MUITO o poder da skill
+        advantages.Add(CreateSpecificSkillPowerOffer(
+            "Especialização Letal",
+            $"Concentre todo seu poder em '{skillName}'.",
+            skillName,
+            15, // +15 de poder (muito alto)
             true,
-            CardAttribute.PlayerActionPower, 15,
-            CardAttribute.EnemyActionPower, 10,
-            obs.triggerType,
-            $"Skill dominante: {skillName}"
+            obs.triggerType
         ));
         
-        // DESVANTAGENS
-        disadvantages.Add(new NegotiationOffer(
+        // === DESVANTAGENS (4 opções) - Metade na skill, metade gerais ===
+        
+        // 1. Aumenta CUSTO DE MANA da skill específica
+        disadvantages.Add(CreateSpecificSkillManaCostOffer(
             "Dependência Custosa",
-            $"Sua dependência de '{skillName}' cobra seu preço.",
+            $"'{skillName}' drena muito mais energia.",
+            skillName,
+            5, // +5 de custo de mana
             false,
-            CardAttribute.PlayerActionManaCost, 5,
-            CardAttribute.EnemySpeed, -2,
+            obs.triggerType
+        ));
+        
+        // 2. Reduz PODER da skill específica
+        disadvantages.Add(CreateSpecificSkillPowerOffer(
+            "Uso Excessivo",
+            $"'{skillName}' perde eficácia pelo uso repetido.",
+            skillName,
+            -8, // -8 de poder
+            false,
+            obs.triggerType
+        ));
+        
+        // 3. Desvantagem geral - Inimigos ganham defesa
+        disadvantages.Add(NegotiationOffer.CreateDisadvantage(
+            "Adaptação Hostil",
+            "Inimigos aprendem seus padrões.",
+            CardAttribute.EnemyDefense,
+            10,
+            false, // Afeta inimigos
             obs.triggerType,
             $"Skill dominante: {skillName}"
         ));
         
-        disadvantages.Add(new NegotiationOffer(
-            "Arsenal Limitado",
-            $"Falta de versatilidade enfraquece seu potencial.",
-            false,
-            CardAttribute.PlayerActionPower, -10,
-            CardAttribute.EnemyMaxHP, -12,
+        // 4. Desvantagem geral - Jogador perde MP máximo
+        disadvantages.Add(NegotiationOffer.CreateDisadvantage(
+            "Esgotamento Mental",
+            "Uso excessivo drena suas reservas.",
+            CardAttribute.PlayerMaxMP,
+            -10,
+            true, // Afeta jogador
             obs.triggerType,
             $"Skill dominante: {skillName}"
         ));
-        
-        disadvantages.Add(new NegotiationOffer(
-            "Previsibilidade Fatal",
-            $"Inimigos aprendem seus padrões.",
-            false,
-            CardAttribute.PlayerMaxHP, -15,
-            CardAttribute.EnemyActionPower, 12,
-            obs.triggerType,
-            $"Skill dominante: {skillName}"
-        ));
-        
-        disadvantages.Add(new NegotiationOffer(
-            "Esgotamento Mágico",
-            $"Uso excessivo da mesma habilidade drena você.",
-            false,
-            CardAttribute.PlayerMaxMP, -15,
-            CardAttribute.EnemyMaxMP, -8,
-            obs.triggerType,
-            $"Skill dominante: {skillName}"
-        ));
-    }
+    }    
     
     /// <summary>
     /// HP baixo frequente - 4 vantagens + 4 desvantagens
@@ -337,42 +335,36 @@ public static class ObservationInterpreter
         List<NegotiationOffer> advantages, List<NegotiationOffer> disadvantages)
     {
         // VANTAGENS - Foco em sobrevivência
-        advantages.Add(new NegotiationOffer(
+        advantages.Add(NegotiationOffer.CreateAdvantage(
             "Fortificação Massiva",
             "Aumente drasticamente seu HP máximo.",
-            true,
-            CardAttribute.PlayerMaxHP, 30,
-            CardAttribute.EnemyMaxHP, 20,
+            CardAttribute.PlayerMaxHP, 20,
             obs.triggerType,
             "HP crítico frequente"
         ));
         
-        advantages.Add(new NegotiationOffer(
+        advantages.Add(NegotiationOffer.CreateAdvantage(
             "Escudo Aprimorado",
             "Fortaleça suas defesas contra ataques.",
-            true,
-            CardAttribute.PlayerDefense, 15,
-            CardAttribute.EnemyActionPower, 12,
+            CardAttribute.PlayerDefense, 8,
             obs.triggerType,
             "HP crítico frequente"
         ));
         
-        advantages.Add(new NegotiationOffer(
+        advantages.Add(NegotiationOffer.CreateAdvantage(
             "Cura Potencializada",
             "Suas habilidades defensivas ficam mais fortes.",
-            true,
-            CardAttribute.PlayerDefensiveActionPower, 20,
-            CardAttribute.EnemyOffensiveActionPower, 10,
+            CardAttribute.PlayerDefensiveActionPower, 12,
             obs.triggerType,
             "HP crítico frequente"
         ));
         
-        advantages.Add(new NegotiationOffer(
-            "Contra-ataque Feroz",
-            "Quando ferido, você ataca com mais força.",
-            true,
-            CardAttribute.PlayerOffensiveActionPower, 18,
-            CardAttribute.EnemyMaxHP, 20,
+        advantages.Add(NegotiationOffer.CreateDisadvantage(
+            "Reclamar com o Gerente",
+            "As ações de todos os inimigos custam mais mana.",
+            CardAttribute.EnemyActionManaCost,   
+            -10,                              
+            false,                            
             obs.triggerType,
             "HP crítico frequente"
         ));
@@ -428,32 +420,26 @@ public static class ObservationInterpreter
         string skillName = obs.GetData<string>("skillName", "Habilidade");
         
         // VANTAGENS
-        advantages.Add(new NegotiationOffer(
+        advantages.Add(NegotiationOffer.CreateAdvantage(
             "Eficiência Mágica",
             "Aprenda a usar habilidades com menos mana.",
-            true,
-            CardAttribute.PlayerActionManaCost, -3,
-            CardAttribute.EnemyActionPower, 8,
+            CardAttribute.PlayerActionManaCost, -8,
             obs.triggerType,
             $"Skill ignorada: {skillName}"
         ));
         
-        advantages.Add(new NegotiationOffer(
+        advantages.Add(NegotiationOffer.CreateAdvantage(
             "Versatilidade Forçada",
-            "Melhore todas suas ações.",
-            true,
-            CardAttribute.PlayerActionPower, 12,
-            CardAttribute.EnemyMaxHP, 15,
+            "Melhore todas suas habilidades ofensivas.",
+            CardAttribute.PlayerActionPower, 8,
             obs.triggerType,
             $"Skill ignorada: {skillName}"
         ));
         
-        advantages.Add(new NegotiationOffer(
+        advantages.Add(NegotiationOffer.CreateAdvantage(
             "Reservas Expandidas",
             "Compense com mais MP.",
-            true,
-            CardAttribute.PlayerMaxMP, 25,
-            CardAttribute.EnemyMaxMP, 12,
+            CardAttribute.PlayerMaxMP, 15,
             obs.triggerType,
             $"Skill ignorada: {skillName}"
         ));
@@ -461,9 +447,7 @@ public static class ObservationInterpreter
         advantages.Add(new NegotiationOffer(
             "Especialização Alternativa",
             "Foque no que você realmente usa.",
-            true,
             CardAttribute.PlayerOffensiveActionPower, 16,
-            CardAttribute.EnemyOffensiveActionPower, 10,
             obs.triggerType,
             $"Skill ignorada: {skillName}"
         ));
@@ -2487,6 +2471,109 @@ public static class ObservationInterpreter
             obs.triggerType,
             $"{currentCoins} moedas, {shopsCount} lojas disponíveis"
         ));
+    }
+    
+    #endregion
+    
+    #region Métodos Helper para Ofertas de Skill Específica
+    
+    /// <summary>
+    /// Cria oferta que modifica APENAS O PODER de uma skill específica
+    /// </summary>
+    private static NegotiationOffer CreateSpecificSkillPowerOffer(
+        string offerName,
+        string description,
+        string targetSkillName,
+        int powerChange,
+        bool isAdvantage,
+        BehaviorTriggerType triggerType)
+    {
+        var offer = new NegotiationOffer
+        {
+            offerName = offerName,
+            offerDescription = description,
+            isAdvantage = isAdvantage,
+            targetAttribute = CardAttribute.PlayerActionPower, // Usado como placeholder
+            value = powerChange,
+            affectsPlayer = true,
+            sourceObservationType = triggerType,
+            contextualInfo = $"Skill: {targetSkillName}"
+        };
+        
+        // MARCA ESPECIAL: Esta oferta modifica skill específica
+        offer.SetData("isSpecificSkill", true);
+        offer.SetData("targetSkillName", targetSkillName);
+        offer.SetData("modifyPower", true);
+        offer.SetData("powerChange", powerChange);
+        
+        return offer;
+    }
+    
+    /// <summary>
+    /// Cria oferta que modifica APENAS O CUSTO DE MANA de uma skill específica
+    /// </summary>
+    private static NegotiationOffer CreateSpecificSkillManaCostOffer(
+        string offerName,
+        string description,
+        string targetSkillName,
+        int manaCostChange,
+        bool isAdvantage,
+        BehaviorTriggerType triggerType)
+    {
+        var offer = new NegotiationOffer
+        {
+            offerName = offerName,
+            offerDescription = description,
+            isAdvantage = isAdvantage,
+            targetAttribute = CardAttribute.PlayerActionManaCost, // Usado como placeholder
+            value = manaCostChange,
+            affectsPlayer = true,
+            sourceObservationType = triggerType,
+            contextualInfo = $"Skill: {targetSkillName}"
+        };
+        
+        // MARCA ESPECIAL
+        offer.SetData("isSpecificSkill", true);
+        offer.SetData("targetSkillName", targetSkillName);
+        offer.SetData("modifyManaCost", true);
+        offer.SetData("manaCostChange", manaCostChange);
+        
+        return offer;
+    }
+    
+    /// <summary>
+    /// Cria oferta que modifica PODER E MANA de uma skill específica
+    /// </summary>
+    private static NegotiationOffer CreateSpecificSkillFullOffer(
+        string offerName,
+        string description,
+        string targetSkillName,
+        int powerChange,
+        int manaCostChange,
+        bool isAdvantage,
+        BehaviorTriggerType triggerType)
+    {
+        var offer = new NegotiationOffer
+        {
+            offerName = offerName,
+            offerDescription = description,
+            isAdvantage = isAdvantage,
+            targetAttribute = CardAttribute.PlayerActionPower, // Placeholder
+            value = powerChange,
+            affectsPlayer = true,
+            sourceObservationType = triggerType,
+            contextualInfo = $"Skill: {targetSkillName}"
+        };
+        
+        // MARCA ESPECIAL
+        offer.SetData("isSpecificSkill", true);
+        offer.SetData("targetSkillName", targetSkillName);
+        offer.SetData("modifyPower", true);
+        offer.SetData("modifyManaCost", true);
+        offer.SetData("powerChange", powerChange);
+        offer.SetData("manaCostChange", manaCostChange);
+        
+        return offer;
     }
     
     #endregion

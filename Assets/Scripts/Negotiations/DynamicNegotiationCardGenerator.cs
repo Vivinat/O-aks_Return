@@ -122,9 +122,6 @@ public class DynamicNegotiationCardGenerator : MonoBehaviour
         }
     }
     
-    /// <summary>
-    /// NOVO: Gera cartas com casamento inteligente de vantagens/desvantagens
-    /// </summary>
     public List<DynamicNegotiationCard> GenerateCards(int numberOfCards)
     {
         List<DynamicNegotiationCard> cards = new List<DynamicNegotiationCard>();
@@ -140,7 +137,6 @@ public class DynamicNegotiationCardGenerator : MonoBehaviour
             return cards;
         }
         
-        // NOVO: Cria pools temporárias para matching
         List<NegotiationOffer> availableAdvantages = new List<NegotiationOffer>(advantagePool);
         List<NegotiationOffer> availableDisadvantages = new List<NegotiationOffer>(disadvantagePool);
         
@@ -149,28 +145,25 @@ public class DynamicNegotiationCardGenerator : MonoBehaviour
             if (availableAdvantages.Count == 0 || availableDisadvantages.Count == 0)
                 break;
             
-            // Pega uma vantagem aleatória
             int advIndex = Random.Range(0, availableAdvantages.Count);
             NegotiationOffer advantage = availableAdvantages[advIndex];
             availableAdvantages.RemoveAt(advIndex);
             
-            // NOVO: Encontra a melhor desvantagem para casar com esta vantagem
             NegotiationOffer disadvantage = FindBestMatch(advantage, availableDisadvantages);
             availableDisadvantages.Remove(disadvantage);
             
-            // Marca como usadas
             usedAdvantages.Add(advantage);
             usedDisadvantages.Add(disadvantage);
             
-            // Escolhe tipo de carta inteligentemente
             NegotiationCardType cardType = ChooseIntelligentCardType(advantage, disadvantage);
             
             DynamicNegotiationCard card = new DynamicNegotiationCard(advantage, disadvantage, cardType);
             cards.Add(card);
             
+            // CORRIGIDO: targetAttribute em vez de playerAttribute/enemyAttribute
             DebugLog($"Carta {i + 1} ({cardType}): {card.GetCardName()}");
-            DebugLog($"  Vantagem: {advantage.offerName} ({advantage.playerAttribute}, valor: {advantage.playerValue})");
-            DebugLog($"  Custo: {disadvantage.offerName} ({disadvantage.enemyAttribute}, valor: {disadvantage.enemyValue})");
+            DebugLog($"  Vantagem: {advantage.offerName} ({advantage.targetAttribute}, valor: {advantage.value})");
+            DebugLog($"  Custo: {disadvantage.offerName} ({disadvantage.targetAttribute}, valor: {disadvantage.value})");
             DebugLog($"  Score de match: {CalculateMatchScore(advantage, disadvantage):F2}");
         }
         
@@ -213,39 +206,43 @@ public class DynamicNegotiationCardGenerator : MonoBehaviour
     private float CalculateMatchScore(NegotiationOffer advantage, NegotiationOffer disadvantage)
     {
         float score = 0f;
-        
+    
         // 1. Categoria de atributo similar (+30 pontos)
-        if (GetAttributeCategory(advantage.playerAttribute) == GetAttributeCategory(disadvantage.enemyAttribute))
+        // CORRIGIDO: targetAttribute
+        if (GetAttributeCategory(advantage.targetAttribute) == GetAttributeCategory(disadvantage.targetAttribute))
         {
             score += 30f;
         }
-        
+    
         // 2. Valores similares (+20 pontos se diferença < 10)
-        int valueDiff = Mathf.Abs(advantage.playerValue - disadvantage.enemyValue);
+        // CORRIGIDO: value
+        int valueDiff = Mathf.Abs(advantage.value - disadvantage.value);
         if (valueDiff < 10)
         {
             score += 20f - valueDiff;
         }
-        
+    
         // 3. Mesmo tipo de observação (+25 pontos)
         if (advantage.sourceObservationType == disadvantage.sourceObservationType)
         {
             score += 25f;
         }
-        
+    
         // 4. Atributos complementares (+15 pontos)
-        if (AreAttributesComplementary(advantage.playerAttribute, disadvantage.enemyAttribute))
+        // CORRIGIDO: targetAttribute
+        if (AreAttributesComplementary(advantage.targetAttribute, disadvantage.targetAttribute))
         {
             score += 15f;
         }
-        
+    
         // 5. Balance check: vantagem não deve ser muito maior que custo (+10 pontos se balanceado)
-        float balance = (float)advantage.playerValue / Mathf.Max(1, disadvantage.enemyValue);
+        // CORRIGIDO: value
+        float balance = (float)advantage.value / Mathf.Max(1, Mathf.Abs(disadvantage.value));
         if (balance >= 0.8f && balance <= 1.2f)
         {
             score += 10f;
         }
-        
+    
         return score;
     }
     
@@ -377,8 +374,8 @@ public class DynamicNegotiationCardGenerator : MonoBehaviour
     
     private NegotiationCardType ChooseIntelligentCardType(NegotiationOffer advantage, NegotiationOffer disadvantage)
     {
-        bool playerAttrsRelated = AreAttributesRelated(advantage.playerAttribute);
-        bool enemyAttrsRelated = AreAttributesRelated(disadvantage.enemyAttribute);
+        bool playerAttrsRelated = AreAttributesRelated(advantage.targetAttribute);
+        bool enemyAttrsRelated = AreAttributesRelated(disadvantage.targetAttribute);
         
         float roll = Random.value;
         

@@ -43,7 +43,11 @@ public enum CardAttribute
     
     // Atributos Gerais
     CoinsEarned,
-    ShopPrices
+    ShopPrices,
+    
+    // NOVO: Modificadores específicos de skill
+    SpecificSkillPower,      // Modifica apenas uma skill específica (poder)
+    SpecificSkillManaCost,   // Modifica apenas uma skill específica (custo)
 }
 
 /// <summary>
@@ -59,108 +63,130 @@ public enum CardIntensity
 }
 
 /// <summary>
-/// Classe auxiliar para conversão de intensidade em valores (REBALANCEADA)
+/// Helper para trabalhar com intensidades de cartas
+/// VALORES BALANCEADOS: 4, 8, 12 (teto máximo)
 /// </summary>
 public static class IntensityHelper
 {
     /// <summary>
-    /// Retorna valor base para a intensidade
-    /// </summary>
-    public static int GetValue(CardIntensity intensity)
-    {
-        switch (intensity)
-        {
-            case CardIntensity.VeryLow: return 5;
-            case CardIntensity.Low: return 10;
-            case CardIntensity.Medium: return 18;
-            case CardIntensity.High: return 25;
-            case CardIntensity.VeryHigh: return 30;
-            default: return 10;
-        }
-    }
-    
-    /// <summary>
-    /// NOVO: Retorna valor escalado baseado no tipo de atributo
-    /// Stats de combate usam valores menores, economia usa valores maiores
+    /// Retorna o valor escalado baseado na intensidade e tipo de atributo
+    /// TETO: 4 (Low), 8 (Medium), 12 (High)
     /// </summary>
     public static int GetScaledValue(CardIntensity intensity, CardAttribute attribute)
     {
-        int baseValue = GetValue(intensity);
+        // Define multiplicador base por intensidade
+        float baseMultiplier = intensity switch
+        {
+            CardIntensity.Low => 1.0f,      // 4
+            CardIntensity.Medium => 2.0f,   // 8
+            CardIntensity.High => 3.0f,     // 12
+            _ => 1.0f
+        };
         
+        // Define valor base por categoria de atributo
+        int baseValue = GetBaseValueForAttribute(attribute);
+        
+        // Calcula valor final
+        int finalValue = Mathf.RoundToInt(baseValue * baseMultiplier);
+        
+        return finalValue;
+    }
+    
+    /// <summary>
+    /// Retorna valor básico para a intensidade
+    /// </summary>
+    public static int GetValue(CardIntensity intensity)
+    {
+        return intensity switch
+        {
+            CardIntensity.Low => 4,
+            CardIntensity.Medium => 8,
+            CardIntensity.High => 12,
+            _ => 4
+        };
+    }
+    
+    /// <summary>
+    /// Retorna valor base por categoria de atributo
+    /// Base = 4 (para escalar 4, 8, 12)
+    /// </summary>
+    private static int GetBaseValueForAttribute(CardAttribute attribute)
+    {
         switch (attribute)
         {
-            // Stats de combate diretos (HP, MP, Defense)
+            // === STATS BASE (valores maiores) ===
             case CardAttribute.PlayerMaxHP:
             case CardAttribute.EnemyMaxHP:
-                return baseValue; // Valor cheio para HP
+                return 8;  // 8, 16, 24
             
             case CardAttribute.PlayerMaxMP:
             case CardAttribute.EnemyMaxMP:
-                return Mathf.RoundToInt(baseValue * 0.8f); // 80% para MP
+                return 6;  // 6, 12, 18
             
+            // === STATS DE COMBATE (valores médios) ===
             case CardAttribute.PlayerDefense:
             case CardAttribute.EnemyDefense:
-                return Mathf.RoundToInt(baseValue * 0.6f); // 60% para Defense
-            
-            // Stats de velocidade (valores muito menores)
-            case CardAttribute.PlayerSpeed:
-            case CardAttribute.EnemySpeed:
-                return Mathf.Max(1, Mathf.RoundToInt(baseValue * 0.2f)); // 20% para Speed (min 1)
-            
-            // Poder de ações
             case CardAttribute.PlayerActionPower:
             case CardAttribute.EnemyActionPower:
+                return 4;  // 4, 8, 12
+            
+            // === TIPOS ESPECÍFICOS DE AÇÃO ===
             case CardAttribute.PlayerOffensiveActionPower:
-            case CardAttribute.EnemyOffensiveActionPower:
-                return Mathf.RoundToInt(baseValue * 0.7f); // 70% para action power
-            
             case CardAttribute.PlayerDefensiveActionPower:
-                return Mathf.RoundToInt(baseValue * 0.6f); // 60% para defensive
-            
             case CardAttribute.PlayerAOEActionPower:
-            case CardAttribute.EnemyAOEActionPower:
-                return Mathf.RoundToInt(baseValue * 0.5f); // 50% para AOE (afeta múltiplos alvos)
-            
             case CardAttribute.PlayerSingleTargetActionPower:
-                return Mathf.RoundToInt(baseValue * 0.8f); // 80% para single target
+            case CardAttribute.EnemyOffensiveActionPower:
+            case CardAttribute.EnemyAOEActionPower:
+                return 5;  // 5, 10, 15
             
-            // Custo de mana
+            // === VELOCIDADE (valores menores) ===
+            case CardAttribute.PlayerSpeed:
+            case CardAttribute.EnemySpeed:
+                return 1;  // 1, 2, 3
+            
+            // === MANA COST (valores menores) ===
             case CardAttribute.PlayerActionManaCost:
             case CardAttribute.EnemyActionManaCost:
-                return Mathf.RoundToInt(baseValue * 0.4f); // 40% para mana cost
+                return 2;  // 2, 4, 6
             
-            // Economia (valores relativamente maiores)
+            // === ECONOMIA ===
             case CardAttribute.CoinsEarned:
-                return Mathf.RoundToInt(baseValue * 1.2f); // 120% para coins
+                return 5;  // 5, 10, 15
             
             case CardAttribute.ShopPrices:
-                return Mathf.RoundToInt(baseValue * 0.9f); // 90% para preços
+                return 4;  // 4, 8, 12
             
             default:
-                return baseValue;
-        }
-    }
-    
-    public static string GetDisplayName(CardIntensity intensity)
-    {
-        switch (intensity)
-        {
-            case CardIntensity.VeryLow: return "Muito Baixa";
-            case CardIntensity.Low: return "Baixa";
-            case CardIntensity.Medium: return "Média";
-            case CardIntensity.High: return "Alta";
-            case CardIntensity.VeryHigh: return "Muito Alta";
-            default: return "Média";
+                return 4;  // Default: 4, 8, 12
         }
     }
     
     /// <summary>
-    /// NOVO: Retorna descrição com valor exato
+    /// Retorna descrição legível da intensidade
     /// </summary>
-    public static string GetDisplayNameWithValue(CardIntensity intensity, CardAttribute attribute)
+    public static string GetIntensityDisplayName(CardIntensity intensity)
     {
-        int value = GetScaledValue(intensity, attribute);
-        return $"{GetDisplayName(intensity)} (±{value})";
+        return intensity switch
+        {
+            CardIntensity.Low => "Baixo",
+            CardIntensity.Medium => "Médio",
+            CardIntensity.High => "Alto",
+            _ => "Desconhecido"
+        };
+    }
+    
+    /// <summary>
+    /// Retorna cor para a intensidade
+    /// </summary>
+    public static Color GetIntensityColor(CardIntensity intensity)
+    {
+        return intensity switch
+        {
+            CardIntensity.Low => new Color(0.6f, 0.8f, 1f),      // Azul claro
+            CardIntensity.Medium => new Color(1f, 0.8f, 0.4f),   // Amarelo
+            CardIntensity.High => new Color(1f, 0.4f, 0.4f),     // Vermelho
+            _ => Color.white
+        };
     }
 }
 
@@ -285,4 +311,6 @@ public static class AttributeHelper
                 return new[] { attribute };
         }
     }
+    
+    
 }

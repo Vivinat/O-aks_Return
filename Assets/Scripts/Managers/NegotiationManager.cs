@@ -405,7 +405,7 @@ public class NegotiationManager : MonoBehaviour
     }
     
     /// <summary>
-    /// Aplica efeitos de uma carta dinâmica
+    /// Aplica efeitos de uma carta dinâmica (ATUALIZADO para suportar skills específicas)
     /// </summary>
     private void ApplyDynamicCard(NegotiationCardUI cardUI)
     {
@@ -421,14 +421,63 @@ public class NegotiationManager : MonoBehaviour
         CardAttribute enemyAttr = cardUI.GetSelectedEnemyAttribute();
         int value = cardUI.GetSelectedValue();
         
-        DebugLog($"Aplicando carta: {card.GetCardName()}");
-        DebugLog($"  Jogador: {playerAttr} {FormatValue(value)}");
-        DebugLog($"  Inimigos: {enemyAttr} {FormatValue(value)}");
+        DebugLog($"=== APLICANDO CARTA: {card.GetCardName()} ===");
         
-        if (DifficultySystem.Instance != null)
+        // === APLICA VANTAGEM ===
+        NegotiationOffer advantage = card.playerBenefit;
+        
+        // Verifica se é skill específica
+        bool isSpecificSkill = advantage.HasData("isSpecificSkill") && advantage.GetData<bool>("isSpecificSkill");
+        
+        if (isSpecificSkill)
         {
-            DifficultySystem.Instance.ApplyNegotiation(playerAttr, enemyAttr, value);
+            // Aplica modificação na skill específica
+            DebugLog($"  Aplicando vantagem em SKILL ESPECÍFICA");
+            NegotiationOfferApplier.ApplyOffer(advantage, value);
         }
+        else
+        {
+            // Aplica modificador geral
+            DebugLog($"  Jogador: {playerAttr} {FormatValue(value)}");
+            
+            if (DifficultySystem.Instance != null)
+            {
+                DifficultySystem.Instance.Modifiers.ApplyModifier(playerAttr, value);
+            }
+        }
+        
+        // === APLICA DESVANTAGEM ===
+        NegotiationOffer disadvantage = card.playerCost;
+        
+        bool isSpecificSkillCost = disadvantage.HasData("isSpecificSkill") && disadvantage.GetData<bool>("isSpecificSkill");
+        
+        if (isSpecificSkillCost)
+        {
+            // Aplica modificação na skill específica (custo)
+            DebugLog($"  Aplicando desvantagem em SKILL ESPECÍFICA");
+            NegotiationOfferApplier.ApplyOffer(disadvantage, value);
+        }
+        else
+        {
+            // Aplica modificador geral
+            if (disadvantage.affectsPlayer)
+            {
+                // Debuff no jogador
+                DebugLog($"  Jogador perde: {playerAttr} {FormatValue(value)}");
+            }
+            else
+            {
+                // Buff nos inimigos
+                DebugLog($"  Inimigos ganham: {enemyAttr} {FormatValue(value)}");
+            }
+            
+            if (DifficultySystem.Instance != null)
+            {
+                DifficultySystem.Instance.Modifiers.ApplyModifier(enemyAttr, value);
+            }
+        }
+        
+        DebugLog("=== NEGOCIAÇÃO APLICADA COM SUCESSO ===");
     }
     
     /// <summary>
@@ -525,4 +574,6 @@ public class NegotiationManager : MonoBehaviour
         if (declineButton != null)
             declineButton.onClick.RemoveAllListeners();
     }
+    
+    
 }

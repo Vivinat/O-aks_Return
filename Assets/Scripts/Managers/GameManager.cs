@@ -52,6 +52,10 @@ public class GameManager : MonoBehaviour
             {
                 DifficultySystem.Instance.ApplyToPlayer(PlayerCharacterInfo);
             }
+            if (GetComponent<SpecificSkillModifier>() == null)
+            {
+                gameObject.AddComponent<SpecificSkillModifier>();
+            }
             InitializePlayerActions();
         }
         else

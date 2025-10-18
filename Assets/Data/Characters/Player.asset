@@ -15,10 +15,11 @@ MonoBehaviour:
   characterName: Logrif
   team: 0
   characterSprite: {fileID: 0}
-  maxHp: 1
+  maxHp: 120
   maxMp: 100
   defense: 15
   speed: 2
   deathSound: {fileID: 8300000, guid: e12666ffd7681944aa9226f20dc7cb95, type: 3}
   battleActions:
   - {fileID: 11400000, guid: fd2185eac5ce59d40a6129af997a4632, type: 2}
+  - {fileID: 11400000, guid: 8a019ceea5aee9c488a6e99ebc688ad0, type: 2}

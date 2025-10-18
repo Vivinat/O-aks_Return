@@ -1,11 +1,10 @@
-// Assets/Scripts/Negotiation/DynamicNegotiationCard.cs
+// Assets/Scripts/Negotiation/DynamicNegotiationCard.cs (CORRIGIDO)
 
 using UnityEngine;
 using System.Collections.Generic;
 
 /// <summary>
-/// Representa uma carta de negociação gerada dinamicamente
-/// Suporta Fixed, IntensityOnly e AttributeAndIntensity
+/// Carta de negociação: EXATAMENTE 1 vantagem + 1 desvantagem
 /// </summary>
 [System.Serializable]
 public class DynamicNegotiationCard
@@ -16,11 +15,9 @@ public class DynamicNegotiationCard
     
     public NegotiationCardType cardType;
     
-    // Dados da oferta de benefício (vantagem)
-    public NegotiationOffer playerBenefit;
-    
-    // Dados da oferta de custo (desvantagem)
-    public NegotiationOffer playerCost;
+    // EXATAMENTE uma vantagem e uma desvantagem
+    public NegotiationOffer playerBenefit;  // O que você ganha
+    public NegotiationOffer playerCost;     // O que você perde OU o que inimigos ganham
     
     // Para IntensityOnly e AttributeAndIntensity
     public List<CardIntensity> availableIntensities = new List<CardIntensity>
@@ -30,12 +27,24 @@ public class DynamicNegotiationCard
         CardIntensity.High
     };
     
-    // Para AttributeAndIntensity
     public List<CardAttribute> availablePlayerAttributes = new List<CardAttribute>();
     public List<CardAttribute> availableEnemyAttributes = new List<CardAttribute>();
     
     public DynamicNegotiationCard(NegotiationOffer advantage, NegotiationOffer disadvantage, NegotiationCardType type = NegotiationCardType.Fixed)
     {
+        // Validação: garante que temos exatamente 1 vantagem e 1 desvantagem
+        if (!advantage.isAdvantage)
+        {
+            Debug.LogError("Primeira oferta deve ser vantagem!");
+            return;
+        }
+        
+        if (disadvantage.isAdvantage)
+        {
+            Debug.LogError("Segunda oferta deve ser desvantagem!");
+            return;
+        }
+        
         playerBenefit = advantage;
         playerCost = disadvantage;
         cardType = type;
@@ -43,7 +52,6 @@ public class DynamicNegotiationCard
         cardName = GenerateCardName();
         cardDescription = GenerateDescription();
         
-        // Setup baseado no tipo
         SetupByType();
     }
     
@@ -52,15 +60,12 @@ public class DynamicNegotiationCard
         switch (cardType)
         {
             case NegotiationCardType.Fixed:
-                // Nada a fazer, valores são fixos
                 break;
                 
             case NegotiationCardType.IntensityOnly:
-                // Mantém os atributos fixos mas permite escolher intensidade
                 break;
                 
             case NegotiationCardType.AttributeAndIntensity:
-                // Gera opções de atributos baseadas nos originais
                 GenerateAttributeOptions();
                 break;
         }
@@ -68,11 +73,10 @@ public class DynamicNegotiationCard
     
     private void GenerateAttributeOptions()
     {
-        // Jogador: oferece variações do atributo original ou relacionados
-        availablePlayerAttributes.Add(playerBenefit.playerAttribute);
+        // Gera variações do atributo da vantagem
+        availablePlayerAttributes.Add(playerBenefit.targetAttribute);
         
-        // Adiciona atributos relacionados
-        switch (playerBenefit.playerAttribute)
+        switch (playerBenefit.targetAttribute)
         {
             case CardAttribute.PlayerMaxHP:
                 availablePlayerAttributes.Add(CardAttribute.PlayerDefense);
@@ -88,19 +92,19 @@ public class DynamicNegotiationCard
                 break;
         }
         
-        // Inimigos: oferece variações
-        availableEnemyAttributes.Add(playerCost.enemyAttribute);
+        // Gera variações do atributo da desvantagem
+        availableEnemyAttributes.Add(playerCost.targetAttribute);
         
-        switch (playerCost.enemyAttribute)
+        switch (playerCost.targetAttribute)
         {
+            case CardAttribute.PlayerMaxHP:
+                availableEnemyAttributes.Add(CardAttribute.PlayerDefense);
+                break;
             case CardAttribute.EnemyMaxHP:
                 availableEnemyAttributes.Add(CardAttribute.EnemyDefense);
                 break;
             case CardAttribute.EnemySpeed:
                 availableEnemyAttributes.Add(CardAttribute.EnemyActionPower);
-                break;
-            case CardAttribute.EnemyActionPower:
-                availableEnemyAttributes.Add(CardAttribute.EnemyMaxHP);
                 break;
         }
     }
@@ -118,57 +122,49 @@ public class DynamicNegotiationCard
     
     private string GenerateDescription()
     {
-        return $"Uma negociação que equilibra {playerBenefit.offerName.ToLower()} com {playerCost.offerName.ToLower()}.";
+        return $"Troca {playerBenefit.offerName.ToLower()} por {playerCost.offerName.ToLower()}.";
     }
     
     /// <summary>
-    /// Retorna descrição completa formatada (para tipo Fixed)
+    /// Retorna descrição completa CLARA e CORRETA
     /// </summary>
     public string GetFullDescription()
     {
         return GetFullDescription(
-            playerBenefit.playerAttribute, 
-            playerCost.enemyAttribute, 
-            playerBenefit.playerValue
+            playerBenefit.targetAttribute, 
+            playerCost.targetAttribute, 
+            playerBenefit.value
         );
     }
     
-    /// <summary>
-    /// Retorna descrição completa formatada com valores customizados
-    /// </summary>
     public string GetFullDescription(CardAttribute? playerAttr, CardAttribute? enemyAttr, int value)
     {
         string desc = $"<b><size=110%>{cardName}</size></b>\n\n";
         desc += $"<i>{cardDescription}</i>\n\n";
         
-        // Benefício (vantagem)
+        // === VANTAGEM (sempre para o jogador) ===
         desc += $"<color=#90EE90><b>✓ Você Ganha:</b></color>\n";
-        if (playerBenefit.playerValue != 0)
+        CardAttribute advantageAttr = playerAttr ?? playerBenefit.targetAttribute;
+        int advantageValue = (cardType == NegotiationCardType.Fixed) ? playerBenefit.value : value;
+        string advantageSign = advantageValue > 0 ? "+" : "";
+        desc += $"{advantageSign}{advantageValue} {AttributeHelper.GetDisplayName(advantageAttr)}\n";
+        
+        // === DESVANTAGEM (debuff no jogador OU buff nos inimigos) ===
+        desc += $"\n<color=#FF6B6B><b>✗ Custo:</b></color>\n";
+        
+        CardAttribute costAttr = enemyAttr ?? playerCost.targetAttribute;
+        int costValue = (cardType == NegotiationCardType.Fixed) ? playerCost.value : value;
+        string costSign = costValue > 0 ? "+" : "";
+        
+        if (playerCost.affectsPlayer)
         {
-            CardAttribute attr = playerAttr ?? playerBenefit.playerAttribute;
-            int val = (cardType == NegotiationCardType.Fixed) ? playerBenefit.playerValue : value;
-            string sign = val > 0 ? "+" : "";
-            desc += $"{sign}{val} {AttributeHelper.GetDisplayName(attr)}\n";
+            // Debuff no jogador
+            desc += $"Você perde: {costSign}{costValue} {AttributeHelper.GetDisplayName(costAttr)}";
         }
-        
-        // Custo (desvantagem)
-        desc += $"\n<color=#FF6B6B><b>✗ Você Perde / Inimigos Ganham:</b></color>\n";
-        
-        // Debuff no jogador (se houver)
-        if (playerCost.playerValue != 0)
+        else
         {
-            int val = (cardType == NegotiationCardType.Fixed) ? playerCost.playerValue : value;
-            string sign = val > 0 ? "+" : "";
-            desc += $"{sign}{val} {AttributeHelper.GetDisplayName(playerCost.playerAttribute)}\n";
-        }
-        
-        // Buff nos inimigos (se houver)
-        if (playerCost.enemyValue != 0)
-        {
-            CardAttribute attr = enemyAttr ?? playerCost.enemyAttribute;
-            int val = (cardType == NegotiationCardType.Fixed) ? playerCost.enemyValue : value;
-            string sign = val > 0 ? "+" : "";
-            desc += $"Inimigos: {sign}{val} {AttributeHelper.GetDisplayName(attr)}";
+            // Buff nos inimigos
+            desc += $"Inimigos ganham: {costSign}{costValue} {AttributeHelper.GetDisplayName(costAttr)}";
         }
         
         return desc;
