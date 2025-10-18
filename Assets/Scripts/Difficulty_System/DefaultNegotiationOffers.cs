@@ -1,4 +1,4 @@
-// Assets/Scripts/Difficulty_System/DefaultNegotiationOffers.cs (IMPROVED)
+// Assets/Scripts/Difficulty_System/DefaultNegotiationOffers.cs (BALANCED)
 
 using UnityEngine;
 using System.Collections.Generic;
@@ -6,7 +6,7 @@ using System.Linq;
 
 /// <summary>
 /// Gera ofertas de negociação padrão que estão sempre disponíveis
-/// MELHORADO: Agora usa mais ofertas IntensityOnly e AttributeAndIntensity
+/// BALANCEADO: Valores ajustados, mais ofertas flexíveis
 /// </summary>
 public class DefaultNegotiationOffers : MonoBehaviour
 {
@@ -21,8 +21,8 @@ public class DefaultNegotiationOffers : MonoBehaviour
     [SerializeField] [Range(0f, 1f)] private float fixedOfferProbability = 0.3f;
     
     [Tooltip("Probabilidade de gerar ofertas IntensityOnly (0-1)")]
-    [SerializeField] [Range(0f, 1f)] private float intensityOnlyProbability = 0.5f;
-    // O resto será AttributeAndIntensity (0.2f se fixed=0.3 e intensity=0.5)
+    [SerializeField] [Range(0f, 1f)] private float intensityOnlyProbability = 0.4f;
+    // O resto será AttributeAndIntensity (0.3f se fixed=0.3 e intensity=0.4)
     
     [Header("Debug")]
     [SerializeField] private bool showDebugLogs = true;
@@ -62,7 +62,7 @@ public class DefaultNegotiationOffers : MonoBehaviour
         // 2. Ofertas de mana (FLEXÍVEIS)
         allPossibleOffers.AddRange(GenerateManaOffers(currentMap));
         
-        // 3. Ofertas de ações específicas (NOVO)
+        // 3. Ofertas de ações específicas
         allPossibleOffers.AddRange(GenerateActionSpecificOffers(currentMap));
         
         // 4. Ofertas relacionadas a boss
@@ -88,38 +88,36 @@ public class DefaultNegotiationOffers : MonoBehaviour
         return offers;
     }
     
-    #region Geradores Específicos - MELHORADOS
+    #region Geradores Específicos - BALANCEADOS
     
     /// <summary>
-    /// NOVO: Ofertas defensivas FLEXÍVEIS (IntensityOnly ou AttributeAndIntensity)
+    /// Ofertas defensivas FLEXÍVEIS (IntensityOnly ou AttributeAndIntensity)
     /// </summary>
     private List<NegotiationOffer> GenerateDefensiveOffers(string mapName)
     {
         List<NegotiationOffer> offers = new List<NegotiationOffer>();
         
-        // VANTAGEM: Fortificação (IntensityOnly ou AttributeAndIntensity)
+        // VANTAGEM: Fortificação
         if (ShouldMakeFlexible())
         {
-            // Oferece escolha entre HP e Defense
             offers.Add(new NegotiationOffer(
                 "Fortificação Adaptativa",
                 "Escolha como fortalecer suas defesas contra adversários.",
                 true,
-                CardAttribute.PlayerMaxHP, 18, // Base value para referência
-                CardAttribute.EnemyActionPower, 15,
+                CardAttribute.PlayerMaxHP, 15, // Valor base reduzido
+                CardAttribute.EnemyActionPower, 12,
                 BehaviorTriggerType.DefaultSessionOffer,
                 "Oferta flexível de defesa"
             ));
         }
         else
         {
-            // Fixed com valores balanceados
             offers.Add(new NegotiationOffer(
                 "Fortificação Básica",
                 "Aumente sua resistência contra ataques.",
                 true,
-                CardAttribute.PlayerDefense, 10,
-                CardAttribute.EnemyActionPower, 12,
+                CardAttribute.PlayerDefense, 8, // Defesa reduzida (universal)
+                CardAttribute.EnemyActionPower, 10,
                 BehaviorTriggerType.DefaultSessionOffer,
                 "Oferta fixa de defesa"
             ));
@@ -130,8 +128,8 @@ public class DefaultNegotiationOffers : MonoBehaviour
             "Armadura Frágil",
             "Sua proteção está comprometida, mas enfraquece inimigos.",
             false,
-            CardAttribute.PlayerDefense, -10,
-            CardAttribute.EnemyMaxHP, -18,
+            CardAttribute.PlayerDefense, -8, // Defesa reduzida
+            CardAttribute.EnemyMaxHP, -15,
             BehaviorTriggerType.DefaultSessionOffer,
             "Desvantagem de defesa"
         ));
@@ -140,21 +138,21 @@ public class DefaultNegotiationOffers : MonoBehaviour
     }
     
     /// <summary>
-    /// NOVO: Ofertas de mana FLEXÍVEIS
+    /// Ofertas de mana FLEXÍVEIS
     /// </summary>
     private List<NegotiationOffer> GenerateManaOffers(string mapName)
     {
         List<NegotiationOffer> offers = new List<NegotiationOffer>();
         
-        // VANTAGEM: Reservas de mana (AttributeAndIntensity)
+        // VANTAGEM: Reservas de mana
         if (ShouldMakeFlexible())
         {
             offers.Add(new NegotiationOffer(
                 "Reservas Arcanas",
                 "Escolha entre aumentar seu MP ou reduzir custos de mana.",
                 true,
-                CardAttribute.PlayerMaxMP, 15,
-                CardAttribute.EnemyMaxMP, 12,
+                CardAttribute.PlayerMaxMP, 12,
+                CardAttribute.EnemyMaxMP, 10,
                 BehaviorTriggerType.DefaultSessionOffer,
                 "Oferta flexível de mana"
             ));
@@ -165,8 +163,8 @@ public class DefaultNegotiationOffers : MonoBehaviour
                 "Reservas de Mana",
                 "Expanda suas reservas de mana.",
                 true,
-                CardAttribute.PlayerMaxMP, 15,
-                CardAttribute.EnemyMaxMP, 12,
+                CardAttribute.PlayerMaxMP, 12,
+                CardAttribute.EnemyMaxMP, 10,
                 BehaviorTriggerType.DefaultSessionOffer,
                 "Oferta fixa de mana"
             ));
@@ -177,8 +175,8 @@ public class DefaultNegotiationOffers : MonoBehaviour
             "Fadiga Mágica",
             "Suas reservas de mana estão esgotadas.",
             false,
-            CardAttribute.PlayerMaxMP, -12,
-            CardAttribute.EnemyActionManaCost, -6,
+            CardAttribute.PlayerMaxMP, -10,
+            CardAttribute.EnemyActionManaCost, -5,
             BehaviorTriggerType.DefaultSessionOffer,
             "Desvantagem de mana"
         ));
@@ -187,7 +185,7 @@ public class DefaultNegotiationOffers : MonoBehaviour
     }
     
     /// <summary>
-    /// NOVO: Ofertas específicas para tipos de ações
+    /// Ofertas específicas para tipos de ações
     /// </summary>
     private List<NegotiationOffer> GenerateActionSpecificOffers(string mapName)
     {
@@ -198,8 +196,8 @@ public class DefaultNegotiationOffers : MonoBehaviour
             "Foco Letal",
             "Seus ataques contra alvos únicos se tornam devastadores.",
             true,
-            CardAttribute.PlayerSingleTargetActionPower, 20,
-            CardAttribute.EnemyDefense, 12,
+            CardAttribute.PlayerSingleTargetActionPower, 16,
+            CardAttribute.EnemyDefense, 10,
             BehaviorTriggerType.DefaultSessionOffer,
             "Buff single-target"
         ));
@@ -209,8 +207,8 @@ public class DefaultNegotiationOffers : MonoBehaviour
             "Destruição em Massa",
             "Seus ataques em área ganham poder adicional.",
             true,
-            CardAttribute.PlayerAOEActionPower, 15,
-            CardAttribute.EnemyMaxHP, 18,
+            CardAttribute.PlayerAOEActionPower, 12, // AOE já atinge múltiplos
+            CardAttribute.EnemyMaxHP, 15,
             BehaviorTriggerType.DefaultSessionOffer,
             "Buff AOE"
         ));
@@ -220,8 +218,8 @@ public class DefaultNegotiationOffers : MonoBehaviour
             "Cura Aprimorada",
             "Suas habilidades de cura e proteção são mais eficazes.",
             true,
-            CardAttribute.PlayerDefensiveActionPower, 18,
-            CardAttribute.EnemyOffensiveActionPower, 12,
+            CardAttribute.PlayerDefensiveActionPower, 15,
+            CardAttribute.EnemyOffensiveActionPower, 10,
             BehaviorTriggerType.DefaultSessionOffer,
             "Buff healing"
         ));
@@ -231,8 +229,8 @@ public class DefaultNegotiationOffers : MonoBehaviour
             "Força Enfraquecida",
             "Seus ataques perdem potência.",
             false,
-            CardAttribute.PlayerOffensiveActionPower, -15,
-            CardAttribute.EnemyMaxHP, -20,
+            CardAttribute.PlayerOffensiveActionPower, -12,
+            CardAttribute.EnemyMaxHP, -16,
             BehaviorTriggerType.DefaultSessionOffer,
             "Debuff ataques"
         ));
@@ -249,13 +247,13 @@ public class DefaultNegotiationOffers : MonoBehaviour
         
         string bossName = GetBossNameFromMap(mapName);
         
-        // VANTAGEM: Enfraquecimento do Boss (valores balanceados)
+        // VANTAGEM: Enfraquecimento do Boss
         offers.Add(new NegotiationOffer(
             "Enfraquecimento do Chefe",
             $"Você ganha força contra o boss {bossName}, mas ele se defende melhor.",
             true,
-            CardAttribute.PlayerActionPower, 18,
-            CardAttribute.EnemyDefense, 15,
+            CardAttribute.PlayerActionPower, 15,
+            CardAttribute.EnemyDefense, 12,
             BehaviorTriggerType.DefaultSessionOffer,
             $"Boss: {bossName}"
         ));
@@ -265,19 +263,19 @@ public class DefaultNegotiationOffers : MonoBehaviour
             "Armadura Quebrada",
             $"O boss {bossName} tem sua defesa reduzida.",
             true,
-            CardAttribute.PlayerActionPower, 22,
-            CardAttribute.EnemyDefense, 18,
+            CardAttribute.PlayerActionPower, 18,
+            CardAttribute.EnemyDefense, 15,
             BehaviorTriggerType.DefaultSessionOffer,
             $"Boss: {bossName}"
         ));
         
-        // DESVANTAGEM: Boss mais forte (valores balanceados)
+        // DESVANTAGEM: Boss mais forte
         offers.Add(new NegotiationOffer(
             "Fúria do Chefe",
             $"O boss {bossName} se enfurece e ganha poder.",
             false,
-            CardAttribute.PlayerMaxHP, -18,
-            CardAttribute.EnemyActionPower, 25,
+            CardAttribute.PlayerMaxHP, -15,
+            CardAttribute.EnemyActionPower, 20,
             BehaviorTriggerType.DefaultSessionOffer,
             $"Boss: {bossName}"
         ));
@@ -287,8 +285,8 @@ public class DefaultNegotiationOffers : MonoBehaviour
             "Dreno Arcano",
             $"O boss {bossName} perde parte de sua mana.",
             true,
-            CardAttribute.PlayerMaxMP, 12,
-            CardAttribute.EnemyMaxMP, 18,
+            CardAttribute.PlayerMaxMP, 10,
+            CardAttribute.EnemyMaxMP, 15,
             BehaviorTriggerType.DefaultSessionOffer,
             $"Boss: {bossName}"
         ));
@@ -305,35 +303,35 @@ public class DefaultNegotiationOffers : MonoBehaviour
         
         string randomEnemy = possibleEnemies[Random.Range(0, possibleEnemies.Count)];
         
-        // VANTAGEM: Debilitação (valores balanceados)
+        // VANTAGEM: Debilitação
         offers.Add(new NegotiationOffer(
             "Debilitação Direcionada",
             $"Enfraquece os ataques de {randomEnemy}.",
             true,
-            CardAttribute.PlayerDefense, 12,
-            CardAttribute.EnemyActionPower, 10,
+            CardAttribute.PlayerDefense, 10,
+            CardAttribute.EnemyActionPower, 8,
             BehaviorTriggerType.DefaultSessionOffer,
             $"Inimigo alvo: {randomEnemy}"
         ));
         
-        // VANTAGEM: Lentidão (valores balanceados - Speed usa escala menor)
+        // VANTAGEM: Lentidão
         offers.Add(new NegotiationOffer(
             "Lentidão Seletiva",
             $"{randomEnemy} se move mais devagar.",
             true,
-            CardAttribute.PlayerSpeed, 2,
-            CardAttribute.EnemySpeed, -3,
+            CardAttribute.PlayerSpeed, 2, // Speed usa escala menor
+            CardAttribute.EnemySpeed, -2,
             BehaviorTriggerType.DefaultSessionOffer,
             $"Inimigo alvo: {randomEnemy}"
         ));
         
-        // DESVANTAGEM: Inimigo mais forte (valores balanceados)
+        // DESVANTAGEM: Inimigo mais forte
         offers.Add(new NegotiationOffer(
             "Treinamento Hostil",
             $"{randomEnemy} se torna mais letal.",
             false,
-            CardAttribute.PlayerActionPower, -12,
-            CardAttribute.EnemyActionPower, 18,
+            CardAttribute.PlayerActionPower, -10,
+            CardAttribute.EnemyActionPower, 15,
             BehaviorTriggerType.DefaultSessionOffer,
             $"Inimigo alvo: {randomEnemy}"
         ));
@@ -342,21 +340,21 @@ public class DefaultNegotiationOffers : MonoBehaviour
     }
     
     /// <summary>
-    /// NOVO: Ofertas de economia FLEXÍVEIS
+    /// Ofertas de economia FLEXÍVEIS
     /// </summary>
     private List<NegotiationOffer> GenerateEconomyOffers(string mapName)
     {
         List<NegotiationOffer> offers = new List<NegotiationOffer>();
         
-        // VANTAGEM: Mais moedas (IntensityOnly)
+        // VANTAGEM: Mais moedas
         if (ShouldMakeFlexible())
         {
             offers.Add(new NegotiationOffer(
                 "Fortuna Crescente",
                 "Escolha quanto deseja ampliar seus ganhos de moedas.",
                 true,
-                CardAttribute.CoinsEarned, 20,
-                CardAttribute.ShopPrices, 15,
+                CardAttribute.CoinsEarned, 16,
+                CardAttribute.ShopPrices, 12,
                 BehaviorTriggerType.DefaultSessionOffer,
                 "Oferta flexível de moedas"
             ));
@@ -367,8 +365,8 @@ public class DefaultNegotiationOffers : MonoBehaviour
                 "Bolsos Profundos",
                 "Ganhe mais moedas em batalhas.",
                 true,
-                CardAttribute.CoinsEarned, 18,
-                CardAttribute.ShopPrices, 12,
+                CardAttribute.CoinsEarned, 15,
+                CardAttribute.ShopPrices, 10,
                 BehaviorTriggerType.DefaultSessionOffer,
                 "Oferta fixa de moedas"
             ));
@@ -379,19 +377,19 @@ public class DefaultNegotiationOffers : MonoBehaviour
             "Desconto Cósmico",
             "Itens custam menos nas lojas.",
             true,
-            CardAttribute.ShopPrices, -15,
-            CardAttribute.EnemyMaxHP, 18,
+            CardAttribute.ShopPrices, -12,
+            CardAttribute.EnemyMaxHP, 15,
             BehaviorTriggerType.DefaultSessionOffer,
             "Desconto na loja"
         ));
         
-        // DESVANTAGEM: Menos moedas (valores balanceados)
+        // DESVANTAGEM: Menos moedas
         offers.Add(new NegotiationOffer(
             "Pobreza Forçada",
             "Ganhe menos moedas, mas inimigos também enfraquecem.",
             false,
-            CardAttribute.CoinsEarned, -12,
-            CardAttribute.EnemyMaxHP, -18,
+            CardAttribute.CoinsEarned, -10,
+            CardAttribute.EnemyMaxHP, -15,
             BehaviorTriggerType.DefaultSessionOffer,
             "Desvantagem econômica"
         ));
@@ -404,7 +402,7 @@ public class DefaultNegotiationOffers : MonoBehaviour
     #region Helper Methods
     
     /// <summary>
-    /// NOVO: Decide se deve criar uma oferta flexível baseado nas probabilidades
+    /// Decide se deve criar uma oferta flexível baseado nas probabilidades
     /// </summary>
     private bool ShouldMakeFlexible()
     {

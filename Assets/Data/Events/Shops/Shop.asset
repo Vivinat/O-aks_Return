@@ -40,5 +40,6 @@ MonoBehaviour:
   - {fileID: 11400000, guid: ad64bce574d025448a09174683c3d79e, type: 2}
   - {fileID: 11400000, guid: 80a0c9281a493a24ea4ae7241dd5fbc5, type: 2}
   - {fileID: 11400000, guid: d17eab27d0e093641a23cd853a6cc812, type: 2}
+  - {fileID: 11400000, guid: d7d3f419c13c6cb4a892ef43b5ef6d58, type: 2}
   numberOfChoices: 3
-  powerupChance: 0.4
+  powerupChance: 0.5

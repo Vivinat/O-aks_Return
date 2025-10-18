@@ -1,4 +1,4 @@
-// Assets/Scripts/Difficulty_System/ObservationInterpreter.cs (REBALANCED & EXPANDED)
+// Assets/Scripts/Difficulty_System/ObservationInterpreter.cs (BALANCED & OPTIMIZED)
 
 using UnityEngine;
 using System.Collections.Generic;
@@ -6,17 +6,15 @@ using System.Linq;
 
 /// <summary>
 /// Interpreta observações comportamentais e gera ofertas de negociação contextuais
-/// MELHORADO: Agora retorna MÚLTIPLAS ofertas e sorteia aleatoriamente
+/// BALANCEADO: 4 vantagens + 4 desvantagens por trigger, valores ajustados
 /// </summary>
 public static class ObservationInterpreter
 {
     /// <summary>
-    /// Interpreta uma observação e gera ofertas (vantagens e desvantagens)
-    /// NOVO: Retorna múltiplas opções e sorteia 1 vantagem + 1 desvantagem
+    /// Interpreta uma observação e gera ofertas (retorna múltiplas opções e sorteia aleatoriamente)
     /// </summary>
     public static List<NegotiationOffer> InterpretObservation(BehaviorObservation observation)
     {
-        // Gera pool de ofertas baseado no tipo de observação
         List<NegotiationOffer> allAdvantages = new List<NegotiationOffer>();
         List<NegotiationOffer> allDisadvantages = new List<NegotiationOffer>();
         
@@ -130,7 +128,7 @@ public static class ObservationInterpreter
                 break;
         }
         
-        // NOVO: Sorteia 1 vantagem e 1 desvantagem aleatórias
+        // Sorteia 1 vantagem e 1 desvantagem aleatórias
         List<NegotiationOffer> selectedOffers = new List<NegotiationOffer>();
         
         if (allAdvantages.Count > 0)
@@ -148,23 +146,23 @@ public static class ObservationInterpreter
         return selectedOffers;
     }
     
-    #region Geradores de Ofertas - EXPANDIDOS
+    #region Geradores de Ofertas - BALANCEADOS (4+4)
     
     /// <summary>
-    /// Morte do jogador - 5 vantagens + 5 desvantagens
+    /// Morte do jogador - 4 vantagens + 4 desvantagens
     /// </summary>
     private static void GeneratePlayerDeathOffers(BehaviorObservation obs, 
         List<NegotiationOffer> advantages, List<NegotiationOffer> disadvantages)
     {
         string killerEnemy = obs.GetData<string>("killerEnemy", "Inimigo");
         
-        // VANTAGENS (5 opções)
+        // VANTAGENS (4 opções) - Valores moderados
         advantages.Add(new NegotiationOffer(
             "Vingança Tardia",
             "Enfraqueça seus adversários após sua queda anterior.",
             true,
             CardAttribute.PlayerDefense, 12,
-            CardAttribute.EnemyMaxHP, -25,
+            CardAttribute.EnemyMaxHP, -20,
             obs.triggerType,
             $"Morreu para: {killerEnemy}"
         ));
@@ -173,18 +171,8 @@ public static class ObservationInterpreter
             "Lição Aprendida",
             "Fortaleça-se com a experiência da derrota.",
             true,
-            CardAttribute.PlayerMaxHP, 30,
-            CardAttribute.EnemyDefense, 15,
-            obs.triggerType,
-            $"Morreu para: {killerEnemy}"
-        ));
-        
-        advantages.Add(new NegotiationOffer(
-            "Resistência Aprimorada",
-            "Sua defesa aumenta após a experiência brutal.",
-            true,
-            CardAttribute.PlayerDefense, 15,
-            CardAttribute.EnemyActionPower, 12,
+            CardAttribute.PlayerMaxHP, 25,
+            CardAttribute.EnemyDefense, 12,
             obs.triggerType,
             $"Morreu para: {killerEnemy}"
         ));
@@ -193,8 +181,8 @@ public static class ObservationInterpreter
             "Retribuição Ofensiva",
             "Transforme sua dor em poder destrutivo.",
             true,
-            CardAttribute.PlayerOffensiveActionPower, 18,
-            CardAttribute.EnemyMaxHP, 20,
+            CardAttribute.PlayerOffensiveActionPower, 15,
+            CardAttribute.EnemyMaxHP, 18,
             obs.triggerType,
             $"Morreu para: {killerEnemy}"
         ));
@@ -203,19 +191,19 @@ public static class ObservationInterpreter
             "Segunda Chance Fortalecida",
             "Reviva com preparação melhor para o desafio.",
             true,
-            CardAttribute.PlayerMaxMP, 25,
+            CardAttribute.PlayerMaxMP, 20,
             CardAttribute.EnemySpeed, 2,
             obs.triggerType,
             $"Morreu para: {killerEnemy}"
         ));
         
-        // DESVANTAGENS (5 opções)
+        // DESVANTAGENS (4 opções) - Custo justo
         disadvantages.Add(new NegotiationOffer(
             "Sede de Sangue",
             "Seus inimigos se fortalecem com a memória de sua derrota.",
             false,
             CardAttribute.PlayerDefense, -8,
-            CardAttribute.EnemyActionPower, 15,
+            CardAttribute.EnemyActionPower, 12,
             obs.triggerType,
             $"Morreu para: {killerEnemy}"
         ));
@@ -224,8 +212,8 @@ public static class ObservationInterpreter
             "Trauma Persistente",
             "O medo da morte enfraquece seu corpo.",
             false,
-            CardAttribute.PlayerMaxHP, -20,
-            CardAttribute.EnemyMaxHP, -15,
+            CardAttribute.PlayerMaxHP, -18,
+            CardAttribute.EnemyMaxHP, -12,
             obs.triggerType,
             $"Morreu para: {killerEnemy}"
         ));
@@ -234,8 +222,8 @@ public static class ObservationInterpreter
             "Desmoralização",
             "Sua força de vontade diminui.",
             false,
-            CardAttribute.PlayerOffensiveActionPower, -12,
-            CardAttribute.EnemyDefense, -10,
+            CardAttribute.PlayerOffensiveActionPower, -10,
+            CardAttribute.EnemyDefense, -8,
             obs.triggerType,
             $"Morreu para: {killerEnemy}"
         ));
@@ -244,18 +232,8 @@ public static class ObservationInterpreter
             "Exaustão Mental",
             "Seu MP sofre com o trauma.",
             false,
-            CardAttribute.PlayerMaxMP, -15,
-            CardAttribute.EnemyActionManaCost, -5,
-            obs.triggerType,
-            $"Morreu para: {killerEnemy}"
-        ));
-        
-        disadvantages.Add(new NegotiationOffer(
-            "Fragilidade Crescente",
-            "Cada derrota te deixa mais vulnerável.",
-            false,
-            CardAttribute.PlayerDefense, -10,
-            CardAttribute.EnemyOffensiveActionPower, -8,
+            CardAttribute.PlayerMaxMP, -12,
+            CardAttribute.EnemyActionManaCost, -4,
             obs.triggerType,
             $"Morreu para: {killerEnemy}"
         ));
@@ -274,8 +252,8 @@ public static class ObservationInterpreter
             "Mestre de Uma Arte",
             $"Especialize-se ainda mais em '{skillName}'.",
             true,
-            CardAttribute.PlayerOffensiveActionPower, 20,
-            CardAttribute.EnemyDefense, 15,
+            CardAttribute.PlayerOffensiveActionPower, 18,
+            CardAttribute.EnemyDefense, 12,
             obs.triggerType,
             $"Skill dominante: {skillName}"
         ));
@@ -284,8 +262,8 @@ public static class ObservationInterpreter
             "Eficiência Aperfeiçoada",
             $"Reduza o custo de todas suas ações.",
             true,
-            CardAttribute.PlayerActionManaCost, -5,
-            CardAttribute.EnemyMaxMP, 12,
+            CardAttribute.PlayerActionManaCost, -4,
+            CardAttribute.EnemyMaxMP, 10,
             obs.triggerType,
             $"Skill dominante: {skillName}"
         ));
@@ -294,8 +272,8 @@ public static class ObservationInterpreter
             "Poder Concentrado",
             $"Foque toda sua energia em seus ataques principais.",
             true,
-            CardAttribute.PlayerSingleTargetActionPower, 25,
-            CardAttribute.EnemyMaxHP, 18,
+            CardAttribute.PlayerSingleTargetActionPower, 20,
+            CardAttribute.EnemyMaxHP, 15,
             obs.triggerType,
             $"Skill dominante: {skillName}"
         ));
@@ -304,8 +282,8 @@ public static class ObservationInterpreter
             "Domínio Técnico",
             $"Compense a falta de variedade com maestria.",
             true,
-            CardAttribute.PlayerActionPower, 18,
-            CardAttribute.EnemyActionPower, 12,
+            CardAttribute.PlayerActionPower, 15,
+            CardAttribute.EnemyActionPower, 10,
             obs.triggerType,
             $"Skill dominante: {skillName}"
         ));
@@ -315,7 +293,7 @@ public static class ObservationInterpreter
             "Dependência Custosa",
             $"Sua dependência de '{skillName}' cobra seu preço.",
             false,
-            CardAttribute.PlayerActionManaCost, 6,
+            CardAttribute.PlayerActionManaCost, 5,
             CardAttribute.EnemySpeed, -2,
             obs.triggerType,
             $"Skill dominante: {skillName}"
@@ -325,8 +303,8 @@ public static class ObservationInterpreter
             "Arsenal Limitado",
             $"Falta de versatilidade enfraquece seu potencial.",
             false,
-            CardAttribute.PlayerActionPower, -12,
-            CardAttribute.EnemyMaxHP, -15,
+            CardAttribute.PlayerActionPower, -10,
+            CardAttribute.EnemyMaxHP, -12,
             obs.triggerType,
             $"Skill dominante: {skillName}"
         ));
@@ -335,8 +313,8 @@ public static class ObservationInterpreter
             "Previsibilidade Fatal",
             $"Inimigos aprendem seus padrões.",
             false,
-            CardAttribute.PlayerMaxHP, -18,
-            CardAttribute.EnemyActionPower, 15,
+            CardAttribute.PlayerMaxHP, -15,
+            CardAttribute.EnemyActionPower, 12,
             obs.triggerType,
             $"Skill dominante: {skillName}"
         ));
@@ -345,26 +323,26 @@ public static class ObservationInterpreter
             "Esgotamento Mágico",
             $"Uso excessivo da mesma habilidade drena você.",
             false,
-            CardAttribute.PlayerMaxMP, -20,
-            CardAttribute.EnemyMaxMP, -10,
+            CardAttribute.PlayerMaxMP, -15,
+            CardAttribute.EnemyMaxMP, -8,
             obs.triggerType,
             $"Skill dominante: {skillName}"
         ));
     }
     
     /// <summary>
-    /// HP baixo frequente - 5 vantagens + 4 desvantagens
+    /// HP baixo frequente - 4 vantagens + 4 desvantagens
     /// </summary>
     private static void GenerateFrequentLowHPOffers(BehaviorObservation obs,
         List<NegotiationOffer> advantages, List<NegotiationOffer> disadvantages)
     {
-        // VANTAGENS
+        // VANTAGENS - Foco em sobrevivência
         advantages.Add(new NegotiationOffer(
             "Fortificação Massiva",
             "Aumente drasticamente seu HP máximo.",
             true,
-            CardAttribute.PlayerMaxHP, 40,
-            CardAttribute.EnemyMaxHP, 25,
+            CardAttribute.PlayerMaxHP, 30,
+            CardAttribute.EnemyMaxHP, 20,
             obs.triggerType,
             "HP crítico frequente"
         ));
@@ -373,8 +351,8 @@ public static class ObservationInterpreter
             "Escudo Aprimorado",
             "Fortaleça suas defesas contra ataques.",
             true,
-            CardAttribute.PlayerDefense, 18,
-            CardAttribute.EnemyActionPower, 15,
+            CardAttribute.PlayerDefense, 15,
+            CardAttribute.EnemyActionPower, 12,
             obs.triggerType,
             "HP crítico frequente"
         ));
@@ -383,18 +361,8 @@ public static class ObservationInterpreter
             "Cura Potencializada",
             "Suas habilidades defensivas ficam mais fortes.",
             true,
-            CardAttribute.PlayerDefensiveActionPower, 25,
-            CardAttribute.EnemyOffensiveActionPower, 12,
-            obs.triggerType,
-            "HP crítico frequente"
-        ));
-        
-        advantages.Add(new NegotiationOffer(
-            "Resistência Balanceada",
-            "Equilíbrio entre HP e defesa.",
-            true,
-            CardAttribute.PlayerMaxHP, 25,
-            CardAttribute.EnemyDefense, 12,
+            CardAttribute.PlayerDefensiveActionPower, 20,
+            CardAttribute.EnemyOffensiveActionPower, 10,
             obs.triggerType,
             "HP crítico frequente"
         ));
@@ -403,8 +371,8 @@ public static class ObservationInterpreter
             "Contra-ataque Feroz",
             "Quando ferido, você ataca com mais força.",
             true,
-            CardAttribute.PlayerOffensiveActionPower, 22,
-            CardAttribute.EnemyMaxHP, 25,
+            CardAttribute.PlayerOffensiveActionPower, 18,
+            CardAttribute.EnemyMaxHP, 20,
             obs.triggerType,
             "HP crítico frequente"
         ));
@@ -414,8 +382,8 @@ public static class ObservationInterpreter
             "Fragilidade Persistente",
             "Seus problemas defensivos deixam marcas.",
             false,
-            CardAttribute.PlayerDefense, -10,
-            CardAttribute.EnemyDefense, -8,
+            CardAttribute.PlayerDefense, -8,
+            CardAttribute.EnemyDefense, -6,
             obs.triggerType,
             "HP crítico frequente"
         ));
@@ -424,8 +392,8 @@ public static class ObservationInterpreter
             "Vitalidade Comprometida",
             "Seu HP máximo é reduzido.",
             false,
-            CardAttribute.PlayerMaxHP, -25,
-            CardAttribute.EnemyMaxHP, -30,
+            CardAttribute.PlayerMaxHP, -20,
+            CardAttribute.EnemyMaxHP, -25,
             obs.triggerType,
             "HP crítico frequente"
         ));
@@ -434,8 +402,8 @@ public static class ObservationInterpreter
             "Vulnerabilidade Crescente",
             "Você se torna mais fácil de ferir.",
             false,
-            CardAttribute.PlayerDefense, -12,
-            CardAttribute.EnemyActionPower, 10,
+            CardAttribute.PlayerDefense, -10,
+            CardAttribute.EnemyActionPower, 8,
             obs.triggerType,
             "HP crítico frequente"
         ));
@@ -444,8 +412,8 @@ public static class ObservationInterpreter
             "Cura Reduzida",
             "Suas habilidades de recuperação enfraquecem.",
             false,
-            CardAttribute.PlayerDefensiveActionPower, -15,
-            CardAttribute.EnemyDefense, -10,
+            CardAttribute.PlayerDefensiveActionPower, -12,
+            CardAttribute.EnemyDefense, -8,
             obs.triggerType,
             "HP crítico frequente"
         ));
@@ -464,8 +432,8 @@ public static class ObservationInterpreter
             "Eficiência Mágica",
             "Aprenda a usar habilidades com menos mana.",
             true,
-            CardAttribute.PlayerActionManaCost, -4,
-            CardAttribute.EnemyActionPower, 10,
+            CardAttribute.PlayerActionManaCost, -3,
+            CardAttribute.EnemyActionPower, 8,
             obs.triggerType,
             $"Skill ignorada: {skillName}"
         ));
@@ -474,8 +442,8 @@ public static class ObservationInterpreter
             "Versatilidade Forçada",
             "Melhore todas suas ações.",
             true,
-            CardAttribute.PlayerActionPower, 15,
-            CardAttribute.EnemyMaxHP, 18,
+            CardAttribute.PlayerActionPower, 12,
+            CardAttribute.EnemyMaxHP, 15,
             obs.triggerType,
             $"Skill ignorada: {skillName}"
         ));
@@ -484,8 +452,8 @@ public static class ObservationInterpreter
             "Reservas Expandidas",
             "Compense com mais MP.",
             true,
-            CardAttribute.PlayerMaxMP, 30,
-            CardAttribute.EnemyMaxMP, 15,
+            CardAttribute.PlayerMaxMP, 25,
+            CardAttribute.EnemyMaxMP, 12,
             obs.triggerType,
             $"Skill ignorada: {skillName}"
         ));
@@ -494,8 +462,8 @@ public static class ObservationInterpreter
             "Especialização Alternativa",
             "Foque no que você realmente usa.",
             true,
-            CardAttribute.PlayerOffensiveActionPower, 20,
-            CardAttribute.EnemyOffensiveActionPower, 12,
+            CardAttribute.PlayerOffensiveActionPower, 16,
+            CardAttribute.EnemyOffensiveActionPower, 10,
             obs.triggerType,
             $"Skill ignorada: {skillName}"
         ));
@@ -505,8 +473,8 @@ public static class ObservationInterpreter
             "Arsenal Limitado",
             "Falta de versatilidade enfraquece você.",
             false,
-            CardAttribute.PlayerActionPower, -12,
-            CardAttribute.EnemyMaxHP, -15,
+            CardAttribute.PlayerActionPower, -10,
+            CardAttribute.EnemyMaxHP, -12,
             obs.triggerType,
             $"Skill ignorada: {skillName}"
         ));
@@ -515,8 +483,8 @@ public static class ObservationInterpreter
             "Desperdício Mágico",
             "Suas habilidades custam mais mana.",
             false,
-            CardAttribute.PlayerActionManaCost, 5,
-            CardAttribute.EnemyActionManaCost, 4,
+            CardAttribute.PlayerActionManaCost, 4,
+            CardAttribute.EnemyActionManaCost, 3,
             obs.triggerType,
             $"Skill ignorada: {skillName}"
         ));
@@ -525,8 +493,8 @@ public static class ObservationInterpreter
             "Poder Reduzido",
             "Falta de treino enfraquece todas ações.",
             false,
-            CardAttribute.PlayerActionPower, -10,
-            CardAttribute.EnemyActionPower, -8,
+            CardAttribute.PlayerActionPower, -8,
+            CardAttribute.EnemyActionPower, -6,
             obs.triggerType,
             $"Skill ignorada: {skillName}"
         ));
@@ -535,8 +503,8 @@ public static class ObservationInterpreter
             "Atrofia de Habilidade",
             "Seus ataques especializados perdem força.",
             false,
-            CardAttribute.PlayerOffensiveActionPower, -15,
-            CardAttribute.EnemyDefense, -10,
+            CardAttribute.PlayerOffensiveActionPower, -12,
+            CardAttribute.EnemyDefense, -8,
             obs.triggerType,
             $"Skill ignorada: {skillName}"
         ));
@@ -548,13 +516,13 @@ public static class ObservationInterpreter
     private static void GenerateAlwaysOutspedOffers(BehaviorObservation obs,
         List<NegotiationOffer> advantages, List<NegotiationOffer> disadvantages)
     {
-        // VANTAGENS
+        // VANTAGENS - Compensação pela lentidão
         advantages.Add(new NegotiationOffer(
             "Primeiro Golpe Poderoso",
             "Compense agir depois com ataques devastadores.",
             true,
-            CardAttribute.PlayerOffensiveActionPower, 20,
-            CardAttribute.EnemyMaxHP, 18,
+            CardAttribute.PlayerOffensiveActionPower, 18,
+            CardAttribute.EnemyMaxHP, 15,
             obs.triggerType,
             "Sempre age por último"
         ));
@@ -563,8 +531,8 @@ public static class ObservationInterpreter
             "Resistência Superior",
             "Se não pode ser rápido, seja resistente.",
             true,
-            CardAttribute.PlayerMaxHP, 35,
-            CardAttribute.EnemyActionPower, 15,
+            CardAttribute.PlayerMaxHP, 28,
+            CardAttribute.EnemyActionPower, 12,
             obs.triggerType,
             "Sempre age por último"
         ));
@@ -573,8 +541,8 @@ public static class ObservationInterpreter
             "Defesa Impenetrável",
             "Fortifique-se enquanto espera sua vez.",
             true,
-            CardAttribute.PlayerDefense, 18,
-            CardAttribute.EnemyOffensiveActionPower, 12,
+            CardAttribute.PlayerDefense, 15,
+            CardAttribute.EnemyOffensiveActionPower, 10,
             obs.triggerType,
             "Sempre age por último"
         ));
@@ -583,8 +551,8 @@ public static class ObservationInterpreter
             "Contra-ataque Letal",
             "Transforme a desvantagem em oportunidade.",
             true,
-            CardAttribute.PlayerSingleTargetActionPower, 25,
-            CardAttribute.EnemyDefense, 15,
+            CardAttribute.PlayerSingleTargetActionPower, 22,
+            CardAttribute.EnemyDefense, 12,
             obs.triggerType,
             "Sempre age por último"
         ));
@@ -594,8 +562,8 @@ public static class ObservationInterpreter
             "Corrida Perdida",
             "Seus adversários ficam ainda mais letais.",
             false,
-            CardAttribute.PlayerMaxMP, -12,
-            CardAttribute.EnemyActionPower, 18,
+            CardAttribute.PlayerMaxMP, -10,
+            CardAttribute.EnemyActionPower, 15,
             obs.triggerType,
             "Sempre age por último"
         ));
@@ -604,8 +572,8 @@ public static class ObservationInterpreter
             "Vulnerabilidade Exposta",
             "Agir por último te deixa vulnerável.",
             false,
-            CardAttribute.PlayerDefense, -10,
-            CardAttribute.EnemyOffensiveActionPower, 12,
+            CardAttribute.PlayerDefense, -8,
+            CardAttribute.EnemyOffensiveActionPower, 10,
             obs.triggerType,
             "Sempre age por último"
         ));
@@ -614,7 +582,7 @@ public static class ObservationInterpreter
             "Lentidão Crítica",
             "Sua baixa velocidade afeta tudo.",
             false,
-            CardAttribute.PlayerActionPower, -12,
+            CardAttribute.PlayerActionPower, -10,
             CardAttribute.EnemySpeed, 2,
             obs.triggerType,
             "Sempre age por último"
@@ -624,8 +592,8 @@ public static class ObservationInterpreter
             "Desvantagem Tática",
             "Perder a iniciativa tem consequências.",
             false,
-            CardAttribute.PlayerMaxHP, -20,
-            CardAttribute.EnemyMaxHP, 15,
+            CardAttribute.PlayerMaxHP, -15,
+            CardAttribute.EnemyMaxHP, 12,
             obs.triggerType,
             "Sempre age por último"
         ));
@@ -637,13 +605,13 @@ public static class ObservationInterpreter
     private static void GenerateAlwaysFirstTurnOffers(BehaviorObservation obs,
         List<NegotiationOffer> advantages, List<NegotiationOffer> disadvantages)
     {
-        // VANTAGENS
+        // VANTAGENS - Aproveitar velocidade
         advantages.Add(new NegotiationOffer(
             "Domínio Tático",
             "Mais recursos para sua vantagem inicial.",
             true,
-            CardAttribute.PlayerMaxMP, 25,
-            CardAttribute.EnemyActionPower, 15,
+            CardAttribute.PlayerMaxMP, 20,
+            CardAttribute.EnemyActionPower, 12,
             obs.triggerType,
             "Sempre age primeiro"
         ));
@@ -652,8 +620,8 @@ public static class ObservationInterpreter
             "Iniciativa Letal",
             "Transforme velocidade em poder destrutivo.",
             true,
-            CardAttribute.PlayerOffensiveActionPower, 22,
-            CardAttribute.EnemyMaxHP, 20,
+            CardAttribute.PlayerOffensiveActionPower, 18,
+            CardAttribute.EnemyMaxHP, 16,
             obs.triggerType,
             "Sempre age primeiro"
         ));
@@ -662,8 +630,8 @@ public static class ObservationInterpreter
             "Abertura Perfeita",
             "Maximize o dano no primeiro turno.",
             true,
-            CardAttribute.PlayerSingleTargetActionPower, 28,
-            CardAttribute.EnemyDefense, 18,
+            CardAttribute.PlayerSingleTargetActionPower, 24,
+            CardAttribute.EnemyDefense, 15,
             obs.triggerType,
             "Sempre age primeiro"
         ));
@@ -672,19 +640,19 @@ public static class ObservationInterpreter
             "Velocidade Esmagadora",
             "Aproveite sua vantagem de velocidade.",
             true,
-            CardAttribute.PlayerActionPower, 20,
+            CardAttribute.PlayerActionPower, 16,
             CardAttribute.EnemySpeed, 2,
             obs.triggerType,
             "Sempre age primeiro"
         ));
         
-        // DESVANTAGENS
+        // DESVANTAGENS - Compensação por ser muito forte
         disadvantages.Add(new NegotiationOffer(
             "Força Bruta Inimiga",
             "Inimigos compensam com puro poder.",
             false,
-            CardAttribute.PlayerDefense, -8,
-            CardAttribute.EnemyActionPower, 22,
+            CardAttribute.PlayerDefense, -6,
+            CardAttribute.EnemyActionPower, 18,
             obs.triggerType,
             "Sempre age primeiro"
         ));
@@ -693,8 +661,8 @@ public static class ObservationInterpreter
             "Fragilidade Veloz",
             "Velocidade às custas de resistência.",
             false,
-            CardAttribute.PlayerMaxHP, -25,
-            CardAttribute.EnemyMaxHP, 15,
+            CardAttribute.PlayerMaxHP, -20,
+            CardAttribute.EnemyMaxHP, 12,
             obs.triggerType,
             "Sempre age primeiro"
         ));
@@ -703,8 +671,8 @@ public static class ObservationInterpreter
             "Exaustão Rápida",
             "Agir primeiro drena sua energia.",
             false,
-            CardAttribute.PlayerMaxMP, -18,
-            CardAttribute.EnemyMaxMP, -10,
+            CardAttribute.PlayerMaxMP, -15,
+            CardAttribute.EnemyMaxMP, -8,
             obs.triggerType,
             "Sempre age primeiro"
         ));
@@ -713,26 +681,26 @@ public static class ObservationInterpreter
             "Contra-medidas Aprendidas",
             "Inimigos se preparam para sua velocidade.",
             false,
-            CardAttribute.PlayerActionPower, -10,
-            CardAttribute.EnemyDefense, 15,
+            CardAttribute.PlayerActionPower, -8,
+            CardAttribute.EnemyDefense, 12,
             obs.triggerType,
             "Sempre age primeiro"
         ));
     }
     
     /// <summary>
-    /// Dificuldade vs Tanks - 5 vantagens + 4 desvantagens
+    /// Dificuldade vs Tanks - 4 vantagens + 4 desvantagens
     /// </summary>
     private static void GenerateStrugglesAgainstTanksOffers(BehaviorObservation obs,
         List<NegotiationOffer> advantages, List<NegotiationOffer> disadvantages)
     {
-        // VANTAGENS
+        // VANTAGENS - Anti-tank
         advantages.Add(new NegotiationOffer(
             "Quebra-Couraças",
             "Perfure as defesas mais robustas.",
             true,
-            CardAttribute.PlayerOffensiveActionPower, 25,
-            CardAttribute.EnemyDefense, 18,
+            CardAttribute.PlayerOffensiveActionPower, 22,
+            CardAttribute.EnemyDefense, 15,
             obs.triggerType,
             "Dificuldade vs Tanks"
         ));
@@ -741,8 +709,8 @@ public static class ObservationInterpreter
             "Perfuração Letal",
             "Seus ataques ignoram parte da defesa inimiga.",
             true,
-            CardAttribute.PlayerSingleTargetActionPower, 30,
-            CardAttribute.EnemyMaxHP, 20,
+            CardAttribute.PlayerSingleTargetActionPower, 25,
+            CardAttribute.EnemyMaxHP, 18,
             obs.triggerType,
             "Dificuldade vs Tanks"
         ));
@@ -751,18 +719,8 @@ public static class ObservationInterpreter
             "Atrito Eficiente",
             "Cause dano constante em alvos resistentes.",
             true,
-            CardAttribute.PlayerActionPower, 22,
-            CardAttribute.EnemyDefense, 15,
-            obs.triggerType,
-            "Dificuldade vs Tanks"
-        ));
-        
-        advantages.Add(new NegotiationOffer(
-            "Destruidor de Fortalezas",
-            "Especialize-se em quebrar defesas.",
-            true,
-            CardAttribute.PlayerOffensiveActionPower, 28,
-            CardAttribute.EnemyMaxHP, 25,
+            CardAttribute.PlayerActionPower, 18,
+            CardAttribute.EnemyDefense, 12,
             obs.triggerType,
             "Dificuldade vs Tanks"
         ));
@@ -771,8 +729,8 @@ public static class ObservationInterpreter
             "Fúria Persistente",
             "Batalhas longas favorecem você.",
             true,
-            CardAttribute.PlayerMaxMP, 30,
-            CardAttribute.EnemyDefense, 12,
+            CardAttribute.PlayerMaxMP, 25,
+            CardAttribute.EnemyDefense, 10,
             obs.triggerType,
             "Dificuldade vs Tanks"
         ));
@@ -782,8 +740,8 @@ public static class ObservationInterpreter
             "Fortaleza Impenetrável",
             "Inimigos endurecem suas defesas.",
             false,
-            CardAttribute.PlayerActionPower, -10,
-            CardAttribute.EnemyMaxHP, 35,
+            CardAttribute.PlayerActionPower, -8,
+            CardAttribute.EnemyMaxHP, 28,
             obs.triggerType,
             "Dificuldade vs Tanks"
         ));
@@ -792,8 +750,8 @@ public static class ObservationInterpreter
             "Muralha Crescente",
             "Defesas inimigas aumentam drasticamente.",
             false,
-            CardAttribute.PlayerOffensiveActionPower, -12,
-            CardAttribute.EnemyDefense, 25,
+            CardAttribute.PlayerOffensiveActionPower, -10,
+            CardAttribute.EnemyDefense, 20,
             obs.triggerType,
             "Dificuldade vs Tanks"
         ));
@@ -802,8 +760,8 @@ public static class ObservationInterpreter
             "Frustração Desgastante",
             "Sua incapacidade de penetrar defesas te esgota.",
             false,
-            CardAttribute.PlayerMaxMP, -20,
-            CardAttribute.EnemyMaxHP, 20,
+            CardAttribute.PlayerMaxMP, -15,
+            CardAttribute.EnemyMaxHP, 15,
             obs.triggerType,
             "Dificuldade vs Tanks"
         ));
@@ -812,8 +770,8 @@ public static class ObservationInterpreter
             "Impotência Ofensiva",
             "Seus ataques enfraquecem contra alvos resistentes.",
             false,
-            CardAttribute.PlayerSingleTargetActionPower, -18,
-            CardAttribute.EnemyDefense, 10,
+            CardAttribute.PlayerSingleTargetActionPower, -15,
+            CardAttribute.EnemyDefense, 8,
             obs.triggerType,
             "Dificuldade vs Tanks"
         ));
@@ -825,13 +783,13 @@ public static class ObservationInterpreter
     private static void GenerateStrugglesAgainstFastOffers(BehaviorObservation obs,
         List<NegotiationOffer> advantages, List<NegotiationOffer> disadvantages)
     {
-        // VANTAGENS
+        // VANTAGENS - Anti-speed
         advantages.Add(new NegotiationOffer(
             "Antecipação",
             "Aprenda a se defender de adversários velozes.",
             true,
-            CardAttribute.PlayerDefense, 15,
-            CardAttribute.EnemyMaxHP, 18,
+            CardAttribute.PlayerDefense, 12,
+            CardAttribute.EnemyMaxHP, 15,
             obs.triggerType,
             "Dificuldade vs Rápidos"
         ));
@@ -840,7 +798,7 @@ public static class ObservationInterpreter
             "Contra-ataque Preciso",
             "Ataques mais fortes compensam falta de velocidade.",
             true,
-            CardAttribute.PlayerOffensiveActionPower, 25,
+            CardAttribute.PlayerOffensiveActionPower, 20,
             CardAttribute.EnemySpeed, -2,
             obs.triggerType,
             "Dificuldade vs Rápidos"
@@ -850,8 +808,8 @@ public static class ObservationInterpreter
             "Muralha Impenetrável",
             "Se não pode alcançá-los, seja impossível de ferir.",
             true,
-            CardAttribute.PlayerMaxHP, 35,
-            CardAttribute.EnemyActionPower, 15,
+            CardAttribute.PlayerMaxHP, 28,
+            CardAttribute.EnemyActionPower, 12,
             obs.triggerType,
             "Dificuldade vs Rápidos"
         ));
@@ -860,8 +818,8 @@ public static class ObservationInterpreter
             "Reflexos Aprimorados",
             "Melhore sua capacidade defensiva.",
             true,
-            CardAttribute.PlayerDefense, 18,
-            CardAttribute.EnemyOffensiveActionPower, 12,
+            CardAttribute.PlayerDefense, 15,
+            CardAttribute.EnemyOffensiveActionPower, 10,
             obs.triggerType,
             "Dificuldade vs Rápidos"
         ));
@@ -871,8 +829,8 @@ public static class ObservationInterpreter
             "Velocidade Cegante",
             "Inimigos ficam impossíveis de acompanhar.",
             false,
-            CardAttribute.PlayerDefense, -10,
-            CardAttribute.EnemyActionPower, 18,
+            CardAttribute.PlayerDefense, -8,
+            CardAttribute.EnemyActionPower, 15,
             obs.triggerType,
             "Dificuldade vs Rápidos"
         ));
@@ -881,8 +839,8 @@ public static class ObservationInterpreter
             "Ataques Implacáveis",
             "Inimigos rápidos te acertam com mais frequência.",
             false,
-            CardAttribute.PlayerMaxHP, -25,
-            CardAttribute.EnemyOffensiveActionPower, 15,
+            CardAttribute.PlayerMaxHP, -20,
+            CardAttribute.EnemyOffensiveActionPower, 12,
             obs.triggerType,
             "Dificuldade vs Rápidos"
         ));
@@ -891,7 +849,7 @@ public static class ObservationInterpreter
             "Lentidão Crítica",
             "Sua baixa velocidade te prejudica ainda mais.",
             false,
-            CardAttribute.PlayerActionPower, -12,
+            CardAttribute.PlayerActionPower, -10,
             CardAttribute.EnemySpeed, 3,
             obs.triggerType,
             "Dificuldade vs Rápidos"
@@ -901,28 +859,28 @@ public static class ObservationInterpreter
             "Sobrecarga Defensiva",
             "Tentar se defender esgota você.",
             false,
-            CardAttribute.PlayerMaxMP, -18,
-            CardAttribute.EnemyActionPower, 12,
+            CardAttribute.PlayerMaxMP, -15,
+            CardAttribute.EnemyActionPower, 10,
             obs.triggerType,
             "Dificuldade vs Rápidos"
         ));
     }
     
     /// <summary>
-    /// Dificuldade vs Múltiplos - 5 vantagens + 4 desvantagens
+    /// Dificuldade vs Múltiplos - 4 vantagens + 4 desvantagens
     /// </summary>
     private static void GenerateStrugglesAgainsSwarmsOffers(BehaviorObservation obs,
         List<NegotiationOffer> advantages, List<NegotiationOffer> disadvantages)
     {
         int enemyCount = obs.GetData<int>("enemyCount", 3);
         
-        // VANTAGENS
+        // VANTAGENS - Anti-swarm
         advantages.Add(new NegotiationOffer(
             "Destruição em Massa",
             "Habilidades de área ganham poder devastador.",
             true,
-            CardAttribute.PlayerAOEActionPower, 30,
-            CardAttribute.EnemyActionPower, 12,
+            CardAttribute.PlayerAOEActionPower, 25,
+            CardAttribute.EnemyActionPower, 10,
             obs.triggerType,
             $"Dificuldade vs {enemyCount} inimigos"
         ));
@@ -931,8 +889,8 @@ public static class ObservationInterpreter
             "Tempestade de Lâminas",
             "Todos seus ataques ficam mais fortes contra grupos.",
             true,
-            CardAttribute.PlayerActionPower, 22,
-            CardAttribute.EnemyMaxHP, 15,
+            CardAttribute.PlayerActionPower, 18,
+            CardAttribute.EnemyMaxHP, 12,
             obs.triggerType,
             $"Dificuldade vs {enemyCount} inimigos"
         ));
@@ -941,18 +899,8 @@ public static class ObservationInterpreter
             "Resistência de Multidão",
             "Fortaleça-se para enfrentar números superiores.",
             true,
-            CardAttribute.PlayerMaxHP, 40,
-            CardAttribute.EnemyActionPower, 15,
-            obs.triggerType,
-            $"Dificuldade vs {enemyCount} inimigos"
-        ));
-        
-        advantages.Add(new NegotiationOffer(
-            "Maestria em Grupo",
-            "Especialize-se em combate contra múltiplos.",
-            true,
-            CardAttribute.PlayerOffensiveActionPower, 25,
-            CardAttribute.EnemyDefense, 15,
+            CardAttribute.PlayerMaxHP, 32,
+            CardAttribute.EnemyActionPower, 12,
             obs.triggerType,
             $"Dificuldade vs {enemyCount} inimigos"
         ));
@@ -961,8 +909,8 @@ public static class ObservationInterpreter
             "Defesa Circular",
             "Proteja-se de ataques de múltiplas direções.",
             true,
-            CardAttribute.PlayerDefense, 20,
-            CardAttribute.EnemyOffensiveActionPower, 12,
+            CardAttribute.PlayerDefense, 16,
+            CardAttribute.EnemyOffensiveActionPower, 10,
             obs.triggerType,
             $"Dificuldade vs {enemyCount} inimigos"
         ));
@@ -972,8 +920,8 @@ public static class ObservationInterpreter
             "Horda Implacável",
             "Mais inimigos surgem, mais fortes.",
             false,
-            CardAttribute.PlayerMaxHP, -18,
-            CardAttribute.EnemyMaxHP, 30,
+            CardAttribute.PlayerMaxHP, -15,
+            CardAttribute.EnemyMaxHP, 25,
             obs.triggerType,
             $"Dificuldade vs {enemyCount} inimigos"
         ));
@@ -982,8 +930,8 @@ public static class ObservationInterpreter
             "Sobrecarga Numérica",
             "Números esmagadores te enfraquecem.",
             false,
-            CardAttribute.PlayerActionPower, -15,
-            CardAttribute.EnemyActionPower, 12,
+            CardAttribute.PlayerActionPower, -12,
+            CardAttribute.EnemyActionPower, 10,
             obs.triggerType,
             $"Dificuldade vs {enemyCount} inimigos"
         ));
@@ -992,8 +940,8 @@ public static class ObservationInterpreter
             "Fadiga de Combate",
             "Lutar contra múltiplos te esgota.",
             false,
-            CardAttribute.PlayerMaxMP, -20,
-            CardAttribute.EnemyMaxMP, -10,
+            CardAttribute.PlayerMaxMP, -15,
+            CardAttribute.EnemyMaxMP, -8,
             obs.triggerType,
             $"Dificuldade vs {enemyCount} inimigos"
         ));
@@ -1002,8 +950,8 @@ public static class ObservationInterpreter
             "Área Insuficiente",
             "Suas habilidades de área enfraquecem.",
             false,
-            CardAttribute.PlayerAOEActionPower, -20,
-            CardAttribute.EnemyMaxHP, -15,
+            CardAttribute.PlayerAOEActionPower, -16,
+            CardAttribute.EnemyMaxHP, -12,
             obs.triggerType,
             $"Dificuldade vs {enemyCount} inimigos"
         ));
@@ -1015,13 +963,13 @@ public static class ObservationInterpreter
     private static void GenerateAlwaysDiesEarlyOffers(BehaviorObservation obs,
         List<NegotiationOffer> advantages, List<NegotiationOffer> disadvantages)
     {
-        // VANTAGENS
+        // VANTAGENS - Sobrevivência inicial
         advantages.Add(new NegotiationOffer(
             "Início Fortificado",
             "Comece com defesas massivas.",
             true,
-            CardAttribute.PlayerMaxHP, 45,
-            CardAttribute.EnemyActionPower, 18,
+            CardAttribute.PlayerMaxHP, 35,
+            CardAttribute.EnemyActionPower, 15,
             obs.triggerType,
             "Morte precoce frequente"
         ));
@@ -1030,8 +978,8 @@ public static class ObservationInterpreter
             "Escudo Inicial",
             "Resistência aprimorada desde o começo.",
             true,
-            CardAttribute.PlayerDefense, 22,
-            CardAttribute.EnemyOffensiveActionPower, 15,
+            CardAttribute.PlayerDefense, 18,
+            CardAttribute.EnemyOffensiveActionPower, 12,
             obs.triggerType,
             "Morte precoce frequente"
         ));
@@ -1040,8 +988,8 @@ public static class ObservationInterpreter
             "Barreira Protetora",
             "Proteção extra nos primeiros turnos.",
             true,
-            CardAttribute.PlayerDefense, 18,
-            CardAttribute.EnemyActionPower, 20,
+            CardAttribute.PlayerDefense, 15,
+            CardAttribute.EnemyActionPower, 16,
             obs.triggerType,
             "Morte precoce frequente"
         ));
@@ -1050,8 +998,8 @@ public static class ObservationInterpreter
             "Vitalidade Reforçada",
             "HP e defesa aumentados.",
             true,
-            CardAttribute.PlayerMaxHP, 35,
-            CardAttribute.EnemyMaxHP, 20,
+            CardAttribute.PlayerMaxHP, 28,
+            CardAttribute.EnemyMaxHP, 16,
             obs.triggerType,
             "Morte precoce frequente"
         ));
@@ -1061,8 +1009,8 @@ public static class ObservationInterpreter
             "Assalto Inicial",
             "Inimigos investem tudo no início.",
             false,
-            CardAttribute.PlayerDefense, -12,
-            CardAttribute.EnemyActionPower, 30,
+            CardAttribute.PlayerDefense, -10,
+            CardAttribute.EnemyActionPower, 25,
             obs.triggerType,
             "Morte precoce frequente"
         ));
@@ -1071,8 +1019,8 @@ public static class ObservationInterpreter
             "Fragilidade Crítica",
             "Você começa mais vulnerável.",
             false,
-            CardAttribute.PlayerMaxHP, -30,
-            CardAttribute.EnemyDefense, -15,
+            CardAttribute.PlayerMaxHP, -25,
+            CardAttribute.EnemyDefense, -12,
             obs.triggerType,
             "Morte precoce frequente"
         ));
@@ -1081,8 +1029,8 @@ public static class ObservationInterpreter
             "Abertura Fatal",
             "Primeiros turnos são ainda mais perigosos.",
             false,
-            CardAttribute.PlayerDefense, -15,
-            CardAttribute.EnemyOffensiveActionPower, 20,
+            CardAttribute.PlayerDefense, -12,
+            CardAttribute.EnemyOffensiveActionPower, 16,
             obs.triggerType,
             "Morte precoce frequente"
         ));
@@ -1091,8 +1039,8 @@ public static class ObservationInterpreter
             "Início Desastroso",
             "Tudo começa mal para você.",
             false,
-            CardAttribute.PlayerMaxHP, -25,
-            CardAttribute.EnemyActionPower, 18,
+            CardAttribute.PlayerMaxHP, -20,
+            CardAttribute.EnemyActionPower, 15,
             obs.triggerType,
             "Morte precoce frequente"
         ));
@@ -1104,13 +1052,13 @@ public static class ObservationInterpreter
     private static void GenerateAlwaysDiesLateOffers(BehaviorObservation obs,
         List<NegotiationOffer> advantages, List<NegotiationOffer> disadvantages)
     {
-        // VANTAGENS
+        // VANTAGENS - Guerra de atrito
         advantages.Add(new NegotiationOffer(
             "Resistência Prolongada",
             "Ganhe fôlego para batalhas longas.",
             true,
-            CardAttribute.PlayerMaxMP, 30,
-            CardAttribute.EnemyMaxHP, 25,
+            CardAttribute.PlayerMaxMP, 25,
+            CardAttribute.EnemyMaxHP, 20,
             obs.triggerType,
             "Morte tardia por atrito"
         ));
@@ -1119,8 +1067,8 @@ public static class ObservationInterpreter
             "Regeneração Persistente",
             "Suas habilidades defensivas melhoram.",
             true,
-            CardAttribute.PlayerDefensiveActionPower, 25,
-            CardAttribute.EnemyOffensiveActionPower, 15,
+            CardAttribute.PlayerDefensiveActionPower, 20,
+            CardAttribute.EnemyOffensiveActionPower, 12,
             obs.triggerType,
             "Morte tardia por atrito"
         ));
@@ -1129,8 +1077,8 @@ public static class ObservationInterpreter
             "Stamina Infinita",
             "Batalhas longas favorecem você.",
             true,
-            CardAttribute.PlayerMaxMP, 35,
-            CardAttribute.EnemyActionPower, 15,
+            CardAttribute.PlayerMaxMP, 28,
+            CardAttribute.EnemyActionPower, 12,
             obs.triggerType,
             "Morte tardia por atrito"
         ));
@@ -1139,8 +1087,8 @@ public static class ObservationInterpreter
             "Fortificação Crescente",
             "Você fica mais forte com o tempo.",
             true,
-            CardAttribute.PlayerDefense, 20,
-            CardAttribute.EnemyDefense, 12,
+            CardAttribute.PlayerDefense, 16,
+            CardAttribute.EnemyDefense, 10,
             obs.triggerType,
             "Morte tardia por atrito"
         ));
@@ -1150,8 +1098,8 @@ public static class ObservationInterpreter
             "Guerra de Atrito",
             "Batalhas longas favorecem adversários.",
             false,
-            CardAttribute.PlayerActionManaCost, 6,
-            CardAttribute.EnemyDefense, 18,
+            CardAttribute.PlayerActionManaCost, 5,
+            CardAttribute.EnemyDefense, 15,
             obs.triggerType,
             "Morte tardia por atrito"
         ));
@@ -1160,8 +1108,8 @@ public static class ObservationInterpreter
             "Exaustão Inevitável",
             "Você se cansa em batalhas prolongadas.",
             false,
-            CardAttribute.PlayerMaxMP, -25,
-            CardAttribute.EnemyMaxMP, 15,
+            CardAttribute.PlayerMaxMP, -20,
+            CardAttribute.EnemyMaxMP, 12,
             obs.triggerType,
             "Morte tardia por atrito"
         ));
@@ -1170,8 +1118,8 @@ public static class ObservationInterpreter
             "Desgaste Acumulado",
             "Dano constante te enfraquece.",
             false,
-            CardAttribute.PlayerDefense, -12,
-            CardAttribute.EnemyActionPower, 15,
+            CardAttribute.PlayerDefense, -10,
+            CardAttribute.EnemyActionPower, 12,
             obs.triggerType,
             "Morte tardia por atrito"
         ));
@@ -1180,8 +1128,8 @@ public static class ObservationInterpreter
             "Esgotamento Total",
             "Longas batalhas drenam tudo de você.",
             false,
-            CardAttribute.PlayerMaxHP, -20,
-            CardAttribute.EnemyMaxHP, 10,
+            CardAttribute.PlayerMaxHP, -16,
+            CardAttribute.EnemyMaxHP, 8,
             obs.triggerType,
             "Morte tardia por atrito"
         ));
@@ -1193,13 +1141,13 @@ public static class ObservationInterpreter
     private static void GenerateDeathByChipDamageOffers(BehaviorObservation obs,
         List<NegotiationOffer> advantages, List<NegotiationOffer> disadvantages)
     {
-        // VANTAGENS
+        // VANTAGENS - Anti-chip damage
         advantages.Add(new NegotiationOffer(
             "Pele de Aço",
             "Fortifique-se contra ataques menores.",
             true,
-            CardAttribute.PlayerDefense, 20,
-            CardAttribute.EnemyActionPower, 15,
+            CardAttribute.PlayerDefense, 16,
+            CardAttribute.EnemyActionPower, 12,
             obs.triggerType,
             "Morte por dano acumulado"
         ));
@@ -1208,8 +1156,8 @@ public static class ObservationInterpreter
             "Regeneração Constante",
             "Curas mais eficazes.",
             true,
-            CardAttribute.PlayerDefensiveActionPower, 28,
-            CardAttribute.EnemyOffensiveActionPower, 12,
+            CardAttribute.PlayerDefensiveActionPower, 22,
+            CardAttribute.EnemyOffensiveActionPower, 10,
             obs.triggerType,
             "Morte por dano acumulado"
         ));
@@ -1218,8 +1166,8 @@ public static class ObservationInterpreter
             "Armadura Reforçada",
             "Reduza todo dano recebido.",
             true,
-            CardAttribute.PlayerDefense, 25,
-            CardAttribute.EnemyDefense, 12,
+            CardAttribute.PlayerDefense, 20,
+            CardAttribute.EnemyDefense, 10,
             obs.triggerType,
             "Morte por dano acumulado"
         ));
@@ -1228,8 +1176,8 @@ public static class ObservationInterpreter
             "Vitalidade Robusta",
             "Mais HP para aguentar o atrito.",
             true,
-            CardAttribute.PlayerMaxHP, 40,
-            CardAttribute.EnemyActionPower, 18,
+            CardAttribute.PlayerMaxHP, 32,
+            CardAttribute.EnemyActionPower, 15,
             obs.triggerType,
             "Morte por dano acumulado"
         ));
@@ -1239,8 +1187,8 @@ public static class ObservationInterpreter
             "Mil Cortes",
             "Inimigos atacam com mais força e frequência.",
             false,
-            CardAttribute.PlayerDefense, -12,
-            CardAttribute.EnemyActionPower, 18,
+            CardAttribute.PlayerDefense, -10,
+            CardAttribute.EnemyActionPower, 15,
             obs.triggerType,
             "Morte por dano acumulado"
         ));
@@ -1249,8 +1197,8 @@ public static class ObservationInterpreter
             "Sangramento Perpétuo",
             "Dano acumulado aumenta.",
             false,
-            CardAttribute.PlayerMaxHP, -25,
-            CardAttribute.EnemyOffensiveActionPower, 15,
+            CardAttribute.PlayerMaxHP, -20,
+            CardAttribute.EnemyOffensiveActionPower, 12,
             obs.triggerType,
             "Morte por dano acumulado"
         ));
@@ -1259,8 +1207,8 @@ public static class ObservationInterpreter
             "Armadura Desgastada",
             "Sua defesa se deteriora.",
             false,
-            CardAttribute.PlayerDefense, -15,
-            CardAttribute.EnemyActionPower, 12,
+            CardAttribute.PlayerDefense, -12,
+            CardAttribute.EnemyActionPower, 10,
             obs.triggerType,
             "Morte por dano acumulado"
         ));
@@ -1269,28 +1217,28 @@ public static class ObservationInterpreter
             "Feridas Abertas",
             "Cada hit dói mais.",
             false,
-            CardAttribute.PlayerDefense, -10,
-            CardAttribute.EnemyOffensiveActionPower, 18,
+            CardAttribute.PlayerDefense, -8,
+            CardAttribute.EnemyOffensiveActionPower, 15,
             obs.triggerType,
             "Morte por dano acumulado"
         ));
     }
     
     /// <summary>
-    /// Vulnerável a one-shots - 5 vantagens + 4 desvantagens
+    /// Vulnerável a one-shots - 4 vantagens + 4 desvantagens
     /// </summary>
     private static void GenerateOneHitKOVulnerableOffers(BehaviorObservation obs,
         List<NegotiationOffer> advantages, List<NegotiationOffer> disadvantages)
     {
         int biggestHit = obs.GetData<int>("biggestHit", 50);
         
-        // VANTAGENS
+        // VANTAGENS - Anti-burst
         advantages.Add(new NegotiationOffer(
             "Fortaleza Viva",
             "Torne-se resistente a ataques devastadores.",
             true,
-            CardAttribute.PlayerMaxHP, 50,
-            CardAttribute.EnemyMaxHP, 35,
+            CardAttribute.PlayerMaxHP, 38,
+            CardAttribute.EnemyMaxHP, 28,
             obs.triggerType,
             $"Vulnerável a one-shots ({biggestHit} dano)"
         ));
@@ -1299,8 +1247,8 @@ public static class ObservationInterpreter
             "Escudo Absoluto",
             "Defesa massiva contra golpes fortes.",
             true,
-            CardAttribute.PlayerDefense, 25,
-            CardAttribute.EnemyActionPower, 20,
+            CardAttribute.PlayerDefense, 20,
+            CardAttribute.EnemyActionPower, 16,
             obs.triggerType,
             $"Vulnerável a one-shots ({biggestHit} dano)"
         ));
@@ -1309,8 +1257,8 @@ public static class ObservationInterpreter
             "Barreira Suprema",
             "Proteção contra dano explosivo.",
             true,
-            CardAttribute.PlayerDefense, 22,
-            CardAttribute.EnemyOffensiveActionPower, 18,
+            CardAttribute.PlayerDefense, 18,
+            CardAttribute.EnemyOffensiveActionPower, 15,
             obs.triggerType,
             $"Vulnerável a one-shots ({biggestHit} dano)"
         ));
@@ -1319,18 +1267,8 @@ public static class ObservationInterpreter
             "Corpo Adamantino",
             "HP e defesa aumentados drasticamente.",
             true,
-            CardAttribute.PlayerMaxHP, 45,
-            CardAttribute.EnemyDefense, 20,
-            obs.triggerType,
-            $"Vulnerável a one-shots ({biggestHit} dano)"
-        ));
-        
-        advantages.Add(new NegotiationOffer(
-            "Proteção Divina",
-            "Resistência aprimorada.",
-            true,
-            CardAttribute.PlayerDefense, 30,
-            CardAttribute.EnemyMaxHP, 25,
+            CardAttribute.PlayerMaxHP, 35,
+            CardAttribute.EnemyDefense, 16,
             obs.triggerType,
             $"Vulnerável a one-shots ({biggestHit} dano)"
         ));
@@ -1340,8 +1278,8 @@ public static class ObservationInterpreter
             "Golpe Executivo",
             "Adversários aperfeiçoam ataques letais.",
             false,
-            CardAttribute.PlayerDefense, -15,
-            CardAttribute.EnemyActionPower, 35,
+            CardAttribute.PlayerDefense, -12,
+            CardAttribute.EnemyActionPower, 28,
             obs.triggerType,
             $"Vulnerável a one-shots ({biggestHit} dano)"
         ));
@@ -1350,8 +1288,8 @@ public static class ObservationInterpreter
             "Fragilidade Extrema",
             "Você fica ainda mais vulnerável.",
             false,
-            CardAttribute.PlayerMaxHP, -30,
-            CardAttribute.EnemyOffensiveActionPower, 25,
+            CardAttribute.PlayerMaxHP, -25,
+            CardAttribute.EnemyOffensiveActionPower, 20,
             obs.triggerType,
             $"Vulnerável a one-shots ({biggestHit} dano)"
         ));
@@ -1360,8 +1298,8 @@ public static class ObservationInterpreter
             "Armadura de Papel",
             "Defesa drasticamente reduzida.",
             false,
-            CardAttribute.PlayerDefense, -20,
-            CardAttribute.EnemyActionPower, 20,
+            CardAttribute.PlayerDefense, -16,
+            CardAttribute.EnemyActionPower, 16,
             obs.triggerType,
             $"Vulnerável a one-shots ({biggestHit} dano)"
         ));
@@ -1370,8 +1308,8 @@ public static class ObservationInterpreter
             "Alvo Fácil",
             "Inimigos miram em suas fraquezas.",
             false,
-            CardAttribute.PlayerMaxHP, -25,
-            CardAttribute.EnemyOffensiveActionPower, 20,
+            CardAttribute.PlayerMaxHP, -20,
+            CardAttribute.EnemyOffensiveActionPower, 16,
             obs.triggerType,
             $"Vulnerável a one-shots ({biggestHit} dano)"
         ));
@@ -1388,8 +1326,8 @@ public static class ObservationInterpreter
             "Vitalidade Resiliente",
             "Compense falta de cura com mais resistência.",
             true,
-            CardAttribute.PlayerMaxHP, 40,
-            CardAttribute.EnemyDefense, 15,
+            CardAttribute.PlayerMaxHP, 32,
+            CardAttribute.EnemyDefense, 12,
             obs.triggerType,
             "HP baixo sem itens de cura"
         ));
@@ -1398,8 +1336,8 @@ public static class ObservationInterpreter
             "Regeneração Natural",
             "Habilidades defensivas melhoradas.",
             true,
-            CardAttribute.PlayerDefensiveActionPower, 30,
-            CardAttribute.EnemyActionPower, 15,
+            CardAttribute.PlayerDefensiveActionPower, 25,
+            CardAttribute.EnemyActionPower, 12,
             obs.triggerType,
             "HP baixo sem itens de cura"
         ));
@@ -1408,8 +1346,8 @@ public static class ObservationInterpreter
             "Defesa Compensatória",
             "Mais defesa para evitar dano.",
             true,
-            CardAttribute.PlayerDefense, 20,
-            CardAttribute.EnemyOffensiveActionPower, 12,
+            CardAttribute.PlayerDefense, 16,
+            CardAttribute.EnemyOffensiveActionPower, 10,
             obs.triggerType,
             "HP baixo sem itens de cura"
         ));
@@ -1418,8 +1356,8 @@ public static class ObservationInterpreter
             "Fortaleza Adaptativa",
             "HP e defesa aumentados.",
             true,
-            CardAttribute.PlayerMaxHP, 35,
-            CardAttribute.EnemyMaxHP, 20,
+            CardAttribute.PlayerMaxHP, 28,
+            CardAttribute.EnemyMaxHP, 16,
             obs.triggerType,
             "HP baixo sem itens de cura"
         ));
@@ -1429,8 +1367,8 @@ public static class ObservationInterpreter
             "Feridas Abertas",
             "Feridas o tornam mais vulnerável.",
             false,
-            CardAttribute.PlayerDefense, -12,
-            CardAttribute.EnemyMaxHP, -18,
+            CardAttribute.PlayerDefense, -10,
+            CardAttribute.EnemyMaxHP, -15,
             obs.triggerType,
             "HP baixo sem itens de cura"
         ));
@@ -1439,8 +1377,8 @@ public static class ObservationInterpreter
             "Corpo Fragilizado",
             "Falta de cura te deixa fraco.",
             false,
-            CardAttribute.PlayerMaxHP, -25,
-            CardAttribute.EnemyDefense, -15,
+            CardAttribute.PlayerMaxHP, -20,
+            CardAttribute.EnemyDefense, -12,
             obs.triggerType,
             "HP baixo sem itens de cura"
         ));
@@ -1449,8 +1387,8 @@ public static class ObservationInterpreter
             "Hemorragia Perpétua",
             "Feridas não cicatrizam.",
             false,
-            CardAttribute.PlayerDefensiveActionPower, -20,
-            CardAttribute.EnemyActionPower, -10,
+            CardAttribute.PlayerDefensiveActionPower, -16,
+            CardAttribute.EnemyActionPower, -8,
             obs.triggerType,
             "HP baixo sem itens de cura"
         ));
@@ -1459,15 +1397,15 @@ public static class ObservationInterpreter
             "Vulnerabilidade Crítica",
             "Sem cura, você fica exposto.",
             false,
-            CardAttribute.PlayerDefense, -15,
-            CardAttribute.EnemyOffensiveActionPower, 12,
+            CardAttribute.PlayerDefense, -12,
+            CardAttribute.EnemyOffensiveActionPower, 10,
             obs.triggerType,
             "HP baixo sem itens de cura"
         ));
     }
     
     /// <summary>
-    /// Problemas de mana - 5 vantagens + 4 desvantagens
+    /// Problemas de mana - 4 vantagens + 4 desvantagens
     /// </summary>
     private static void GenerateManaIssuesOffers(BehaviorObservation obs,
         List<NegotiationOffer> advantages, List<NegotiationOffer> disadvantages)
@@ -1477,8 +1415,8 @@ public static class ObservationInterpreter
             "Reservas Mágicas",
             "Amplie drasticamente suas reservas de mana.",
             true,
-            CardAttribute.PlayerMaxMP, 35,
-            CardAttribute.EnemyMaxMP, 20,
+            CardAttribute.PlayerMaxMP, 28,
+            CardAttribute.EnemyMaxMP, 16,
             obs.triggerType,
             "Problemas de mana constantes"
         ));
@@ -1487,8 +1425,8 @@ public static class ObservationInterpreter
             "Eficiência Arcana",
             "Reduza o custo de todas habilidades.",
             true,
-            CardAttribute.PlayerActionManaCost, -6,
-            CardAttribute.EnemyActionPower, 12,
+            CardAttribute.PlayerActionManaCost, -5,
+            CardAttribute.EnemyActionPower, 10,
             obs.triggerType,
             "Problemas de mana constantes"
         ));
@@ -1497,8 +1435,8 @@ public static class ObservationInterpreter
             "Maestria Energética",
             "Use mana com muito mais eficiência.",
             true,
-            CardAttribute.PlayerActionManaCost, -5,
-            CardAttribute.EnemyMaxMP, 15,
+            CardAttribute.PlayerActionManaCost, -4,
+            CardAttribute.EnemyMaxMP, 12,
             obs.triggerType,
             "Problemas de mana constantes"
         ));
@@ -1507,18 +1445,8 @@ public static class ObservationInterpreter
             "Poço Infinito",
             "MP massivamente aumentado.",
             true,
-            CardAttribute.PlayerMaxMP, 40,
-            CardAttribute.EnemyActionPower, 15,
-            obs.triggerType,
-            "Problemas de mana constantes"
-        ));
-        
-        advantages.Add(new NegotiationOffer(
-            "Canalização Perfeita",
-            "Custo e reservas melhorados.",
-            true,
-            CardAttribute.PlayerMaxMP, 30,
-            CardAttribute.EnemyDefense, 12,
+            CardAttribute.PlayerMaxMP, 32,
+            CardAttribute.EnemyActionPower, 12,
             obs.triggerType,
             "Problemas de mana constantes"
         ));
@@ -1528,8 +1456,8 @@ public static class ObservationInterpreter
             "Exaustão Mágica",
             "Habilidades drenam ainda mais energia.",
             false,
-            CardAttribute.PlayerActionManaCost, 7,
-            CardAttribute.EnemyActionManaCost, -4,
+            CardAttribute.PlayerActionManaCost, 6,
+            CardAttribute.EnemyActionManaCost, -3,
             obs.triggerType,
             "Problemas de mana constantes"
         ));
@@ -1538,8 +1466,8 @@ public static class ObservationInterpreter
             "Reservas Esgotadas",
             "Seu MP máximo diminui.",
             false,
-            CardAttribute.PlayerMaxMP, -25,
-            CardAttribute.EnemyMaxMP, -15,
+            CardAttribute.PlayerMaxMP, -20,
+            CardAttribute.EnemyMaxMP, -12,
             obs.triggerType,
             "Problemas de mana constantes"
         ));
@@ -1548,8 +1476,8 @@ public static class ObservationInterpreter
             "Dreno Arcano",
             "Magia custa mais e você tem menos.",
             false,
-            CardAttribute.PlayerMaxMP, -20,
-            CardAttribute.EnemyDefense, -12,
+            CardAttribute.PlayerMaxMP, -16,
+            CardAttribute.EnemyDefense, -10,
             obs.triggerType,
             "Problemas de mana constantes"
         ));
@@ -1558,8 +1486,8 @@ public static class ObservationInterpreter
             "Desperdício Mágico",
             "Suas habilidades ficam muito caras.",
             false,
-            CardAttribute.PlayerActionManaCost, 8,
-            CardAttribute.EnemyActionPower, -10,
+            CardAttribute.PlayerActionManaCost, 7,
+            CardAttribute.EnemyActionPower, -8,
             obs.triggerType,
             "Problemas de mana constantes"
         ));
@@ -1576,8 +1504,8 @@ public static class ObservationInterpreter
             "Autossuficiência",
             "Troque dependência de itens por poder próprio.",
             true,
-            CardAttribute.PlayerMaxHP, 35,
-            CardAttribute.EnemyMaxHP, 25,
+            CardAttribute.PlayerMaxHP, 28,
+            CardAttribute.EnemyMaxHP, 20,
             obs.triggerType,
             "Dependência de consumíveis"
         ));
@@ -1586,8 +1514,8 @@ public static class ObservationInterpreter
             "Força Interior",
             "Desenvolva poder independente.",
             true,
-            CardAttribute.PlayerDefensiveActionPower, 30,
-            CardAttribute.EnemyActionPower, 15,
+            CardAttribute.PlayerDefensiveActionPower, 25,
+            CardAttribute.EnemyActionPower, 12,
             obs.triggerType,
             "Dependência de consumíveis"
         ));
@@ -1596,8 +1524,8 @@ public static class ObservationInterpreter
             "Recursos Internos",
             "Mais MP para habilidades próprias.",
             true,
-            CardAttribute.PlayerMaxMP, 35,
-            CardAttribute.EnemyDefense, 15,
+            CardAttribute.PlayerMaxMP, 28,
+            CardAttribute.EnemyDefense, 12,
             obs.triggerType,
             "Dependência de consumíveis"
         ));
@@ -1606,8 +1534,8 @@ public static class ObservationInterpreter
             "Independência Total",
             "Stats permanentes aumentados.",
             true,
-            CardAttribute.PlayerActionPower, 20,
-            CardAttribute.EnemyActionPower, 15,
+            CardAttribute.PlayerActionPower, 16,
+            CardAttribute.EnemyActionPower, 12,
             obs.triggerType,
             "Dependência de consumíveis"
         ));
@@ -1617,8 +1545,8 @@ public static class ObservationInterpreter
             "Escassez Material",
             "Recursos se tornam ainda mais raros.",
             false,
-            CardAttribute.CoinsEarned, -15,
-            CardAttribute.EnemyDefense, -12,
+            CardAttribute.CoinsEarned, -12,
+            CardAttribute.EnemyDefense, -10,
             obs.triggerType,
             "Dependência de consumíveis"
         ));
@@ -1627,8 +1555,8 @@ public static class ObservationInterpreter
             "Dependência Crítica",
             "Estratégia baseada em itens te enfraquece.",
             false,
-            CardAttribute.PlayerDefense, -15,
-            CardAttribute.EnemyActionPower, -12,
+            CardAttribute.PlayerDefense, -12,
+            CardAttribute.EnemyActionPower, -10,
             obs.triggerType,
             "Dependência de consumíveis"
         ));
@@ -1637,8 +1565,8 @@ public static class ObservationInterpreter
             "Fragilidade Sem Itens",
             "Sem consumíveis, você é fraco.",
             false,
-            CardAttribute.PlayerMaxHP, -25,
-            CardAttribute.EnemyMaxHP, -20,
+            CardAttribute.PlayerMaxHP, -20,
+            CardAttribute.EnemyMaxHP, -16,
             obs.triggerType,
             "Dependência de consumíveis"
         ));
@@ -1647,8 +1575,8 @@ public static class ObservationInterpreter
             "Vício Custoso",
             "Sua dependência cobra um preço alto.",
             false,
-            CardAttribute.PlayerActionPower, -12,
-            CardAttribute.EnemyDefense, -10,
+            CardAttribute.PlayerActionPower, -10,
+            CardAttribute.EnemyDefense, -8,
             obs.triggerType,
             "Dependência de consumíveis"
         ));
@@ -1667,8 +1595,8 @@ public static class ObservationInterpreter
             "Confiança Absoluta",
             "Sua força é inquestionável.",
             true,
-            CardAttribute.PlayerActionPower, 30,
-            CardAttribute.CoinsEarned, -18,
+            CardAttribute.PlayerActionPower, 25,
+            CardAttribute.CoinsEarned, -15,
             obs.triggerType,
             $"Vitória perfeita vs {enemyName}"
         ));
@@ -1677,8 +1605,8 @@ public static class ObservationInterpreter
             "Domínio Total",
             "Você está além do desafio.",
             true,
-            CardAttribute.PlayerOffensiveActionPower, 35,
-            CardAttribute.EnemyMaxHP, 30,
+            CardAttribute.PlayerOffensiveActionPower, 28,
+            CardAttribute.EnemyMaxHP, 25,
             obs.triggerType,
             $"Vitória perfeita vs {enemyName}"
         ));
@@ -1687,8 +1615,8 @@ public static class ObservationInterpreter
             "Superioridade Marcial",
             "Todos seus ataques ficam mais fortes.",
             true,
-            CardAttribute.PlayerActionPower, 28,
-            CardAttribute.EnemyActionPower, 20,
+            CardAttribute.PlayerActionPower, 22,
+            CardAttribute.EnemyActionPower, 16,
             obs.triggerType,
             $"Vitória perfeita vs {enemyName}"
         ));
@@ -1697,8 +1625,8 @@ public static class ObservationInterpreter
             "Maestria Completa",
             "Aumente seu poder ofensivo.",
             true,
-            CardAttribute.PlayerOffensiveActionPower, 30,
-            CardAttribute.EnemyDefense, 20,
+            CardAttribute.PlayerOffensiveActionPower, 25,
+            CardAttribute.EnemyDefense, 16,
             obs.triggerType,
             $"Vitória perfeita vs {enemyName}"
         ));
@@ -1708,8 +1636,8 @@ public static class ObservationInterpreter
             "Lição Aprendida",
             "Inimigos estudam sua técnica.",
             false,
-            CardAttribute.PlayerMaxHP, -25,
-            CardAttribute.EnemyDefense, 25,
+            CardAttribute.PlayerMaxHP, -20,
+            CardAttribute.EnemyDefense, 20,
             obs.triggerType,
             $"Vitória perfeita vs {enemyName}"
         ));
@@ -1718,8 +1646,8 @@ public static class ObservationInterpreter
             "Arrogância Fatal",
             "Confiança excessiva te enfraquece.",
             false,
-            CardAttribute.PlayerDefense, -15,
-            CardAttribute.EnemyActionPower, 20,
+            CardAttribute.PlayerDefense, -12,
+            CardAttribute.EnemyActionPower, 16,
             obs.triggerType,
             $"Vitória perfeita vs {enemyName}"
         ));
@@ -1728,8 +1656,8 @@ public static class ObservationInterpreter
             "Desafio Amplificado",
             "Universo aumenta a dificuldade.",
             false,
-            CardAttribute.PlayerMaxHP, -20,
-            CardAttribute.EnemyMaxHP, 40,
+            CardAttribute.PlayerMaxHP, -16,
+            CardAttribute.EnemyMaxHP, 32,
             obs.triggerType,
             $"Vitória perfeita vs {enemyName}"
         ));
@@ -1738,15 +1666,15 @@ public static class ObservationInterpreter
             "Contra-medidas Desenvolvidas",
             "Inimigos se preparam melhor.",
             false,
-            CardAttribute.PlayerActionPower, -15,
-            CardAttribute.EnemyDefense, 25,
+            CardAttribute.PlayerActionPower, -12,
+            CardAttribute.EnemyDefense, 20,
             obs.triggerType,
             $"Vitória perfeita vs {enemyName}"
         ));
     }
     
     /// <summary>
-    /// Item esgotado - 3 vantagens + 3 desvantagens
+    /// Item esgotado - 4 vantagens + 4 desvantagens
     /// </summary>
     private static void GenerateItemExhaustedOffers(BehaviorObservation obs,
         List<NegotiationOffer> advantages, List<NegotiationOffer> disadvantages)
@@ -1758,8 +1686,8 @@ public static class ObservationInterpreter
             "Força Interior",
             $"Ao esgotar '{itemName}', desenvolve resistência própria.",
             true,
-            CardAttribute.PlayerMaxHP, 35,
-            CardAttribute.EnemyMaxHP, 28,
+            CardAttribute.PlayerMaxHP, 28,
+            CardAttribute.EnemyMaxHP, 22,
             obs.triggerType,
             $"Item esgotado: {itemName}"
         ));
@@ -1768,8 +1696,8 @@ public static class ObservationInterpreter
             "Adaptação Forçada",
             "Aprenda a lutar sem depender de itens.",
             true,
-            CardAttribute.PlayerActionPower, 22,
-            CardAttribute.EnemyActionPower, 15,
+            CardAttribute.PlayerActionPower, 18,
+            CardAttribute.EnemyActionPower, 12,
             obs.triggerType,
             $"Item esgotado: {itemName}"
         ));
@@ -1778,8 +1706,18 @@ public static class ObservationInterpreter
             "Autossuficiência Desenvolvida",
             "Habilidades próprias ficam mais fortes.",
             true,
-            CardAttribute.PlayerDefensiveActionPower, 28,
-            CardAttribute.EnemyDefense, 15,
+            CardAttribute.PlayerDefensiveActionPower, 22,
+            CardAttribute.EnemyDefense, 12,
+            obs.triggerType,
+            $"Item esgotado: {itemName}"
+        ));
+        
+        advantages.Add(new NegotiationOffer(
+            "Compensação Natural",
+            "Seus atributos base melhoram.",
+            true,
+            CardAttribute.PlayerMaxMP, 24,
+            CardAttribute.EnemyMaxMP, 15,
             obs.triggerType,
             $"Item esgotado: {itemName}"
         ));
@@ -1789,8 +1727,8 @@ public static class ObservationInterpreter
             "Dependência Crítica",
             "Estratégia baseada em itens te enfraquece.",
             false,
-            CardAttribute.PlayerDefense, -15,
-            CardAttribute.EnemyActionPower, -12,
+            CardAttribute.PlayerDefense, -12,
+            CardAttribute.EnemyActionPower, -10,
             obs.triggerType,
             $"Item esgotado: {itemName}"
         ));
@@ -1799,8 +1737,8 @@ public static class ObservationInterpreter
             "Escassez Permanente",
             "Recursos ficam ainda mais raros.",
             false,
-            CardAttribute.CoinsEarned, -18,
-            CardAttribute.EnemyMaxHP, -15,
+            CardAttribute.CoinsEarned, -15,
+            CardAttribute.EnemyMaxHP, -12,
             obs.triggerType,
             $"Item esgotado: {itemName}"
         ));
@@ -1809,8 +1747,18 @@ public static class ObservationInterpreter
             "Fragilidade Exposta",
             "Sem itens, suas fraquezas aparecem.",
             false,
-            CardAttribute.PlayerMaxHP, -20,
-            CardAttribute.EnemyDefense, -15,
+            CardAttribute.PlayerMaxHP, -16,
+            CardAttribute.EnemyDefense, -12,
+            obs.triggerType,
+            $"Item esgotado: {itemName}"
+        ));
+        
+        disadvantages.Add(new NegotiationOffer(
+            "Despreparo",
+            "Falta de recursos te prejudica.",
+            false,
+            CardAttribute.PlayerActionPower, -10,
+            CardAttribute.EnemyMaxHP, -10,
             obs.triggerType,
             $"Item esgotado: {itemName}"
         ));
@@ -1827,8 +1775,8 @@ public static class ObservationInterpreter
             "A Melhor Defesa",
             "Puro foco ofensivo devastador.",
             true,
-            CardAttribute.PlayerOffensiveActionPower, 35,
-            CardAttribute.EnemyActionPower, 25,
+            CardAttribute.PlayerOffensiveActionPower, 28,
+            CardAttribute.EnemyActionPower, 20,
             obs.triggerType,
             "Build sem skills defensivas"
         ));
@@ -1837,8 +1785,8 @@ public static class ObservationInterpreter
             "Ataque Esmagador",
             "Todos ataques ganham poder massivo.",
             true,
-            CardAttribute.PlayerActionPower, 30,
-            CardAttribute.EnemyDefense, 20,
+            CardAttribute.PlayerActionPower, 25,
+            CardAttribute.EnemyDefense, 16,
             obs.triggerType,
             "Build sem skills defensivas"
         ));
@@ -1847,8 +1795,8 @@ public static class ObservationInterpreter
             "Destruição Pura",
             "Especialize-se em dano.",
             true,
-            CardAttribute.PlayerSingleTargetActionPower, 35,
-            CardAttribute.EnemyMaxHP, 25,
+            CardAttribute.PlayerSingleTargetActionPower, 30,
+            CardAttribute.EnemyMaxHP, 20,
             obs.triggerType,
             "Build sem skills defensivas"
         ));
@@ -1857,8 +1805,8 @@ public static class ObservationInterpreter
             "Força Bruta",
             "Compensação ofensiva total.",
             true,
-            CardAttribute.PlayerOffensiveActionPower, 32,
-            CardAttribute.EnemyOffensiveActionPower, 20,
+            CardAttribute.PlayerOffensiveActionPower, 26,
+            CardAttribute.EnemyOffensiveActionPower, 16,
             obs.triggerType,
             "Build sem skills defensivas"
         ));
@@ -1868,8 +1816,8 @@ public static class ObservationInterpreter
             "Vidro e Canhão",
             "Sem defesas, você é frágil.",
             false,
-            CardAttribute.PlayerMaxHP, 45,
-            CardAttribute.EnemyActionPower, 30,
+            CardAttribute.PlayerMaxHP, -18,
+            CardAttribute.EnemyActionPower, 25,
             obs.triggerType,
             "Build sem skills defensivas"
         ));
@@ -1878,8 +1826,8 @@ public static class ObservationInterpreter
             "Fragilidade Extrema",
             "Falta de defesa te enfraquece.",
             false,
-            CardAttribute.PlayerDefense, -18,
-            CardAttribute.EnemyMaxHP, -15,
+            CardAttribute.PlayerDefense, -15,
+            CardAttribute.EnemyMaxHP, -12,
             obs.triggerType,
             "Build sem skills defensivas"
         ));
@@ -1888,8 +1836,8 @@ public static class ObservationInterpreter
             "Vulnerabilidade Total",
             "Você é um alvo fácil.",
             false,
-            CardAttribute.PlayerMaxHP, -30,
-            CardAttribute.EnemyActionPower, 20,
+            CardAttribute.PlayerMaxHP, -25,
+            CardAttribute.EnemyActionPower, 16,
             obs.triggerType,
             "Build sem skills defensivas"
         ));
@@ -1898,15 +1846,15 @@ public static class ObservationInterpreter
             "Defesa Inexistente",
             "Inimigos exploram sua fragilidade.",
             false,
-            CardAttribute.PlayerDefense, -15,
-            CardAttribute.EnemyOffensiveActionPower, 22,
+            CardAttribute.PlayerDefense, -12,
+            CardAttribute.EnemyOffensiveActionPower, 18,
             obs.triggerType,
             "Build sem skills defensivas"
         ));
     }
     
     /// <summary>
-    /// Morte repetida em boss - 5 vantagens + 4 desvantagens
+    /// Morte repetida em boss - 4 vantagens + 4 desvantagens
     /// </summary>
     private static void GenerateRepeatedBossDeathOffers(BehaviorObservation obs,
         List<NegotiationOffer> advantages, List<NegotiationOffer> disadvantages)
@@ -1918,8 +1866,8 @@ public static class ObservationInterpreter
             "Vingança Direcionada",
             $"Forças cósmicas concedem poder contra {bossName}.",
             true,
-            CardAttribute.PlayerActionPower, 40,
-            CardAttribute.EnemyMaxHP, 35,
+            CardAttribute.PlayerActionPower, 32,
+            CardAttribute.EnemyMaxHP, 28,
             obs.triggerType,
             $"Mortes repetidas: {bossName}"
         ));
@@ -1928,8 +1876,8 @@ public static class ObservationInterpreter
             "Lições do Fracasso",
             "Aprenda com cada derrota.",
             true,
-            CardAttribute.PlayerOffensiveActionPower, 38,
-            CardAttribute.EnemyDefense, 25,
+            CardAttribute.PlayerOffensiveActionPower, 30,
+            CardAttribute.EnemyDefense, 20,
             obs.triggerType,
             $"Mortes repetidas: {bossName}"
         ));
@@ -1938,8 +1886,8 @@ public static class ObservationInterpreter
             "Resistência Forjada",
             "Fortifique-se através do sofrimento.",
             true,
-            CardAttribute.PlayerMaxHP, 45,
-            CardAttribute.EnemyActionPower, 30,
+            CardAttribute.PlayerMaxHP, 36,
+            CardAttribute.EnemyActionPower, 25,
             obs.triggerType,
             $"Mortes repetidas: {bossName}"
         ));
@@ -1948,18 +1896,8 @@ public static class ObservationInterpreter
             "Determinação Inabalável",
             "Cada derrota te fortalece.",
             true,
-            CardAttribute.PlayerDefense, 22,
-            CardAttribute.EnemyOffensiveActionPower, 18,
-            obs.triggerType,
-            $"Mortes repetidas: {bossName}"
-        ));
-        
-        advantages.Add(new NegotiationOffer(
-            "Preparação Total",
-            "Múltiplas tentativas te preparam perfeitamente.",
-            true,
-            CardAttribute.PlayerMaxMP, 35,
-            CardAttribute.EnemyMaxMP, 20,
+            CardAttribute.PlayerDefense, 18,
+            CardAttribute.EnemyOffensiveActionPower, 15,
             obs.triggerType,
             $"Mortes repetidas: {bossName}"
         ));
@@ -1969,8 +1907,8 @@ public static class ObservationInterpreter
             "Sede por Sangue",
             $"{bossName} se fortalece com cada vitória.",
             false,
-            CardAttribute.PlayerMaxMP, -20,
-            CardAttribute.EnemyActionPower, 35,
+            CardAttribute.PlayerMaxMP, -16,
+            CardAttribute.EnemyActionPower, 28,
             obs.triggerType,
             $"Mortes repetidas: {bossName}"
         ));
@@ -1979,8 +1917,8 @@ public static class ObservationInterpreter
             "Trauma Profundo",
             "Mortes repetidas te enfraquecem mentalmente.",
             false,
-            CardAttribute.PlayerMaxHP, -30,
-            CardAttribute.EnemyMaxHP, 20,
+            CardAttribute.PlayerMaxHP, -25,
+            CardAttribute.EnemyMaxHP, 16,
             obs.triggerType,
             $"Mortes repetidas: {bossName}"
         ));
@@ -1989,25 +1927,25 @@ public static class ObservationInterpreter
             "Desmoralização Total",
             "Derrotas consecutivas te quebram.",
             false,
-            CardAttribute.PlayerActionPower, -18,
-            CardAttribute.EnemyDefense, 15,
+            CardAttribute.PlayerActionPower, -15,
+            CardAttribute.EnemyDefense, 12,
             obs.triggerType,
             $"Mortes repetidas: {bossName}"
         ));
         
         disadvantages.Add(new NegotiationOffer(
             "Medo Paralisante",
-            "Pavor de {bossName} te enfraquece.",
+            $"Pavor de {bossName} te enfraquece.",
             false,
-            CardAttribute.PlayerDefense, -15,
-            CardAttribute.EnemyOffensiveActionPower, 25,
+            CardAttribute.PlayerDefense, -12,
+            CardAttribute.EnemyOffensiveActionPower, 20,
             obs.triggerType,
             $"Mortes repetidas: {bossName}"
         ));
     }
     
     /// <summary>
-    /// Loja ignorada - 3 vantagens + 3 desvantagens
+    /// Loja ignorada - 4 vantagens + 4 desvantagens
     /// </summary>
     private static void GenerateShopIgnoredOffers(BehaviorObservation obs,
         List<NegotiationOffer> advantages, List<NegotiationOffer> disadvantages)
@@ -2019,8 +1957,8 @@ public static class ObservationInterpreter
             "Guardião de Recursos",
             "Disciplina financeira é recompensada.",
             true,
-            CardAttribute.CoinsEarned, 25,
-            CardAttribute.ShopPrices, 12,
+            CardAttribute.CoinsEarned, 20,
+            CardAttribute.ShopPrices, 10,
             obs.triggerType,
             $"Loja ignorada com {playerCoins} moedas"
         ));
@@ -2029,8 +1967,8 @@ public static class ObservationInterpreter
             "Autossuficiência Premiada",
             "Não precisar de itens te fortalece.",
             true,
-            CardAttribute.PlayerActionPower, 22,
-            CardAttribute.EnemyActionPower, 15,
+            CardAttribute.PlayerActionPower, 18,
+            CardAttribute.EnemyActionPower, 12,
             obs.triggerType,
             $"Loja ignorada com {playerCoins} moedas"
         ));
@@ -2039,8 +1977,18 @@ public static class ObservationInterpreter
             "Economia Sábia",
             "Guardar recursos tem benefícios.",
             true,
-            CardAttribute.CoinsEarned, 28,
-            CardAttribute.EnemyDefense, 12,
+            CardAttribute.CoinsEarned, 22,
+            CardAttribute.EnemyDefense, 10,
+            obs.triggerType,
+            $"Loja ignorada com {playerCoins} moedas"
+        ));
+        
+        advantages.Add(new NegotiationOffer(
+            "Poupança Recompensada",
+            "Mais moedas e preços melhores.",
+            true,
+            CardAttribute.CoinsEarned, 18,
+            CardAttribute.EnemyMaxHP, 15,
             obs.triggerType,
             $"Loja ignorada com {playerCoins} moedas"
         ));
@@ -2050,8 +1998,8 @@ public static class ObservationInterpreter
             "Inflação Galopante",
             "Comerciantes aumentam os preços.",
             false,
-            CardAttribute.ShopPrices, 30,
-            CardAttribute.EnemyMaxHP, -25,
+            CardAttribute.ShopPrices, 25,
+            CardAttribute.EnemyMaxHP, -20,
             obs.triggerType,
             $"Loja ignorada com {playerCoins} moedas"
         ));
@@ -2060,8 +2008,8 @@ public static class ObservationInterpreter
             "Escassez Forçada",
             "Recursos ficam mais caros.",
             false,
-            CardAttribute.ShopPrices, 25,
-            CardAttribute.EnemyActionPower, -12,
+            CardAttribute.ShopPrices, 20,
+            CardAttribute.EnemyActionPower, -10,
             obs.triggerType,
             $"Loja ignorada com {playerCoins} moedas"
         ));
@@ -2070,8 +2018,18 @@ public static class ObservationInterpreter
             "Isolamento Custoso",
             "Ignorar comércio tem consequências.",
             false,
-            CardAttribute.CoinsEarned, -15,
-            CardAttribute.EnemyDefense, -15,
+            CardAttribute.CoinsEarned, -12,
+            CardAttribute.EnemyDefense, -12,
+            obs.triggerType,
+            $"Loja ignorada com {playerCoins} moedas"
+        ));
+        
+        disadvantages.Add(new NegotiationOffer(
+            "Oportunidades Perdidas",
+            "Perder lojas te enfraquece economicamente.",
+            false,
+            CardAttribute.CoinsEarned, -10,
+            CardAttribute.EnemyMaxHP, -10,
             obs.triggerType,
             $"Loja ignorada com {playerCoins} moedas"
         ));
@@ -2088,8 +2046,8 @@ public static class ObservationInterpreter
             "Poder Crescente",
             "Canalize confiança em poder ofensivo.",
             true,
-            CardAttribute.PlayerOffensiveActionPower, 30,
-            CardAttribute.EnemyActionPower, 20,
+            CardAttribute.PlayerOffensiveActionPower, 25,
+            CardAttribute.EnemyActionPower, 16,
             obs.triggerType,
             "Vitória muito fácil"
         ));
@@ -2098,8 +2056,8 @@ public static class ObservationInterpreter
             "Superioridade Consolidada",
             "Você está além deste desafio.",
             true,
-            CardAttribute.PlayerActionPower, 28,
-            CardAttribute.EnemyMaxHP, 25,
+            CardAttribute.PlayerActionPower, 22,
+            CardAttribute.EnemyMaxHP, 20,
             obs.triggerType,
             "Vitória muito fácil"
         ));
@@ -2108,8 +2066,8 @@ public static class ObservationInterpreter
             "Domínio Absoluto",
             "Vitórias fáceis provam sua força.",
             true,
-            CardAttribute.PlayerOffensiveActionPower, 32,
-            CardAttribute.EnemyDefense, 20,
+            CardAttribute.PlayerOffensiveActionPower, 26,
+            CardAttribute.EnemyDefense, 16,
             obs.triggerType,
             "Vitória muito fácil"
         ));
@@ -2118,8 +2076,8 @@ public static class ObservationInterpreter
             "Maestria Incomparável",
             "Você domina completamente o combate.",
             true,
-            CardAttribute.PlayerSingleTargetActionPower, 35,
-            CardAttribute.EnemyOffensiveActionPower, 18,
+            CardAttribute.PlayerSingleTargetActionPower, 28,
+            CardAttribute.EnemyOffensiveActionPower, 15,
             obs.triggerType,
             "Vitória muito fácil"
         ));
@@ -2129,8 +2087,8 @@ public static class ObservationInterpreter
             "Desafio Amplificado",
             "Universo aumenta a dificuldade para te testar.",
             false,
-            CardAttribute.PlayerMaxHP, -20,
-            CardAttribute.EnemyMaxHP, 40,
+            CardAttribute.PlayerMaxHP, -16,
+            CardAttribute.EnemyMaxHP, 32,
             obs.triggerType,
             "Vitória muito fácil"
         ));
@@ -2139,8 +2097,8 @@ public static class ObservationInterpreter
             "Contra-medidas Desenvolvidas",
             "Inimigos se preparam melhor.",
             false,
-            CardAttribute.PlayerActionPower, -15,
-            CardAttribute.EnemyDefense, 30,
+            CardAttribute.PlayerActionPower, -12,
+            CardAttribute.EnemyDefense, 25,
             obs.triggerType,
             "Vitória muito fácil"
         ));
@@ -2149,8 +2107,8 @@ public static class ObservationInterpreter
             "Arrogância Custosa",
             "Confiança excessiva te enfraquece.",
             false,
-            CardAttribute.PlayerDefense, -18,
-            CardAttribute.EnemyActionPower, 25,
+            CardAttribute.PlayerDefense, -15,
+            CardAttribute.EnemyActionPower, 20,
             obs.triggerType,
             "Vitória muito fácil"
         ));
@@ -2159,8 +2117,8 @@ public static class ObservationInterpreter
             "Escalada de Poder",
             "Inimigos ficam dramaticamente mais fortes.",
             false,
-            CardAttribute.PlayerMaxHP, -25,
-            CardAttribute.EnemyActionPower, 30,
+            CardAttribute.PlayerMaxHP, -20,
+            CardAttribute.EnemyActionPower, 25,
             obs.triggerType,
             "Vitória muito fácil"
         ));
@@ -2179,8 +2137,8 @@ public static class ObservationInterpreter
             "Maestria Arcana",
             "Domine magias poderosas com mais eficiência.",
             true,
-            CardAttribute.PlayerMaxMP, 40,
-            CardAttribute.EnemyMaxMP, 25,
+            CardAttribute.PlayerMaxMP, 32,
+            CardAttribute.EnemyMaxMP, 20,
             obs.triggerType,
             $"Custo médio: {avgCost:F0} MP"
         ));
@@ -2189,8 +2147,8 @@ public static class ObservationInterpreter
             "Eficiência Aprimorada",
             "Reduza drasticamente custos de mana.",
             true,
-            CardAttribute.PlayerActionManaCost, -7,
-            CardAttribute.EnemyActionPower, 15,
+            CardAttribute.PlayerActionManaCost, -6,
+            CardAttribute.EnemyActionPower, 12,
             obs.triggerType,
             $"Custo médio: {avgCost:F0} MP"
         ));
@@ -2199,8 +2157,8 @@ public static class ObservationInterpreter
             "Poder Justificado",
             "Skills caras ficam ainda mais fortes.",
             true,
-            CardAttribute.PlayerOffensiveActionPower, 35,
-            CardAttribute.EnemyDefense, 20,
+            CardAttribute.PlayerOffensiveActionPower, 28,
+            CardAttribute.EnemyDefense, 16,
             obs.triggerType,
             $"Custo médio: {avgCost:F0} MP"
         ));
@@ -2209,8 +2167,8 @@ public static class ObservationInterpreter
             "Reservas Infinitas",
             "MP massivamente aumentado.",
             true,
-            CardAttribute.PlayerMaxMP, 45,
-            CardAttribute.EnemyActionPower, 18,
+            CardAttribute.PlayerMaxMP, 36,
+            CardAttribute.EnemyActionPower, 15,
             obs.triggerType,
             $"Custo médio: {avgCost:F0} MP"
         ));
@@ -2220,8 +2178,8 @@ public static class ObservationInterpreter
             "Fome Voraz",
             "Magias poderosas drenam ainda mais energia.",
             false,
-            CardAttribute.PlayerActionManaCost, 10,
-            CardAttribute.EnemyActionManaCost, 6,
+            CardAttribute.PlayerActionManaCost, 8,
+            CardAttribute.EnemyActionManaCost, 5,
             obs.triggerType,
             $"Custo médio: {avgCost:F0} MP"
         ));
@@ -2230,8 +2188,8 @@ public static class ObservationInterpreter
             "Esgotamento Rápido",
             "Você fica sem mana rapidamente.",
             false,
-            CardAttribute.PlayerMaxMP, -30,
-            CardAttribute.EnemyMaxMP, -15,
+            CardAttribute.PlayerMaxMP, -25,
+            CardAttribute.EnemyMaxMP, -12,
             obs.triggerType,
             $"Custo médio: {avgCost:F0} MP"
         ));
@@ -2240,8 +2198,8 @@ public static class ObservationInterpreter
             "Desperdício Extremo",
             "Custos exorbitantes te limitam.",
             false,
-            CardAttribute.PlayerActionManaCost, 12,
-            CardAttribute.EnemyDefense, -10,
+            CardAttribute.PlayerActionManaCost, 10,
+            CardAttribute.EnemyDefense, -8,
             obs.triggerType,
             $"Custo médio: {avgCost:F0} MP"
         ));
@@ -2250,15 +2208,15 @@ public static class ObservationInterpreter
             "Dependência Cara",
             "Skills caras te deixam vulnerável.",
             false,
-            CardAttribute.PlayerMaxMP, -25,
-            CardAttribute.EnemyActionPower, 15,
+            CardAttribute.PlayerMaxMP, -20,
+            CardAttribute.EnemyActionPower, 12,
             obs.triggerType,
             $"Custo médio: {avgCost:F0} MP"
         ));
     }
     
     /// <summary>
-    /// Sem dano em área - 5 vantagens + 4 desvantagens
+    /// Sem dano em área - 4 vantagens + 4 desvantagens
     /// </summary>
     private static void GenerateNoAOEDamageOffers(BehaviorObservation obs,
         List<NegotiationOffer> advantages, List<NegotiationOffer> disadvantages)
@@ -2270,8 +2228,8 @@ public static class ObservationInterpreter
             "Assassino Preciso",
             "Foco absoluto em alvos únicos.",
             true,
-            CardAttribute.PlayerSingleTargetActionPower, 40,
-            CardAttribute.EnemyDefense, 20,
+            CardAttribute.PlayerSingleTargetActionPower, 32,
+            CardAttribute.EnemyDefense, 16,
             obs.triggerType,
             $"Sem AOE vs {avgEnemies:F0} inimigos"
         ));
@@ -2280,8 +2238,8 @@ public static class ObservationInterpreter
             "Destruição Direcionada",
             "Ataques únicos ganham poder massivo.",
             true,
-            CardAttribute.PlayerSingleTargetActionPower, 38,
-            CardAttribute.EnemyMaxHP, 22,
+            CardAttribute.PlayerSingleTargetActionPower, 30,
+            CardAttribute.EnemyMaxHP, 18,
             obs.triggerType,
             $"Sem AOE vs {avgEnemies:F0} inimigos"
         ));
@@ -2290,8 +2248,8 @@ public static class ObservationInterpreter
             "Perfuração Letal",
             "Especialize-se em eliminar alvos únicos.",
             true,
-            CardAttribute.PlayerOffensiveActionPower, 30,
-            CardAttribute.EnemyDefense, 18,
+            CardAttribute.PlayerOffensiveActionPower, 25,
+            CardAttribute.EnemyDefense, 15,
             obs.triggerType,
             $"Sem AOE vs {avgEnemies:F0} inimigos"
         ));
@@ -2300,18 +2258,8 @@ public static class ObservationInterpreter
             "Foco Absoluto",
             "Concentração total resulta em devastação.",
             true,
-            CardAttribute.PlayerSingleTargetActionPower, 35,
-            CardAttribute.EnemyActionPower, 15,
-            obs.triggerType,
-            $"Sem AOE vs {avgEnemies:F0} inimigos"
-        ));
-        
-        advantages.Add(new NegotiationOffer(
-            "Maestria Single-Target",
-            "Torne-se mestre em eliminar indivíduos.",
-            true,
-            CardAttribute.PlayerSingleTargetActionPower, 42,
-            CardAttribute.EnemyOffensiveActionPower, 18,
+            CardAttribute.PlayerSingleTargetActionPower, 28,
+            CardAttribute.EnemyActionPower, 12,
             obs.triggerType,
             $"Sem AOE vs {avgEnemies:F0} inimigos"
         ));
@@ -2321,8 +2269,8 @@ public static class ObservationInterpreter
             "Números Crescentes",
             "Sem AOE, enfrenta hordas maiores.",
             false,
-            CardAttribute.PlayerMaxHP, -20,
-            CardAttribute.EnemyMaxHP, -18,
+            CardAttribute.PlayerMaxHP, -16,
+            CardAttribute.EnemyMaxHP, -15,
             obs.triggerType,
             $"Sem AOE vs {avgEnemies:F0} inimigos"
         ));
@@ -2331,8 +2279,8 @@ public static class ObservationInterpreter
             "Sobrecarga de Alvos",
             "Múltiplos inimigos te sobrecarregam.",
             false,
-            CardAttribute.PlayerActionPower, -15,
-            CardAttribute.EnemyMaxHP, 20,
+            CardAttribute.PlayerActionPower, -12,
+            CardAttribute.EnemyMaxHP, 16,
             obs.triggerType,
             $"Sem AOE vs {avgEnemies:F0} inimigos"
         ));
@@ -2341,8 +2289,8 @@ public static class ObservationInterpreter
             "Vulnerabilidade Tática",
             "Falta de área te expõe.",
             false,
-            CardAttribute.PlayerDefense, -12,
-            CardAttribute.EnemyActionPower, 15,
+            CardAttribute.PlayerDefense, -10,
+            CardAttribute.EnemyActionPower, 12,
             obs.triggerType,
             $"Sem AOE vs {avgEnemies:F0} inimigos"
         ));
@@ -2351,15 +2299,15 @@ public static class ObservationInterpreter
             "Limitação Estratégica",
             "Incapacidade de lidar com grupos.",
             false,
-            CardAttribute.PlayerSingleTargetActionPower, -20,
-            CardAttribute.EnemyDefense, -15,
+            CardAttribute.PlayerSingleTargetActionPower, -16,
+            CardAttribute.EnemyDefense, -12,
             obs.triggerType,
             $"Sem AOE vs {avgEnemies:F0} inimigos"
         ));
     }
     
     /// <summary>
-    /// Ficou sem dinheiro após compras - 3 vantagens + 3 desvantagens
+    /// Ficou sem dinheiro após compras - 4 vantagens + 4 desvantagens
     /// </summary>
     private static void GenerateBrokeAfterShoppingOffers(BehaviorObservation obs,
         List<NegotiationOffer> advantages, List<NegotiationOffer> disadvantages)
@@ -2371,8 +2319,8 @@ public static class ObservationInterpreter
             "Tudo ou Nada",
             "Gastar tudo mostra comprometimento.",
             true,
-            CardAttribute.CoinsEarned, 35,
-            CardAttribute.EnemyActionPower, 15,
+            CardAttribute.CoinsEarned, 28,
+            CardAttribute.EnemyActionPower, 12,
             obs.triggerType,
             $"Restaram apenas {coinsLeft} moedas"
         ));
@@ -2381,8 +2329,8 @@ public static class ObservationInterpreter
             "Investimento Sábio",
             "Seus gastos são recompensados.",
             true,
-            CardAttribute.PlayerActionPower, 25,
-            CardAttribute.EnemyDefense, 15,
+            CardAttribute.PlayerActionPower, 20,
+            CardAttribute.EnemyDefense, 12,
             obs.triggerType,
             $"Restaram apenas {coinsLeft} moedas"
         ));
@@ -2391,8 +2339,18 @@ public static class ObservationInterpreter
             "Recompensa por Coragem",
             "Ousadia financeira traz benefícios.",
             true,
+            CardAttribute.CoinsEarned, 25,
+            CardAttribute.ShopPrices, -10,
+            obs.triggerType,
+            $"Restaram apenas {coinsLeft} moedas"
+        ));
+        
+        advantages.Add(new NegotiationOffer(
+            "Fortuna Renovada",
+            "Você recupera recursos rapidamente.",
+            true,
             CardAttribute.CoinsEarned, 30,
-            CardAttribute.ShopPrices, -12,
+            CardAttribute.EnemyMaxHP, 15,
             obs.triggerType,
             $"Restaram apenas {coinsLeft} moedas"
         ));
@@ -2402,8 +2360,8 @@ public static class ObservationInterpreter
             "Endividamento",
             "Gastos excessivos têm consequências.",
             false,
-            CardAttribute.ShopPrices, 25,
-            CardAttribute.EnemyMaxHP, -18,
+            CardAttribute.ShopPrices, 20,
+            CardAttribute.EnemyMaxHP, -15,
             obs.triggerType,
             $"Restaram apenas {coinsLeft} moedas"
         ));
@@ -2412,8 +2370,8 @@ public static class ObservationInterpreter
             "Pobreza Extrema",
             "Você ficou completamente sem recursos.",
             false,
-            CardAttribute.CoinsEarned, -20,
-            CardAttribute.EnemyDefense, -15,
+            CardAttribute.CoinsEarned, -16,
+            CardAttribute.EnemyDefense, -12,
             obs.triggerType,
             $"Restaram apenas {coinsLeft} moedas"
         ));
@@ -2422,15 +2380,25 @@ public static class ObservationInterpreter
             "Crise Financeira",
             "Sua situação econômica piora.",
             false,
-            CardAttribute.ShopPrices, 22,
-            CardAttribute.EnemyActionPower, -10,
+            CardAttribute.ShopPrices, 18,
+            CardAttribute.EnemyActionPower, -8,
+            obs.triggerType,
+            $"Restaram apenas {coinsLeft} moedas"
+        ));
+        
+        disadvantages.Add(new NegotiationOffer(
+            "Despesas Imprudentes",
+            "Gastar demais te prejudica.",
+            false,
+            CardAttribute.CoinsEarned, -14,
+            CardAttribute.EnemyMaxHP, -10,
             obs.triggerType,
             $"Restaram apenas {coinsLeft} moedas"
         ));
     }
     
     /// <summary>
-    /// Poucas moedas com lojas disponíveis - 4 vantagens + 3 desvantagens
+    /// Poucas moedas com lojas disponíveis - 4 vantagens + 4 desvantagens
     /// </summary>
     private static void GenerateLowCoinsUnvisitedShopsOffers(BehaviorObservation obs,
         List<NegotiationOffer> advantages, List<NegotiationOffer> disadvantages)
@@ -2443,7 +2411,7 @@ public static class ObservationInterpreter
             "Filantropia Cósmica",
             "Forças do universo concedem moedas.",
             true,
-            CardAttribute.CoinsEarned, 30,
+            CardAttribute.CoinsEarned, 25,
             CardAttribute.EnemySpeed, 2,
             obs.triggerType,
             $"{currentCoins} moedas, {shopsCount} lojas disponíveis"
@@ -2453,8 +2421,8 @@ public static class ObservationInterpreter
             "Misericórdia Divina",
             "Sua pobreza é aliviada.",
             true,
-            CardAttribute.CoinsEarned, 35,
-            CardAttribute.EnemyActionPower, 12,
+            CardAttribute.CoinsEarned, 28,
+            CardAttribute.EnemyActionPower, 10,
             obs.triggerType,
             $"{currentCoins} moedas, {shopsCount} lojas disponíveis"
         ));
@@ -2463,8 +2431,8 @@ public static class ObservationInterpreter
             "Desconto Compassivo",
             "Comerciantes têm pena de você.",
             true,
-            CardAttribute.ShopPrices, -25,
-            CardAttribute.EnemyDefense, 10,
+            CardAttribute.ShopPrices, -20,
+            CardAttribute.EnemyDefense, 8,
             obs.triggerType,
             $"{currentCoins} moedas, {shopsCount} lojas disponíveis"
         ));
@@ -2473,8 +2441,8 @@ public static class ObservationInterpreter
             "Fortuna Renovada",
             "Recursos surgem quando mais precisa.",
             true,
-            CardAttribute.CoinsEarned, 32,
-            CardAttribute.EnemyMaxHP, 15,
+            CardAttribute.CoinsEarned, 26,
+            CardAttribute.EnemyMaxHP, 12,
             obs.triggerType,
             $"{currentCoins} moedas, {shopsCount} lojas disponíveis"
         ));
@@ -2484,8 +2452,8 @@ public static class ObservationInterpreter
             "Círculo Vicioso",
             "Escassez de recursos persiste.",
             false,
-            CardAttribute.PlayerMaxMP, -15,
-            CardAttribute.ShopPrices, -25,
+            CardAttribute.PlayerMaxMP, -12,
+            CardAttribute.ShopPrices, -20,
             obs.triggerType,
             $"{currentCoins} moedas, {shopsCount} lojas disponíveis"
         ));
@@ -2494,8 +2462,8 @@ public static class ObservationInterpreter
             "Pobreza Permanente",
             "Você ganha menos moedas.",
             false,
-            CardAttribute.CoinsEarned, -18,
-            CardAttribute.EnemyMaxHP, -20,
+            CardAttribute.CoinsEarned, -15,
+            CardAttribute.EnemyMaxHP, -16,
             obs.triggerType,
             $"{currentCoins} moedas, {shopsCount} lojas disponíveis"
         ));
@@ -2504,8 +2472,18 @@ public static class ObservationInterpreter
             "Destituição Total",
             "Recursos escasseiam ainda mais.",
             false,
-            CardAttribute.CoinsEarned, -15,
-            CardAttribute.EnemyDefense, -18,
+            CardAttribute.CoinsEarned, -12,
+            CardAttribute.EnemyDefense, -15,
+            obs.triggerType,
+            $"{currentCoins} moedas, {shopsCount} lojas disponíveis"
+        ));
+        
+        disadvantages.Add(new NegotiationOffer(
+            "Miséria Crescente",
+            "Sua situação financeira piora.",
+            false,
+            CardAttribute.CoinsEarned, -10,
+            CardAttribute.EnemyActionPower, -8,
             obs.triggerType,
             $"{currentCoins} moedas, {shopsCount} lojas disponíveis"
         ));
