@@ -1,14 +1,15 @@
-// Assets/Scripts/Difficulty_System/NegotiationOfferApplier.cs (NOVO)
+// Assets/Scripts/Difficulty_System/NegotiationOfferApplier.cs (IMMEDIATE APPLICATION)
 
 using UnityEngine;
 
 /// <summary>
-/// Aplica ofertas de negociação (tanto gerais quanto específicas de skill)
+/// Aplica ofertas de negociação IMEDIATAMENTE
+/// (tanto gerais quanto específicas de skill)
 /// </summary>
 public static class NegotiationOfferApplier
 {
     /// <summary>
-    /// Aplica UMA oferta (vantagem ou desvantagem)
+    /// Aplica UMA oferta (vantagem ou desvantagem) IMEDIATAMENTE
     /// </summary>
     public static void ApplyOffer(NegotiationOffer offer, int finalValue)
     {
@@ -17,22 +18,22 @@ public static class NegotiationOfferApplier
         
         if (isSpecificSkill)
         {
-            ApplySpecificSkillOffer(offer, finalValue);
+            ApplySpecificSkillOfferImmediate(offer, finalValue);
         }
         else
         {
-            ApplyGeneralOffer(offer, finalValue);
+            ApplyGeneralOfferImmediate(offer, finalValue);
         }
     }
     
     /// <summary>
-    /// Aplica oferta de skill específica
+    /// ATUALIZADO: Aplica oferta de skill específica IMEDIATAMENTE no ScriptableObject
     /// </summary>
-    private static void ApplySpecificSkillOffer(NegotiationOffer offer, int finalValue)
+    private static void ApplySpecificSkillOfferImmediate(NegotiationOffer offer, int finalValue)
     {
         if (SpecificSkillModifier.Instance == null)
         {
-            Debug.LogError("SpecificSkillModifier não encontrado! Adicione ao GameManager.");
+            Debug.LogError("⚠️ SpecificSkillModifier não encontrado! Adicione ao GameManager.");
             return;
         }
         
@@ -40,7 +41,7 @@ public static class NegotiationOfferApplier
         
         if (string.IsNullOrEmpty(skillName))
         {
-            Debug.LogError("Nome da skill não encontrado na oferta!");
+            Debug.LogError("⚠️ Nome da skill não encontrado na oferta!");
             return;
         }
         
@@ -61,8 +62,9 @@ public static class NegotiationOfferApplier
                 manaCostChange = Mathf.RoundToInt(manaCostChange * scale);
             }
             
+            // APLICA IMEDIATAMENTE no SO
             SpecificSkillModifier.Instance.ModifySkill(skillName, powerChange, manaCostChange);
-            Debug.Log($"✅ Skill '{skillName}' modificada: Poder {powerChange:+#;-#;0}, Mana {manaCostChange:+#;-#;0}");
+            Debug.Log($"✅ Skill '{skillName}' modificada IMEDIATAMENTE: Poder {powerChange:+#;-#;0}, Mana {manaCostChange:+#;-#;0}");
         }
         else if (modifyPower)
         {
@@ -75,8 +77,9 @@ public static class NegotiationOfferApplier
                 powerChange = Mathf.RoundToInt(powerChange * scale);
             }
             
+            // APLICA IMEDIATAMENTE no SO
             SpecificSkillModifier.Instance.ModifySkillPower(skillName, powerChange);
-            Debug.Log($"✅ Skill '{skillName}': Poder {powerChange:+#;-#;0}");
+            Debug.Log($"✅ Skill '{skillName}': Poder {powerChange:+#;-#;0} (IMEDIATO)");
         }
         else if (modifyManaCost)
         {
@@ -89,25 +92,46 @@ public static class NegotiationOfferApplier
                 manaCostChange = Mathf.RoundToInt(manaCostChange * scale);
             }
             
+            // APLICA IMEDIATAMENTE no SO
             SpecificSkillModifier.Instance.ModifySkillManaCost(skillName, manaCostChange);
-            Debug.Log($"✅ Skill '{skillName}': Custo {manaCostChange:+#;-#;0} MP");
+            Debug.Log($"✅ Skill '{skillName}': Custo {manaCostChange:+#;-#;0} MP (IMEDIATO)");
         }
     }
     
     /// <summary>
-    /// Aplica oferta geral (sistema existente)
+    /// ATUALIZADO: Aplica oferta geral IMEDIATAMENTE via DifficultySystem
     /// </summary>
-    private static void ApplyGeneralOffer(NegotiationOffer offer, int finalValue)
+    private static void ApplyGeneralOfferImmediate(NegotiationOffer offer, int finalValue)
     {
         if (DifficultySystem.Instance == null)
         {
-            Debug.LogError("DifficultySystem não encontrado!");
+            Debug.LogError("⚠️ DifficultySystem não encontrado!");
             return;
         }
         
-        // Aplica pelo sistema de dificuldade existente
-        DifficultySystem.Instance.Modifiers.ApplyModifier(offer.targetAttribute, finalValue);
+        // IMPORTANTE: Usa ApplyModifierImmediate via DifficultySystem
+        // NÃO apenas registra - APLICA no SO
         
-        Debug.Log($"✅ Modificador geral aplicado: {offer.targetAttribute} {finalValue:+#;-#;0}");
+        // DifficultySystem.ApplyNegotiation() já faz isso corretamente
+        // Mas aqui estamos lidando com ofertas individuais
+        
+        // Chama método privado ApplyModifierImmediate via reflexão
+        var method = typeof(DifficultySystem).GetMethod("ApplyModifierImmediate", 
+            System.Reflection.BindingFlags.NonPublic | 
+            System.Reflection.BindingFlags.Instance);
+        
+        if (method != null)
+        {
+            method.Invoke(DifficultySystem.Instance, new object[] { offer.targetAttribute, finalValue, offer.affectsPlayer });
+            
+            // Registra no histórico
+            DifficultySystem.Instance.Modifiers.RecordModifier(offer.targetAttribute, finalValue);
+            
+            Debug.Log($"✅ Modificador geral aplicado IMEDIATAMENTE: {offer.targetAttribute} {finalValue:+#;-#;0}");
+        }
+        else
+        {
+            Debug.LogError("⚠️ Método ApplyModifierImmediate não encontrado!");
+        }
     }
 }

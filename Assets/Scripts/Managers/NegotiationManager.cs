@@ -1,4 +1,4 @@
-// Assets/Scripts/Negotiation/NegotiationManager.cs (UPDATED - With Refresh System)
+// Assets/Scripts/Negotiation/NegotiationManager.cs (IMMEDIATE APPLICATION)
 
 using UnityEngine;
 using UnityEngine.UI;
@@ -11,7 +11,7 @@ public class NegotiationManager : MonoBehaviour
     [Header("UI References")]
     [SerializeField] private Transform cardsContainer;
     [SerializeField] private GameObject cardPrefab;
-    [SerializeField] private GameObject refreshButtonPrefab; // NOVO: Prefab do botão de refresh
+    [SerializeField] private GameObject refreshButtonPrefab;
     [SerializeField] private Button confirmButton;
     [SerializeField] private Button declineButton;
     [SerializeField] private TextMeshProUGUI titleText;
@@ -19,8 +19,8 @@ public class NegotiationManager : MonoBehaviour
     
     [Header("Configuration")]
     [SerializeField] private int numberOfCards = 3;
-    [SerializeField] private bool useDynamicCards = true; // Se false, usa SOs
-    [SerializeField] private List<NegotiationCardSO> fallbackCards; // Cards SO para fallback
+    [SerializeField] private bool useDynamicCards = true;
+    [SerializeField] private List<NegotiationCardSO> fallbackCards;
     
     [Header("Refresh Settings")]
     [SerializeField] private Color refreshUsedColor = new Color(0.5f, 0.5f, 0.5f, 0.5f);
@@ -28,8 +28,7 @@ public class NegotiationManager : MonoBehaviour
     [Header("Debug")]
     [SerializeField] private bool showDebugLogs = true;
     
-    // Estado interno
-    private List<GameObject> cardContainers = new List<GameObject>(); // Containers (carta + botão)
+    private List<GameObject> cardContainers = new List<GameObject>();
     private List<NegotiationCardUI> cardUIList = new List<NegotiationCardUI>();
     private List<GameObject> refreshButtonObjects = new List<GameObject>();
     private List<bool> refreshButtonUsed = new List<bool>();
@@ -64,9 +63,6 @@ public class NegotiationManager : MonoBehaviour
         UpdateConfirmButton();
     }
     
-    /// <summary>
-    /// Configura negociação com cartas dinâmicas (sistema novo)
-    /// </summary>
     private void SetupDynamicNegotiation()
     {
         if (DynamicNegotiationCardGenerator.Instance == null)
@@ -76,10 +72,8 @@ public class NegotiationManager : MonoBehaviour
             return;
         }
         
-        // Processa observações e gera pool de ofertas
         DynamicNegotiationCardGenerator.Instance.ProcessObservations();
         
-        // Verifica se há ofertas suficientes
         if (!DynamicNegotiationCardGenerator.Instance.HasEnoughOffers(numberOfCards))
         {
             int maxCards = DynamicNegotiationCardGenerator.Instance.GetMaxPossibleCards();
@@ -95,7 +89,6 @@ public class NegotiationManager : MonoBehaviour
             numberOfCards = maxCards;
         }
         
-        // Gera cartas com matching inteligente
         currentDynamicCards = DynamicNegotiationCardGenerator.Instance.GenerateCards(numberOfCards);
         
         if (currentDynamicCards.Count == 0)
@@ -106,14 +99,9 @@ public class NegotiationManager : MonoBehaviour
         }
         
         DebugLog($"✓ {currentDynamicCards.Count} cartas dinâmicas geradas");
-        
-        // Cria UI das cartas
         CreateDynamicCardUI();
     }
     
-    /// <summary>
-    /// Configura negociação com cartas estáticas (sistema antigo - fallback)
-    /// </summary>
     private void SetupStaticNegotiation()
     {
         if (fallbackCards == null || fallbackCards.Count == 0)
@@ -122,7 +110,6 @@ public class NegotiationManager : MonoBehaviour
             return;
         }
         
-        // Embaralha e pega N cartas
         List<NegotiationCardSO> shuffled = new List<NegotiationCardSO>(fallbackCards);
         ShuffleList(shuffled);
         
@@ -136,13 +123,9 @@ public class NegotiationManager : MonoBehaviour
         }
     }
     
-    /// <summary>
-    /// NOVO: Cria UI para cartas dinâmicas com botões de refresh
-    /// </summary>
     private void CreateDynamicCardUI()
     {
         ClearCards();
-        
         refreshButtonUsed.Clear();
         
         for (int i = 0; i < currentDynamicCards.Count; i++)
@@ -152,12 +135,8 @@ public class NegotiationManager : MonoBehaviour
         }
     }
     
-    /// <summary>
-    /// NOVO: Cria um slot com carta dinâmica + botão de refresh
-    /// </summary>
     private void CreateDynamicCardSlot(DynamicNegotiationCard card, int index)
     {
-        // Cria container vertical para carta + botão refresh
         GameObject containerObj = new GameObject($"CardSlot_{index}");
         containerObj.transform.SetParent(cardsContainer);
         containerObj.transform.localScale = Vector3.one;
@@ -170,7 +149,6 @@ public class NegotiationManager : MonoBehaviour
         verticalLayout.childForceExpandHeight = false;
         verticalLayout.childForceExpandWidth = false;
         
-        // Cria a carta
         GameObject cardObj = Instantiate(cardPrefab, containerObj.transform);
         cardObj.transform.localScale = Vector3.one;
         
@@ -185,7 +163,6 @@ public class NegotiationManager : MonoBehaviour
             DebugLog("⚠️ NegotiationCardUI não encontrado no prefab!");
         }
         
-        // Cria o botão de refresh
         if (refreshButtonPrefab != null)
         {
             GameObject refreshObj = Instantiate(refreshButtonPrefab, containerObj.transform);
@@ -197,7 +174,6 @@ public class NegotiationManager : MonoBehaviour
                 int refreshIndex = index;
                 refreshBtn.onClick.AddListener(() => OnRefreshClicked(refreshIndex));
                 
-                // Configura texto do botão
                 TextMeshProUGUI btnText = refreshBtn.GetComponentInChildren<TextMeshProUGUI>();
                 if (btnText != null)
                 {
@@ -211,9 +187,6 @@ public class NegotiationManager : MonoBehaviour
         cardContainers.Add(containerObj);
     }
     
-    /// <summary>
-    /// Cria um slot com carta estática (sem refresh)
-    /// </summary>
     private void CreateStaticCardSlot(NegotiationCardSO card, int index)
     {
         GameObject cardObj = Instantiate(cardPrefab, cardsContainer);
@@ -229,12 +202,8 @@ public class NegotiationManager : MonoBehaviour
         cardContainers.Add(cardObj);
     }
     
-    /// <summary>
-    /// NOVO: Chamado quando um botão de refresh é clicado
-    /// </summary>
     private void OnRefreshClicked(int slotIndex)
     {
-        // Verifica se já foi usado
         if (refreshButtonUsed[slotIndex])
         {
             DebugLog($"Botão de refresh {slotIndex} já foi usado!");
@@ -243,10 +212,8 @@ public class NegotiationManager : MonoBehaviour
         
         DebugLog($"Refresh solicitado para slot {slotIndex}");
         
-        // Marca como usado
         refreshButtonUsed[slotIndex] = true;
         
-        // Desabilita visualmente o botão
         if (slotIndex < refreshButtonObjects.Count)
         {
             Button refreshBtn = refreshButtonObjects[slotIndex].GetComponent<Button>();
@@ -262,13 +229,9 @@ public class NegotiationManager : MonoBehaviour
             }
         }
         
-        // Gera nova carta
         RefreshCardSlot(slotIndex);
     }
     
-    /// <summary>
-    /// NOVO: Atualiza uma carta específica
-    /// </summary>
     private void RefreshCardSlot(int slotIndex)
     {
         if (slotIndex < 0 || slotIndex >= currentDynamicCards.Count)
@@ -277,21 +240,18 @@ public class NegotiationManager : MonoBehaviour
             return;
         }
         
-        // IMPORTANTE: Libera as ofertas da carta antiga de volta para a pool
         DynamicNegotiationCard oldCard = currentDynamicCards[slotIndex];
         if (oldCard != null && DynamicNegotiationCardGenerator.Instance != null)
         {
             DynamicNegotiationCardGenerator.Instance.ReleaseCardOffers(oldCard);
         }
         
-        // Gera nova carta única
         DynamicNegotiationCard newCard = DynamicNegotiationCardGenerator.Instance.GenerateSingleCard();
         
         if (newCard == null)
         {
             DebugLog("⚠️ Não há mais cartas únicas disponíveis para refresh!");
             
-            // Reverte o botão de refresh
             refreshButtonUsed[slotIndex] = false;
             if (slotIndex < refreshButtonObjects.Count)
             {
@@ -307,23 +267,13 @@ public class NegotiationManager : MonoBehaviour
                 }
             }
             
-            // Devolve as ofertas que acabamos de liberar
-            if (oldCard != null && DynamicNegotiationCardGenerator.Instance != null)
-            {
-                // Re-marca como usadas já que não conseguimos substituir
-                var generator = DynamicNegotiationCardGenerator.Instance;
-                // Não há método público para isso, então apenas deixamos
-            }
-            
             return;
         }
         
         DebugLog($"Slot {slotIndex}: '{oldCard?.GetCardName()}' → '{newCard.GetCardName()}'");
         
-        // Atualiza a lista interna
         currentDynamicCards[slotIndex] = newCard;
         
-        // Atualiza a UI da carta
         if (slotIndex < cardUIList.Count)
         {
             NegotiationCardUI cardUI = cardUIList[slotIndex];
@@ -333,7 +283,6 @@ public class NegotiationManager : MonoBehaviour
             }
         }
         
-        // Se a carta refreshada estava selecionada, desseleciona
         if (selectedCard != null && cardUIList.IndexOf(selectedCard) == slotIndex)
         {
             selectedCard.SetSelected(false);
@@ -342,18 +291,13 @@ public class NegotiationManager : MonoBehaviour
         }
     }
     
-    /// <summary>
-    /// Chamado quando uma carta é selecionada
-    /// </summary>
     public void SelectCard(NegotiationCardUI card)
     {
-        // Desseleciona carta anterior
         if (selectedCard != null)
         {
             selectedCard.SetSelected(false);
         }
         
-        // Seleciona nova carta
         selectedCard = card;
         selectedCard.SetSelected(true);
         
@@ -405,7 +349,7 @@ public class NegotiationManager : MonoBehaviour
     }
     
     /// <summary>
-    /// Aplica efeitos de uma carta dinâmica (ATUALIZADO para suportar skills específicas)
+    /// ATUALIZADO: Aplica efeitos de carta dinâmica IMEDIATAMENTE
     /// </summary>
     private void ApplyDynamicCard(NegotiationCardUI cardUI)
     {
@@ -426,23 +370,23 @@ public class NegotiationManager : MonoBehaviour
         // === APLICA VANTAGEM ===
         NegotiationOffer advantage = card.playerBenefit;
         
-        // Verifica se é skill específica
         bool isSpecificSkill = advantage.HasData("isSpecificSkill") && advantage.GetData<bool>("isSpecificSkill");
         
         if (isSpecificSkill)
         {
-            // Aplica modificação na skill específica
+            // Aplica modificação na skill específica IMEDIATAMENTE
             DebugLog($"  Aplicando vantagem em SKILL ESPECÍFICA");
             NegotiationOfferApplier.ApplyOffer(advantage, value);
         }
         else
         {
-            // Aplica modificador geral
+            // Aplica modificador geral IMEDIATAMENTE
             DebugLog($"  Jogador: {playerAttr} {FormatValue(value)}");
             
             if (DifficultySystem.Instance != null)
             {
-                DifficultySystem.Instance.Modifiers.ApplyModifier(playerAttr, value);
+                // NOVO: Usa método que aplica imediatamente
+                DifficultySystem.Instance.ApplyNegotiation(playerAttr, enemyAttr, value);
             }
         }
         
@@ -453,35 +397,28 @@ public class NegotiationManager : MonoBehaviour
         
         if (isSpecificSkillCost)
         {
-            // Aplica modificação na skill específica (custo)
+            // Aplica modificação na skill específica (custo) IMEDIATAMENTE
             DebugLog($"  Aplicando desvantagem em SKILL ESPECÍFICA");
             NegotiationOfferApplier.ApplyOffer(disadvantage, value);
         }
         else
         {
-            // Aplica modificador geral
+            // Já foi aplicado junto com advantage no ApplyNegotiation
             if (disadvantage.affectsPlayer)
             {
-                // Debuff no jogador
                 DebugLog($"  Jogador perde: {playerAttr} {FormatValue(value)}");
             }
             else
             {
-                // Buff nos inimigos
                 DebugLog($"  Inimigos ganham: {enemyAttr} {FormatValue(value)}");
-            }
-            
-            if (DifficultySystem.Instance != null)
-            {
-                DifficultySystem.Instance.Modifiers.ApplyModifier(enemyAttr, value);
             }
         }
         
-        DebugLog("=== NEGOCIAÇÃO APLICADA COM SUCESSO ===");
+        DebugLog("=== NEGOCIAÇÃO APLICADA COM SUCESSO (IMEDIATA) ===");
     }
     
     /// <summary>
-    /// Aplica efeitos de uma carta estática
+    /// ATUALIZADO: Aplica efeitos de carta estática IMEDIATAMENTE
     /// </summary>
     private void ApplyStaticCard(NegotiationCardUI cardUI)
     {
@@ -503,6 +440,7 @@ public class NegotiationManager : MonoBehaviour
         
         if (DifficultySystem.Instance != null)
         {
+            // NOVO: Aplica imediatamente
             DifficultySystem.Instance.ApplyNegotiation(playerAttr, enemyAttr, value);
         }
     }
@@ -574,6 +512,4 @@ public class NegotiationManager : MonoBehaviour
         if (declineButton != null)
             declineButton.onClick.RemoveAllListeners();
     }
-    
-    
 }

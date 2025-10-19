@@ -248,24 +248,41 @@ public class NegotiationCardUI : MonoBehaviour, IPointerEnterHandler, IPointerEx
     private void PopulateIntensityDropdown()
     {
         if (intensityDropdown == null) return;
-        
+    
         intensityDropdown.ClearOptions();
         List<string> options = new List<string>();
-        
+    
         List<CardIntensity> availableIntensities = isDynamicCard 
             ? cardDataDynamic.availableIntensities 
             : cardDataSO.availableIntensities;
-        
+    
         foreach (var intensity in availableIntensities)
         {
-            int val = IntensityHelper.GetValue(intensity);
-            options.Add($"{IntensityHelper.GetIntensityDisplayName(intensity)} (+{val})");
+            int rawValue = IntensityHelper.GetValue(intensity);
+        
+            // NOVO: Calcula os valores REAIS que serão aplicados
+            int realPlayerValue = IntensityHelper.GetScaledValue(intensity, selectedPlayerAttribute);
+            int realEnemyValue = IntensityHelper.GetScaledValue(intensity, selectedEnemyAttribute);
+        
+            // Mostra ambos os valores se forem diferentes
+            string displayText;
+            if (realPlayerValue == realEnemyValue)
+            {
+                displayText = $"{IntensityHelper.GetIntensityDisplayName(intensity)} (+{realPlayerValue})";
+            }
+            else
+            {
+                displayText = $"{IntensityHelper.GetIntensityDisplayName(intensity)} (Você: +{realPlayerValue} | Inimigos: +{realEnemyValue})";
+            }
+        
+            options.Add(displayText);
         }
-        
+    
         intensityDropdown.AddOptions(options);
-        
+    
         if (availableIntensities.Count > 0)
         {
+            // IMPORTANTE: Guarda a intensidade RAW, não o valor escalado
             selectedValue = IntensityHelper.GetValue(availableIntensities[0]);
             intensityDropdown.value = 0;
         }
@@ -276,23 +293,41 @@ public class NegotiationCardUI : MonoBehaviour, IPointerEnterHandler, IPointerEx
         List<CardAttribute> availableAttrs = isDynamicCard 
             ? cardDataDynamic.availablePlayerAttributes 
             : cardDataSO.availablePlayerAttributes;
-        
+    
         if (availableAttrs.Count > index)
         {
             selectedPlayerAttribute = availableAttrs[index];
+        
+            // NOVO: Atualiza o dropdown de intensidade com os novos valores
+            if (intensityDropdown != null && intensityPanel != null && intensityPanel.activeSelf)
+            {
+                int currentSelection = intensityDropdown.value;
+                PopulateIntensityDropdown();
+                intensityDropdown.value = currentSelection; // Mantém seleção
+            }
+        
             UpdateDescription();
         }
     }
-    
+
     private void OnEnemyAttributeChanged(int index)
     {
         List<CardAttribute> availableAttrs = isDynamicCard 
             ? cardDataDynamic.availableEnemyAttributes 
             : cardDataSO.availableEnemyAttributes;
-        
+    
         if (availableAttrs.Count > index)
         {
             selectedEnemyAttribute = availableAttrs[index];
+        
+            // NOVO: Atualiza o dropdown de intensidade com os novos valores
+            if (intensityDropdown != null && intensityPanel != null && intensityPanel.activeSelf)
+            {
+                int currentSelection = intensityDropdown.value;
+                PopulateIntensityDropdown();
+                intensityDropdown.value = currentSelection; // Mantém seleção
+            }
+        
             UpdateDescription();
         }
     }

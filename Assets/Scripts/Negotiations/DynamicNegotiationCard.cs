@@ -126,51 +126,67 @@ public class DynamicNegotiationCard
     }
     
     /// <summary>
-    /// Retorna descrição completa CLARA e CORRETA
+    /// CORRIGIDO: Retorna descrição completa com valores REAIS ESCALADOS
     /// </summary>
-    public string GetFullDescription(CardAttribute? playerAttr, CardAttribute? enemyAttr, int value)
+    public string GetFullDescription(CardAttribute? playerAttr, CardAttribute? enemyAttr, int intensityValue)
     {
         string desc = $"<b><size=110%>{cardName}</size></b>\n\n";
         desc += $"<i>{cardDescription}</i>\n\n";
 
         // === VANTAGEM ===
         CardAttribute advantageAttr = playerAttr ?? playerBenefit.targetAttribute;
-        int advantageValue = (cardType == NegotiationCardType.Fixed) ? playerBenefit.value : value;
         
-        // NOVO: Detecta se a vantagem é buff no jogador ou debuff nos inimigos
-        bool advantageAffectsPlayer = IsPlayerAttribute(advantageAttr);
-        
-        if (advantageAffectsPlayer && advantageValue > 0)
+        // CRÍTICO: Calcula o valor REAL escalado baseado na intensidade e atributo
+        int realAdvantageValue;
+        if (cardType == NegotiationCardType.Fixed)
         {
-            // Buff no jogador (caso normal)
-            desc += $"<color=#90EE90><b>✓ Você Ganha:</b></color>\n";
-            desc += $"+{advantageValue} {AttributeHelper.GetDisplayName(advantageAttr)}\n";
-        }
-        else if (!advantageAffectsPlayer && advantageValue < 0)
-        {
-            // Debuff nos inimigos (vantagem indireta)
-            desc += $"<color=#90EE90><b>✓ Inimigos Perdem:</b></color>\n";
-            int displayValue = Mathf.Abs(advantageValue);
-            desc += $"-{displayValue} {AttributeHelper.GetDisplayName(advantageAttr)}\n";
-        }
-        else if (!advantageAffectsPlayer && advantageValue > 0)
-        {
-            // Caso raro: vantagem que aumenta atributo inimigo (não deveria acontecer)
-            desc += $"<color=#90EE90><b>✓ Você Ganha:</b></color>\n";
-            desc += $"Inimigos ganham +{advantageValue} {AttributeHelper.GetDisplayName(advantageAttr)} (??)\n";
+            realAdvantageValue = playerBenefit.value;
         }
         else
         {
-            // Valor zero ou negativo no jogador
-            desc += $"<color=#90EE90><b>✓ Efeito Especial:</b></color>\n";
-            desc += $"{advantageValue} {AttributeHelper.GetDisplayName(advantageAttr)}\n";
+            // Escala o valor baseado no atributo específico
+            realAdvantageValue = IntensityHelper.GetScaledValue((CardIntensity)intensityValue, advantageAttr);
+        }
+        
+        // Detecta se a vantagem é buff no jogador ou debuff nos inimigos
+        bool advantageAffectsPlayer = IsPlayerAttribute(advantageAttr);
+        
+        if (advantageAffectsPlayer && realAdvantageValue > 0)
+        {
+            // Buff no jogador (caso normal)
+            desc += $"<color=#90EE90><b>✓ Você Ganha:</b></color>\n";
+            desc += $"+{realAdvantageValue} {AttributeHelper.GetDisplayName(advantageAttr)}\n";
+        }
+        else if (!advantageAffectsPlayer && realAdvantageValue < 0)
+        {
+            // Debuff nos inimigos (vantagem indireta)
+            desc += $"<color=#90EE90><b>✓ Inimigos Perdem:</b></color>\n";
+            int displayValue = Mathf.Abs(realAdvantageValue);
+            desc += $"-{displayValue} {AttributeHelper.GetDisplayName(advantageAttr)}\n";
+        }
+        else
+        {
+            // Caso especial
+            desc += $"<color=#90EE90><b>✓ Você Ganha:</b></color>\n";
+            desc += $"{realAdvantageValue:+#;-#;0} {AttributeHelper.GetDisplayName(advantageAttr)}\n";
         }
 
         // === DESVANTAGEM ===
         desc += $"\n<color=#FF6B6B><b>✗ Custo:</b></color>\n";
 
         CardAttribute costAttr = enemyAttr ?? playerCost.targetAttribute;
-        int costValue = (cardType == NegotiationCardType.Fixed) ? playerCost.value : value;
+        
+        // CRÍTICO: Calcula o valor REAL escalado baseado na intensidade e atributo
+        int realCostValue;
+        if (cardType == NegotiationCardType.Fixed)
+        {
+            realCostValue = playerCost.value;
+        }
+        else
+        {
+            // Escala o valor baseado no atributo específico do custo
+            realCostValue = IntensityHelper.GetScaledValue((CardIntensity)intensityValue, costAttr);
+        }
 
         // Detecta se afeta jogador ou inimigos
         bool costAffectsPlayer = IsPlayerAttribute(costAttr) || playerCost.affectsPlayer;
@@ -178,14 +194,22 @@ public class DynamicNegotiationCard
         if (costAffectsPlayer)
         {
             // Debuff no jogador
-            int displayValue = Mathf.Abs(costValue);
-            desc += $"Você perde: <color=#FF4444>-{displayValue}</color> {AttributeHelper.GetDisplayName(costAttr)}";
+            if (realCostValue < 0)
+            {
+                // Valor negativo = perda
+                int displayValue = Mathf.Abs(realCostValue);
+                desc += $"Você perde: <color=#FF4444>-{displayValue}</color> {AttributeHelper.GetDisplayName(costAttr)}";
+            }
+            else
+            {
+                // Valor positivo em custo de mana/preço (aumenta)
+                desc += $"<color=#FF4444>+{realCostValue}</color> {AttributeHelper.GetDisplayName(costAttr)}";
+            }
         }
         else
         {
             // Buff nos inimigos
-            string costSign = costValue > 0 ? "+" : "";
-            desc += $"Inimigos ganham: <color=#FF4444>{costSign}{costValue}</color> {AttributeHelper.GetDisplayName(costAttr)}";
+            desc += $"Inimigos ganham: <color=#FF4444>+{realCostValue}</color> {AttributeHelper.GetDisplayName(costAttr)}";
         }
 
         return desc;
