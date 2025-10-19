@@ -1,4 +1,4 @@
-// Assets/Scripts/Difficulty_System/DifficultySystem.cs (IMMEDIATE APPLICATION)
+// Assets/Scripts/Difficulty_System/DifficultySystem.cs (FIXED - COMPLETE)
 
 using UnityEngine;
 using System.IO;
@@ -50,27 +50,25 @@ public class DifficultySystem : MonoBehaviour
     
     /// <summary>
     /// APLICA negociação IMEDIATAMENTE e registra no histórico
+    /// Agora recebe valores separados para player e enemy
     /// </summary>
-    public void ApplyNegotiation(CardAttribute playerAttr, CardAttribute enemyAttr, int intensity)
+    public void ApplyNegotiation(CardAttribute playerAttr, CardAttribute enemyAttr, int playerValue, int enemyValue)
     {
-        int playerValue = IntensityHelper.GetScaledValue((CardIntensity)intensity, playerAttr);
-        int enemyValue = IntensityHelper.GetScaledValue((CardIntensity)intensity, enemyAttr);
-        
         DebugLog($"=== APLICANDO NEGOCIAÇÃO ===");
         DebugLog($"Jogador: {playerAttr} {FormatValue(playerValue)}");
         DebugLog($"Inimigo: {enemyAttr} {FormatValue(enemyValue)}");
         
-        // APLICA modificações imediatamente
+        // APLICA modificações imediatamente usando os valores já escalados
         if (playerAttr != CardAttribute.PlayerMaxHP || playerValue != 0)
         {
             ApplyModifierImmediate(playerAttr, playerValue, true);
-            modifiers.RecordModifier(playerAttr, playerValue); // Registra
+            modifiers.RecordModifier(playerAttr, playerValue);
         }
         
         if (enemyAttr != CardAttribute.EnemyMaxHP || enemyValue != 0)
         {
             ApplyModifierImmediate(enemyAttr, enemyValue, false);
-            modifiers.RecordModifier(enemyAttr, enemyValue); // Registra
+            modifiers.RecordModifier(enemyAttr, enemyValue);
         }
         
         SaveModifiers();
@@ -163,7 +161,6 @@ public class DifficultySystem : MonoBehaviour
             // === ECONOMIA ===
             case CardAttribute.CoinsEarned:
             case CardAttribute.ShopPrices:
-                // Esses são aplicados em runtime, não precisam modificar SOs
                 DebugLog($"✅ {attribute} registrado (aplicado em runtime)");
                 break;
             
@@ -176,7 +173,6 @@ public class DifficultySystem : MonoBehaviour
             case CardAttribute.EnemyActionManaCost:
             case CardAttribute.EnemyOffensiveActionPower:
             case CardAttribute.EnemyAOEActionPower:
-                // Inimigos são modificados quando spawnam (na InitializeEnemyTeam)
                 DebugLog($"✅ {attribute} registrado (aplicado ao spawnar inimigos)");
                 break;
         }

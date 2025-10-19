@@ -29,4 +29,10 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scenes/Defeat_Scene.unity
     guid: 06e72cb5774d9744ab27a0c0b9c1d2a4
+  - enabled: 1
+    path: Assets/Scenes/Map2.unity
+    guid: cbdc56e1ee099314cbfbccbdc83b1515
+  - enabled: 1
+    path: Assets/Scenes/Map3.unity
+    guid: 519fb88ca09d00b408063b51e3137bb7
   m_configObjects: {}

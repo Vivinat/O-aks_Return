@@ -1,4 +1,4 @@
-// Assets/Scripts/Negotiation/NegotiationEnums.cs (REBALANCED)
+// Assets/Scripts/Negotiation/NegotiationEnums.cs (COMPLETE - SIMPLIFIED)
 
 using UnityEngine;
 
@@ -23,146 +23,83 @@ public enum CardAttribute
     PlayerDefense,
     PlayerSpeed,
     
-    // Atributos de Ações do Jogador (NOVOS E ESPECÍFICOS)
+    // Atributos de Ações do Jogador
     PlayerActionPower,
     PlayerActionManaCost,
-    PlayerOffensiveActionPower,    // NOVO: Apenas skills ofensivas
-    PlayerDefensiveActionPower,    // NOVO: Apenas skills defensivas/cura
-    PlayerAOEActionPower,          // NOVO: Apenas skills de área
-    PlayerSingleTargetActionPower, // NOVO: Apenas skills single-target
+    PlayerOffensiveActionPower,
+    PlayerDefensiveActionPower,
+    PlayerAOEActionPower,
+    PlayerSingleTargetActionPower,
     
-    // Atributos de Inimigos (Específicos)
+    // Atributos de Inimigos
     EnemyMaxHP,
     EnemyMaxMP,
     EnemyDefense,
     EnemySpeed,
     EnemyActionPower,
     EnemyActionManaCost,
-    EnemyOffensiveActionPower,     // NOVO
-    EnemyAOEActionPower,           // NOVO
+    EnemyOffensiveActionPower,
+    EnemyAOEActionPower,
     
     // Atributos Gerais
     CoinsEarned,
     ShopPrices,
     
-    // NOVO: Modificadores específicos de skill
-    SpecificSkillPower,      // Modifica apenas uma skill específica (poder)
-    SpecificSkillManaCost,   // Modifica apenas uma skill específica (custo)
+    // Modificadores específicos de skill
+    SpecificSkillPower,
+    SpecificSkillManaCost,
 }
 
 /// <summary>
-/// Intensidades disponíveis para modificações (REBALANCEADAS - Máximo 30%)
+/// Intensidades disponíveis para modificações
 /// </summary>
 public enum CardIntensity
 {
-    VeryLow,    // ±3-5 (~3-5% de 100 HP base)
-    Low,        // ±8-10 (~8-10%)
-    Medium,     // ±15-18 (~15-18%)
-    High,       // ±22-25 (~22-25%)
-    VeryHigh    // ±28-30 (~28-30% - MÁXIMO)
+    Low,     // 1x
+    Medium,  // 2x
+    High     // 3x
 }
 
 /// <summary>
 /// Helper para trabalhar com intensidades de cartas
-/// VALORES BALANCEADOS: 4, 8, 12 (teto máximo)
+/// MULTIPLICADORES SIMPLES: 1x, 2x, 3x
 /// </summary>
 public static class IntensityHelper
 {
     /// <summary>
-    /// Retorna o valor escalado baseado na intensidade e tipo de atributo
-    /// TETO: 4 (Low), 8 (Medium), 12 (High)
+    /// Retorna o multiplicador da intensidade
+    /// Low = 1x, Medium = 2x, High = 3x
     /// </summary>
-    public static int GetScaledValue(CardIntensity intensity, CardAttribute attribute)
-    {
-        // Define multiplicador base por intensidade
-        float baseMultiplier = intensity switch
-        {
-            CardIntensity.Low => 1.0f,      // 4
-            CardIntensity.Medium => 2.0f,   // 8
-            CardIntensity.High => 3.0f,     // 12
-            _ => 1.0f
-        };
-        
-        // Define valor base por categoria de atributo
-        int baseValue = GetBaseValueForAttribute(attribute);
-        
-        // Calcula valor final
-        int finalValue = Mathf.RoundToInt(baseValue * baseMultiplier);
-        
-        return finalValue;
-    }
-    
-    /// <summary>
-    /// Retorna valor básico para a intensidade
-    /// </summary>
-    public static int GetValue(CardIntensity intensity)
+    public static float GetMultiplier(CardIntensity intensity)
     {
         return intensity switch
         {
-            CardIntensity.Low => 4,
-            CardIntensity.Medium => 8,
-            CardIntensity.High => 12,
-            _ => 4
+            CardIntensity.Low => 1.0f,
+            CardIntensity.Medium => 2.0f,
+            CardIntensity.High => 3.0f,
+            _ => 1.0f
         };
     }
     
     /// <summary>
-    /// Retorna valor base por categoria de atributo
-    /// Base = 4 (para escalar 4, 8, 12)
+    /// Aplica o multiplicador da intensidade a um valor base
     /// </summary>
-    private static int GetBaseValueForAttribute(CardAttribute attribute)
+    public static int GetScaledValue(CardIntensity intensity, int baseValue)
     {
-        switch (attribute)
-        {
-            // === STATS BASE (valores maiores) ===
-            case CardAttribute.PlayerMaxHP:
-            case CardAttribute.EnemyMaxHP:
-                return 8;  // 8, 16, 24
-            
-            case CardAttribute.PlayerMaxMP:
-            case CardAttribute.EnemyMaxMP:
-                return 6;  // 6, 12, 18
-            
-            // === STATS DE COMBATE (valores médios) ===
-            case CardAttribute.PlayerDefense:
-            case CardAttribute.EnemyDefense:
-            case CardAttribute.PlayerActionPower:
-            case CardAttribute.EnemyActionPower:
-                return 4;  // 4, 8, 12
-            
-            // === TIPOS ESPECÍFICOS DE AÇÃO ===
-            case CardAttribute.PlayerOffensiveActionPower:
-            case CardAttribute.PlayerDefensiveActionPower:
-            case CardAttribute.PlayerAOEActionPower:
-            case CardAttribute.PlayerSingleTargetActionPower:
-            case CardAttribute.EnemyOffensiveActionPower:
-            case CardAttribute.EnemyAOEActionPower:
-                return 5;  // 5, 10, 15
-            
-            // === VELOCIDADE (valores menores) ===
-            case CardAttribute.PlayerSpeed:
-            case CardAttribute.EnemySpeed:
-                return 1;  // 1, 2, 3
-            
-            // === MANA COST (valores menores) ===
-            case CardAttribute.PlayerActionManaCost:
-            case CardAttribute.EnemyActionManaCost:
-                return 2;  // 2, 4, 6
-            
-            // === ECONOMIA ===
-            case CardAttribute.CoinsEarned:
-                return 5;  // 5, 10, 15
-            
-            case CardAttribute.ShopPrices:
-                return 4;  // 4, 8, 12
-            
-            default:
-                return 4;  // Default: 4, 8, 12
-        }
+        float multiplier = GetMultiplier(intensity);
+        return Mathf.RoundToInt(Mathf.Abs(baseValue) * multiplier);
     }
     
     /// <summary>
-    /// Retorna descrição legível da intensidade
+    /// Retorna valor básico para a intensidade (compatibilidade)
+    /// </summary>
+    public static int GetValue(CardIntensity intensity)
+    {
+        return (int)GetMultiplier(intensity);
+    }
+    
+    /// <summary>
+    /// Retorna descrição legível da intensidade (apenas o nome)
     /// </summary>
     public static string GetIntensityDisplayName(CardIntensity intensity)
     {
@@ -191,7 +128,7 @@ public static class IntensityHelper
 }
 
 /// <summary>
-/// Classe auxiliar para nomes de atributos (EXPANDIDA)
+/// Classe auxiliar para nomes de atributos
 /// </summary>
 public static class AttributeHelper
 {
@@ -232,7 +169,7 @@ public static class AttributeHelper
     }
     
     /// <summary>
-    /// NOVO: Retorna descrição curta para UI compacta
+    /// Retorna descrição curta para UI compacta
     /// </summary>
     public static string GetShortName(CardAttribute attribute)
     {
@@ -255,7 +192,7 @@ public static class AttributeHelper
     }
     
     /// <summary>
-    /// NOVO: Verifica se um atributo modifica BattleActions
+    /// Verifica se um atributo modifica BattleActions
     /// </summary>
     public static bool IsActionModifier(CardAttribute attribute)
     {
@@ -272,21 +209,18 @@ public static class AttributeHelper
     }
     
     /// <summary>
-    /// NOVO: Retorna atributos relacionados (para AttributeAndIntensity)
+    /// Retorna atributos relacionados (para AttributeAndIntensity)
     /// </summary>
     public static CardAttribute[] GetRelatedAttributes(CardAttribute attribute)
     {
         switch (attribute)
         {
-            // HP relaciona com Defense
             case CardAttribute.PlayerMaxHP:
                 return new[] { CardAttribute.PlayerMaxHP, CardAttribute.PlayerDefense };
             
-            // MP relaciona com custo de mana
             case CardAttribute.PlayerMaxMP:
                 return new[] { CardAttribute.PlayerMaxMP, CardAttribute.PlayerActionManaCost };
             
-            // Action Power pode escolher tipo específico
             case CardAttribute.PlayerActionPower:
                 return new[] { 
                     CardAttribute.PlayerActionPower,
@@ -295,11 +229,9 @@ public static class AttributeHelper
                     CardAttribute.PlayerAOEActionPower
                 };
             
-            // Inimigos: HP com Defense
             case CardAttribute.EnemyMaxHP:
                 return new[] { CardAttribute.EnemyMaxHP, CardAttribute.EnemyDefense };
             
-            // Inimigos: Action Power com tipos
             case CardAttribute.EnemyActionPower:
                 return new[] {
                     CardAttribute.EnemyActionPower,
@@ -311,6 +243,4 @@ public static class AttributeHelper
                 return new[] { attribute };
         }
     }
-    
-    
 }

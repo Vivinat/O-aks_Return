@@ -1,4 +1,4 @@
-// Assets/Scripts/Negotiation/NegotiationManager.cs (IMMEDIATE APPLICATION)
+// Assets/Scripts/Negotiation/NegotiationManager.cs (COMPLETE - FIXED)
 
 using UnityEngine;
 using UnityEngine.UI;
@@ -349,7 +349,7 @@ public class NegotiationManager : MonoBehaviour
     }
     
     /// <summary>
-    /// ATUALIZADO: Aplica efeitos de carta dinâmica IMEDIATAMENTE
+    /// Aplica efeitos de carta dinâmica IMEDIATAMENTE
     /// </summary>
     private void ApplyDynamicCard(NegotiationCardUI cardUI)
     {
@@ -363,9 +363,14 @@ public class NegotiationManager : MonoBehaviour
         
         CardAttribute playerAttr = cardUI.GetSelectedPlayerAttribute();
         CardAttribute enemyAttr = cardUI.GetSelectedEnemyAttribute();
-        int value = cardUI.GetSelectedValue();
+        CardIntensity intensity = cardUI.GetSelectedIntensity();
+        
+        // Calcula valores reais aplicando o multiplicador aos valores base
+        int playerValue = IntensityHelper.GetScaledValue(intensity, card.playerBenefit.value);
+        int enemyValue = IntensityHelper.GetScaledValue(intensity, Mathf.Abs(card.playerCost.value));
         
         DebugLog($"=== APLICANDO CARTA: {card.GetCardName()} ===");
+        DebugLog($"Intensidade: {IntensityHelper.GetIntensityDisplayName(intensity)} ({IntensityHelper.GetMultiplier(intensity)}x)");
         
         // === APLICA VANTAGEM ===
         NegotiationOffer advantage = card.playerBenefit;
@@ -374,19 +379,18 @@ public class NegotiationManager : MonoBehaviour
         
         if (isSpecificSkill)
         {
-            // Aplica modificação na skill específica IMEDIATAMENTE
             DebugLog($"  Aplicando vantagem em SKILL ESPECÍFICA");
-            NegotiationOfferApplier.ApplyOffer(advantage, value);
+            NegotiationOfferApplier.ApplyOffer(advantage, playerValue);
         }
         else
         {
-            // Aplica modificador geral IMEDIATAMENTE
-            DebugLog($"  Jogador: {playerAttr} {FormatValue(value)}");
+            DebugLog($"  Jogador: {playerAttr} {FormatValue(playerValue)}");
+            DebugLog($"  Inimigos: {enemyAttr} {FormatValue(enemyValue)}");
             
             if (DifficultySystem.Instance != null)
             {
-                // NOVO: Usa método que aplica imediatamente
-                DifficultySystem.Instance.ApplyNegotiation(playerAttr, enemyAttr, value);
+                // Passa valores separados
+                DifficultySystem.Instance.ApplyNegotiation(playerAttr, enemyAttr, playerValue, enemyValue);
             }
         }
         
@@ -397,28 +401,15 @@ public class NegotiationManager : MonoBehaviour
         
         if (isSpecificSkillCost)
         {
-            // Aplica modificação na skill específica (custo) IMEDIATAMENTE
             DebugLog($"  Aplicando desvantagem em SKILL ESPECÍFICA");
-            NegotiationOfferApplier.ApplyOffer(disadvantage, value);
-        }
-        else
-        {
-            // Já foi aplicado junto com advantage no ApplyNegotiation
-            if (disadvantage.affectsPlayer)
-            {
-                DebugLog($"  Jogador perde: {playerAttr} {FormatValue(value)}");
-            }
-            else
-            {
-                DebugLog($"  Inimigos ganham: {enemyAttr} {FormatValue(value)}");
-            }
+            NegotiationOfferApplier.ApplyOffer(disadvantage, enemyValue);
         }
         
         DebugLog("=== NEGOCIAÇÃO APLICADA COM SUCESSO (IMEDIATA) ===");
     }
     
     /// <summary>
-    /// ATUALIZADO: Aplica efeitos de carta estática IMEDIATAMENTE
+    /// Aplica efeitos de carta estática IMEDIATAMENTE
     /// </summary>
     private void ApplyStaticCard(NegotiationCardUI cardUI)
     {
@@ -432,16 +423,25 @@ public class NegotiationManager : MonoBehaviour
         
         CardAttribute playerAttr = cardUI.GetSelectedPlayerAttribute();
         CardAttribute enemyAttr = cardUI.GetSelectedEnemyAttribute();
-        int value = cardUI.GetSelectedValue();
+        CardIntensity intensity = cardUI.GetSelectedIntensity();
+        
+        // Usa valores base separados para player e enemy
+        int basePlayerValue = card.fixedPlayerValue;
+        int baseEnemyValue = card.fixedEnemyValue;
+        
+        // Calcula valores reais aplicando o multiplicador aos valores base
+        int playerValue = IntensityHelper.GetScaledValue(intensity, basePlayerValue);
+        int enemyValue = IntensityHelper.GetScaledValue(intensity, baseEnemyValue);
         
         DebugLog($"Aplicando carta: {card.cardName}");
-        DebugLog($"  Jogador: {playerAttr} {FormatValue(value)}");
-        DebugLog($"  Inimigos: {enemyAttr} {FormatValue(value)}");
+        DebugLog($"Intensidade: {IntensityHelper.GetIntensityDisplayName(intensity)} ({IntensityHelper.GetMultiplier(intensity)}x)");
+        DebugLog($"  Jogador: {playerAttr} {FormatValue(playerValue)}");
+        DebugLog($"  Inimigos: {enemyAttr} {FormatValue(enemyValue)}");
         
         if (DifficultySystem.Instance != null)
         {
-            // NOVO: Aplica imediatamente
-            DifficultySystem.Instance.ApplyNegotiation(playerAttr, enemyAttr, value);
+            // Passa os 4 argumentos: playerAttr, enemyAttr, playerValue, enemyValue
+            DifficultySystem.Instance.ApplyNegotiation(playerAttr, enemyAttr, playerValue, enemyValue);
         }
     }
     

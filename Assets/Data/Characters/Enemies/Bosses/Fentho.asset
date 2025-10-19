@@ -15,10 +15,10 @@ MonoBehaviour:
   characterName: Fentho, o Sonhador
   team: 1
   characterSprite: {fileID: 21300000, guid: 1d14b39757f049a4c815fb3a06345da4, type: 3}
-  maxHp: 1200
+  maxHp: 500
   maxMp: 500
-  defense: 30
-  speed: 1
+  defense: 18
+  speed: 1.7
   deathSound: {fileID: 8300000, guid: e12666ffd7681944aa9226f20dc7cb95, type: 3}
   battleActions:
   - {fileID: 11400000, guid: d6f12f8449a69e6439861ceb55211d88, type: 2}

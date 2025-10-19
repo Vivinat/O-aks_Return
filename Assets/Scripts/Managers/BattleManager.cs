@@ -506,4 +506,12 @@ public class BattleManager : MonoBehaviour
         currentState = BattleState.RUNNING;
         Debug.Log($"[BattleManager] Diálogo do boss '{bossFound}' concluído. Batalha retomada.");
     }
+    
+    /// <summary>
+    /// NOVO: Retorna o personagem atualmente ativo (útil para ressurreição)
+    /// </summary>
+    public BattleEntity GetActiveCharacter()
+    {
+        return activeCharacter;
+    }
 }

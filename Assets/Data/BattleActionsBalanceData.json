@@ -28,7 +28,7 @@
         {
             "actionName": "Benção da Resistência",
             "assetPath": "Assets/Data/BattleActions/Paladin/Bencao_da_Resistencia.asset",
-            "description": "Concede proteção e regeneração a um aliado por 3 turnos. Custo: 16 MP",
+            "description": "Concede proteção a um aliado por 3 turnos. Custo:8 MP",
             "targetType": "SingleAlly",
             "manaCost": 16,
             "isConsumable": false,
@@ -41,19 +41,6 @@
                     "statusEffect": "Protected",
                     "statusDuration": 3,
                     "statusPower": 20,
-                    "hasSelfEffect": false,
-                    "selfEffectType": "Attack",
-                    "selfEffectPower": 0,
-                    "selfStatusEffect": "None",
-                    "selfStatusDuration": 0,
-                    "selfStatusPower": 0
-                },
-                {
-                    "effectType": "RestoreMana",
-                    "power": 0,
-                    "statusEffect": "Regeneration",
-                    "statusDuration": 3,
-                    "statusPower": 12,
                     "hasSelfEffect": false,
                     "selfEffectType": "Attack",
                     "selfEffectPower": 0,
@@ -516,7 +503,7 @@
             "shopPrice": 10,
             "effects": [
                 {
-                    "effectType": "RestoreMana",
+                    "effectType": "Buff",
                     "power": 0,
                     "statusEffect": "DefenseUp",
                     "statusDuration": 3,
@@ -650,8 +637,8 @@
                     "selfEffectType": "Buff",
                     "selfEffectPower": 0,
                     "selfStatusEffect": "Regeneration",
-                    "selfStatusDuration": 0,
-                    "selfStatusPower": 0
+                    "selfStatusDuration": 4,
+                    "selfStatusPower": 10
                 }
             ]
         }
@@ -782,7 +769,7 @@
                     "selfStatusPower": 0
                 },
                 {
-                    "effectType": "RestoreMana",
+                    "effectType": "Buff",
                     "power": 0,
                     "statusEffect": "DefenseUp",
                     "statusDuration": 3,
@@ -795,7 +782,7 @@
                     "selfStatusPower": 0
                 },
                 {
-                    "effectType": "RestoreMana",
+                    "effectType": "Buff",
                     "power": 0,
                     "statusEffect": "SpeedUp",
                     "statusDuration": 3,
@@ -1045,7 +1032,7 @@
             "shopPrice": 95,
             "effects": [
                 {
-                    "effectType": "RestoreMana",
+                    "effectType": "Buff",
                     "power": 0,
                     "statusEffect": "AttackUp",
                     "statusDuration": 1,
@@ -1345,7 +1332,7 @@
             "shopPrice": 10,
             "effects": [
                 {
-                    "effectType": "RestoreMana",
+                    "effectType": "Buff",
                     "power": 0,
                     "statusEffect": "AttackUp",
                     "statusDuration": 3,
@@ -1420,7 +1407,7 @@
             "shopPrice": 10,
             "effects": [
                 {
-                    "effectType": "Buff",
+                    "effectType": "Debuff",
                     "power": 0,
                     "statusEffect": "DefenseDown",
                     "statusDuration": 4,
@@ -1445,7 +1432,7 @@
             "shopPrice": 10,
             "effects": [
                 {
-                    "effectType": "Buff",
+                    "effectType": "Debuff",
                     "power": 0,
                     "statusEffect": "Poison",
                     "statusDuration": 3,
@@ -1470,7 +1457,7 @@
             "shopPrice": 10,
             "effects": [
                 {
-                    "effectType": "RestoreMana",
+                    "effectType": "Buff",
                     "power": 0,
                     "statusEffect": "AttackUp",
                     "statusDuration": 3,

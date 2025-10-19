@@ -1,4 +1,4 @@
-// Assets/Scripts/Negotiation/NegotiationCardUI.cs (UPDATED - Dual Support)
+// Assets/Scripts/Negotiation/NegotiationCardUI.cs (COMPLETE - FIXED)
 
 using UnityEngine;
 using UnityEngine.UI;
@@ -29,8 +29,8 @@ public class NegotiationCardUI : MonoBehaviour, IPointerEnterHandler, IPointerEx
     [SerializeField] private float colorTransitionSpeed = 8f;
     
     // Dados - pode ser SO ou dinâmico
-    private NegotiationCardSO cardDataSO; // Sistema antigo
-    private DynamicNegotiationCard cardDataDynamic; // Sistema novo
+    private NegotiationCardSO cardDataSO;
+    private DynamicNegotiationCard cardDataDynamic;
     private bool isDynamicCard = false;
     
     private NegotiationManager negotiationManager;
@@ -41,7 +41,7 @@ public class NegotiationCardUI : MonoBehaviour, IPointerEnterHandler, IPointerEx
     // Valores selecionados
     private CardAttribute selectedPlayerAttribute;
     private CardAttribute selectedEnemyAttribute;
-    private int selectedValue;
+    private CardIntensity selectedIntensity;
     
     void Awake()
     {
@@ -144,13 +144,13 @@ public class NegotiationCardUI : MonoBehaviour, IPointerEnterHandler, IPointerEx
         {
             selectedPlayerAttribute = cardDataDynamic.playerBenefit.targetAttribute;
             selectedEnemyAttribute = cardDataDynamic.playerCost.targetAttribute;
-            selectedValue = cardDataDynamic.playerBenefit.value;
+            selectedIntensity = CardIntensity.Low;
         }
         else
         {
             selectedPlayerAttribute = cardDataSO.fixedPlayerAttribute;
             selectedEnemyAttribute = cardDataSO.fixedEnemyAttribute;
-            selectedValue = cardDataSO.fixedValue;
+            selectedIntensity = CardIntensity.Low;
         }
     }
     
@@ -258,32 +258,15 @@ public class NegotiationCardUI : MonoBehaviour, IPointerEnterHandler, IPointerEx
     
         foreach (var intensity in availableIntensities)
         {
-            int rawValue = IntensityHelper.GetValue(intensity);
-        
-            // NOVO: Calcula os valores REAIS que serão aplicados
-            int realPlayerValue = IntensityHelper.GetScaledValue(intensity, selectedPlayerAttribute);
-            int realEnemyValue = IntensityHelper.GetScaledValue(intensity, selectedEnemyAttribute);
-        
-            // Mostra ambos os valores se forem diferentes
-            string displayText;
-            if (realPlayerValue == realEnemyValue)
-            {
-                displayText = $"{IntensityHelper.GetIntensityDisplayName(intensity)} (+{realPlayerValue})";
-            }
-            else
-            {
-                displayText = $"{IntensityHelper.GetIntensityDisplayName(intensity)} (Você: +{realPlayerValue} | Inimigos: +{realEnemyValue})";
-            }
-        
-            options.Add(displayText);
+            // APENAS o nome da intensidade - sem valores
+            options.Add(IntensityHelper.GetIntensityDisplayName(intensity));
         }
     
         intensityDropdown.AddOptions(options);
     
         if (availableIntensities.Count > 0)
         {
-            // IMPORTANTE: Guarda a intensidade RAW, não o valor escalado
-            selectedValue = IntensityHelper.GetValue(availableIntensities[0]);
+            selectedIntensity = availableIntensities[0];
             intensityDropdown.value = 0;
         }
     }
@@ -297,15 +280,6 @@ public class NegotiationCardUI : MonoBehaviour, IPointerEnterHandler, IPointerEx
         if (availableAttrs.Count > index)
         {
             selectedPlayerAttribute = availableAttrs[index];
-        
-            // NOVO: Atualiza o dropdown de intensidade com os novos valores
-            if (intensityDropdown != null && intensityPanel != null && intensityPanel.activeSelf)
-            {
-                int currentSelection = intensityDropdown.value;
-                PopulateIntensityDropdown();
-                intensityDropdown.value = currentSelection; // Mantém seleção
-            }
-        
             UpdateDescription();
         }
     }
@@ -319,15 +293,6 @@ public class NegotiationCardUI : MonoBehaviour, IPointerEnterHandler, IPointerEx
         if (availableAttrs.Count > index)
         {
             selectedEnemyAttribute = availableAttrs[index];
-        
-            // NOVO: Atualiza o dropdown de intensidade com os novos valores
-            if (intensityDropdown != null && intensityPanel != null && intensityPanel.activeSelf)
-            {
-                int currentSelection = intensityDropdown.value;
-                PopulateIntensityDropdown();
-                intensityDropdown.value = currentSelection; // Mantém seleção
-            }
-        
             UpdateDescription();
         }
     }
@@ -340,7 +305,7 @@ public class NegotiationCardUI : MonoBehaviour, IPointerEnterHandler, IPointerEx
         
         if (availableIntensities.Count > index)
         {
-            selectedValue = IntensityHelper.GetValue(availableIntensities[index]);
+            selectedIntensity = availableIntensities[index];
             UpdateDescription();
         }
     }
@@ -351,26 +316,18 @@ public class NegotiationCardUI : MonoBehaviour, IPointerEnterHandler, IPointerEx
     
         if (isDynamicCard)
         {
-            // CRÍTICO: Passa o VALOR ESCALADO REAL, não o valor bruto da intensidade
-            int realPlayerValue = IntensityHelper.GetScaledValue((CardIntensity)selectedValue, selectedPlayerAttribute);
-            int realEnemyValue = IntensityHelper.GetScaledValue((CardIntensity)selectedValue, selectedEnemyAttribute);
-        
             descriptionText.text = cardDataDynamic.GetFullDescription(
                 selectedPlayerAttribute, 
                 selectedEnemyAttribute, 
-                selectedValue  // Ainda passa o valor bruto para o método identificar a intensidade
+                selectedIntensity
             );
         }
         else
         {
-            // Para cartas estáticas, passa valores reais também
-            int realPlayerValue = IntensityHelper.GetScaledValue((CardIntensity)selectedValue, selectedPlayerAttribute);
-            int realEnemyValue = IntensityHelper.GetScaledValue((CardIntensity)selectedValue, selectedEnemyAttribute);
-        
             descriptionText.text = cardDataSO.GetFullDescription(
                 selectedPlayerAttribute, 
                 selectedEnemyAttribute, 
-                selectedValue
+                selectedIntensity
             );
         }
     }
@@ -425,5 +382,30 @@ public class NegotiationCardUI : MonoBehaviour, IPointerEnterHandler, IPointerEx
     public DynamicNegotiationCard GetDynamicCardData() => cardDataDynamic;
     public CardAttribute GetSelectedPlayerAttribute() => selectedPlayerAttribute;
     public CardAttribute GetSelectedEnemyAttribute() => selectedEnemyAttribute;
-    public int GetSelectedValue() => selectedValue;
+    public CardIntensity GetSelectedIntensity() => selectedIntensity;
+    
+    /// <summary>
+    /// Retorna o valor final calculado (base * multiplicador)
+    /// </summary>
+    public int GetSelectedValue()
+    {
+        if (isDynamicCard && cardDataDynamic != null)
+        {
+            return IntensityHelper.GetScaledValue(selectedIntensity, cardDataDynamic.playerBenefit.value);
+        }
+        else if (!isDynamicCard && cardDataSO != null)
+        {
+            // Para cartas estáticas, usa o valor base apropriado baseado no tipo
+            int baseValue = cardDataSO.cardType switch
+            {
+                NegotiationCardType.Fixed => cardDataSO.fixedPlayerValue,
+                NegotiationCardType.IntensityOnly => cardDataSO.fixedPlayerValue,
+                NegotiationCardType.AttributeAndIntensity => cardDataSO.fixedPlayerValue,
+                _ => 0
+            };
+            
+            return IntensityHelper.GetScaledValue(selectedIntensity, baseValue);
+        }
+        return 0;
+    }
 }

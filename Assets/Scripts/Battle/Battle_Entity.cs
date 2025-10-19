@@ -385,7 +385,8 @@ public class BattleEntity : MonoBehaviour
     }
     
     /// <summary>
-    /// NOVO: Tenta ativar o sistema de segunda chance
+    /// CORRIGIDO: Tenta ativar o sistema de segunda chance
+    /// Agora reseta corretamente o ATB do atacante para evitar ação dupla
     /// </summary>
     private void TryActivateSecondChance()
     {
@@ -414,6 +415,9 @@ public class BattleEntity : MonoBehaviour
         
         Debug.Log("=== ATIVANDO SISTEMA DE SEGUNDA CHANCE ===");
         
+        // NOVO: Salva referência do personagem ativo atual
+        BattleEntity currentActiveCharacter = battleManager.GetActiveCharacter();
+        
         // Inicia negociação
         DeathNegotiationManager.Instance.StartNegotiation(this, battleManager, (accepted) =>
         {
@@ -427,6 +431,15 @@ public class BattleEntity : MonoBehaviour
             {
                 // Jogador aceitou - já foi revivido pelo manager
                 Debug.Log("Negociação aceita! Jogador revivido.");
+                
+                // CORREÇÃO CRÍTICA: Reseta o ATB do personagem que estava agindo
+                // para evitar que ele ataque novamente
+                if (currentActiveCharacter != null && !currentActiveCharacter.isDead)
+                {
+                    Debug.Log($"Resetando ATB de {currentActiveCharacter.characterData.characterName} para evitar turno duplo");
+                    currentActiveCharacter.ResetATB();
+                }
+                
                 // Precisa resetar o estado da batalha
                 if (battleManager != null)
                 {

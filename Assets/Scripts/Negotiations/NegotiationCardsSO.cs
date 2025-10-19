@@ -1,47 +1,32 @@
-// Assets/Scripts/Negotiation/NegotiationCardSO.cs (SIMPLIFIED)
+// Assets/Scripts/Negotiation/NegotiationCardSO.cs (COMPLETE - FIXED)
 
 using UnityEngine;
 using System.Collections.Generic;
 
-[CreateAssetMenu(fileName = "New Negotiation Card", menuName = "Negotiation/Card")]
+/// <summary>
+/// ScriptableObject que define uma carta de negociação estática
+/// </summary>
+[CreateAssetMenu(menuName = "Negotiation/Negotiation Card")]
 public class NegotiationCardSO : ScriptableObject
 {
-    [Header("═══ INFORMAÇÕES BÁSICAS ═══")]
-    public string cardName = "Nova Carta";
+    [Header("Card Info")]
+    public string cardName;
+    [TextArea(3, 6)]
+    public string cardDescription;
     public Sprite cardSprite;
     
-    [TextArea(2, 4)]
-    public string cardDescription = "Descrição da negociação";
+    [Header("Card Type")]
+    public NegotiationCardType cardType;
     
-    [Header("═══ TIPO DE CARTA ═══")]
-    public NegotiationCardType cardType = NegotiationCardType.Fixed;
+    [Header("Fixed Type Settings")]
+    public CardAttribute fixedPlayerAttribute;
+    public int fixedPlayerValue;
+    public CardAttribute fixedEnemyAttribute;
+    public int fixedEnemyValue;
     
-    [Header("═══ CONFIGURAÇÃO: FIXED ═══")]
-    [Tooltip("Apenas para tipo FIXED")]
-    public int fixedValue = 20;
-    
-    [Tooltip("Atributo que o JOGADOR ganha (Fixed)")]
-    public CardAttribute fixedPlayerAttribute = CardAttribute.PlayerMaxHP;
-    
-    [Tooltip("Atributo que os INIMIGOS ganham (Fixed)")]
-    public CardAttribute fixedEnemyAttribute = CardAttribute.EnemyMaxHP;
-    
-    [Header("═══ CONFIGURAÇÃO: INTENSITY ONLY ═══")]
-    [Tooltip("Apenas para tipo INTENSITY ONLY")]
-    public CardAttribute intensityOnlyPlayerAttribute = CardAttribute.PlayerMaxHP;
-    
-    [Tooltip("Apenas para tipo INTENSITY ONLY")]
-    public CardAttribute intensityOnlyEnemyAttribute = CardAttribute.EnemyMaxHP;
-    
-    [Header("═══ CONFIGURAÇÃO: INTENSITY AND ATTRIBUTE ═══")]
-    [Tooltip("Apenas para tipo INTENSITY AND ATTRIBUTE - Lista de atributos disponíveis")]
-    public List<CardAttribute> availablePlayerAttributes = new List<CardAttribute>();
-    
-    [Tooltip("Apenas para tipo INTENSITY AND ATTRIBUTE - Lista de atributos disponíveis")]
-    public List<CardAttribute> availableEnemyAttributes = new List<CardAttribute>();
-    
-    [Header("═══ INTENSIDADES DISPONÍVEIS ═══")]
-    [Tooltip("Para INTENSITY ONLY e INTENSITY AND ATTRIBUTE")]
+    [Header("Intensity Only Settings")]
+    public CardAttribute intensityOnlyPlayerAttribute;
+    public CardAttribute intensityOnlyEnemyAttribute;
     public List<CardIntensity> availableIntensities = new List<CardIntensity>
     {
         CardIntensity.Low,
@@ -49,78 +34,130 @@ public class NegotiationCardSO : ScriptableObject
         CardIntensity.High
     };
     
+    [Header("Attribute and Intensity Settings")]
+    public List<CardAttribute> availablePlayerAttributes = new List<CardAttribute>();
+    public List<CardAttribute> availableEnemyAttributes = new List<CardAttribute>();
+    
     /// <summary>
-    /// Retorna o texto completo formatado da carta
+    /// Retorna descrição completa da carta com valores calculados pela intensidade
     /// </summary>
-    public string GetFullDescription(CardAttribute? playerAttr, CardAttribute? enemyAttr, int value)
+    public string GetFullDescription(CardAttribute? playerAttr, CardAttribute? enemyAttr, CardIntensity intensity)
     {
         string desc = $"<b><size=110%>{cardName}</size></b>\n\n";
         desc += $"<i>{cardDescription}</i>\n\n";
-        desc += $"<color=#90EE90><b>✓ Você Ganha:</b></color>\n";
-        desc += $"+{value} de {AttributeHelper.GetDisplayName(playerAttr ?? fixedPlayerAttribute)}\n\n";
-        desc += $"<color=#FF6B6B><b>✗ Inimigos Ganham:</b></color>\n";
-        desc += $"+{value} de {AttributeHelper.GetDisplayName(enemyAttr ?? fixedEnemyAttribute)}";
+        
+        switch (cardType)
+        {
+            case NegotiationCardType.Fixed:
+                desc += GetFixedDescription();
+                break;
+                
+            case NegotiationCardType.IntensityOnly:
+                desc += GetIntensityOnlyDescription(intensity);
+                break;
+                
+            case NegotiationCardType.AttributeAndIntensity:
+                desc += GetAttributeAndIntensityDescription(
+                    playerAttr ?? intensityOnlyPlayerAttribute, 
+                    enemyAttr ?? intensityOnlyEnemyAttribute, 
+                    intensity
+                );
+                break;
+        }
+        
         return desc;
     }
     
+    private string GetFixedDescription()
+    {
+        string desc = $"<color=#90EE90><b>✓ Você Ganha:</b></color>\n";
+        desc += $"+{fixedPlayerValue} {AttributeHelper.GetDisplayName(fixedPlayerAttribute)}\n\n";
+        
+        desc += $"<color=#FF6B6B><b>✗ Custo:</b></color>\n";
+        desc += $"Inimigos ganham: +{fixedEnemyValue} {AttributeHelper.GetDisplayName(fixedEnemyAttribute)}";
+        
+        return desc;
+    }
+    
+    private string GetIntensityOnlyDescription(CardIntensity intensity)
+    {
+        // Aplica multiplicador aos valores base
+        int playerValue = IntensityHelper.GetScaledValue(intensity, fixedPlayerValue);
+        int enemyValue = IntensityHelper.GetScaledValue(intensity, fixedEnemyValue);
+        
+        string desc = $"<color=#90EE90><b>✓ Você Ganha:</b></color>\n";
+        desc += $"+{playerValue} {AttributeHelper.GetDisplayName(intensityOnlyPlayerAttribute)}\n\n";
+        
+        desc += $"<color=#FF6B6B><b>✗ Custo:</b></color>\n";
+        desc += $"Inimigos ganham: +{enemyValue} {AttributeHelper.GetDisplayName(intensityOnlyEnemyAttribute)}";
+        
+        return desc;
+    }
+    
+    private string GetAttributeAndIntensityDescription(CardAttribute playerAttr, CardAttribute enemyAttr, CardIntensity intensity)
+    {
+        // Aplica multiplicador aos valores base
+        int playerValue = IntensityHelper.GetScaledValue(intensity, fixedPlayerValue);
+        int enemyValue = IntensityHelper.GetScaledValue(intensity, fixedEnemyValue);
+        
+        string desc = $"<color=#90EE90><b>✓ Você Ganha:</b></color>\n";
+        desc += $"+{playerValue} {AttributeHelper.GetDisplayName(playerAttr)}\n\n";
+        
+        desc += $"<color=#FF6B6B><b>✗ Custo:</b></color>\n";
+        desc += $"Inimigos ganham: +{enemyValue} {AttributeHelper.GetDisplayName(enemyAttr)}";
+        
+        return desc;
+    }
+    
+    /// <summary>
+    /// Valida se a carta tem configuração válida
+    /// </summary>
     public bool IsValid()
     {
-        if (string.IsNullOrEmpty(cardName)) return false;
-        
-        if (cardType == NegotiationCardType.AttributeAndIntensity)
-        {
-            if (availablePlayerAttributes.Count == 0 || availableEnemyAttributes.Count == 0)
-            {
-                Debug.LogError($"Carta '{name}': INTENSITY AND ATTRIBUTE requer listas de atributos!");
-                return false;
-            }
-        }
-        
-        if (cardType != NegotiationCardType.Fixed && availableIntensities.Count == 0)
-        {
-            Debug.LogError($"Carta '{name}': Tipo {cardType} requer intensidades disponíveis!");
+        if (string.IsNullOrEmpty(cardName))
             return false;
-        }
         
-        return true;
+        switch (cardType)
+        {
+            case NegotiationCardType.Fixed:
+                return fixedPlayerValue != 0 || fixedEnemyValue != 0;
+            
+            case NegotiationCardType.IntensityOnly:
+                return availableIntensities.Count > 0;
+            
+            case NegotiationCardType.AttributeAndIntensity:
+                return availablePlayerAttributes.Count > 0 && 
+                       availableEnemyAttributes.Count > 0 && 
+                       availableIntensities.Count > 0;
+            
+            default:
+                return false;
+        }
     }
     
     void OnValidate()
     {
-        // Ajuda visual no Inspector
-        if (cardType == NegotiationCardType.Fixed)
+        // Garante que há pelo menos uma intensidade disponível
+        if (availableIntensities.Count == 0)
         {
-            // Limpa listas não usadas
-            availablePlayerAttributes.Clear();
-            availableEnemyAttributes.Clear();
-            availableIntensities.Clear();
+            availableIntensities.Add(CardIntensity.Low);
+            availableIntensities.Add(CardIntensity.Medium);
+            availableIntensities.Add(CardIntensity.High);
         }
-        else if (cardType == NegotiationCardType.IntensityOnly)
+        
+        // Para tipo AttributeAndIntensity, garante que há atributos disponíveis
+        if (cardType == NegotiationCardType.AttributeAndIntensity)
         {
-            // Limpa listas não usadas
-            availablePlayerAttributes.Clear();
-            availableEnemyAttributes.Clear();
-            
-            if (availableIntensities.Count == 0)
-            {
-                availableIntensities.Add(CardIntensity.Medium);
-            }
-        }
-        else if (cardType == NegotiationCardType.AttributeAndIntensity)
-        {
-            if (availableIntensities.Count == 0)
-            {
-                availableIntensities.Add(CardIntensity.Medium);
-            }
-            
             if (availablePlayerAttributes.Count == 0)
             {
                 availablePlayerAttributes.Add(CardAttribute.PlayerMaxHP);
+                availablePlayerAttributes.Add(CardAttribute.PlayerDefense);
             }
             
             if (availableEnemyAttributes.Count == 0)
             {
                 availableEnemyAttributes.Add(CardAttribute.EnemyMaxHP);
+                availableEnemyAttributes.Add(CardAttribute.EnemyDefense);
             }
         }
     }

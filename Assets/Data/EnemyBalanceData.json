@@ -67,7 +67,7 @@
                     "manaCost": 14,
                     "targetType": "SingleAlly",
                     "effectCount": 1,
-                    "primaryEffectType": "RestoreMana",
+                    "primaryEffectType": "Buff",
                     "power": 0,
                     "statusEffect": "DefenseUp",
                     "statusDuration": 3,
@@ -250,7 +250,7 @@
                     "manaCost": 14,
                     "targetType": "SingleAlly",
                     "effectCount": 1,
-                    "primaryEffectType": "RestoreMana",
+                    "primaryEffectType": "Buff",
                     "power": 0,
                     "statusEffect": "DefenseUp",
                     "statusDuration": 3,
@@ -319,8 +319,8 @@
             "assetPath": "Assets/Data/Characters/Enemies/Paladins/Campeão.asset",
             "maxHp": 130,
             "maxMp": 100,
-            "defense": 18,
-            "speed": 0.8999999761581421,
+            "defense": 6,
+            "speed": 1.0,
             "actions": [
                 {
                     "name": "Golpe Poderoso",
@@ -362,8 +362,8 @@
             "assetPath": "Assets/Data/Characters/Enemies/Paladins/Cruzado.asset",
             "maxHp": 150,
             "maxMp": 100,
-            "defense": 15,
-            "speed": 0.800000011920929,
+            "defense": 8,
+            "speed": 1.0,
             "actions": [
                 {
                     "name": "Golpe Divino",
@@ -405,7 +405,7 @@
             "assetPath": "Assets/Data/Characters/Enemies/Paladins/Escudeiro.asset",
             "maxHp": 120,
             "maxMp": 110,
-            "defense": 15,
+            "defense": 4,
             "speed": 1.0,
             "actions": [
                 {
@@ -448,8 +448,8 @@
             "assetPath": "Assets/Data/Characters/Enemies/Paladins/Guardião.asset",
             "maxHp": 140,
             "maxMp": 100,
-            "defense": 20,
-            "speed": 0.949999988079071,
+            "defense": 10,
+            "speed": 1.0,
             "actions": [
                 {
                     "name": "Golpe Divino",
@@ -466,7 +466,7 @@
                     "name": "Benção da Resistência",
                     "manaCost": 16,
                     "targetType": "SingleAlly",
-                    "effectCount": 2,
+                    "effectCount": 1,
                     "primaryEffectType": "Buff",
                     "power": 0,
                     "statusEffect": "Protected",
@@ -491,8 +491,8 @@
             "assetPath": "Assets/Data/Characters/Enemies/Paladins/Inquisidora.asset",
             "maxHp": 140,
             "maxMp": 120,
-            "defense": 17,
-            "speed": 0.949999988079071,
+            "defense": 8,
+            "speed": 1.0,
             "actions": [
                 {
                     "name": "Golpe Divino",
@@ -521,7 +521,7 @@
                     "manaCost": 10,
                     "targetType": "SingleEnemy",
                     "effectCount": 1,
-                    "primaryEffectType": "Buff",
+                    "primaryEffectType": "Debuff",
                     "power": 0,
                     "statusEffect": "DefenseDown",
                     "statusDuration": 4,
@@ -534,7 +534,7 @@
             "assetPath": "Assets/Data/Characters/Enemies/Paladins/Paladino.asset",
             "maxHp": 145,
             "maxMp": 120,
-            "defense": 16,
+            "defense": 13,
             "speed": 1.0,
             "actions": [
                 {
@@ -563,7 +563,7 @@
                     "name": "Benção da Resistência",
                     "manaCost": 16,
                     "targetType": "SingleAlly",
-                    "effectCount": 2,
+                    "effectCount": 1,
                     "primaryEffectType": "Buff",
                     "power": 0,
                     "statusEffect": "Protected",
@@ -588,7 +588,7 @@
             "assetPath": "Assets/Data/Characters/Enemies/Paladins/Sacerdotisa.asset",
             "maxHp": 110,
             "maxMp": 200,
-            "defense": 19,
+            "defense": 8,
             "speed": 1.100000023841858,
             "actions": [
                 {
@@ -644,7 +644,7 @@
             "assetPath": "Assets/Data/Characters/Enemies/Monsters/Aberração.asset",
             "maxHp": 200,
             "maxMp": 100,
-            "defense": 18,
+            "defense": 10,
             "speed": 1.0,
             "actions": [
                 {
@@ -687,7 +687,7 @@
             "assetPath": "Assets/Data/Characters/Enemies/Monsters/ComensalQuaseMorte.asset",
             "maxHp": 90,
             "maxMp": 100,
-            "defense": 12,
+            "defense": 6,
             "speed": 0.8999999761581421,
             "actions": [
                 {
@@ -730,7 +730,7 @@
             "assetPath": "Assets/Data/Characters/Enemies/Monsters/Cultista.asset",
             "maxHp": 70,
             "maxMp": 140,
-            "defense": 6,
+            "defense": 8,
             "speed": 1.5,
             "actions": [
                 {
@@ -749,7 +749,7 @@
                     "manaCost": 10,
                     "targetType": "SingleEnemy",
                     "effectCount": 1,
-                    "primaryEffectType": "Buff",
+                    "primaryEffectType": "Debuff",
                     "power": 0,
                     "statusEffect": "DefenseDown",
                     "statusDuration": 4,
@@ -760,7 +760,7 @@
                     "manaCost": 15,
                     "targetType": "AllEnemies",
                     "effectCount": 1,
-                    "primaryEffectType": "Buff",
+                    "primaryEffectType": "Debuff",
                     "power": 0,
                     "statusEffect": "Poison",
                     "statusDuration": 3,
@@ -773,7 +773,7 @@
             "assetPath": "Assets/Data/Characters/Enemies/Monsters/Demônio.asset",
             "maxHp": 180,
             "maxMp": 150,
-            "defense": 15,
+            "defense": 14,
             "speed": 1.2999999523162842,
             "actions": [
                 {
@@ -803,7 +803,7 @@
                     "manaCost": 8,
                     "targetType": "Self",
                     "effectCount": 1,
-                    "primaryEffectType": "RestoreMana",
+                    "primaryEffectType": "Buff",
                     "power": 0,
                     "statusEffect": "AttackUp",
                     "statusDuration": 3,
@@ -816,7 +816,7 @@
             "assetPath": "Assets/Data/Characters/Enemies/Monsters/Discipulo_Fentho.asset",
             "maxHp": 220,
             "maxMp": 180,
-            "defense": 16,
+            "defense": 15,
             "speed": 0.8500000238418579,
             "actions": [
                 {
@@ -870,7 +870,7 @@
             "assetPath": "Assets/Data/Characters/Enemies/Monsters/Infero.asset",
             "maxHp": 250,
             "maxMp": 120,
-            "defense": 24,
+            "defense": 12,
             "speed": 0.800000011920929,
             "actions": [
                 {
@@ -954,7 +954,7 @@
                     "manaCost": 15,
                     "targetType": "Self",
                     "effectCount": 1,
-                    "primaryEffectType": "RestoreMana",
+                    "primaryEffectType": "Buff",
                     "power": 0,
                     "statusEffect": "AttackUp",
                     "statusDuration": 3,
@@ -967,7 +967,7 @@
             "assetPath": "Assets/Data/Characters/Enemies/Monsters/Morto-Vivo.asset",
             "maxHp": 80,
             "maxMp": 120,
-            "defense": 7,
+            "defense": 2,
             "speed": 1.2000000476837159,
             "actions": [
                 {
@@ -1107,10 +1107,10 @@
         {
             "name": "Fentho, o Sonhador",
             "assetPath": "Assets/Data/Characters/Enemies/Bosses/Fentho.asset",
-            "maxHp": 1200,
+            "maxHp": 500,
             "maxMp": 500,
-            "defense": 30,
-            "speed": 1.0,
+            "defense": 18,
+            "speed": 1.7000000476837159,
             "actions": [
                 {
                     "name": "Golpe da Execução",
@@ -1128,7 +1128,7 @@
                     "manaCost": 15,
                     "targetType": "Self",
                     "effectCount": 1,
-                    "primaryEffectType": "RestoreMana",
+                    "primaryEffectType": "Buff",
                     "power": 0,
                     "statusEffect": "AttackUp",
                     "statusDuration": 3,
@@ -1237,9 +1237,9 @@
         {
             "name": "Valdemor, Senhor das Trevas",
             "assetPath": "Assets/Data/Characters/Enemies/Bosses/Valdemor.asset",
-            "maxHp": 700,
+            "maxHp": 350,
             "maxMp": 300,
-            "defense": 20,
+            "defense": 14,
             "speed": 1.2999999523162842,
             "actions": [
                 {
@@ -1305,19 +1305,19 @@
             "count": 24,
             "avgHp": 114.70833587646485,
             "avgMp": 125.0,
-            "avgDefense": 11.625,
-            "avgSpeed": 1.160416603088379,
+            "avgDefense": 7.708333492279053,
+            "avgSpeed": 1.1770833730697632,
             "minHp": 30,
             "maxHp": 250
         },
         "bosses": {
             "count": 3,
-            "avgHp": 700.0,
+            "avgHp": 350.0,
             "avgMp": 300.0,
-            "avgDefense": 19.0,
-            "avgSpeed": 1.100000023841858,
+            "avgDefense": 13.0,
+            "avgSpeed": 1.3333333730697632,
             "minHp": 200,
-            "maxHp": 1200
+            "maxHp": 500
         }
     }
 }

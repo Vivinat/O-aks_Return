@@ -23,7 +23,7 @@ public class BattleHUD : MonoBehaviour
     
     [Header("Turn Timer UI")]
     public TextMeshProUGUI turnTimerText;
-    public float turnTimeLimit = 60f;
+    public float turnTimeLimit = 30f;
     
     [Header("Prefabs")]
     public GameObject actionButtonPrefab;
