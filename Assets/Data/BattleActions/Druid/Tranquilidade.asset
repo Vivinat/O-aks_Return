@@ -25,10 +25,10 @@ MonoBehaviour:
     statusPower: 0
     hasSelfEffect: 1
     selfEffectType: 3
-    selfEffectPower: 10
+    selfEffectPower: 0
     selfStatusEffect: 8
-    selfStatusDuration: 2
-    selfStatusPower: 10
+    selfStatusDuration: 0
+    selfStatusPower: 0
   manaCost: 28
   isConsumable: 0
   maxUses: 1

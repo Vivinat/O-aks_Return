@@ -360,6 +360,11 @@ public class BattleEntity : MonoBehaviour
             TryActivateSecondChance();
             return; // Não continua o processo de morte se a segunda chance for ativada
         }
+        
+        if (currentHp == 0 && characterData.team == Team.Player)
+        {
+            BehaviorAnalysisIntegration.OnPlayerDeath(this);
+        }
 
         // Desativa os sliders da HUD imediatamente (apenas inimigos chegam aqui)
         DisableHUDElements();

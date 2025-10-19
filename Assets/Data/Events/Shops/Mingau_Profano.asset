@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   powerupName: Mingau Profano
   description: Recupera 30 de MP
-  icon: {fileID: 21300000, guid: c7df5d0de6ce0d1449eeb566d5fe059f, type: 3}
+  icon: {fileID: 21300000, guid: 73d73ed7b64de8e40a3c9ae502db2a09, type: 3}
   powerupType: 5
   value: 30
   shopPrice: 30

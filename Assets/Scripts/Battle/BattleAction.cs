@@ -106,8 +106,6 @@ public class BattleAction : ScriptableObject
         }
     }
     
-    // ... (métodos anteriores permanecem iguais)
-    
     /// <summary>
     /// Gera a descrição completa da ação baseada nos valores atuais (versão compacta)
     /// </summary>
@@ -158,23 +156,59 @@ public class BattleAction : ScriptableObject
                     statusEffectsList.Add(statusDesc);
                 }
                 
-                // Efeito em si mesmo
+                // ============================================
+                // CORREÇÃO: Efeito em si mesmo
+                // ============================================
                 if (effect.hasSelfEffect)
                 {
+                    // Trata dano em si mesmo
+                    if (effect.selfEffectType == ActionType.Attack)
+                    {
+                        desc.AppendLine($"<color=#ff6b6b>⚠️ Auto-Dano: {effect.selfEffectPower} HP</color>");
+                        hasMainEffects = true;
+                    }
+                    
+                    // Trata cura em si mesmo
                     if (effect.selfEffectType == ActionType.Heal)
                     {
                         desc.AppendLine($"<color=#51cf66>Auto-Cura: {effect.selfEffectPower} HP</color>");
                         hasMainEffects = true;
                     }
                     
-                    if (effect.selfStatusEffect != StatusEffectType.None)
+                    // Trata restauração de mana em si mesmo
+                    if (effect.selfEffectType == ActionType.RestoreMana)
                     {
-                        string selfStatusDesc = GetStatusEffectDescriptionCompact(
-                            effect.selfStatusEffect, 
-                            effect.selfStatusPower, 
-                            effect.selfStatusDuration
-                        );
-                        statusEffectsList.Add($"{selfStatusDesc} (em você)");
+                        desc.AppendLine($"<color=#4dabf7>Auto-Restaura: {effect.selfEffectPower} MP</color>");
+                        hasMainEffects = true;
+                    }
+                    
+                    // Trata buff em si mesmo
+                    if (effect.selfEffectType == ActionType.Buff)
+                    {
+                        // Status effect associado ao self buff
+                        if (effect.selfStatusEffect != StatusEffectType.None)
+                        {
+                            string selfStatusDesc = GetStatusEffectDescriptionCompact(
+                                effect.selfStatusEffect, 
+                                effect.selfStatusPower, 
+                                effect.selfStatusDuration
+                            );
+                            statusEffectsList.Add($"{selfStatusDesc} (em você)");
+                        }
+                    }
+                    
+                    // Trata debuff em si mesmo
+                    if (effect.selfEffectType == ActionType.Debuff)
+                    {
+                        if (effect.selfStatusEffect != StatusEffectType.None)
+                        {
+                            string selfStatusDesc = GetStatusEffectDescriptionCompact(
+                                effect.selfStatusEffect, 
+                                effect.selfStatusPower, 
+                                effect.selfStatusDuration
+                            );
+                            statusEffectsList.Add($"{selfStatusDesc} (em você)");
+                        }
                     }
                 }
             }

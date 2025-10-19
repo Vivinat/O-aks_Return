@@ -13,8 +13,7 @@ MonoBehaviour:
   m_Name: Bencao_da_Resistencia
   m_EditorClassIdentifier: 
   actionName: "Ben\xE7\xE3o da Resist\xEAncia"
-  description: "Concede prote\xE7\xE3o e regenera\xE7\xE3o a um aliado por 3 turnos.
-    Custo: 16 MP"
+  description: "Concede prote\xE7\xE3o a um aliado por 3 turnos. Custo:8 MP"
   icon: {fileID: 21300000, guid: 3e8d26f7c02bb124fa1b74a6cac5427b, type: 3}
   targetType: 1
   effects:
@@ -23,17 +22,6 @@ MonoBehaviour:
     statusEffect: 10
     statusDuration: 3
     statusPower: 20
-    hasSelfEffect: 0
-    selfEffectType: 0
-    selfEffectPower: 0
-    selfStatusEffect: 0
-    selfStatusDuration: 0
-    selfStatusPower: 0
-  - effectType: 2
-    power: 0
-    statusEffect: 8
-    statusDuration: 3
-    statusPower: 12
     hasSelfEffect: 0
     selfEffectType: 0
     selfEffectPower: 0

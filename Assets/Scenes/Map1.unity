@@ -656,7 +656,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   connectedNodes:
-  - {fileID: 1833207071}
+  - {fileID: 487018138}
   isLocked: 1
   eventType: {fileID: 11400000, guid: 79be9220695e2ce4aa9acbbde1b2671e, type: 2}
   eventMusic: {fileID: 8300000, guid: b39dd8c5ddbeed843a617136c38638e9, type: 3}
@@ -1729,8 +1729,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   connectedNodes:
-  - {fileID: 487018138}
-  isLocked: 0
+  - {fileID: 1833207071}
+  isLocked: 1
   eventType: {fileID: 11400000, guid: 49c00a95a5fe8e845be861d16869a638, type: 2}
   eventMusic: {fileID: 8300000, guid: 23d8d8f77322850498744f3027fe877b, type: 3}
   battleBackgroundOverride: {fileID: 21300000, guid: b9aa14e29ef603f43a85a5793b3d8d29, type: 3}
@@ -2027,8 +2027,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   connectedNodes:
-  - {fileID: 1178669354}
-  - {fileID: 718378763}
+  - {fileID: 370416512}
   isLocked: 1
   eventType: {fileID: 11400000, guid: d8646c16425a26047aa7bab2691ea189, type: 2}
   eventMusic: {fileID: 8300000, guid: b39dd8c5ddbeed843a617136c38638e9, type: 3}
@@ -2139,7 +2138,7 @@ Transform:
   m_GameObject: {fileID: 487018137}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -0.46, y: 8.48, z: 0}
+  m_LocalPosition: {x: -2.45, y: 12.52, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -3049,53 +3048,6 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!1 &822390318
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 822390320}
-  - component: {fileID: 822390319}
-  m_Layer: 0
-  m_Name: BehaviourAnalyzer
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!114 &822390319
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 822390318}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 265d717933528144d9b5bd8bae89757e, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  enableLogging: 1
-  saveToFile: 1
-  saveFileName: player_behavior.json
---- !u!4 &822390320
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 822390318}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0.8485509, y: 8.513618, z: -0.02654371}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 0}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &882108344
 GameObject:
   m_ObjectHideFlags: 0
@@ -3257,55 +3209,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f4688fdb7df04437aeb418b961361dc5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
---- !u!1 &1041115055
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 1041115057}
-  - component: {fileID: 1041115056}
-  m_Layer: 0
-  m_Name: DynamicNegotiationCardGenerator
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!114 &1041115056
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1041115055}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 72f7eadb4ae46374daef350d6e27a1ba, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  maxObservationsToProcess: 10
-  clearProcessedObservations: 1
-  fixedProbability: 0.4
-  intensityOnlyProbability: 0.3
-  showDebugLogs: 1
---- !u!4 &1041115057
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1041115055}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 2.4478698, y: 24.100344, z: -0.113545515}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 0}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1048656626
 GameObject:
   m_ObjectHideFlags: 0
@@ -36183,7 +36086,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   connectedNodes:
-  - {fileID: 370416512}
+  - {fileID: 1178669354}
+  - {fileID: 718378763}
   isLocked: 1
   eventType: {fileID: 11400000, guid: 558d1b97dea0b8341a32949bf74dee37, type: 2}
   eventMusic: {fileID: 8300000, guid: 89a268cad7d4a574fa2463297cd3498a, type: 3}
@@ -36294,7 +36198,7 @@ Transform:
   m_GameObject: {fileID: 1833207070}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -2.51, y: 12.52, z: 0}
+  m_LocalPosition: {x: -0.5, y: 8.52, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -37076,8 +36980,6 @@ SceneRoots:
   - {fileID: 1454678072}
   - {fileID: 1681200404}
   - {fileID: 2026001520}
-  - {fileID: 822390320}
   - {fileID: 740120916}
   - {fileID: 1282895010}
-  - {fileID: 1041115057}
   - {fileID: 492682733}

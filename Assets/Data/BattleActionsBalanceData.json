@@ -633,7 +633,7 @@
         {
             "actionName": "Tranquilidade",
             "assetPath": "Assets/Data/BattleActions/Druid/Tranquilidade.asset",
-            "description": "Cura 20 de vida e aplica Regeneração a todos os aliados por 2 turnos. Custo: 28 MP",
+            "description": "Cura 20 de vida e aplica Regeneração a todos os aliados por 4 turnos. Custo: 28 MP",
             "targetType": "AllAllies",
             "manaCost": 28,
             "isConsumable": false,
@@ -646,23 +646,10 @@
                     "statusEffect": "None",
                     "statusDuration": 0,
                     "statusPower": 0,
-                    "hasSelfEffect": false,
-                    "selfEffectType": "Attack",
+                    "hasSelfEffect": true,
+                    "selfEffectType": "Buff",
                     "selfEffectPower": 0,
-                    "selfStatusEffect": "None",
-                    "selfStatusDuration": 0,
-                    "selfStatusPower": 0
-                },
-                {
-                    "effectType": "Buff",
-                    "power": 0,
-                    "statusEffect": "Regeneration",
-                    "statusDuration": 2,
-                    "statusPower": 10,
-                    "hasSelfEffect": false,
-                    "selfEffectType": "Attack",
-                    "selfEffectPower": 0,
-                    "selfStatusEffect": "None",
+                    "selfStatusEffect": "Regeneration",
                     "selfStatusDuration": 0,
                     "selfStatusPower": 0
                 }

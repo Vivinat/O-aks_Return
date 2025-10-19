@@ -17,7 +17,7 @@ MonoBehaviour:
   characterSprite: {fileID: 21300000, guid: 05980b37c245f8b45aa693cd56ccf1ed, type: 3}
   maxHp: 48
   maxMp: 100
-  defense: 5
+  defense: 4
   speed: 1.5
   deathSound: {fileID: 8300000, guid: e12666ffd7681944aa9226f20dc7cb95, type: 3}
   battleActions:

@@ -15,12 +15,12 @@ MonoBehaviour:
   characterName: Arquidruida
   team: 1
   characterSprite: {fileID: 21300000, guid: cc545ffe2701bd84b9d18c61d5e6070b, type: 3}
-  maxHp: 70
+  maxHp: 50
   maxMp: 120
-  defense: 8
+  defense: 5
   speed: 1
   deathSound: {fileID: 8300000, guid: e12666ffd7681944aa9226f20dc7cb95, type: 3}
   battleActions:
   - {fileID: 11400000, guid: 0060d794505e9224388cb6ec5fd4069d, type: 2}
-  - {fileID: 11400000, guid: 30aca9e1e836b914e9ae3af57fe1f207, type: 2}
   - {fileID: 11400000, guid: 8207259ce4cd17548aac413f2a2cccf6, type: 2}
+  - {fileID: 11400000, guid: 2c5dac40f7a583d4e9049f5696b29fa6, type: 2}

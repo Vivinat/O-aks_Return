@@ -3,9 +3,9 @@
         {
             "name": "Arqueiro",
             "assetPath": "Assets/Data/Characters/Enemies/Druids/Arqueiro.asset",
-            "maxHp": 50,
+            "maxHp": 40,
             "maxMp": 100,
-            "defense": 4,
+            "defense": 2,
             "speed": 1.7999999523162842,
             "actions": [
                 {
@@ -39,16 +39,16 @@
                     "power": 25,
                     "statusEffect": "SpeedDown",
                     "statusDuration": 3,
-                    "statusPower": 30
+                    "statusPower": 40
                 }
             ]
         },
         {
             "name": "Arquidruida",
             "assetPath": "Assets/Data/Characters/Enemies/Druids/Arquidruida.asset",
-            "maxHp": 70,
+            "maxHp": 50,
             "maxMp": 120,
-            "defense": 8,
+            "defense": 5,
             "speed": 1.0,
             "actions": [
                 {
@@ -63,17 +63,6 @@
                     "statusPower": 0
                 },
                 {
-                    "name": "Toque Restaurador",
-                    "manaCost": 9,
-                    "targetType": "SingleAlly",
-                    "effectCount": 1,
-                    "primaryEffectType": "Heal",
-                    "power": 45,
-                    "statusEffect": "",
-                    "statusDuration": 0,
-                    "statusPower": 0
-                },
-                {
                     "name": "Invigorar",
                     "manaCost": 14,
                     "targetType": "SingleAlly",
@@ -83,13 +72,24 @@
                     "statusEffect": "DefenseUp",
                     "statusDuration": 3,
                     "statusPower": 25
+                },
+                {
+                    "name": "Familiar",
+                    "manaCost": 18,
+                    "targetType": "AllEnemies",
+                    "effectCount": 1,
+                    "primaryEffectType": "Debuff",
+                    "power": 0,
+                    "statusEffect": "Cursed",
+                    "statusDuration": 3,
+                    "statusPower": 12
                 }
             ]
         },
         {
             "name": "Atirador de Elite",
             "assetPath": "Assets/Data/Characters/Enemies/Druids/Atirador_de_Elite.asset",
-            "maxHp": 55,
+            "maxHp": 45,
             "maxMp": 110,
             "defense": 3,
             "speed": 1.7000000476837159,
@@ -134,7 +134,7 @@
             "assetPath": "Assets/Data/Characters/Enemies/Druids/Caçador.asset",
             "maxHp": 48,
             "maxMp": 100,
-            "defense": 5,
+            "defense": 4,
             "speed": 1.5,
             "actions": [
                 {
@@ -175,9 +175,9 @@
         {
             "name": "Druida",
             "assetPath": "Assets/Data/Characters/Enemies/Druids/Druida.asset",
-            "maxHp": 60,
+            "maxHp": 30,
             "maxMp": 130,
-            "defense": 7,
+            "defense": 4,
             "speed": 1.2999999523162842,
             "actions": [
                 {
@@ -220,7 +220,7 @@
             "assetPath": "Assets/Data/Characters/Enemies/Druids/Guardião_da_Mata.asset",
             "maxHp": 80,
             "maxMp": 100,
-            "defense": 10,
+            "defense": 6,
             "speed": 1.100000023841858,
             "actions": [
                 {
@@ -303,7 +303,7 @@
                     "name": "Tranquilidade",
                     "manaCost": 28,
                     "targetType": "AllAllies",
-                    "effectCount": 2,
+                    "effectCount": 1,
                     "primaryEffectType": "Heal",
                     "power": 20,
                     "statusEffect": "",
@@ -1124,15 +1124,15 @@
                     "statusPower": 0
                 },
                 {
-                    "name": "Causalidade",
-                    "manaCost": 0,
-                    "targetType": "AllEnemies",
+                    "name": "Pacto de Sangue",
+                    "manaCost": 15,
+                    "targetType": "Self",
                     "effectCount": 1,
-                    "primaryEffectType": "Attack",
-                    "power": 30,
-                    "statusEffect": "Cursed",
-                    "statusDuration": 2,
-                    "statusPower": 25
+                    "primaryEffectType": "RestoreMana",
+                    "power": 0,
+                    "statusEffect": "AttackUp",
+                    "statusDuration": 3,
+                    "statusPower": 30
                 },
                 {
                     "name": "Agonia",
@@ -1155,16 +1155,27 @@
                     "statusEffect": "",
                     "statusDuration": 0,
                     "statusPower": 0
+                },
+                {
+                    "name": "Lâmina Fantasma",
+                    "manaCost": 16,
+                    "targetType": "SingleEnemy",
+                    "effectCount": 1,
+                    "primaryEffectType": "Attack",
+                    "power": 70,
+                    "statusEffect": "DefenseDown",
+                    "statusDuration": 1,
+                    "statusPower": 8
                 }
             ]
         },
         {
             "name": "Mawron, o Senhor do Escuro",
             "assetPath": "Assets/Data/Characters/Enemies/Bosses/Mawron.asset",
-            "maxHp": 500,
-            "maxMp": 200,
-            "defense": 25,
-            "speed": 1.100000023841858,
+            "maxHp": 200,
+            "maxMp": 100,
+            "defense": 7,
+            "speed": 1.0,
             "actions": [
                 {
                     "name": "Golpe Divino",
@@ -1209,6 +1220,17 @@
                     "statusEffect": "Vulnerable",
                     "statusDuration": 2,
                     "statusPower": 15
+                },
+                {
+                    "name": "Raio Sombrio",
+                    "manaCost": 8,
+                    "targetType": "SingleEnemy",
+                    "effectCount": 1,
+                    "primaryEffectType": "Attack",
+                    "power": 45,
+                    "statusEffect": "",
+                    "statusDuration": 0,
+                    "statusPower": 0
                 }
             ]
         },
@@ -1263,6 +1285,17 @@
                     "statusEffect": "",
                     "statusDuration": 0,
                     "statusPower": 0
+                },
+                {
+                    "name": "Jato Venenoso",
+                    "manaCost": 10,
+                    "targetType": "SingleEnemy",
+                    "effectCount": 1,
+                    "primaryEffectType": "Attack",
+                    "power": 20,
+                    "statusEffect": "Poison",
+                    "statusDuration": 4,
+                    "statusPower": 10
                 }
             ]
         }
@@ -1270,20 +1303,20 @@
     "statistics": {
         "normalEnemies": {
             "count": 24,
-            "avgHp": 117.625,
+            "avgHp": 114.70833587646485,
             "avgMp": 125.0,
-            "avgDefense": 12.166666984558106,
+            "avgDefense": 11.625,
             "avgSpeed": 1.160416603088379,
-            "minHp": 48,
+            "minHp": 30,
             "maxHp": 250
         },
         "bosses": {
             "count": 3,
-            "avgHp": 800.0,
-            "avgMp": 333.3333435058594,
-            "avgDefense": 25.0,
-            "avgSpeed": 1.1333333253860474,
-            "minHp": 500,
+            "avgHp": 700.0,
+            "avgMp": 300.0,
+            "avgDefense": 19.0,
+            "avgSpeed": 1.100000023841858,
+            "minHp": 200,
             "maxHp": 1200
         }
     }

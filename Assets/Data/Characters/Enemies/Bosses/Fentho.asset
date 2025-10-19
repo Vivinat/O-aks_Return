@@ -22,6 +22,7 @@ MonoBehaviour:
   deathSound: {fileID: 8300000, guid: e12666ffd7681944aa9226f20dc7cb95, type: 3}
   battleActions:
   - {fileID: 11400000, guid: d6f12f8449a69e6439861ceb55211d88, type: 2}
-  - {fileID: 11400000, guid: 7e41ac4b5795bd1459765b7b3fc5f98d, type: 2}
+  - {fileID: 11400000, guid: 0d55325cd13e71a46931e27623093640, type: 2}
   - {fileID: 11400000, guid: ad5ddba0759830247b5d10a16e27d4af, type: 2}
   - {fileID: 11400000, guid: 28cee2fc757fdd6489b60abbe2e6d7fd, type: 2}
+  - {fileID: 11400000, guid: 17ab2ffe98f632e48ac7b4d97ed62dfb, type: 2}

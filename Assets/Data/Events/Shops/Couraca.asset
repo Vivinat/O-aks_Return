@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   powerupName: "Coura\xE7a"
   description: Aumenta Defesa em 5
-  icon: {fileID: 21300000, guid: c653e3b2f321ea24aab4a7b1ad5189cb, type: 3}
+  icon: {fileID: 21300000, guid: a6649b3dba787054ba6dd2d5b7c26317, type: 3}
   powerupType: 2
   value: 5
   shopPrice: 40

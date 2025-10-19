@@ -128,46 +128,93 @@ public class DynamicNegotiationCard
     /// <summary>
     /// Retorna descrição completa CLARA e CORRETA
     /// </summary>
-    public string GetFullDescription()
-    {
-        return GetFullDescription(
-            playerBenefit.targetAttribute, 
-            playerCost.targetAttribute, 
-            playerBenefit.value
-        );
-    }
-    
     public string GetFullDescription(CardAttribute? playerAttr, CardAttribute? enemyAttr, int value)
     {
         string desc = $"<b><size=110%>{cardName}</size></b>\n\n";
         desc += $"<i>{cardDescription}</i>\n\n";
-        
-        // === VANTAGEM (sempre para o jogador) ===
-        desc += $"<color=#90EE90><b>✓ Você Ganha:</b></color>\n";
+
+        // === VANTAGEM ===
         CardAttribute advantageAttr = playerAttr ?? playerBenefit.targetAttribute;
         int advantageValue = (cardType == NegotiationCardType.Fixed) ? playerBenefit.value : value;
-        string advantageSign = advantageValue > 0 ? "+" : "";
-        desc += $"{advantageSign}{advantageValue} {AttributeHelper.GetDisplayName(advantageAttr)}\n";
         
-        // === DESVANTAGEM (debuff no jogador OU buff nos inimigos) ===
+        // NOVO: Detecta se a vantagem é buff no jogador ou debuff nos inimigos
+        bool advantageAffectsPlayer = IsPlayerAttribute(advantageAttr);
+        
+        if (advantageAffectsPlayer && advantageValue > 0)
+        {
+            // Buff no jogador (caso normal)
+            desc += $"<color=#90EE90><b>✓ Você Ganha:</b></color>\n";
+            desc += $"+{advantageValue} {AttributeHelper.GetDisplayName(advantageAttr)}\n";
+        }
+        else if (!advantageAffectsPlayer && advantageValue < 0)
+        {
+            // Debuff nos inimigos (vantagem indireta)
+            desc += $"<color=#90EE90><b>✓ Inimigos Perdem:</b></color>\n";
+            int displayValue = Mathf.Abs(advantageValue);
+            desc += $"-{displayValue} {AttributeHelper.GetDisplayName(advantageAttr)}\n";
+        }
+        else if (!advantageAffectsPlayer && advantageValue > 0)
+        {
+            // Caso raro: vantagem que aumenta atributo inimigo (não deveria acontecer)
+            desc += $"<color=#90EE90><b>✓ Você Ganha:</b></color>\n";
+            desc += $"Inimigos ganham +{advantageValue} {AttributeHelper.GetDisplayName(advantageAttr)} (??)\n";
+        }
+        else
+        {
+            // Valor zero ou negativo no jogador
+            desc += $"<color=#90EE90><b>✓ Efeito Especial:</b></color>\n";
+            desc += $"{advantageValue} {AttributeHelper.GetDisplayName(advantageAttr)}\n";
+        }
+
+        // === DESVANTAGEM ===
         desc += $"\n<color=#FF6B6B><b>✗ Custo:</b></color>\n";
-        
+
         CardAttribute costAttr = enemyAttr ?? playerCost.targetAttribute;
         int costValue = (cardType == NegotiationCardType.Fixed) ? playerCost.value : value;
-        string costSign = costValue > 0 ? "+" : "";
-        
-        if (playerCost.affectsPlayer)
+
+        // Detecta se afeta jogador ou inimigos
+        bool costAffectsPlayer = IsPlayerAttribute(costAttr) || playerCost.affectsPlayer;
+
+        if (costAffectsPlayer)
         {
             // Debuff no jogador
-            desc += $"Você perde: {costSign}{costValue} {AttributeHelper.GetDisplayName(costAttr)}";
+            int displayValue = Mathf.Abs(costValue);
+            desc += $"Você perde: <color=#FF4444>-{displayValue}</color> {AttributeHelper.GetDisplayName(costAttr)}";
         }
         else
         {
             // Buff nos inimigos
-            desc += $"Inimigos ganham: {costSign}{costValue} {AttributeHelper.GetDisplayName(costAttr)}";
+            string costSign = costValue > 0 ? "+" : "";
+            desc += $"Inimigos ganham: <color=#FF4444>{costSign}{costValue}</color> {AttributeHelper.GetDisplayName(costAttr)}";
         }
-        
+
         return desc;
+    }
+    
+    /// <summary>
+    /// NOVO: Verifica se um atributo afeta o jogador
+    /// </summary>
+    private bool IsPlayerAttribute(CardAttribute attr)
+    {
+        switch (attr)
+        {
+            case CardAttribute.PlayerMaxHP:
+            case CardAttribute.PlayerMaxMP:
+            case CardAttribute.PlayerDefense:
+            case CardAttribute.PlayerSpeed:
+            case CardAttribute.PlayerActionPower:
+            case CardAttribute.PlayerActionManaCost:
+            case CardAttribute.PlayerOffensiveActionPower:
+            case CardAttribute.PlayerDefensiveActionPower:
+            case CardAttribute.PlayerAOEActionPower:
+            case CardAttribute.PlayerSingleTargetActionPower:
+            case CardAttribute.CoinsEarned:
+            case CardAttribute.ShopPrices:
+                return true;
+            
+            default:
+                return false;
+        }
     }
     
     public string GetCardName() => cardName;
