@@ -143,12 +143,12 @@ public static class AttributeHelper
             case CardAttribute.PlayerSpeed: return "Velocidade";
             
             // Atributos de ações do jogador
-            case CardAttribute.PlayerActionPower: return "Poder de Ações";
-            case CardAttribute.PlayerActionManaCost: return "Custo de Mana";
-            case CardAttribute.PlayerOffensiveActionPower: return "Poder de Ataques";
-            case CardAttribute.PlayerDefensiveActionPower: return "Poder de Cura/Defesa";
+            case CardAttribute.PlayerActionPower: return "Poder de TODAS as ações";
+            case CardAttribute.PlayerActionManaCost: return "Custo de Mana para usar habilidades";
+            case CardAttribute.PlayerOffensiveActionPower: return "Poder de ações ofensivas";
+            case CardAttribute.PlayerDefensiveActionPower: return "Poder de ações de Cura/Buff";
             case CardAttribute.PlayerAOEActionPower: return "Poder de Ataques em Área";
-            case CardAttribute.PlayerSingleTargetActionPower: return "Poder de Ataques Únicos";
+            case CardAttribute.PlayerSingleTargetActionPower: return "Poder de Ataques Ofensivos de Alvo Único";
             
             // Atributos dos inimigos
             case CardAttribute.EnemyMaxHP: return "Vida Máxima dos Inimigos";
@@ -161,8 +161,8 @@ public static class AttributeHelper
             case CardAttribute.EnemyAOEActionPower: return "Poder de Ataques em Área Inimigos";
             
             // Economia
-            case CardAttribute.CoinsEarned: return "Moedas Ganhas";
-            case CardAttribute.ShopPrices: return "Preços da Loja";
+            case CardAttribute.CoinsEarned: return "Moedas Ganhas nas Próximas Batalhas";
+            case CardAttribute.ShopPrices: return "Valor dos Items da Loja";
             
             default: return attribute.ToString();
         }

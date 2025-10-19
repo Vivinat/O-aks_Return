@@ -1,4 +1,4 @@
-// Assets/Scripts/UI/MainMenuManager.cs
+// Assets/Scripts/Managers/MainMenuManager.cs
 
 using UnityEngine;
 using UnityEngine.UI;
@@ -7,6 +7,7 @@ using TMPro;
 
 /// <summary>
 /// Gerencia o menu principal do jogo
+/// NOTA: A limpeza de dados é feita automaticamente pelo JSONCleaner ao carregar esta cena
 /// </summary>
 public class MainMenuManager : MonoBehaviour
 {
@@ -68,7 +69,7 @@ public class MainMenuManager : MonoBehaviour
         Debug.Log($"Iniciando jogo - Carregando: {firstMapScene}");
         AudioConstants.PlayButtonSelect();
         
-        // Limpa dados de saves anteriores se necessário
+        // Limpa dados básicos de progressão
         ResetGameData();
         
         // Carrega a primeira cena do jogo
@@ -107,7 +108,8 @@ public class MainMenuManager : MonoBehaviour
     }
 
     /// <summary>
-    /// Reseta dados do jogo para um novo início
+    /// Reseta dados básicos do jogo para um novo início
+    /// NOTA: A limpeza de JSONs é feita pelo JSONCleaner automaticamente
     /// </summary>
     private void ResetGameData()
     {
@@ -116,10 +118,17 @@ public class MainMenuManager : MonoBehaviour
         PlayerPrefs.DeleteKey("CompletedBossNode");
         PlayerPrefs.DeleteKey("NextSceneAfterBoss");
         
-        // Você pode adicionar outros resets aqui se necessário
-        // Por exemplo: resetar moedas, inventário, etc.
+        // Limpa estados de mapas
+        if (GameManager.Instance != null)
+        {
+            GameManager.Instance.ClearMapData("Map1");
+            GameManager.Instance.ClearMapData("Map2");
+            GameManager.Instance.ClearMapData("Map3");
+        }
         
-        Debug.Log("Dados do jogo resetados para novo início");
+        PlayerPrefs.Save();
+        
+        Debug.Log("Dados básicos do jogo resetados para novo início");
     }
 
     void OnValidate()

@@ -1,0 +1,66 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d20f0df1dbbcccb48abf69dbcc5cc4f7, type: 3}
+  m_Name: VictoryDialogue
+  m_EditorClassIdentifier: 
+  dialogueTitle: Intro
+  dialogueEntries:
+  - speakerName: 
+    text: "A popula\xE7\xE3o se reune diante do pal\xE1cio. Os dem\xF4nios e os mercen\xE1rios
+      de Fentho que n\xE3o morreram, agora correm para as florestas, desprovidas
+      de mestre e de vit\xF3ria."
+    customDelay: 0
+    customSound: {fileID: 0}
+  - speakerName: 
+    text: "Por um momento, a cidade fica em sil\xEAncio. Quem \xE9 o her\xF3i que
+      conseguiu dar cabo naquele malfeitor?"
+    customDelay: 0
+    customSound: {fileID: 0}
+  - speakerName: Logrif
+    text: "HER\xD3I???"
+    customDelay: 0
+    customSound: {fileID: 0}
+  - speakerName: "Popula\xE7\xE3o"
+    text: "Aben\xE7oado seja! Ele nos salvou!"
+    customDelay: 0
+    customSound: {fileID: 0}
+  - speakerName: Logrif
+    text: "Carca\xE7a e carnificina! Essa... Essa... Massa de manobra ousa me eleger
+      como um campe\xE3o, escravo de suas vontades? Eu que mando aqui!"
+    customDelay: 0
+    customSound: {fileID: 0}
+  - speakerName: Logrif
+    text: "Apesar que... Essa talvez seja uma boa oportunidade. Esses tr\xEAs palha\xE7os
+      que se diziam meus 'concorrentes' s\xE3o apenas o come\xE7o. H\xE1 outros.
+      Outros que se atrevem a me desafiar! "
+    customDelay: 0
+    customSound: {fileID: 0}
+  - speakerName: Logrif
+    text: "Para destruir o mundo, preciso conquist\xE1-lo! E esses mortais s\xE3o
+      sempre \xFAteis, apesar de suas vozes irritantes."
+    customDelay: 0
+    customSound: {fileID: 0}
+  - speakerName: Logrif
+    text: "Est\xE1 decidido! Marcharemos em breve, meus homens! H\xE1 outros... 'Vil\xF5es'
+      para se combater! Se dorbem diante de seu novo senhor!"
+    customDelay: 0
+    customSound: {fileID: 0}
+  - speakerName: Logrif
+    text: Ave Logrif! Ave Logrif! Ave Logrif!
+    customDelay: 0
+    customSound: {fileID: 0}
+  - speakerName: Logrif
+    text: Obrigado por jogar!
+    customDelay: 0
+    customSound: {fileID: 0}
+  backgroundMusic: {fileID: 0}
+  stopCurrentMusicWhenPlaying: 0
