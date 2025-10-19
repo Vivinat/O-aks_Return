@@ -488,14 +488,6 @@ public static class ObservationInterpreter
     private static void GenerateAlwaysOutspedOffers(BehaviorObservation obs,
         List<NegotiationOffer> advantages, List<NegotiationOffer> disadvantages)
     {
-        // VANTAGENS - Compensação pela lentidão
-        advantages.Add(NegotiationOffer.CreateAdvantage(
-            "Primeiro Golpe Poderoso",
-            "Você se torna mais rápido.",
-            CardAttribute.PlayerSpeed, 1,
-            obs.triggerType,
-            "Sempre age por último"
-        ));
         
         advantages.Add(NegotiationOffer.CreateAdvantage(
             "Resistência Superior",
@@ -517,16 +509,6 @@ public static class ObservationInterpreter
             "Contra-ataque Letal",
             "Transforme a desvantagem em oportunidade.",
             CardAttribute.PlayerSingleTargetActionPower, 8,
-            obs.triggerType,
-            "Sempre age por último"
-        ));
-        
-        // DESVANTAGENS
-        disadvantages.Add(NegotiationOffer.CreateDisadvantage(
-            "Corrida Perdida",
-            "Seus adversários ficam ainda mais rápidos!",
-            CardAttribute.EnemySpeed, 1,
-            false,
             obs.triggerType,
             "Sempre age por último"
         ));
@@ -590,30 +572,11 @@ public static class ObservationInterpreter
             "Sempre age primeiro"
         ));
         
-        advantages.Add(NegotiationOffer.CreateDisadvantage(
-            "Distorção",
-            "Todos os inimigos parecem mais lentos.",
-            CardAttribute.EnemySpeed,   
-            -1,                              
-            false,                            
-            obs.triggerType,
-            "Sempre age primeiro"
-        ));
-        
         // DESVANTAGENS - Compensação por ser muito forte
         disadvantages.Add(NegotiationOffer.CreateDisadvantage(
             "Força Bruta Inimiga",
             "Inimigos compensam com puro poder.",
             CardAttribute.EnemyActionPower, 8,
-            false,
-            obs.triggerType,
-            "Sempre age primeiro"
-        ));
-        
-        disadvantages.Add(NegotiationOffer.CreateDisadvantage(
-            "Supervelocidade",
-            "Inimigos se ajustam à sua velocidade.",
-            CardAttribute.EnemySpeed, 1,
             false,
             obs.triggerType,
             "Sempre age primeiro"
@@ -749,16 +712,6 @@ public static class ObservationInterpreter
             "Se não pode alcançá-los, seja impossível de ferir.",
             CardAttribute.PlayerMaxHP, 
             15,
-            obs.triggerType,
-            "Dificuldade vs Rápidos"
-        ));
-        
-        advantages.Add(NegotiationOffer.CreateDisadvantage(
-            "Nivelar o Jogo",
-            "Reduza a velocidade dos inimigos",
-            CardAttribute.EnemySpeed, 
-            -1,
-            false,
             obs.triggerType,
             "Dificuldade vs Rápidos"
         ));
@@ -1400,16 +1353,6 @@ public static class ObservationInterpreter
             obs.triggerType,
             "Dependência de consumíveis"
         ));
-        
-        disadvantages.Add(NegotiationOffer.CreateDisadvantage(
-            "Vício Custoso",
-            "Sua dependência cobra um preço alto.",
-            CardAttribute.EnemySpeed, 
-            1,
-            false,
-            obs.triggerType,
-            "Dependência de consumíveis"
-        ));
     }
     
     /// <summary>
@@ -1442,15 +1385,6 @@ public static class ObservationInterpreter
             "Temido",
             "Seus inimigos te temem",
             CardAttribute.EnemyActionManaCost, -8,
-            false,
-            obs.triggerType,
-            $"Vitória perfeita vs {enemyName}"
-        ));
-        
-        advantages.Add(NegotiationOffer.CreateDisadvantage(
-            "Paralisados de Medo",
-            "Seus inimigos hesitam ao agir",
-            CardAttribute.EnemySpeed, -1,
             false,
             obs.triggerType,
             $"Vitória perfeita vs {enemyName}"
@@ -1938,16 +1872,6 @@ public static class ObservationInterpreter
             "Custos exorbitantes te limitam.",
             CardAttribute.PlayerActionManaCost,
             15,
-            true, // Afeta jogador
-            obs.triggerType,
-            $"Custo médio: {avgCost:F0} MP"
-        ));
-        
-        disadvantages.Add(NegotiationOffer.CreateDisadvantage(
-            "Dependência Lenta",
-            "Skills caras te deixam lento.",
-            CardAttribute.PlayerSpeed,
-            -3,
             true, // Afeta jogador
             obs.triggerType,
             $"Custo médio: {avgCost:F0} MP"

@@ -432,7 +432,11 @@ public class BattleEntity : MonoBehaviour
                 // Jogador aceitou - já foi revivido pelo manager
                 Debug.Log("Negociação aceita! Jogador revivido.");
                 
-                // CORREÇÃO CRÍTICA: Reseta o ATB do personagem que estava agindo
+                // CORREÇÃO 1: Limpa TODOS os status effects negativos do jogador
+                ClearNegativeStatusEffects();
+                Debug.Log("Status effects negativos removidos após ressurreição!");
+                
+                // CORREÇÃO 2: Reseta o ATB do personagem que estava agindo
                 // para evitar que ele ataque novamente
                 if (currentActiveCharacter != null && !currentActiveCharacter.isDead)
                 {
@@ -447,6 +451,31 @@ public class BattleEntity : MonoBehaviour
                 }
             }
         });
+    }
+    
+    /// <summary>
+    /// NOVO: Remove apenas status effects negativos (debuffs e DoTs)
+    /// Útil para ressurreição - mantém buffs positivos
+    /// </summary>
+    public void ClearNegativeStatusEffects()
+    {
+        List<StatusEffectType> negativeEffects = new List<StatusEffectType>
+        {
+            StatusEffectType.Poison,
+            StatusEffectType.AttackDown,
+            StatusEffectType.DefenseDown,
+            StatusEffectType.SpeedDown,
+            StatusEffectType.Vulnerable,
+            StatusEffectType.Cursed,
+            StatusEffectType.DefenseDown
+        };
+    
+        int removedCount = activeStatusEffects.RemoveAll(effect => negativeEffects.Contains(effect.type));
+    
+        if (removedCount > 0)
+        {
+            Debug.Log($"{characterData.characterName} teve {removedCount} status effects negativos removidos!");
+        }
     }
 
     /// <summary>

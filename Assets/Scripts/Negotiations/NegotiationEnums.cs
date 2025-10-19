@@ -87,7 +87,7 @@ public static class IntensityHelper
     public static int GetScaledValue(CardIntensity intensity, int baseValue)
     {
         float multiplier = GetMultiplier(intensity);
-        return Mathf.RoundToInt(Mathf.Abs(baseValue) * multiplier);
+        return Mathf.RoundToInt(baseValue * multiplier);
     }
     
     /// <summary>
@@ -128,7 +128,7 @@ public static class IntensityHelper
 }
 
 /// <summary>
-/// Classe auxiliar para nomes de atributos
+/// Classe auxiliar para nomes e descrições de atributos
 /// </summary>
 public static class AttributeHelper
 {
@@ -165,6 +165,146 @@ public static class AttributeHelper
             case CardAttribute.ShopPrices: return "Preços da Loja";
             
             default: return attribute.ToString();
+        }
+    }
+    
+    /// <summary>
+    /// NOVO: Retorna explicação detalhada de quando/como o atributo afeta o jogo
+    /// </summary>
+    public static string GetDetailedExplanation(CardAttribute attribute, int value, bool isAdvantage)
+    {
+        string sign = value > 0 ? "+" : "";
+        string absValue = Mathf.Abs(value).ToString();
+        
+        switch (attribute)
+        {
+            // === JOGADOR - STATS BASE ===
+            case CardAttribute.PlayerMaxHP:
+                if (isAdvantage)
+                    return $"Sua vida máxima aumenta em {absValue} pontos";
+                else
+                    return $"Sua vida máxima diminui em {absValue} pontos";
+            
+            case CardAttribute.PlayerMaxMP:
+                if (isAdvantage)
+                    return $"Sua mana máxima aumenta em {absValue} pontos";
+                else
+                    return $"Sua mana máxima diminui em {absValue} pontos";
+            
+            case CardAttribute.PlayerDefense:
+                if (isAdvantage)
+                    return $"Sua defesa aumenta em {absValue}";
+                else
+                    return $"Sua defesa diminui em {absValue}";
+            
+            case CardAttribute.PlayerSpeed:
+                if (isAdvantage)
+                    return $"Sua velocidade aumenta em {absValue}";
+                else
+                    return $"Sua velocidade diminui em {absValue}";
+            
+            // === JOGADOR - AÇÕES ===
+            case CardAttribute.PlayerActionPower:
+                if (isAdvantage)
+                    return $"Habilidades causam {sign}{absValue} de dano/cura extra";
+                else
+                    return $"Habilidades causam {sign}{absValue} de dano/cura a menos";
+            
+            case CardAttribute.PlayerActionManaCost:
+                if (isAdvantage)
+                    return $"Habilidades custam {absValue} MP a menos";
+                else
+                    return $"Habilidades custam {absValue} MP a mais";
+            
+            case CardAttribute.PlayerOffensiveActionPower:
+                if (isAdvantage)
+                    return $"Ataques ofensivos causam {sign}{absValue} de dano extra";
+                else
+                    return $"Ataques ofensivos causam {sign}{absValue} de dano a menos";
+            
+            case CardAttribute.PlayerDefensiveActionPower:
+                if (isAdvantage)
+                    return $"Curas e buffs são {sign}{absValue} pontos mais efetivos";
+                else
+                    return $"Curas e buffs são {sign}{absValue} pontos menos efetivos";
+            
+            case CardAttribute.PlayerAOEActionPower:
+                if (isAdvantage)
+                    return $"Ataques em área causam {sign}{absValue} de dano extra";
+                else
+                    return $"Ataques em área causam {sign}{absValue} de dano a menos";
+            
+            case CardAttribute.PlayerSingleTargetActionPower:
+                if (isAdvantage)
+                    return $"Ataques de alvo único causam {sign}{absValue} de dano extra";
+                else
+                    return $"Ataques de alvo único causam {sign}{absValue} de dano a menos";
+            
+            // === INIMIGOS - STATS ===
+            case CardAttribute.EnemyMaxHP:
+                if (isAdvantage)
+                    return $"Inimigos têm {absValue} HP a menos";
+                else
+                    return $"Inimigos têm {sign}{absValue} HP a mais";
+            
+            case CardAttribute.EnemyMaxMP:
+                if (isAdvantage)
+                    return $"Inimigos têm {absValue} MP a menos";
+                else
+                    return $"Inimigos têm {sign}{absValue} MP a mais";
+            
+            case CardAttribute.EnemyDefense:
+                if (isAdvantage)
+                    return $"Inimigos têm {absValue} de defesa a menos";
+                else
+                    return $"Inimigos têm {sign}{absValue} de defesa a mais";
+            
+            case CardAttribute.EnemySpeed:
+                if (isAdvantage)
+                    return $"Inimigos têm {absValue} de velocidade a menos";
+                else
+                    return $"Inimigos têm {sign}{absValue} de velocidade a mais";
+            
+            // === INIMIGOS - AÇÕES ===
+            case CardAttribute.EnemyActionPower:
+                if (isAdvantage)
+                    return $"Ataques inimigos causam {absValue} de dano a menos";
+                else
+                    return $"Ataques inimigos causam {sign}{absValue} de dano extra";
+            
+            case CardAttribute.EnemyActionManaCost:
+                if (isAdvantage)
+                    return $"Habilidades inimigas custam {sign}{absValue} MP a mais";
+                else
+                    return $"Habilidades inimigas custam {absValue} MP a menos";
+            
+            case CardAttribute.EnemyOffensiveActionPower:
+                if (isAdvantage)
+                    return $"Ataques ofensivos inimigos causam {absValue} de dano a menos";
+                else
+                    return $"Ataques ofensivos  inimigos causam {sign}{absValue} de dano extra";
+            
+            case CardAttribute.EnemyAOEActionPower:
+                if (isAdvantage)
+                    return $"Ataques em área inimigos causam {absValue} de dano a menos";
+                else
+                    return $"Ataques em área inimigos causam {sign}{absValue} de dano extra";
+            
+            // === ECONOMIA ===
+            case CardAttribute.CoinsEarned:
+                if (isAdvantage)
+                    return $"Você ganha {sign}{absValue} moedas extras ao vencer batalhas";
+                else
+                    return $"Você ganha {absValue} moedas a menos ao vencer batalhas";
+            
+            case CardAttribute.ShopPrices:
+                if (isAdvantage)
+                    return $"Itens na loja custam {absValue} moedas a menos";
+                else
+                    return $"Itens na loja custam {sign}{absValue} moedas a mais";
+            
+            default:
+                return GetDisplayName(attribute);
         }
     }
     

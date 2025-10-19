@@ -367,7 +367,7 @@ public class NegotiationManager : MonoBehaviour
         
         // Calcula valores reais aplicando o multiplicador aos valores base
         int playerValue = IntensityHelper.GetScaledValue(intensity, card.playerBenefit.value);
-        int enemyValue = IntensityHelper.GetScaledValue(intensity, Mathf.Abs(card.playerCost.value));
+        int enemyValue = IntensityHelper.GetScaledValue(intensity, card.playerCost.value);
         
         DebugLog($"=== APLICANDO CARTA: {card.GetCardName()} ===");
         DebugLog($"Intensidade: {IntensityHelper.GetIntensityDisplayName(intensity)} ({IntensityHelper.GetMultiplier(intensity)}x)");

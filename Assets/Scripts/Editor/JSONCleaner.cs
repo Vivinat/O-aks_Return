@@ -9,7 +9,7 @@ using System.IO;
 /// Limpa automaticamente os dados salvos quando o jogador perde
 /// Funciona em Editor, Standalone e WebGL
 /// </summary>
-public class DefeatSceneDataCleaner : MonoBehaviour
+public class JSONCLeaner : MonoBehaviour
 {
     [Header("Configuration")]
     [SerializeField] private bool clearOnDefeatScene = true;
@@ -25,7 +25,7 @@ public class DefeatSceneDataCleaner : MonoBehaviour
     [Header("Debug")]
     [SerializeField] private bool showDebugLogs = true;
 
-    private static DefeatSceneDataCleaner instance;
+    private static JSONCLeaner instance;
 
     void Awake()
     {
