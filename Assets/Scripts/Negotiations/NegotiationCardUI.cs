@@ -348,17 +348,25 @@ public class NegotiationCardUI : MonoBehaviour, IPointerEnterHandler, IPointerEx
     private void UpdateDescription()
     {
         if (descriptionText == null) return;
-        
+    
         if (isDynamicCard)
         {
+            // CRÍTICO: Passa o VALOR ESCALADO REAL, não o valor bruto da intensidade
+            int realPlayerValue = IntensityHelper.GetScaledValue((CardIntensity)selectedValue, selectedPlayerAttribute);
+            int realEnemyValue = IntensityHelper.GetScaledValue((CardIntensity)selectedValue, selectedEnemyAttribute);
+        
             descriptionText.text = cardDataDynamic.GetFullDescription(
                 selectedPlayerAttribute, 
                 selectedEnemyAttribute, 
-                selectedValue
+                selectedValue  // Ainda passa o valor bruto para o método identificar a intensidade
             );
         }
         else
         {
+            // Para cartas estáticas, passa valores reais também
+            int realPlayerValue = IntensityHelper.GetScaledValue((CardIntensity)selectedValue, selectedPlayerAttribute);
+            int realEnemyValue = IntensityHelper.GetScaledValue((CardIntensity)selectedValue, selectedEnemyAttribute);
+        
             descriptionText.text = cardDataSO.GetFullDescription(
                 selectedPlayerAttribute, 
                 selectedEnemyAttribute, 
