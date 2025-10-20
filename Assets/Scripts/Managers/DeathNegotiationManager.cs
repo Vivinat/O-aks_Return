@@ -68,15 +68,33 @@ public class DeathNegotiationManager : MonoBehaviour
     
     void Update()
     {
-        // Permite abrir menu de status com E durante negociação
-        if (negotiationPanel != null && negotiationPanel.activeSelf)
+        // Permite abrir/fechar menu de status com E durante negociação
+        if (negotiationPanel != null && negotiationPanel.activeSelf) //
         {
-            if (Input.GetKeyDown(KeyCode.E))
+            if (Input.GetKeyDown(KeyCode.E)) //
             {
-                // TODO: Abrir menu de status
-                Debug.Log("Menu de status (implemente StatusMenuManager)");
+                // --- CORREÇÃO ---
+                // Manda o StatusPanel abrir ou fechar
+                if (StatusPanel.Instance != null)
+                {
+                    StatusPanel.Instance.TogglePanel();
+                }
+                else
+                {
+                    Debug.LogWarning("StatusPanel.Instance não encontrado!");
+                }
+                // --- FIM DA CORREÇÃO ---
             }
         }
+    }
+    
+    /// <summary>
+    /// Verifica se a UI de negociação está visível
+    /// </summary>
+    public bool IsNegotiationActive()
+    {
+        // Retorna true se o painel de negociação estiver ativo no mundo
+        return negotiationPanel != null && negotiationPanel.activeSelf;
     }
     
     private void SetupUI()

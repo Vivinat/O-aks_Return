@@ -29,7 +29,7 @@ MonoBehaviour:
     selfStatusEffect: 0
     selfStatusDuration: 0
     selfStatusPower: 0
-  - effectType: 2
+  - effectType: 3
     power: 0
     statusEffect: 3
     statusDuration: 4

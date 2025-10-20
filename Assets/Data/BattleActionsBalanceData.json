@@ -74,7 +74,7 @@
                     "selfStatusPower": 0
                 },
                 {
-                    "effectType": "RestoreMana",
+                    "effectType": "Buff",
                     "power": 0,
                     "statusEffect": "DefenseUp",
                     "statusDuration": 4,
@@ -1613,11 +1613,11 @@
                     "statusDuration": 0,
                     "statusPower": 0,
                     "hasSelfEffect": true,
-                    "selfEffectType": "Buff",
-                    "selfEffectPower": 0,
-                    "selfStatusEffect": "DefenseDown",
-                    "selfStatusDuration": 2,
-                    "selfStatusPower": 5
+                    "selfEffectType": "Attack",
+                    "selfEffectPower": 10,
+                    "selfStatusEffect": "None",
+                    "selfStatusDuration": 0,
+                    "selfStatusPower": 0
                 }
             ]
         },

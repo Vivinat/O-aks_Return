@@ -35,6 +35,7 @@ public class StatusPanel : MonoBehaviour
     // Estado interno
     private bool isOpen = false;
     private List<GameObject> skillSlots = new List<GameObject>();
+    private bool isPausedByMe = false; // <<< ADICIONE ESTA LINHA
 
     void Awake()
     {
@@ -55,22 +56,26 @@ public class StatusPanel : MonoBehaviour
         InitializePanel();
     }
 
+    // SUBSTITUA A FUNÇÃO UPDATE() INTEIRA PELA VERSÃO ABAIXO
     void Update()
     {
         // Tecla 'E' para abrir/fechar o painel
-        // Mas NÃO processa se estiver na cena de negociação (deixa o NegotiationManager controlar)
-        if (Input.GetKeyDown(KeyCode.E))
+        if (Input.GetKeyDown(KeyCode.E)) //
         {
-            // Ignora se estiver na cena de negociação
-            if (IsNegotiationScene())
+            // --- CORREÇÃO ---
+            // Se a negociação estiver ativa, NÃO faça nada aqui.
+            // O DeathNegotiationManager está no controle.
+            if (DeathNegotiationManager.Instance != null && 
+                DeathNegotiationManager.Instance.IsNegotiationActive())
             {
-                return; // Deixa o NegotiationManager controlar
+                return; // Deixa o DeathNegotiationManager controlar
             }
+            // --- FIM DA CORREÇÃO ---
         
             // Verifica se o OptionsMenu não está aberto
-            if (OptionsMenu.Instance == null || !OptionsMenu.Instance.IsMenuOpen())
+            if (OptionsMenu.Instance == null || !OptionsMenu.Instance.IsMenuOpen()) //
             {
-                TogglePanel();
+                TogglePanel(); //
             }
         }
     }
@@ -103,66 +108,73 @@ public class StatusPanel : MonoBehaviour
 
     public void OpenPanel()
     {
-        if (statusPanel == null)
+        if (statusPanel == null) //
         {
-            Debug.LogWarning("StatusPanel: statusPanel não foi atribuído!");
+            Debug.LogWarning("StatusPanel: statusPanel não foi atribuído!"); //
             return;
         }
         AudioConstants.PlayMenuOpen();
         
-        isOpen = true;
-        statusPanel.SetActive(true);
+        isOpen = true; //
+        statusPanel.SetActive(true); //
         
-        // Só pausa o tempo se NÃO for a cena de negociação
-        if (!IsNegotiationScene())
+        // --- CORREÇÃO DO BUG TIME.SCALE ---
+        bool negotiationIsActive = DeathNegotiationManager.Instance != null && 
+                                   DeathNegotiationManager.Instance.IsNegotiationActive();
+        
+        // Só pausa o tempo se a negociação NÃO estiver ativa
+        // (pois a negociação já pausou o tempo)
+        if (!negotiationIsActive)
         {
             Time.timeScale = 0f;
+            isPausedByMe = true; // Marcamos que NÓS pausamos o jogo
         }
+        else
+        {
+            // Se a negociação está ativa, o tempo JÁ ESTÁ 0.
+            // Não fomos nós que pausamos.
+            isPausedByMe = false;
+        }
+        // --- FIM DA CORREÇÃO ---
         
-        UpdateCharacterInfo();
-        UpdateSkillsList();
+        UpdateCharacterInfo(); //
+        UpdateSkillsList(); //
         
-        Debug.Log("Painel de status aberto");
+        Debug.Log("Painel de status aberto"); //
     }
 
     public void ClosePanel()
     {
-        if (statusPanel == null) return;
+        if (statusPanel == null) return; //
 
-        isOpen = false;
-        statusPanel.SetActive(false);
+        // --- INÍCIO DA SOLUÇÃO SIMPLES (BLOQUEIO) ---
+        // Verifica se o DeathNegotiationManager existe E está ativo
+        if (DeathNegotiationManager.Instance != null && 
+            DeathNegotiationManager.Instance.IsNegotiationActive())
+        {
+            Debug.Log("StatusPanel: Fechamento bloqueado. Negociação em andamento.");
+            // Opcional: Tocar um som de "bloqueado"
+            return; // IMPEDE O FECHAMENTO
+        }
+        // --- FIM DA SOLUÇÃO SIMPLES ---
+
+        isOpen = false; //
+        statusPanel.SetActive(false); //
         
-        // Só volta o tempo se NÃO for a cena de negociação
-        if (!IsNegotiationScene() || !IsBattleScene() || !IsBossScene())
+        // --- CORREÇÃO DO BUG TIME.SCALE ---
+        // Só resume o tempo se fomos NÓS que pausamos
+        if (isPausedByMe)
         {
             Time.timeScale = 1f;
+            isPausedByMe = false;
         }
+        // Removemos a checagem 'IsNegotiationScene()' que causava o bug
+        // --- FIM DA CORREÇÃO ---
         
-        if (tooltipUI != null)
-            tooltipUI.Hide();
+        if (tooltipUI != null) //
+            tooltipUI.Hide(); //
         
-        Debug.Log("Painel de status fechado");
-    }
-
-    /// <summary>
-    /// Verifica se está na cena de negociação
-    /// </summary>
-    private bool IsNegotiationScene()
-    {
-        string currentScene = SceneManager.GetActiveScene().name;
-        return currentScene == "NegotiationScene";
-    }
-    
-    private bool IsBattleScene()
-    {
-        string currentScene = SceneManager.GetActiveScene().name;
-        return currentScene == "BattleScene";
-    }
-    
-    private bool IsBossScene()
-    {
-        string currentScene = SceneManager.GetActiveScene().name;
-        return currentScene == "BossScene";
+        Debug.Log("Painel de status fechado"); //
     }
 
     private void UpdateCharacterInfo()

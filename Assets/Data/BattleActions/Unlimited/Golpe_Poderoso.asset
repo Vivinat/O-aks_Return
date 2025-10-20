@@ -23,11 +23,11 @@ MonoBehaviour:
     statusDuration: 0
     statusPower: 0
     hasSelfEffect: 1
-    selfEffectType: 3
-    selfEffectPower: 0
-    selfStatusEffect: 4
-    selfStatusDuration: 2
-    selfStatusPower: 5
+    selfEffectType: 0
+    selfEffectPower: 10
+    selfStatusEffect: 0
+    selfStatusDuration: 0
+    selfStatusPower: 0
   manaCost: 0
   isConsumable: 0
   maxUses: 1

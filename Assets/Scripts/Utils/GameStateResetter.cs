@@ -133,7 +133,7 @@ public static class GameStateResetter
         player.maxHp = 100;
         player.maxMp = 100;
         player.defense = 15;
-        player.speed = 2f;
+        player.speed = 3.5f;
         
         // Reseta HP/MP atuais
         GameManager.Instance.SetPlayerCurrentHP(100);

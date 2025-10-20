@@ -18,8 +18,7 @@ MonoBehaviour:
   maxHp: 100
   maxMp: 100
   defense: 15
-  speed: 3
+  speed: 3.5
   deathSound: {fileID: 8300000, guid: e12666ffd7681944aa9226f20dc7cb95, type: 3}
   battleActions:
   - {fileID: 11400000, guid: fd2185eac5ce59d40a6129af997a4632, type: 2}
-  - {fileID: 11400000, guid: 28cee2fc757fdd6489b60abbe2e6d7fd, type: 2}

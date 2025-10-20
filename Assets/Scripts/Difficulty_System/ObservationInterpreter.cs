@@ -354,7 +354,7 @@ public static class ObservationInterpreter
             "Reclamar com o Gerente",
             "As ações de todos os inimigos custam mais mana.",
             CardAttribute.EnemyActionManaCost,   
-            -10,                              
+            10,                              
             false,                            
             obs.triggerType,
             "HP crítico frequente"
