@@ -48,12 +48,15 @@ public class GameManager : MonoBehaviour
         {
             Instance = this;
             DontDestroyOnLoad(gameObject);
+            if (DifficultySystem.Instance != null && PlayerCharacterInfo != null)
+            {
+                DifficultySystem.Instance.ApplyToPlayer(PlayerCharacterInfo);
+            }
             if (GetComponent<SpecificSkillModifier>() == null)
             {
                 gameObject.AddComponent<SpecificSkillModifier>();
             }
             InitializePlayerActions();
-            
         }
         else
         {

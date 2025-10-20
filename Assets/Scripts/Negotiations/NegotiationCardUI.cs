@@ -248,25 +248,25 @@ public class NegotiationCardUI : MonoBehaviour, IPointerEnterHandler, IPointerEx
     private void PopulateIntensityDropdown()
     {
         if (intensityDropdown == null) return;
-    
+        
         intensityDropdown.ClearOptions();
         List<string> options = new List<string>();
-    
+        
         List<CardIntensity> availableIntensities = isDynamicCard 
             ? cardDataDynamic.availableIntensities 
             : cardDataSO.availableIntensities;
-    
+        
         foreach (var intensity in availableIntensities)
         {
-            // APENAS o nome da intensidade - sem valores
-            options.Add(IntensityHelper.GetIntensityDisplayName(intensity));
+            int val = IntensityHelper.GetValue(intensity);
+            options.Add($"{IntensityHelper.GetIntensityDisplayName(intensity)} (+{val})");
         }
-    
+        
         intensityDropdown.AddOptions(options);
-    
+        
         if (availableIntensities.Count > 0)
         {
-            selectedIntensity = availableIntensities[0];
+            selectedValue = IntensityHelper.GetValue(availableIntensities[0]);
             intensityDropdown.value = 0;
         }
     }
@@ -276,20 +276,20 @@ public class NegotiationCardUI : MonoBehaviour, IPointerEnterHandler, IPointerEx
         List<CardAttribute> availableAttrs = isDynamicCard 
             ? cardDataDynamic.availablePlayerAttributes 
             : cardDataSO.availablePlayerAttributes;
-    
+        
         if (availableAttrs.Count > index)
         {
             selectedPlayerAttribute = availableAttrs[index];
             UpdateDescription();
         }
     }
-
+    
     private void OnEnemyAttributeChanged(int index)
     {
         List<CardAttribute> availableAttrs = isDynamicCard 
             ? cardDataDynamic.availableEnemyAttributes 
             : cardDataSO.availableEnemyAttributes;
-    
+        
         if (availableAttrs.Count > index)
         {
             selectedEnemyAttribute = availableAttrs[index];

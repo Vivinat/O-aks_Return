@@ -1,4 +1,4 @@
-// Assets/Scripts/Managers/BattleManager.cs (NO DUPLICATE MODIFICATIONS)
+// Assets/Scripts/Managers/BattleManager.cs (Enhanced for new Action System)
 
 using System.Collections;
 using System.Collections.Generic;
@@ -25,9 +25,9 @@ public class BattleManager : MonoBehaviour
     [SerializeField] private float enemyActionDisplayTime = 2.0f;
     
     [Header("Boss Dialogues")]
-    public DialogueSO boss1Dialogue;
-    public DialogueSO boss2Dialogue;
-    public DialogueSO boss3Dialogue;
+    public DialogueSO boss1Dialogue; // MAWRON
+    public DialogueSO boss2Dialogue; // VALDEMOR
+    public DialogueSO boss3Dialogue; // FENTHO
     
     private int currentTurnNumber = 0;
 
@@ -38,6 +38,7 @@ public class BattleManager : MonoBehaviour
             GameManager.Instance.InitializePlayerStats();
         }
         
+        // NOVO: Reseta sistema de segunda chance no início da batalha
         if (DeathNegotiationManager.Instance != null)
         {
             DeathNegotiationManager.Instance.ResetForNewBattle();
@@ -52,10 +53,6 @@ public class BattleManager : MonoBehaviour
         StartCoroutine(CheckForBossDialogue());
     }
     
-    /// <summary>
-    /// ATUALIZADO: Inicializa inimigos aplicando modificadores apenas em RUNTIME
-    /// (As modificações gerais já foram aplicadas nos SOs pela negociação)
-    /// </summary>
     private void InitializeEnemyTeam()
     {
         enemyTeam = new List<BattleEntity>();
@@ -73,8 +70,7 @@ public class BattleManager : MonoBehaviour
 
                 BattleEntity entity = currentSlot.GetComponent<BattleEntity>();
             
-                // IMPORTANTE: Apenas aplica modificadores de INIMIGOS em runtime
-                // (modificadores do jogador já foram aplicados diretamente nos SOs)
+                // NOVO: Aplica modificadores de dificuldade ao inimigo ANTES de atribuir
                 if (DifficultySystem.Instance != null)
                 {
                     DifficultySystem.Instance.ApplyToEnemy(enemiesToSpawn[i]);
@@ -90,43 +86,41 @@ public class BattleManager : MonoBehaviour
         }
     }
 
-    /// <summary>
-    /// ATUALIZADO: Inicializa jogador SEM aplicar modificadores
-    /// (modificações já foram aplicadas nos SOs pela negociação)
-    /// </summary>
     private void InitializePlayerTeam()
     {
         playerTeam = FindObjectsOfType<BattleEntity>()
             .Where(e => e.characterData.team == Team.Player)
             .ToList();
     
-        // Carrega HP/MP salvos
+        // NOVO: Carrega HP/MP atuais do GameManager
         foreach (BattleEntity player in playerTeam)
         {
             if (GameManager.Instance != null)
             {
+                // Usa os valores salvos no GameManager
                 typeof(BattleEntity)
                     .GetField("currentHp", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance)
                     ?.SetValue(player, GameManager.Instance.GetPlayerCurrentHP());
                 
                 player.currentMp = GameManager.Instance.GetPlayerCurrentMP();
             
+                // Força update das barras
                 player.ForceUpdateValueTexts();
             }
         }
-        
-        // NÃO aplica modificadores aqui - já foram aplicados nos SOs!
     }
     
     void Update()
     {
         if (currentState != BattleState.RUNNING) return;
 
+        // Atualiza ATB de todos
         foreach (var character in allCharacters.Where(c => !c.isDead))
         {
             character.UpdateATB(Time.deltaTime);
         }
 
+        // Verifica quem está pronto para agir
         var readyCharacter = allCharacters
             .Where(c => c.isReady && !c.isDead)
             .OrderByDescending(c => c.characterData.speed)
@@ -137,6 +131,7 @@ public class BattleManager : MonoBehaviour
             activeCharacter = readyCharacter;
             currentState = BattleState.ACTION_PENDING;
 
+            // Process status effects at the start of turn
             activeCharacter.ProcessStatusEffectsTurn();
 
             if (activeCharacter.characterData.team == Team.Player)
@@ -158,21 +153,26 @@ public class BattleManager : MonoBehaviour
     private IEnumerator ProcessAction(BattleAction action, BattleEntity caster, List<BattleEntity> targets)
     {
         currentState = BattleState.PERFORMING_ACTION;
-        currentProcessingAction = action;
+        currentProcessingAction = action; // Set current action for special processing
         
+        // NOVO: Registra ação na ordem de turnos
         BehaviorAnalysisIntegration.OnTurnAction(caster);
     
-        currentTurnNumber++;
+        currentTurnNumber++; // NOVO: Incrementa contador de turno
 
+        // 1. Toca o efeito de flash do atacante
         caster.OnExecuteAction();
         Debug.Log($"{caster.characterData.characterName} uses {action.actionName}!");
     
+        // Espera um pouco para o efeito visual acontecer
         yield return new WaitForSeconds(actionDelay);
 
+        // 2. Check mana cost and apply effects
         if (caster.ConsumeMana(action.manaCost))
         {
             BehaviorAnalysisIntegration.OnPlayerSkillUsed(action, caster);
         
+            // Handle consumable usage
             if (action.isConsumable)
             {
                 bool canStillUse = action.UseAction();
@@ -186,10 +186,12 @@ public class BattleManager : MonoBehaviour
                 }
             }
             
+            // NOVO: Rastreia dano total causado pela skill
             int totalDamageThisAction = 0;
 
             foreach (ActionEffect effect in action.effects)
             {
+                // MODIFICADO: Captura HP antes do efeito
                 Dictionary<BattleEntity, int> hpBefore = new Dictionary<BattleEntity, int>();
                 foreach (var target in targets)
                 {
@@ -201,6 +203,7 @@ public class BattleManager : MonoBehaviour
             
                 yield return StartCoroutine(ApplyActionEffect(effect, caster, targets));
             
+                // NOVO: Calcula dano causado
                 foreach (var target in targets)
                 {
                     if (hpBefore.ContainsKey(target))
@@ -216,6 +219,7 @@ public class BattleManager : MonoBehaviour
                 }
             }
         
+            // NOVO: Registra dano causado pela skill (apenas para jogador)
             if (totalDamageThisAction > 0 && caster.characterData.team == Team.Player)
             {
                 BehaviorAnalysisIntegration.OnPlayerSkillDamage(action, totalDamageThisAction);
@@ -233,6 +237,9 @@ public class BattleManager : MonoBehaviour
         CheckBattleEnd();
     }
     
+    /// <summary>
+    /// NOVO: Retorna o número do turno atual
+    /// </summary>
     public int GetCurrentTurn()
     {
         return currentTurnNumber;
@@ -240,6 +247,7 @@ public class BattleManager : MonoBehaviour
 
     private IEnumerator ApplyActionEffect(ActionEffect effect, BattleEntity caster, List<BattleEntity> targets)
     {
+        // Check for special effects first
         if (ActionEffectProcessor.RequiresSpecialProcessing(GetCurrentAction()))
         {
             foreach (var target in targets)
@@ -248,9 +256,10 @@ public class BattleManager : MonoBehaviour
                 ActionEffectProcessor.ProcessSpecialEffect(GetCurrentAction(), caster, target);
                 yield return new WaitForSeconds(0.2f);
             }
-            yield break;
+            yield break; // Use yield break instead of return in coroutines
         }
 
+        // Apply primary effect to targets
         foreach (var target in targets)
         {
             if (target.isDead) continue;
@@ -272,9 +281,11 @@ public class BattleManager : MonoBehaviour
                     
                 case ActionType.Buff:
                 case ActionType.Debuff:
+                    // Status effects are handled below
                     break;
             }
 
+            // Apply status effect if present
             if (effect.statusEffect != StatusEffectType.None)
             {
                 target.ApplyStatusEffect(effect.statusEffect, effect.statusPower, effect.statusDuration);
@@ -283,6 +294,7 @@ public class BattleManager : MonoBehaviour
             yield return new WaitForSeconds(0.2f);
         }
 
+        // Apply self effect if present
         if (effect.hasSelfEffect && !caster.isDead)
         {
             switch (effect.selfEffectType)
@@ -298,9 +310,11 @@ public class BattleManager : MonoBehaviour
                     
                 case ActionType.Buff:
                 case ActionType.Debuff:
+                    // Self status effect handled below
                     break;
             }
 
+            // Apply self status effect if present
             if (effect.selfStatusEffect != StatusEffectType.None)
             {
                 caster.ApplyStatusEffect(effect.selfStatusEffect, effect.selfStatusPower, effect.selfStatusDuration);
@@ -308,6 +322,7 @@ public class BattleManager : MonoBehaviour
         }
     }
 
+    // Helper to get current action being processed
     private BattleAction currentProcessingAction;
     
     private BattleAction GetCurrentAction()
@@ -319,15 +334,18 @@ public class BattleManager : MonoBehaviour
     {
         yield return new WaitForSeconds(1.0f);
     
+        // Pega o único jogador
         BattleEntity player = playerTeam.FirstOrDefault(p => !p.isDead);
     
         if (player == null)
         {
+            // Jogador morreu, batalha já deve ter terminado
             activeCharacter.ResetATB();
             currentState = BattleState.RUNNING;
             yield break;
         }
     
+        // ========== USA A IA ==========
         BattleAction chosenAction = EnemyAI.ChooseBestAction(activeCharacter, player, enemyTeam);
 
         if (chosenAction == null)
@@ -338,12 +356,14 @@ public class BattleManager : MonoBehaviour
             yield break;
         }
 
+        // Mostra a ação do inimigo
         string enemyActionText = $"{activeCharacter.characterData.characterName} usa {chosenAction.actionName}!";
         battleHUD.ShowEnemyAction(enemyActionText);
     
         yield return new WaitForSeconds(enemyActionDisplayTime);
         battleHUD.HideEnemyAction();
 
+        // Escolhe os alvos
         List<BattleEntity> targets = EnemyAI.ChooseBestTargets(chosenAction, activeCharacter, player, enemyTeam);
 
         if (targets.Any())
@@ -371,8 +391,10 @@ public class BattleManager : MonoBehaviour
             Debug.Log("VICTORY!");
             
             int baseReward = Random.Range(20, 51);
+            // Multiplica pela quantidade de inimigos
             int totalEnemies = enemyTeam.Count;
             int rewardCoins = baseReward * totalEnemies;
+            // Garante que não passe de 100 moedas
             rewardCoins = Mathf.Min(rewardCoins, 150);
             Debug.Log("Acrescentado " + rewardCoins + " ao jogador. Fórmula usada:" + baseReward + " + " + totalEnemies );
             
@@ -390,6 +412,9 @@ public class BattleManager : MonoBehaviour
         }
     }
     
+    /// <summary>
+    /// NOVO: Trata derrota e vai para tela de morte
+    /// </summary>
     private IEnumerator HandleBattleDefeat()
     {
         yield return new WaitForSeconds(2f);
@@ -401,6 +426,7 @@ public class BattleManager : MonoBehaviour
     
         Debug.Log("=== JOGADOR MORREU - INDO PARA TELA DE MORTE ===");
     
+        // Carrega a cena de morte
         SceneManager.LoadScene("Defeat_Scene");
     }
 
@@ -419,6 +445,7 @@ public class BattleManager : MonoBehaviour
     
         yield return new WaitForSeconds(3f);
     
+        // NOVO: Salva stats antes de sair
         SavePlayerStatsToGameManager();
     
         GameManager.Instance.ReturnToMap();
@@ -430,8 +457,10 @@ public class BattleManager : MonoBehaviour
 
         Debug.Log($"⏱️ {character.characterData.characterName} perdeu o turno por timeout!");
 
+        // Reseta a ATB do personagem
         character.ResetATB();
     
+        // Mostra uma mensagem temporária
         if (battleHUD != null)
         {
             battleHUD.ShowTemporaryMessage(
@@ -443,10 +472,14 @@ public class BattleManager : MonoBehaviour
         currentState = BattleState.RUNNING;
     }
     
+    /// <summary>
+    /// Salva o HP/MP atual do jogador no GameManager quando a batalha termina
+    /// </summary>
     private void SavePlayerStatsToGameManager()
     {
         if (GameManager.Instance == null) return;
     
+        // Pega o primeiro jogador vivo (ou o primeiro se todos estão mortos)
         BattleEntity player = playerTeam.FirstOrDefault();
     
         if (player != null)
@@ -458,18 +491,24 @@ public class BattleManager : MonoBehaviour
         }
     }
     
+    /// <summary>
+    /// Verifica se algum inimigo é um boss e executa o diálogo inicial.
+    /// Pausa a batalha enquanto o diálogo é exibido.
+    /// </summary>
     private IEnumerator CheckForBossDialogue()
     {
-        yield return new WaitForSeconds(0.5f);
+        yield return new WaitForSeconds(0.5f); // pequeno delay após iniciar
 
         if (GameManager.enemiesToBattle == null || GameManager.enemiesToBattle.Count == 0)
             yield break;
 
+        // Normaliza nomes para comparação
         var enemies = GameManager.enemiesToBattle.Select(e => e.characterName.ToLower()).ToList();
 
         string bossFound = null;
         DialogueSO dialogueToPlay = null;
 
+        // === Verificações de nome de boss ===
         if (enemies.Any(n => n.Contains("mawron")))
         {
             bossFound = "Mawron";
@@ -486,13 +525,16 @@ public class BattleManager : MonoBehaviour
             dialogueToPlay = boss3Dialogue;
         }
 
+        // Se nenhum boss encontrado, apenas continua
         if (bossFound == null)
             yield break;
 
         Debug.Log($"[BattleManager] Boss detectado: {bossFound}");
 
+        // === Pausa a batalha ===
         currentState = BattleState.START;
 
+        // === Exibe o diálogo ===
         bool finished = false;
 
         if (dialogueToPlay != null && DialogueManager.Instance != null)
@@ -500,18 +542,12 @@ public class BattleManager : MonoBehaviour
             DialogueUtils.ShowDialogue(dialogueToPlay, () => finished = true);
         }
 
+        // Espera o diálogo terminar
         while (!finished)
             yield return null;
 
+        // === Retoma a batalha ===
         currentState = BattleState.RUNNING;
         Debug.Log($"[BattleManager] Diálogo do boss '{bossFound}' concluído. Batalha retomada.");
-    }
-    
-    /// <summary>
-    /// NOVO: Retorna o personagem atualmente ativo (útil para ressurreição)
-    /// </summary>
-    public BattleEntity GetActiveCharacter()
-    {
-        return activeCharacter;
     }
 }
