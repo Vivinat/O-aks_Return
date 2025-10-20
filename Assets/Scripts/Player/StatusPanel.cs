@@ -133,7 +133,7 @@ public class StatusPanel : MonoBehaviour
         statusPanel.SetActive(false);
         
         // Só volta o tempo se NÃO for a cena de negociação
-        if (!IsNegotiationScene())
+        if (!IsNegotiationScene() || !IsBattleScene() || !IsBossScene())
         {
             Time.timeScale = 1f;
         }
@@ -151,6 +151,18 @@ public class StatusPanel : MonoBehaviour
     {
         string currentScene = SceneManager.GetActiveScene().name;
         return currentScene == "NegotiationScene";
+    }
+    
+    private bool IsBattleScene()
+    {
+        string currentScene = SceneManager.GetActiveScene().name;
+        return currentScene == "BattleScene";
+    }
+    
+    private bool IsBossScene()
+    {
+        string currentScene = SceneManager.GetActiveScene().name;
+        return currentScene == "BossScene";
     }
 
     private void UpdateCharacterInfo()

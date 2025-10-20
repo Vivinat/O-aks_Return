@@ -360,10 +360,10 @@ public class DeathNegotiationManager : MonoBehaviour
 
         if (hpField != null)
         {
-            hpField.SetValue(targetPlayer,targetPlayer.GetMaxHP());
+            hpField.SetValue(targetPlayer,100);
         }
         
-        targetPlayer.currentMp = targetPlayer.GetMaxMP();
+        targetPlayer.currentMp = 100;
         
         // Marca como vivo
         var deadField = typeof(BattleEntity).GetField("isDead", 

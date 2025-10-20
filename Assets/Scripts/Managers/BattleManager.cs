@@ -56,7 +56,9 @@ public class BattleManager : MonoBehaviour
     }
     
     /// <summary>
-    /// Inicializa inimigos aplicando modificadores
+    /// CORRIGIDO: Instancia o SO do inimigo, aplica stats na instância,
+    /// e atribui a INSTÂNCIA ao BattleEntity.
+    /// Isso corrige os tooltips SEM contaminar as ações.
     /// </summary>
     private void InitializeEnemyTeam()
     {
@@ -74,16 +76,31 @@ public class BattleManager : MonoBehaviour
                 currentSlot.SetActive(true);
 
                 BattleEntity entity = currentSlot.GetComponent<BattleEntity>();
+                
+                // --- INÍCIO DA CORREÇÃO ---
+                
+                // 1. Pega o ScriptableObject original
+                Character originalEnemySO = enemiesToSpawn[i];
+
+                // 2. Cria uma INSTÂNCIA (cópia) dele
+                Character enemyInstance = Instantiate(originalEnemySO);
+                enemyInstance.name = originalEnemySO.name + " (Runtime Instance)";
             
+                // 3. Aplica os STATS (HP, Def, etc) nessa INSTÂNCIA
                 if (DifficultySystem.Instance != null)
                 {
-                    DifficultySystem.Instance.ApplyToEnemy_Stats(Instantiate(enemiesToSpawn[i]));
+                    // Agora estamos modificando 'enemyInstance', não o SO original
+                    DifficultySystem.Instance.ApplyToEnemy_Stats(enemyInstance);
                 }
             
-                entity.characterData = enemiesToSpawn[i];
+                // 4. Atribui a INSTÂNCIA modificada ao BattleEntity
+                entity.characterData = enemyInstance;
+                
+                // --- FIM DA CORREÇÃO ---
             
                 SpriteRenderer sr = currentSlot.GetComponentInChildren<SpriteRenderer>();
-                if(sr != null) sr.sprite = enemiesToSpawn[i].characterSprite;
+                // Usa o sprite da instância (que é o mesmo do original)
+                if(sr != null) sr.sprite = enemyInstance.characterSprite;
 
                 enemyTeam.Add(entity);
             }
