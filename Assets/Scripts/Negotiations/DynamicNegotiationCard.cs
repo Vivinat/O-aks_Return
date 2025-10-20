@@ -126,8 +126,7 @@ public class DynamicNegotiationCard
     }
     
     /// <summary>
-    /// Calcula e mostra valores REAIS baseados na intensidade
-    /// Multiplica os valores base pelo multiplicador (1x, 2x, 3x)
+    /// ✅ CORRIGIDO: Calcula e mostra valores REAIS com sinal correto para mana cost
     /// </summary>
     public string GetFullDescription(CardAttribute? playerAttr, CardAttribute? enemyAttr, CardIntensity intensity)
     {
@@ -140,8 +139,24 @@ public class DynamicNegotiationCard
         // Calcula o valor REAL aplicando o multiplicador ao valor base
         int realAdvantageValue = IntensityHelper.GetScaledValue(intensity, playerBenefit.value);
         
+        // ✅ CORREÇÃO: Força sinal correto para custos de mana
+        realAdvantageValue = CorrectManaCostSignForUI(advantageAttr, realAdvantageValue, true);
+        
         desc += $"<color=#90EE90><b>✓ Você Ganha:</b></color>\n";
-        desc += $"+{realAdvantageValue} {AttributeHelper.GetDisplayName(advantageAttr)}\n";
+        
+        // Formato especial para custos de mana (sempre mostrar redução como positivo na UI)
+        if (advantageAttr == CardAttribute.PlayerActionManaCost)
+        {
+            desc += $"Reduz custo de mana: <color=#90EE90>{Mathf.Abs(realAdvantageValue)}</color>\n";
+        }
+        else if (advantageAttr == CardAttribute.EnemyActionManaCost)
+        {
+            desc += $"Inimigos pagam <color=#90EE90>+{realAdvantageValue}</color> de mana a mais\n";
+        }
+        else
+        {
+            desc += $"+{realAdvantageValue} {AttributeHelper.GetDisplayName(advantageAttr)}\n";
+        }
 
         // === DESVANTAGEM ===
         desc += $"\n<color=#FF6B6B><b>✗ Custo:</b></color>\n";
@@ -150,6 +165,9 @@ public class DynamicNegotiationCard
         
         // Calcula o valor REAL aplicando o multiplicador ao valor base
         int realCostValue = IntensityHelper.GetScaledValue(intensity, playerCost.value);
+        
+        // ✅ CORREÇÃO: Força sinal correto para custos de mana
+        realCostValue = CorrectManaCostSignForUI(costAttr, realCostValue, false);
 
         // Detecta se afeta jogador ou inimigos
         bool costAffectsPlayer = IsPlayerAttribute(costAttr) || playerCost.affectsPlayer;
@@ -157,15 +175,74 @@ public class DynamicNegotiationCard
         if (costAffectsPlayer)
         {
             // Debuff no jogador
-            desc += $"Você perde: <color=#FF4444>-{realCostValue}</color> {AttributeHelper.GetDisplayName(costAttr)}";
+            if (costAttr == CardAttribute.PlayerActionManaCost)
+            {
+                desc += $"Aumenta custo de mana: <color=#FF4444>+{Mathf.Abs(realCostValue)}</color>";
+            }
+            else
+            {
+                desc += $"Você perde: <color=#FF4444>-{Mathf.Abs(realCostValue)}</color> {AttributeHelper.GetDisplayName(costAttr)}";
+            }
         }
         else
         {
             // Buff nos inimigos
-            desc += $"Inimigos ganham: <color=#FF4444>+{realCostValue}</color> {AttributeHelper.GetDisplayName(costAttr)}";
+            if (costAttr == CardAttribute.EnemyActionManaCost)
+            {
+                desc += $"Inimigos pagam <color=#FF4444>{realCostValue}</color> de mana a menos";
+            }
+            else
+            {
+                desc += $"Inimigos ganham: <color=#FF4444>+{Mathf.Abs(realCostValue)}</color> {AttributeHelper.GetDisplayName(costAttr)}";
+            }
         }
 
         return desc;
+    }
+    
+    /// <summary>
+    /// ✅ NOVO: Força sinal correto para custos de mana na UI
+    /// </summary>
+    private int CorrectManaCostSignForUI(CardAttribute attribute, int value, bool isAdvantage)
+    {
+        // Se não for custo de mana, retorna valor original
+        if (attribute != CardAttribute.PlayerActionManaCost && 
+            attribute != CardAttribute.EnemyActionManaCost)
+        {
+            return value;
+        }
+    
+        // === CUSTO DE MANA DO JOGADOR ===
+        if (attribute == CardAttribute.PlayerActionManaCost)
+        {
+            if (isAdvantage)
+            {
+                // ✅ VANTAGEM: Reduzir custo = NEGATIVO
+                return -Mathf.Abs(value);
+            }
+            else
+            {
+                // ❌ DESVANTAGEM: Aumentar custo = POSITIVO
+                return Mathf.Abs(value);
+            }
+        }
+    
+        // === CUSTO DE MANA DOS INIMIGOS ===
+        if (attribute == CardAttribute.EnemyActionManaCost)
+        {
+            if (isAdvantage)
+            {
+                // ✅ VANTAGEM (para jogador): Aumentar custo inimigo = POSITIVO
+                return Mathf.Abs(value);
+            }
+            else
+            {
+                // ❌ DESVANTAGEM: Reduzir custo inimigo = NEGATIVO
+                return -Mathf.Abs(value);
+            }
+        }
+    
+        return value;
     }
     
     /// <summary>

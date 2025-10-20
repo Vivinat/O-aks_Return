@@ -91,6 +91,68 @@ public static class IntensityHelper
     }
     
     /// <summary>
+    /// ✅ NOVO: Escala valor e GARANTE sinal correto para custos de mana
+    /// </summary>
+    public static int GetScaledValueWithCorrection(
+        CardIntensity intensity, 
+        int baseValue, 
+        CardAttribute attribute, 
+        bool isAdvantage)
+    {
+        // Calcula valor escalado normalmente
+        int scaledValue = GetScaledValue(intensity, baseValue);
+    
+        // Se não for custo de mana, retorna direto
+        if (attribute != CardAttribute.PlayerActionManaCost && 
+            attribute != CardAttribute.EnemyActionManaCost)
+        {
+            return scaledValue;
+        }
+    
+        // ✅ CORREÇÃO AUTOMÁTICA para custos de mana
+        return CorrectManaCostSign(attribute, scaledValue, isAdvantage);
+    }
+    
+    /// <summary>
+    /// ✅ Força o sinal correto para custos de mana
+    /// </summary>
+    private static int CorrectManaCostSign(CardAttribute attribute, int value, bool isAdvantage)
+    {
+        // === CUSTO DE MANA DO JOGADOR ===
+        if (attribute == CardAttribute.PlayerActionManaCost)
+        {
+            if (isAdvantage)
+            {
+                // ✅ VANTAGEM: Reduzir custo = NEGATIVO
+                return -Mathf.Abs(value);
+            }
+            else
+            {
+                // ❌ DESVANTAGEM: Aumentar custo = POSITIVO
+                return Mathf.Abs(value);
+            }
+        }
+    
+        // === CUSTO DE MANA DOS INIMIGOS ===
+        if (attribute == CardAttribute.EnemyActionManaCost)
+        {
+            if (isAdvantage)
+            {
+                // ✅ VANTAGEM (para jogador): Aumentar custo inimigo = POSITIVO
+                return Mathf.Abs(value);
+            }
+            else
+            {
+                // ❌ DESVANTAGEM: Reduzir custo inimigo = NEGATIVO
+                return -Mathf.Abs(value);
+            }
+        }
+    
+        return value;
+    }
+
+    
+    /// <summary>
     /// Retorna valor básico para a intensidade (compatibilidade)
     /// </summary>
     public static int GetValue(CardIntensity intensity)

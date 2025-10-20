@@ -349,7 +349,7 @@ public class NegotiationManager : MonoBehaviour
     }
     
     /// <summary>
-    /// Aplica efeitos de carta dinâmica IMEDIATAMENTE
+    /// ✅ MODIFICADO: ApplyDynamicCard com correção de sinal
     /// </summary>
     private void ApplyDynamicCard(NegotiationCardUI cardUI)
     {
@@ -368,6 +368,10 @@ public class NegotiationManager : MonoBehaviour
         // Calcula valores reais aplicando o multiplicador aos valores base
         int playerValue = IntensityHelper.GetScaledValue(intensity, card.playerBenefit.value);
         int enemyValue = IntensityHelper.GetScaledValue(intensity, card.playerCost.value);
+        
+        // ✅ CORREÇÃO FINAL: Força sinal correto para custos de mana
+        playerValue = CorrectManaCostSign(playerAttr, playerValue, true);  // Vantagem
+        enemyValue = CorrectManaCostSign(enemyAttr, enemyValue, false);    // Desvantagem
         
         DebugLog($"=== APLICANDO CARTA: {card.GetCardName()} ===");
         DebugLog($"Intensidade: {IntensityHelper.GetIntensityDisplayName(intensity)} ({IntensityHelper.GetMultiplier(intensity)}x)");
@@ -389,7 +393,6 @@ public class NegotiationManager : MonoBehaviour
             
             if (DifficultySystem.Instance != null)
             {
-                // Passa valores separados
                 DifficultySystem.Instance.ApplyNegotiation(playerAttr, enemyAttr, playerValue, enemyValue);
             }
         }
@@ -407,40 +410,42 @@ public class NegotiationManager : MonoBehaviour
         
         DebugLog("=== NEGOCIAÇÃO APLICADA COM SUCESSO (IMEDIATA) ===");
     }
+
     
     /// <summary>
-    /// Aplica efeitos de carta estática IMEDIATAMENTE
+    /// ✅ MODIFICADO: ApplyStaticCard com correção de sinal
     /// </summary>
     private void ApplyStaticCard(NegotiationCardUI cardUI)
     {
         NegotiationCardSO card = cardUI.GetCardData();
-        
+    
         if (card == null)
         {
             DebugLog("⚠️ Dados da carta estática inválidos!");
             return;
         }
-        
+    
         CardAttribute playerAttr = cardUI.GetSelectedPlayerAttribute();
         CardAttribute enemyAttr = cardUI.GetSelectedEnemyAttribute();
         CardIntensity intensity = cardUI.GetSelectedIntensity();
-        
-        // Usa valores base separados para player e enemy
+    
         int basePlayerValue = card.fixedPlayerValue;
         int baseEnemyValue = card.fixedEnemyValue;
-        
-        // Calcula valores reais aplicando o multiplicador aos valores base
+    
         int playerValue = IntensityHelper.GetScaledValue(intensity, basePlayerValue);
         int enemyValue = IntensityHelper.GetScaledValue(intensity, baseEnemyValue);
-        
+    
+        // ✅ CORREÇÃO FINAL: Força sinal correto para custos de mana
+        playerValue = CorrectManaCostSign(playerAttr, playerValue, true);  // Vantagem
+        enemyValue = CorrectManaCostSign(enemyAttr, enemyValue, false);    // Desvantagem
+    
         DebugLog($"Aplicando carta: {card.cardName}");
         DebugLog($"Intensidade: {IntensityHelper.GetIntensityDisplayName(intensity)} ({IntensityHelper.GetMultiplier(intensity)}x)");
         DebugLog($"  Jogador: {playerAttr} {FormatValue(playerValue)}");
         DebugLog($"  Inimigos: {enemyAttr} {FormatValue(enemyValue)}");
-        
+    
         if (DifficultySystem.Instance != null)
         {
-            // Passa os 4 argumentos: playerAttr, enemyAttr, playerValue, enemyValue
             DifficultySystem.Instance.ApplyNegotiation(playerAttr, enemyAttr, playerValue, enemyValue);
         }
     }
@@ -489,6 +494,59 @@ public class NegotiationManager : MonoBehaviour
             list[i] = list[randomIndex];
             list[randomIndex] = temp;
         }
+    }
+    
+    /// <summary>
+    /// ✅ CORREÇÃO FINAL: Garante sinal correto antes de aplicar modificadores
+    /// </summary>
+    private int CorrectManaCostSign(CardAttribute attribute, int value, bool isAdvantage)
+    {
+        // Se não for custo de mana, retorna valor original
+        if (attribute != CardAttribute.PlayerActionManaCost && 
+            attribute != CardAttribute.EnemyActionManaCost)
+        {
+            return value;
+        }
+    
+        // === CUSTO DE MANA DO JOGADOR ===
+        if (attribute == CardAttribute.PlayerActionManaCost)
+        {
+            if (isAdvantage)
+            {
+                // ✅ VANTAGEM: Reduzir custo = NEGATIVO
+                int corrected = -Mathf.Abs(value);
+                DebugLog($"  🔧 Correção PlayerManaCost (vantagem): {value} → {corrected}");
+                return corrected;
+            }
+            else
+            {
+                // ❌ DESVANTAGEM: Aumentar custo = POSITIVO
+                int corrected = Mathf.Abs(value);
+                DebugLog($"  🔧 Correção PlayerManaCost (desvantagem): {value} → {corrected}");
+                return corrected;
+            }
+        }
+    
+        // === CUSTO DE MANA DOS INIMIGOS ===
+        if (attribute == CardAttribute.EnemyActionManaCost)
+        {
+            if (isAdvantage)
+            {
+                // ✅ VANTAGEM (para jogador): Aumentar custo inimigo = POSITIVO
+                int corrected = Mathf.Abs(value);
+                DebugLog($"  🔧 Correção EnemyManaCost (vantagem): {value} → {corrected}");
+                return corrected;
+            }
+            else
+            {
+                // ❌ DESVANTAGEM: Reduzir custo inimigo = NEGATIVO
+                int corrected = -Mathf.Abs(value);
+                DebugLog($"  🔧 Correção EnemyManaCost (desvantagem): {value} → {corrected}");
+                return corrected;
+            }
+        }
+    
+        return value;
     }
     
     private string FormatValue(int value)

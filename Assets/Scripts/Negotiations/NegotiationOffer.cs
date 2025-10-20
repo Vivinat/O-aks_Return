@@ -1,142 +1,175 @@
-// Assets/Scripts/Negotiation/NegotiationOffer.cs (CORRIGIDO)
+// Assets/Scripts/Negotiation/NegotiationOffer.cs (FIXED - AUTO SIGN CORRECTION)
 
-using System.Collections.Generic;
 using UnityEngine;
+using System.Collections.Generic;
 
 /// <summary>
-/// Representa UMA ÚNICA oferta - ou vantagem OU desvantagem
-/// NUNCA ambas ao mesmo tempo
+/// Representa UMA oferta de negociação (vantagem ou desvantagem)
+/// CORRIGE AUTOMATICAMENTE o sinal para custos de mana
 /// </summary>
 [System.Serializable]
 public class NegotiationOffer
 {
     public string offerName;
     public string offerDescription;
-    public bool isAdvantage; // true = vantagem, false = desvantagem
     
-    // APENAS UM efeito por oferta
+    public bool isAdvantage;
     public CardAttribute targetAttribute;
     public int value;
-    public bool affectsPlayer; // true = afeta jogador, false = afeta inimigos
+    public bool affectsPlayer;
     
-    // Metadados
     public BehaviorTriggerType sourceObservationType;
     public string contextualInfo;
     
-    // NOVO: Dados customizados para ofertas especiais
     private Dictionary<string, object> customData = new Dictionary<string, object>();
     
     /// <summary>
-    /// NOVO: Define dado customizado
-    /// </summary>
-    public void SetData(string key, object value)
-    {
-        customData[key] = value;
-    }
-    
-    /// <summary>
-    /// NOVO: Obtém dado customizado
-    /// </summary>
-    public T GetData<T>(string key, T defaultValue = default(T))
-    {
-        if (customData.TryGetValue(key, out object value) && value is T)
-        {
-            return (T)value;
-        }
-        return defaultValue;
-    }
-    
-    /// <summary>
-    /// NOVO: Verifica se tem dado customizado
-    /// </summary>
-    public bool HasData(string key)
-    {
-        return customData.ContainsKey(key);
-    }
-    
-    /// <summary>
-    /// Construtor para VANTAGEM (sempre beneficia o jogador)
+    /// NOVO: Cria vantagem com CORREÇÃO AUTOMÁTICA de sinal para mana cost
     /// </summary>
     public static NegotiationOffer CreateAdvantage(
-        string name, 
+        string name,
         string description,
-        CardAttribute playerAttr, 
-        int playerValue,
-        BehaviorTriggerType sourceType, 
+        CardAttribute attribute,
+        int value,
+        BehaviorTriggerType trigger,
         string context = "")
     {
+        // ✅ CORREÇÃO AUTOMÁTICA: Força sinal correto para custos de mana
+        int correctedValue = CorrectSignForManaCost(attribute, value, true);
+        
         return new NegotiationOffer
         {
             offerName = name,
             offerDescription = description,
             isAdvantage = true,
-            targetAttribute = playerAttr,
-            value = playerValue,
-            affectsPlayer = true,
-            sourceObservationType = sourceType,
+            targetAttribute = attribute,
+            value = correctedValue,  // ✅ Usa valor corrigido
+            affectsPlayer = IsPlayerAttribute(attribute),
+            sourceObservationType = trigger,
             contextualInfo = context
         };
     }
     
     /// <summary>
-    /// Construtor para DESVANTAGEM (sempre prejudica o jogador OU beneficia inimigos)
+    /// NOVO: Cria desvantagem com CORREÇÃO AUTOMÁTICA de sinal para mana cost
     /// </summary>
     public static NegotiationOffer CreateDisadvantage(
         string name,
         string description,
         CardAttribute attribute,
         int value,
-        bool affectsPlayer, // true = debuff no jogador, false = buff nos inimigos
-        BehaviorTriggerType sourceType,
+        bool affectsPlayer,
+        BehaviorTriggerType trigger,
         string context = "")
     {
+        // ✅ CORREÇÃO AUTOMÁTICA: Força sinal correto para custos de mana
+        int correctedValue = CorrectSignForManaCost(attribute, value, false);
+        
         return new NegotiationOffer
         {
             offerName = name,
             offerDescription = description,
             isAdvantage = false,
             targetAttribute = attribute,
-            value = value,
+            value = correctedValue,  // ✅ Usa valor corrigido
             affectsPlayer = affectsPlayer,
-            sourceObservationType = sourceType,
+            sourceObservationType = trigger,
             contextualInfo = context
         };
     }
     
     /// <summary>
-    /// Retorna descrição formatada clara
+    /// ✅ CORREÇÃO AUTOMÁTICA DE SINAL PARA CUSTOS DE MANA
     /// </summary>
-    public string GetFormattedDescription()
+    private static int CorrectSignForManaCost(CardAttribute attribute, int value, bool isAdvantage)
     {
-        string desc = $"<b>{offerName}</b>\n\n";
-        desc += $"<i>{offerDescription}</i>\n\n";
-        
-        if (isAdvantage)
+        // Se não for custo de mana, retorna valor original
+        if (attribute != CardAttribute.PlayerActionManaCost && 
+            attribute != CardAttribute.EnemyActionManaCost)
         {
-            // Vantagem sempre beneficia jogador
-            string sign = value > 0 ? "+" : "";
-            desc += $"<color=#90EE90><b>✓ Você ganha:</b></color>\n";
-            desc += $"{sign}{value} {AttributeHelper.GetDisplayName(targetAttribute)}";
+            return value;
         }
-        else
+        
+        // === CUSTO DE MANA DO JOGADOR ===
+        if (attribute == CardAttribute.PlayerActionManaCost)
         {
-            // Desvantagem - ou debuff no jogador OU buff nos inimigos
-            desc += $"<color=#FF6B6B><b>✗ Custo:</b></color>\n";
-            
-            if (affectsPlayer)
+            if (isAdvantage)
             {
-                // Debuff no jogador
-                string sign = value > 0 ? "+" : "";
-                desc += $"Você perde: {sign}{value} {AttributeHelper.GetDisplayName(targetAttribute)}";
+                // ✅ VANTAGEM: Reduzir custo = NEGATIVO
+                return -Mathf.Abs(value);
             }
             else
             {
-                // Buff nos inimigos
-                string sign = value > 0 ? "+" : "";
-                desc += $"Inimigos ganham: {sign}{value} {AttributeHelper.GetDisplayName(targetAttribute)}";
+                // ❌ DESVANTAGEM: Aumentar custo = POSITIVO
+                return Mathf.Abs(value);
             }
         }
         
-        return desc;
+        // === CUSTO DE MANA DOS INIMIGOS ===
+        if (attribute == CardAttribute.EnemyActionManaCost)
+        {
+            if (isAdvantage)
+            {
+                // ✅ VANTAGEM (para jogador): Aumentar custo inimigo = POSITIVO
+                return Mathf.Abs(value);
+            }
+            else
+            {
+                // ❌ DESVANTAGEM: Reduzir custo inimigo = NEGATIVO
+                return -Mathf.Abs(value);
+            }
+        }
+        
+        return value;
+    }
+    
+    private static bool IsPlayerAttribute(CardAttribute attr)
+    {
+        switch (attr)
+        {
+            case CardAttribute.PlayerMaxHP:
+            case CardAttribute.PlayerMaxMP:
+            case CardAttribute.PlayerDefense:
+            case CardAttribute.PlayerSpeed:
+            case CardAttribute.PlayerActionPower:
+            case CardAttribute.PlayerActionManaCost:
+            case CardAttribute.PlayerOffensiveActionPower:
+            case CardAttribute.PlayerDefensiveActionPower:
+            case CardAttribute.PlayerAOEActionPower:
+            case CardAttribute.PlayerSingleTargetActionPower:
+            case CardAttribute.CoinsEarned:
+            case CardAttribute.ShopPrices:
+                return true;
+            
+            default:
+                return false;
+        }
+    }
+    
+    // Custom data storage
+    public void SetData<T>(string key, T data)
+    {
+        customData[key] = data;
+    }
+    
+    public T GetData<T>(string key, T defaultValue = default)
+    {
+        if (customData.TryGetValue(key, out object value))
+        {
+            try
+            {
+                return (T)value;
+            }
+            catch
+            {
+                return defaultValue;
+            }
+        }
+        return defaultValue;
+    }
+    
+    public bool HasData(string key)
+    {
+        return customData.ContainsKey(key);
     }
 }
