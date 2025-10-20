@@ -125,10 +125,10 @@ public class BattleHUD : MonoBehaviour
         // Para qualquer timer anterior
         StopTurnTimer();
 
-        // Inicia novo timer
-        currentTurnTime = turnTimeLimit;
+        // CORREÇÃO: Aplica o multiplicador ao tempo limite
+        currentTurnTime = turnTimeLimit * decisionTimeMultiplier;
         isTimerActive = true;
-        
+    
         if (turnTimerText != null)
         {
             turnTimerText.gameObject.SetActive(true);

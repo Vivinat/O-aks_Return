@@ -91,7 +91,7 @@ public class DefaultNegotiationOffers : MonoBehaviour
             "Armadura Reforçada",
             "Fortaleça suas defesas.",
             CardAttribute.PlayerDefense,
-            8,
+            2,
             BehaviorTriggerType.DefaultSessionOffer,
             "Oferta de defesa"
         ));
@@ -101,7 +101,7 @@ public class DefaultNegotiationOffers : MonoBehaviour
             "Armadura Frágil",
             "Sua proteção está comprometida.",
             CardAttribute.PlayerDefense,
-            -6,
+            -2,
             true, // Afeta jogador
             BehaviorTriggerType.DefaultSessionOffer,
             "Desvantagem de defesa"
@@ -179,7 +179,7 @@ public class DefaultNegotiationOffers : MonoBehaviour
             "Foco Letal",
             "Ataques contra alvos únicos devastam.",
             CardAttribute.PlayerSingleTargetActionPower,
-            12,
+            6,
             BehaviorTriggerType.DefaultSessionOffer,
             "Buff single-target"
         ));
@@ -233,7 +233,7 @@ public class DefaultNegotiationOffers : MonoBehaviour
             "Matador de Chefes",
             $"Ganhe força contra {bossName}.",
             CardAttribute.PlayerActionPower,
-            12,
+            6,
             BehaviorTriggerType.DefaultSessionOffer,
             $"Boss: {bossName}"
         ));
@@ -266,18 +266,7 @@ public class DefaultNegotiationOffers : MonoBehaviour
             "Proteção Aprimorada",
             $"Fortifique-se contra {randomEnemy}.",
             CardAttribute.PlayerDefense,
-            8,
-            BehaviorTriggerType.DefaultSessionOffer,
-            $"Inimigo alvo: {randomEnemy}"
-        ));
-        
-        // DESVANTAGEM: Inimigos mais rápidos
-        offers.Add(NegotiationOffer.CreateDisadvantage(
-            "Agilidade Hostil",
-            $"{randomEnemy} fica mais rápido.",
-            CardAttribute.EnemySpeed,
             2,
-            false, // Afeta inimigos
             BehaviorTriggerType.DefaultSessionOffer,
             $"Inimigo alvo: {randomEnemy}"
         ));

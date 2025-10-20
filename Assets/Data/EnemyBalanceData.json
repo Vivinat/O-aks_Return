@@ -377,17 +377,6 @@
                     "statusPower": 0
                 },
                 {
-                    "name": "Retribuição Divina",
-                    "manaCost": 100,
-                    "targetType": "SingleEnemy",
-                    "effectCount": 1,
-                    "primaryEffectType": "Attack",
-                    "power": 150,
-                    "statusEffect": "",
-                    "statusDuration": 0,
-                    "statusPower": 0
-                },
-                {
                     "name": "Luz Sagrada",
                     "manaCost": 10,
                     "targetType": "SingleAlly",
@@ -491,7 +480,7 @@
             "assetPath": "Assets/Data/Characters/Enemies/Paladins/Inquisidora.asset",
             "maxHp": 140,
             "maxMp": 120,
-            "defense": 8,
+            "defense": 4,
             "speed": 1.0,
             "actions": [
                 {
@@ -534,7 +523,7 @@
             "assetPath": "Assets/Data/Characters/Enemies/Paladins/Paladino.asset",
             "maxHp": 145,
             "maxMp": 120,
-            "defense": 13,
+            "defense": 11,
             "speed": 1.0,
             "actions": [
                 {
@@ -588,7 +577,7 @@
             "assetPath": "Assets/Data/Characters/Enemies/Paladins/Sacerdotisa.asset",
             "maxHp": 110,
             "maxMp": 200,
-            "defense": 8,
+            "defense": 2,
             "speed": 1.100000023841858,
             "actions": [
                 {
@@ -967,7 +956,7 @@
             "assetPath": "Assets/Data/Characters/Enemies/Monsters/Morto-Vivo.asset",
             "maxHp": 80,
             "maxMp": 120,
-            "defense": 2,
+            "defense": 1,
             "speed": 1.2000000476837159,
             "actions": [
                 {
@@ -977,28 +966,6 @@
                     "effectCount": 1,
                     "primaryEffectType": "Attack",
                     "power": 25,
-                    "statusEffect": "",
-                    "statusDuration": 0,
-                    "statusPower": 0
-                },
-                {
-                    "name": "Decadência",
-                    "manaCost": 22,
-                    "targetType": "AllEnemies",
-                    "effectCount": 1,
-                    "primaryEffectType": "Debuff",
-                    "power": 0,
-                    "statusEffect": "Cursed",
-                    "statusDuration": 4,
-                    "statusPower": 15
-                },
-                {
-                    "name": "Drenar Alma",
-                    "manaCost": 18,
-                    "targetType": "SingleEnemy",
-                    "effectCount": 1,
-                    "primaryEffectType": "Attack",
-                    "power": 50,
                     "statusEffect": "",
                     "statusDuration": 0,
                     "statusPower": 0
@@ -1305,7 +1272,7 @@
             "count": 24,
             "avgHp": 114.70833587646485,
             "avgMp": 125.0,
-            "avgDefense": 7.708333492279053,
+            "avgDefense": 7.166666507720947,
             "avgSpeed": 1.1770833730697632,
             "minHp": 30,
             "maxHp": 250

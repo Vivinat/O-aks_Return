@@ -357,13 +357,13 @@ public class DeathNegotiationManager : MonoBehaviour
         var hpField = typeof(BattleEntity).GetField("currentHp", 
             System.Reflection.BindingFlags.NonPublic | 
             System.Reflection.BindingFlags.Instance);
-        
+
         if (hpField != null)
         {
-            hpField.SetValue(targetPlayer, 100);
+            hpField.SetValue(targetPlayer,targetPlayer.GetMaxHP());
         }
         
-        targetPlayer.currentMp = 100;
+        targetPlayer.currentMp = targetPlayer.GetMaxMP();
         
         // Marca como vivo
         var deadField = typeof(BattleEntity).GetField("isDead", 

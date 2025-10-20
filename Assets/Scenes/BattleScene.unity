@@ -3862,7 +3862,7 @@ MonoBehaviour:
   cancelTargetButton: {fileID: 1494178113}
   targetInstructionText: {fileID: 1170736607}
   turnTimerText: {fileID: 2108340315}
-  turnTimeLimit: 60
+  turnTimeLimit: 30
   actionButtonPrefab: {fileID: 3198887975348253832, guid: d69a3f07b9088eb4f942a39225ef717d, type: 3}
 --- !u!224 &835269379
 RectTransform:

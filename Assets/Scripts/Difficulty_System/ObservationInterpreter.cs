@@ -205,7 +205,7 @@ public static class ObservationInterpreter
             "Trauma Persistente",
             "O medo da morte enfraquece seu corpo.",
             CardAttribute.PlayerDefense,
-            -8,
+            -2,
             true,
             obs.triggerType,
             $"Morreu para: {killerEnemy}"
@@ -302,7 +302,7 @@ public static class ObservationInterpreter
             "Adaptação Hostil",
             "Inimigos aprendem seus padrões.",
             CardAttribute.EnemyDefense,
-            10,
+            2,
             false, 
             obs.triggerType,
             $"Skill dominante: {skillName}"
@@ -337,7 +337,7 @@ public static class ObservationInterpreter
         advantages.Add(NegotiationOffer.CreateAdvantage(
             "Escudo Aprimorado",
             "Fortaleça suas defesas contra ataques.",
-            CardAttribute.PlayerDefense, 8,
+            CardAttribute.PlayerDefense, 2,
             obs.triggerType,
             "HP crítico frequente"
         ));
@@ -364,7 +364,7 @@ public static class ObservationInterpreter
         disadvantages.Add(NegotiationOffer.CreateDisadvantage(
             "Fragilidade Persistente",
             "Seus problemas defensivos deixam marcas.",
-            CardAttribute.PlayerDefense, -8,
+            CardAttribute.PlayerDefense, -2,
             true,
             obs.triggerType,
             "HP crítico frequente"
@@ -410,7 +410,7 @@ public static class ObservationInterpreter
             "Chama Ardente",
             $"'{skillName}' se torna mais poderosa.",
             skillName,
-            12, 
+            6, 
             true,
             obs.triggerType
         ));
@@ -429,7 +429,7 @@ public static class ObservationInterpreter
             "Ressurgência",
             $"'{skillName}' se equipara as demais.",
             skillName,
-            12, 
+            6, 
             -12,  
             true,
             obs.triggerType
@@ -448,7 +448,7 @@ public static class ObservationInterpreter
         disadvantages.Add(NegotiationOffer.CreateDisadvantage(
             "Fragilidade Persistente",
             "Seus problemas defensivos deixam marcas.",
-            CardAttribute.PlayerDefense, -8,
+            CardAttribute.PlayerDefense, -2,
             true,
             obs.triggerType,
             "HP crítico frequente"
@@ -500,7 +500,7 @@ public static class ObservationInterpreter
         advantages.Add(NegotiationOffer.CreateAdvantage(
             "Defesa Impenetrável",
             "Fortifique-se enquanto espera sua vez.",
-            CardAttribute.PlayerDefense, 6,
+            CardAttribute.PlayerDefense, 2,
             obs.triggerType,
             "Sempre age por último"
         ));
@@ -516,7 +516,7 @@ public static class ObservationInterpreter
         disadvantages.Add(NegotiationOffer.CreateDisadvantage(
             "Vulnerabilidade Exposta",
             "Agir por último te deixa vulnerável.",
-            CardAttribute.PlayerDefense, -8,
+            CardAttribute.PlayerDefense, -2,
             true,
             obs.triggerType,
             "Sempre age por último"
@@ -594,7 +594,7 @@ public static class ObservationInterpreter
         disadvantages.Add(NegotiationOffer.CreateDisadvantage(
             "Contra-medidas Aprendidas",
             "Inimigos se preparam para sua velocidade.",
-            CardAttribute.EnemyDefense, 12,
+            CardAttribute.EnemyDefense, 2,
             false,
             obs.triggerType,
             "Sempre age primeiro"
@@ -627,7 +627,7 @@ public static class ObservationInterpreter
         advantages.Add(NegotiationOffer.CreateAdvantage(
             "Atrito Defensivo",
             "Aumente suas defesas.",
-            CardAttribute.PlayerDefense, 8,
+            CardAttribute.PlayerDefense, 2,
             obs.triggerType,
             "Dificuldade vs Tanks"
         ));
@@ -655,7 +655,7 @@ public static class ObservationInterpreter
             "Muralha Crescente",
             "Defesas inimigas aumentam drasticamente.",
             CardAttribute.EnemyDefense,
-            10,
+            2,
             false, // Afeta inimigos
             obs.triggerType,
             "Dificuldade vs Tanks"
@@ -693,7 +693,7 @@ public static class ObservationInterpreter
             "Antecipação",
             "Aprenda a se defender de adversários velozes.",
             CardAttribute.PlayerDefense, 
-            8,
+            2,
             obs.triggerType,
             "Dificuldade vs Rápidos"
         ));
@@ -751,7 +751,7 @@ public static class ObservationInterpreter
             "Fragilidade Exposta",
             "Sua defesa enfraquece contra adversários velozes.",
             CardAttribute.PlayerDefense,
-            -8,
+            -2,
             true, // Afeta jogador
             obs.triggerType,
             "Dificuldade vs Rápidos"
@@ -865,7 +865,7 @@ public static class ObservationInterpreter
             "Escudo Inicial",
             "Resistência aprimorada desde o começo.",
             CardAttribute.PlayerDefense, 
-            10,
+            2,
             obs.triggerType,
             "Morte precoce frequente"
         ));
@@ -924,7 +924,7 @@ public static class ObservationInterpreter
             "Defesas Comprometidas",
             "Sua defesa inicial é reduzida.",
             CardAttribute.PlayerDefense,
-            -8,
+            -2,
             true, // Afeta jogador
             obs.triggerType,
             "Morte precoce frequente"
@@ -970,7 +970,7 @@ public static class ObservationInterpreter
             "Fortificação Crescente",
             "Você fica mais forte com o tempo.",
             CardAttribute.PlayerDefense, 
-            8,
+            2,
             obs.triggerType,
             "Morte tardia por atrito"
         ));
@@ -980,7 +980,7 @@ public static class ObservationInterpreter
             "Guerra de Atrito",
             "Batalhas longas favorecem adversários.",
             CardAttribute.EnemyDefense,
-            6,
+            2,
             false, // Afeta inimigos
             obs.triggerType,
             "Morte tardia por atrito"
@@ -1000,7 +1000,7 @@ public static class ObservationInterpreter
             "Desgaste Acumulado",
             "Dano constante te enfraquece.",
             CardAttribute.PlayerDefense,
-            -8,
+            -2,
             true, // Afeta jogador
             obs.triggerType,
             "Morte tardia por atrito"
@@ -1028,7 +1028,7 @@ public static class ObservationInterpreter
             "Pele de Aço",
             "Fortifique-se contra ataques menores.",
             CardAttribute.PlayerDefense, 
-            8,
+            2,
             obs.triggerType,
             "Morte por dano acumulado"
         ));
@@ -1066,7 +1066,7 @@ public static class ObservationInterpreter
             "Armadura Desgastada",
             "Sua defesa se deteriora.",
             CardAttribute.PlayerDefense,
-            -10,
+            -2,
             true, // Afeta jogador
             obs.triggerType,
             "Morte por dano acumulado"
@@ -1105,7 +1105,7 @@ public static class ObservationInterpreter
             "Escudo Absoluto",
             "Defesa massiva contra golpes fortes.",
             CardAttribute.PlayerDefense, 
-            8,
+            2,
             obs.triggerType,
             $"Vulnerável a one-shots ({biggestHit} dano)"
         ));
@@ -1145,7 +1145,7 @@ public static class ObservationInterpreter
             "Armadura de Papel",
             "Defesa drasticamente reduzida.",
             CardAttribute.PlayerDefense,
-            -10,
+            -2,
             true, // Afeta jogador
             obs.triggerType,
             $"Vulnerável a one-shots ({biggestHit} dano)"
@@ -1181,7 +1181,7 @@ public static class ObservationInterpreter
             "Defesa Compensatória",
             "Mais defesa para evitar dano.",
             CardAttribute.PlayerDefense, 
-            8,
+            2,
             obs.triggerType,
             "HP baixo sem itens de cura"
         ));
@@ -1191,7 +1191,7 @@ public static class ObservationInterpreter
             "Feridas Abertas",
             "Feridas o tornam mais vulnerável.",
             CardAttribute.PlayerDefense,
-            -8,
+            -2,
             true, // Afeta jogador
             obs.triggerType,
             "HP baixo sem itens de cura"
@@ -1338,7 +1338,7 @@ public static class ObservationInterpreter
             "Dependência Crítica",
             "Estratégia baseada em itens te enfraquece.",
             CardAttribute.PlayerDefense, 
-            -8,
+            -2,
             true,
             obs.triggerType,
             "Dependência de consumíveis"
@@ -1486,7 +1486,7 @@ public static class ObservationInterpreter
             "Dependência Crítica",
             "Estratégia baseada em itens te enfraquece.",
             CardAttribute.PlayerDefense,
-            -8,
+            -2,
             true, // Afeta jogador
             obs.triggerType,
             $"Item esgotado: {itemName}"
@@ -1542,7 +1542,7 @@ public static class ObservationInterpreter
             "Fragilidade Extrema",
             "Falta de defesa te enfraquece.",
             CardAttribute.PlayerDefense,
-            -12,
+            -2,
             true, // Afeta jogador
             obs.triggerType,
             "Build sem skills defensivas"
@@ -1599,7 +1599,7 @@ public static class ObservationInterpreter
             "Determinação Inabalável",
             "Cada derrota te fortalece.",
             CardAttribute.PlayerDefense, 
-            10,
+            2,
             obs.triggerType,
             $"Mortes repetidas: {bossName}"
         ));
@@ -1639,7 +1639,7 @@ public static class ObservationInterpreter
             "Medo Paralisante",
             $"Pavor de {bossName} te enfraquece.",
             CardAttribute.PlayerDefense,
-            -20,
+            -2,
             true, // Afeta jogador
             obs.triggerType,
             $"Mortes repetidas: {bossName}"
@@ -1783,7 +1783,7 @@ public static class ObservationInterpreter
             "Contra-medidas Desenvolvidas",
             "Inimigos se preparam melhor.",
             CardAttribute.EnemyDefense,
-            15,
+            2,
             false, // Afeta inimigos
             obs.triggerType,
             "Vitória muito fácil"
@@ -1793,7 +1793,7 @@ public static class ObservationInterpreter
             "Arrogância Custosa",
             "Confiança excessiva te enfraquece.",
             CardAttribute.PlayerDefense,
-            -10,
+            -2,
             true, // Afeta jogador
             obs.triggerType,
             "Vitória muito fácil"
@@ -1920,7 +1920,7 @@ public static class ObservationInterpreter
             "Vulnerabilidade Tática",
             "Falta de área te expõe.",
             CardAttribute.PlayerDefense,
-            -8,
+            -2,
             true, // Afeta jogador
             obs.triggerType,
             $"Sem AOE vs {avgEnemies:F0} inimigos"
