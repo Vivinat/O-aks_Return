@@ -6,6 +6,9 @@ EditorBuildSettings:
   serializedVersion: 2
   m_Scenes:
   - enabled: 1
+    path: Assets/Scenes/MainMenu.unity
+    guid: a8cee20ef1a970f4a85a7de68a51481c
+  - enabled: 1
     path: Assets/Scenes/Map1.unity
     guid: 2cda990e2423bbf4892e6590ba056729
   - enabled: 1
@@ -20,9 +23,6 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scenes/SkillScene.unity
     guid: 75d90d764b8a66e49897ea88705b7d83
-  - enabled: 1
-    path: Assets/Scenes/MainMenu.unity
-    guid: a8cee20ef1a970f4a85a7de68a51481c
   - enabled: 1
     path: Assets/Scenes/NegotiationScene.unity
     guid: dbcd8fbdeba3e6f43a7df843cecc2743

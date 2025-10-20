@@ -36116,7 +36116,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   connectedNodes: []
-  isLocked: 1
+  isLocked: 0
   eventType: {fileID: 11400000, guid: 92eafcb1da51eec4cbfb8f4c1cc5a7ab, type: 2}
   eventMusic: {fileID: 8300000, guid: 22ae0753faf058b48b67456873234e53, type: 3}
   battleBackgroundOverride: {fileID: 21300000, guid: 908e78130125f104fbb177131cc4f48f, type: 3}
@@ -36244,7 +36244,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f34709a6485a02e4f8393a557042f8a4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  nextSceneName: EndGame
+  nextSceneName: VictoryScene
 --- !u!114 &1766109687 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 9057472692246560393, guid: 634f0a548f72d13438a695827a14cd45, type: 3}

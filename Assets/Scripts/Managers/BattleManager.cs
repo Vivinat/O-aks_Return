@@ -154,6 +154,16 @@ public class BattleManager : MonoBehaviour
 
             activeCharacter.ProcessStatusEffectsTurn();
 
+            // ✅ ADICIONE ESTA VERIFICAÇÃO
+            if (activeCharacter.isDead)
+            {
+                Debug.Log($"{activeCharacter.characterData.characterName} morreu por efeitos de status antes de agir!");
+                activeCharacter.ResetATB();
+                CheckBattleEnd(); // Verifica se a batalha terminou
+                currentState = BattleState.RUNNING;
+                return; // Importante: sai do Update sem processar a ação
+            }
+
             if (activeCharacter.characterData.team == Team.Player)
             {
                 battleHUD.ShowActionMenu(activeCharacter);

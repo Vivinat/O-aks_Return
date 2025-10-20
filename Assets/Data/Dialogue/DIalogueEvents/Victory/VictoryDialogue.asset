@@ -51,7 +51,7 @@ MonoBehaviour:
     customSound: {fileID: 0}
   - speakerName: Logrif
     text: "Est\xE1 decidido! Marcharemos em breve, meus homens! H\xE1 outros... 'Vil\xF5es'
-      para se combater! Se dorbem diante de seu novo senhor!"
+      para se combater! Se dobrem diante de seu novo senhor!"
     customDelay: 0
     customSound: {fileID: 0}
   - speakerName: Logrif
