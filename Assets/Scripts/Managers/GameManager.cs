@@ -10,9 +10,6 @@ public class GameManager : MonoBehaviour
     
     [Header("Player Configuration")]
     public Character PlayerCharacterInfo;
-    
-    [Tooltip("O SCRIPTABLE OBJECT original e imutável do jogador.")]
-    [SerializeField] private Character pristinePlayerSO;
     public EventTypeSO CurrentEvent { get; private set; }
     
     [Header("Currency System")]

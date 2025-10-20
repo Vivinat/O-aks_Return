@@ -49,7 +49,9 @@ public class ActionButtonUI : MonoBehaviour, IPointerEnterHandler, IPointerExitH
     {
         if (battleHUD != null && actionData != null)
         {
-            string description = actionData.description;
+            BattleAction displayAction = GetActionForDisplay();
+
+            string description = displayAction.description;
             
             // NOVO: Adiciona informações extras para consumíveis
             if (actionData.isConsumable)
@@ -62,7 +64,11 @@ public class ActionButtonUI : MonoBehaviour, IPointerEnterHandler, IPointerExitH
                 description += $"\n\nCusto de MP: {actionData.manaCost}";
             }
             
-            battleHUD.ShowTooltip(actionData.actionName, actionData.GetDynamicDescription());
+            // ===== USA CÓPIA MODIFICADA PARA TOOLTIP =====
+            
+            // Usa GetDynamicDescription() que já calcula tudo corretamente
+            battleHUD.ShowTooltip(displayAction.actionName, displayAction.GetDynamicDescription());
+            
         }
     }
 
@@ -72,5 +78,29 @@ public class ActionButtonUI : MonoBehaviour, IPointerEnterHandler, IPointerExitH
         {
             battleHUD.HideTooltip();
         }
+    }
+    
+    /// <summary>
+    /// NOVO: Retorna a ação apropriada para display (cópia modificada se disponível)
+    /// </summary>
+    private BattleAction GetActionForDisplay()
+    {
+        // Se não há actionData, retorna null
+        if (actionData == null) return null;
+        
+        // Tenta obter a cópia modificada
+        if (BattleActionRuntimeCopies.Instance != null)
+        {
+            BattleAction modifiedCopy = BattleActionRuntimeCopies.Instance.GetModifiedActionCopy(actionData);
+            
+            // Se encontrou a cópia, usa ela
+            if (modifiedCopy != null)
+            {
+                return modifiedCopy;
+            }
+        }
+        
+        // Se não encontrou cópia, usa o original (fallback seguro)
+        return actionData;
     }
 }
