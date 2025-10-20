@@ -1,4 +1,4 @@
-// GameManager.cs (Versão Atualizada com Suporte a Eventos de Diálogo)
+// GameManager.cs (Versão Completamente Corrigida)
 
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -10,6 +10,9 @@ public class GameManager : MonoBehaviour
     
     [Header("Player Configuration")]
     public Character PlayerCharacterInfo;
+    
+    [Tooltip("O SCRIPTABLE OBJECT original e imutável do jogador.")]
+    [SerializeField] private Character pristinePlayerSO;
     public EventTypeSO CurrentEvent { get; private set; }
     
     [Header("Currency System")]
@@ -28,7 +31,7 @@ public class GameManager : MonoBehaviour
     
     public static Sprite pendingBattleBackground; // Sprite que será usado na próxima batalha
     
-    // NOVO: Sistema para eventos de diálogo
+    // Sistema para eventos de diálogo
     private MapManager currentMapManager;
     private MapNode pendingNodeToComplete;
     
@@ -48,15 +51,24 @@ public class GameManager : MonoBehaviour
         {
             Instance = this;
             DontDestroyOnLoad(gameObject);
+            
+            // Aplica modificadores do DifficultySystem ao personagem
             if (DifficultySystem.Instance != null && PlayerCharacterInfo != null)
             {
                 DifficultySystem.Instance.ApplyToPlayer(PlayerCharacterInfo);
             }
+            
+            // Certifica que SpecificSkillModifier existe
             if (GetComponent<SpecificSkillModifier>() == null)
             {
                 gameObject.AddComponent<SpecificSkillModifier>();
             }
+            
+            // Inicializa ações do jogador
             InitializePlayerActions();
+            
+            // NOVO: Inicializa cópias runtime para tooltips
+            InitializePlayerActionCopies();
         }
         else
         {
@@ -71,6 +83,32 @@ public class GameManager : MonoBehaviour
         {
             PlayerBattleActions.AddRange(PlayerCharacterInfo.battleActions);
         }
+    }
+    
+    /// <summary>
+    /// NOVO: Inicializa as cópias runtime das ações do jogador
+    /// Estas cópias são APENAS PARA CONSULTA pelos tooltips
+    /// </summary>
+    private void InitializePlayerActionCopies()
+    {
+        if (PlayerCharacterInfo == null || PlayerCharacterInfo.battleActions == null)
+        {
+            Debug.LogWarning("Não foi possível inicializar cópias - dados do jogador não encontrados");
+            return;
+        }
+        
+        // Certifica que o BattleActionRuntimeCopies existe
+        if (BattleActionRuntimeCopies.Instance == null)
+        {
+            GameObject runtimeCopiesObj = new GameObject("BattleActionRuntimeCopies");
+            runtimeCopiesObj.AddComponent<BattleActionRuntimeCopies>();
+            Debug.Log("BattleActionRuntimeCopies criado automaticamente");
+        }
+        
+        // Inicializa as cópias com as ações do jogador
+        BattleActionRuntimeCopies.Instance.InitializePlayerActions(PlayerCharacterInfo.battleActions);
+        
+        Debug.Log($"✓ Cópias runtime inicializadas com {PlayerCharacterInfo.battleActions.Count} ações");
     }
 
     /// <summary>
@@ -107,8 +145,6 @@ public class GameManager : MonoBehaviour
         }
     }
 
-// Modifique o método StartEvent no GameManager.cs
-
     public void StartEvent(EventTypeSO eventData, MapNode sourceNode = null)
     {
         CurrentEvent = eventData;
@@ -120,7 +156,7 @@ public class GameManager : MonoBehaviour
             return;
         }
     
-        // NOVO: Para eventos de negociação
+        // Para eventos de negociação
         if (eventData is NegotiationEventSO negotiationEvent)
         {
             // Salva referências para completar o nó após a negociação
@@ -161,7 +197,7 @@ public class GameManager : MonoBehaviour
     }
     
     /// <summary>
-    /// NOVO: Inicia um evento de diálogo diretamente no mapa atual
+    /// Inicia um evento de diálogo diretamente no mapa atual
     /// </summary>
     private void StartDialogueEvent(DialogueEventSO dialogueEvent, MapNode sourceNode)
     {
@@ -174,7 +210,7 @@ public class GameManager : MonoBehaviour
         if (!dialogueEvent.HasValidDialogue())
         {
             Debug.LogError($"Evento de diálogo '{dialogueEvent.name}' não tem conteúdo válido!");
-            CompleteDialogueEvent(); // Completa mesmo assim para não travar o jogo
+            CompleteDialogueEvent();
             return;
         }
 
@@ -194,17 +230,15 @@ public class GameManager : MonoBehaviour
         // Decide como iniciar o diálogo baseado na configuração
         if (dialogueEvent.ShouldUseDialogueSO())
         {
-            // Usa o DialogueSO complexo
             Debug.Log("Usando DialogueSO para o evento de diálogo");
             DialogueUtils.ShowDialogue(dialogueEvent.dialogueData, OnDialogueEventComplete);
         }
         else
         {
-            // Usa o texto simples
             string speaker = dialogueEvent.GetSpeakerName();
             string text = dialogueEvent.GetDialogueText();
             
-            Debug.Log($"Usando texto simples para o evento de diálogo: Speaker='{speaker}', Text='{text.Substring(0, Mathf.Min(50, text.Length))}...'");
+            Debug.Log($"Usando texto simples para o evento de diálogo");
             
             if (string.IsNullOrEmpty(speaker))
             {
@@ -218,7 +252,7 @@ public class GameManager : MonoBehaviour
     }
     
     /// <summary>
-    /// NOVO: Callback chamado quando o evento de diálogo termina
+    /// Callback chamado quando o evento de diálogo termina
     /// </summary>
     private void OnDialogueEventComplete()
     {
@@ -227,7 +261,7 @@ public class GameManager : MonoBehaviour
     }
     
     /// <summary>
-    /// NOVO: Completa o evento de diálogo e marca o nó como terminado
+    /// Completa o evento de diálogo e marca o nó como terminado
     /// </summary>
     private void CompleteDialogueEvent()
     {
@@ -235,14 +269,11 @@ public class GameManager : MonoBehaviour
         {
             Debug.Log($"Completando nó de diálogo: {pendingNodeToComplete.gameObject.name}");
             
-            // Marca o nó como completado
             pendingNodeToComplete.CompleteNode();
             pendingNodeToComplete.UnlockConnectedNodes();
             
-            // Salva o estado do mapa
             if (currentMapManager != null)
             {
-                // Força o MapManager a salvar o estado atualizado
                 var saveMethod = typeof(MapManager).GetMethod("SaveMapState", 
                     System.Reflection.BindingFlags.NonPublic | 
                     System.Reflection.BindingFlags.Instance);
@@ -255,7 +286,6 @@ public class GameManager : MonoBehaviour
             }
         }
         
-        // Limpa as referências
         pendingNodeToComplete = null;
         currentMapManager = null;
         CurrentEvent = null;
@@ -265,7 +295,6 @@ public class GameManager : MonoBehaviour
     
     public void ReturnToMap()
     {
-        // NOVO: Volta à música do mapa quando retorna
         if (AudioManager.Instance != null)
         {
             AudioManager.Instance.ReturnToMapMusic();
@@ -292,26 +321,21 @@ public class GameManager : MonoBehaviour
             return;
         }
 
-        // Limpa dados do mapa atual
         if (!string.IsNullOrEmpty(currentMapSceneName))
         {
             ClearMapData(currentMapSceneName);
             Debug.Log($"Dados do mapa '{currentMapSceneName}' limpos para progressão.");
         }
 
-        // Limpa referências de nós completados
         PlayerPrefs.DeleteKey("LastCompletedNode");
         
         Debug.Log($"Progredindo para o próximo mapa: {nextSceneName}");
         
-        // NOVO: Para a música atual antes de mudar de mapa
         if (AudioManager.Instance != null)
         {
-            // Não precisa configurar música específica - o novo mapa terá sua própria música
             AudioManager.Instance.StopMusic(true);
         }
         
-        // Carrega a próxima cena
         SceneManager.LoadScene(nextSceneName);
     }
 
@@ -324,7 +348,6 @@ public class GameManager : MonoBehaviour
         {
             PlayerBattleActions.Remove(itemToRemove);
             
-            // Atualiza também o Character data
             if (PlayerCharacterInfo != null && PlayerCharacterInfo.battleActions != null)
             {
                 PlayerCharacterInfo.battleActions.Remove(itemToRemove);
@@ -334,14 +357,13 @@ public class GameManager : MonoBehaviour
         }
     }
     
-    public void CompleteNegotiationEvent(NegotiationCardSO selectedCard, CardAttribute playerAttr, CardAttribute enemyAttr, int value)
+    /// <summary>
+    /// Completa evento de negociação (chamado pelo NegotiationManager)
+    /// </summary>
+    public void CompleteNegotiationEvent()
     {
         Debug.Log("=== COMPLETANDO EVENTO DE NEGOCIAÇÃO ===");
-        Debug.Log($"Aplicando: Jogador +{value} {playerAttr}, Inimigos +{value} {enemyAttr}");
-    
-        // TODO: Aplicar no sistema de dificuldade
-        // DifficultySystem.ApplyNegotiation(playerAttr, enemyAttr, value);
-    
+        
         // Marca o nó como completado
         if (currentMapManager != null && pendingNodeToComplete != null)
         {

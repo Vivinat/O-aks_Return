@@ -34,8 +34,11 @@ public class StatusButtonUI : MonoBehaviour, IPointerEnterHandler, IPointerExitH
     {
         if (statusPanel != null && actionData != null)
         {
-            // ===== USA DESCRIÇÃO DINÂMICA =====
-            statusPanel.ShowTooltip(actionData.actionName, actionData.GetDynamicDescription());
+            // ===== USA CÓPIA MODIFICADA PARA TOOLTIP =====
+            BattleAction displayAction = GetActionForDisplay();
+            
+            // Usa GetDynamicDescription() que já calcula tudo corretamente
+            statusPanel.ShowTooltip(displayAction.actionName, displayAction.GetDynamicDescription());
         }
     }
 
@@ -45,5 +48,29 @@ public class StatusButtonUI : MonoBehaviour, IPointerEnterHandler, IPointerExitH
         {
             statusPanel.HideTooltip();
         }
+    }
+    
+    /// <summary>
+    /// NOVO: Retorna a ação apropriada para display (cópia modificada se disponível)
+    /// </summary>
+    private BattleAction GetActionForDisplay()
+    {
+        // Se não há actionData, retorna null
+        if (actionData == null) return null;
+        
+        // Tenta obter a cópia modificada
+        if (BattleActionRuntimeCopies.Instance != null)
+        {
+            BattleAction modifiedCopy = BattleActionRuntimeCopies.Instance.GetModifiedActionCopy(actionData);
+            
+            // Se encontrou a cópia, usa ela
+            if (modifiedCopy != null)
+            {
+                return modifiedCopy;
+            }
+        }
+        
+        // Se não encontrou cópia, usa o original (fallback seguro)
+        return actionData;
     }
 }

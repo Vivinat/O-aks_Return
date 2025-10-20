@@ -1,8 +1,7 @@
-// Assets/Scripts/Difficulty_System/DifficultySystem.cs (ENHANCED)
+// Assets/Scripts/Difficulty_System/DifficultySystem.cs (FIXED - Corrigido para usar IntensityHelper)
 
 using UnityEngine;
 using System.IO;
-using System.Linq;
 
 /// <summary>
 /// Sistema central de dificuldade que aplica modificadores de negociações
@@ -46,35 +45,6 @@ public class DifficultySystem : MonoBehaviour
     void OnApplicationPause(bool pauseStatus)
     {
         if (pauseStatus) SaveModifiers();
-    }
-    
-    /// <summary>
-    /// Aplica uma negociação aos modificadores (usando valores escalados)
-    /// </summary>
-    public void ApplyNegotiation(CardAttribute playerAttr, CardAttribute enemyAttr, int playerValue, int enemyValue)
-    {
-        // NOVO: Usa valores escalados do IntensityHelper
-        int playerValue = IntensityHelper.GetScaledValue((CardIntensity)intensity, playerAttr);
-        int enemyValue = IntensityHelper.GetScaledValue((CardIntensity)intensity, enemyAttr);
-        
-        DebugLog($"=== APLICANDO NEGOCIAÇÃO ===");
-        DebugLog($"Jogador: {playerAttr} {FormatValue(playerValue)}");
-        DebugLog($"Inimigo: {enemyAttr} {FormatValue(enemyValue)}");
-        
-        if (playerAttr != CardAttribute.PlayerMaxHP || playerValue != 0)
-        {
-            modifiers.ApplyModifier(playerAttr, playerValue);
-            DebugLog($"✅ Aplicado ao jogador: {AttributeHelper.GetDisplayName(playerAttr)} {FormatValue(playerValue)}");
-        }
-        
-        if (enemyAttr != CardAttribute.EnemyMaxHP || enemyValue != 0)
-        {
-            modifiers.ApplyModifier(enemyAttr, enemyValue);
-            DebugLog($"✅ Aplicado aos inimigos: {AttributeHelper.GetDisplayName(enemyAttr)} {FormatValue(enemyValue)}");
-        }
-        
-        SaveModifiers();
-        DebugLog("\n" + modifiers.GetSummary());
     }
     
     /// <summary>
