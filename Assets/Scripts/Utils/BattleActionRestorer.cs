@@ -98,9 +98,49 @@ public static class BattleActionRestorer
     }
     
     /// <summary>
+    /// NOVO: Restaura as BattleActions de um Character específico
+    /// (Usado pelo BattleManager para resetar o inimigo antes do turno)
+    /// </summary>
+    public static void RestoreSingleCharacterActions(Character character)
+    {
+        if (character == null || character.battleActions == null)
+        {
+            Debug.LogWarning("Character ou suas BattleActions são nulos.");
+            return;
+        }
+
+        // Garante que o JSON com os valores base esteja carregado
+        if (!LoadDatabase()) //
+        {
+            Debug.LogError("Não foi possível carregar o database. Restauração do inimigo cancelada.");
+            return;
+        }
+        
+        // Debug.Log($"Restaurando ações para: {character.characterName}");
+
+        foreach (var action in character.battleActions)
+        {
+            if (action == null) continue;
+            
+            // Encontra os dados originais no JSON pelo nome
+            BattleActionData originalData = FindActionData(action.actionName); //
+            
+            if (originalData != null)
+            {
+                // Restaura o SO para os valores base
+                RestoreSingleAction(originalData); //
+            }
+            else
+            {
+                Debug.LogWarning($"⚠️ Dados originais não encontrados para: {action.actionName}");
+            }
+        }
+    }
+    
+    /// <summary>
     /// Restaura uma única BattleAction
     /// </summary>
-    private static bool RestoreSingleAction(BattleActionData data)
+    public static bool RestoreSingleAction(BattleActionData data)
     {
         if (string.IsNullOrEmpty(data.assetPath))
         {

@@ -231,58 +231,85 @@ public class DifficultySystem : MonoBehaviour
     /// Aplica modificadores a um inimigo quando ele é criado
     /// (Chamado pelo BattleManager na InitializeEnemyTeam)
     /// </summary>
-    public void ApplyToEnemy(Character enemy)
+    public void ApplyToEnemy(Character enemy, bool applyStats, bool applyActions)
     {
         if (enemy == null || enemy.team != Team.Enemy) return;
         
-        DebugLog($"Aplicando modificadores ao inimigo: {enemy.characterName}");
-        
-        // Stats básicos
-        enemy.maxHp = Mathf.Max(1, enemy.maxHp + modifiers.enemyMaxHPModifier);
-        enemy.maxMp = Mathf.Max(0, enemy.maxMp + modifiers.enemyMaxMPModifier);
-        enemy.defense = Mathf.Max(0, enemy.defense + modifiers.enemyDefenseModifier);
-        enemy.speed = Mathf.Max(0.1f, enemy.speed + modifiers.enemySpeedModifier);
-        
-        // Ações
-        if (enemy.battleActions != null)
+        if (applyStats)
         {
-            foreach (var action in enemy.battleActions)
+            DebugLog($"Aplicando modificadores ao inimigo: {enemy.characterName}");
+            
+            // Stats básicos
+            enemy.maxHp = Mathf.Max(1, enemy.maxHp + modifiers.enemyMaxHPModifier);
+            enemy.maxMp = Mathf.Max(0, enemy.maxMp + modifiers.enemyMaxMPModifier);
+            enemy.defense = Mathf.Max(0, enemy.defense + modifiers.enemyDefenseModifier);
+            enemy.speed = Mathf.Max(0.1f, enemy.speed + modifiers.enemySpeedModifier);
+        }
+
+        if (applyActions)
+        {
+            // Ações
+            if (enemy.battleActions != null)
             {
-                if (action == null || action.effects == null) continue;
-                
-                foreach (var effect in action.effects)
+                foreach (var action in enemy.battleActions)
                 {
-                    // Poder geral
-                    if (modifiers.enemyActionPowerModifier != 0 && effect.effectType == ActionType.Attack)
+                    if (action == null || action.effects == null) continue;
+
+                    foreach (var effect in action.effects)
                     {
-                        effect.power = Mathf.Max(1, effect.power + modifiers.enemyActionPowerModifier);
-                    }
-                    
-                    // Poder ofensivo específico
-                    if (modifiers.enemyOffensiveActionPowerModifier != 0 && effect.effectType == ActionType.Attack)
-                    {
-                        effect.power = Mathf.Max(1, effect.power + modifiers.enemyOffensiveActionPowerModifier);
-                    }
-                    
-                    // AOE específico
-                    if (modifiers.enemyAOEActionPowerModifier != 0 && IsAOEAction(action))
-                    {
-                        if (effect.effectType == ActionType.Attack)
+                        // Poder geral
+                        if (modifiers.enemyActionPowerModifier != 0 && effect.effectType == ActionType.Attack)
                         {
-                            effect.power = Mathf.Max(1, effect.power + modifiers.enemyAOEActionPowerModifier);
+                            effect.power = Mathf.Max(1, effect.power + modifiers.enemyActionPowerModifier);
+                        }
+
+                        // Poder ofensivo específico
+                        if (modifiers.enemyOffensiveActionPowerModifier != 0 && effect.effectType == ActionType.Attack)
+                        {
+                            effect.power = Mathf.Max(1, effect.power + modifiers.enemyOffensiveActionPowerModifier);
+                        }
+
+                        // AOE específico
+                        if (modifiers.enemyAOEActionPowerModifier != 0 && IsAOEAction(action))
+                        {
+                            if (effect.effectType == ActionType.Attack)
+                            {
+                                effect.power = Mathf.Max(1, effect.power + modifiers.enemyAOEActionPowerModifier);
+                            }
                         }
                     }
-                }
-                
-                // Custo de mana
-                if (modifiers.enemyActionManaCostModifier != 0)
-                {
-                    action.manaCost = Mathf.Max(0, action.manaCost + modifiers.enemyActionManaCostModifier);
+
+                    // Custo de mana
+                    if (modifiers.enemyActionManaCostModifier != 0)
+                    {
+                        action.manaCost = Mathf.Max(0, action.manaCost + modifiers.enemyActionManaCostModifier);
+                    }
                 }
             }
         }
-        
+
         DebugLog($"✅ {enemy.characterName} modificado");
+    }
+    
+    /// <summary>
+    /// NOVO: Aplica APENAS STATS (HP, MP, Def, Speed) a um inimigo.
+    /// (Chamado pelo BattleManager na InitializeEnemyTeam)
+    /// </summary>
+    public void ApplyToEnemy_Stats(Character enemy)
+    {
+        // ATENÇÃO: Isso ainda causa o bug cumulativo de stats se a batalha 
+        // for chamada várias vezes sem resetar o SO.
+        // A única solução 100% para isso é Instanciar o inimigo.
+        ApplyToEnemy(enemy, true, false); 
+    }
+    
+    /// <summary>
+    /// NOVO: Aplica APENAS AÇÕES (Power, Mana Cost) a um inimigo.
+    /// (Chamado pelo BattleManager no PerformEnemyAction)
+    /// </summary>
+    public void ApplyToEnemy_Actions(Character enemy)
+    {
+        ApplyToEnemy(enemy, false, true);
     }
     
     private bool IsAOEAction(BattleAction action)

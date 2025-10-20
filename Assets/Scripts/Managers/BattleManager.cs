@@ -1,4 +1,4 @@
-// Assets/Scripts/Managers/BattleManager.cs (NO DUPLICATE MODIFICATIONS)
+// Assets/Scripts/Managers/BattleManager.cs (FIXED - NO CROSS-CONTAMINATION)
 
 using System.Collections;
 using System.Collections.Generic;
@@ -30,6 +30,9 @@ public class BattleManager : MonoBehaviour
     public DialogueSO boss3Dialogue;
     
     private int currentTurnNumber = 0;
+    
+    // Sistema de backup para evitar contaminação entre jogador/inimigo
+    private BattleActionBackup actionBackup = new BattleActionBackup();
 
     void Start()
     {
@@ -53,8 +56,7 @@ public class BattleManager : MonoBehaviour
     }
     
     /// <summary>
-    /// ATUALIZADO: Inicializa inimigos aplicando modificadores apenas em RUNTIME
-    /// (As modificações gerais já foram aplicadas nos SOs pela negociação)
+    /// Inicializa inimigos aplicando modificadores
     /// </summary>
     private void InitializeEnemyTeam()
     {
@@ -73,11 +75,9 @@ public class BattleManager : MonoBehaviour
 
                 BattleEntity entity = currentSlot.GetComponent<BattleEntity>();
             
-                // IMPORTANTE: Apenas aplica modificadores de INIMIGOS em runtime
-                // (modificadores do jogador já foram aplicados diretamente nos SOs)
                 if (DifficultySystem.Instance != null)
                 {
-                    DifficultySystem.Instance.ApplyToEnemy(enemiesToSpawn[i]);
+                    DifficultySystem.Instance.ApplyToEnemy_Stats(Instantiate(enemiesToSpawn[i]));
                 }
             
                 entity.characterData = enemiesToSpawn[i];
@@ -91,7 +91,7 @@ public class BattleManager : MonoBehaviour
     }
 
     /// <summary>
-    /// ATUALIZADO: Inicializa jogador SEM aplicar modificadores
+    /// Inicializa jogador SEM aplicar modificadores
     /// (modificações já foram aplicadas nos SOs pela negociação)
     /// </summary>
     private void InitializePlayerTeam()
@@ -114,8 +114,6 @@ public class BattleManager : MonoBehaviour
                 player.ForceUpdateValueTexts();
             }
         }
-        
-        // NÃO aplica modificadores aqui - já foram aplicados nos SOs!
     }
     
     void Update()
@@ -315,6 +313,9 @@ public class BattleManager : MonoBehaviour
         return currentProcessingAction;
     }
 
+    /// <summary>
+    /// CORRIGIDO: Evita contaminação cruzada entre modificadores de jogador/inimigo
+    /// </summary>
     private IEnumerator PerformEnemyAction()
     {
         yield return new WaitForSeconds(1.0f);
@@ -327,12 +328,26 @@ public class BattleManager : MonoBehaviour
             currentState = BattleState.RUNNING;
             yield break;
         }
-    
+        
+        // === PASSO 1: SALVA valores atuais das ações DESTE inimigo ===
+        actionBackup.SaveActions(activeCharacter.characterData.battleActions);
+        
+        // === PASSO 2: RESETA para valores base ===
+        BattleActionRestorer.RestoreSingleCharacterActions(activeCharacter.characterData);
+        
+        // === PASSO 3: APLICA modificadores de inimigo (se houver) ===
+        if (DifficultySystem.Instance != null)
+        {
+            DifficultySystem.Instance.ApplyToEnemy_Actions(activeCharacter.characterData);
+        }
+        
+        // === PASSO 4: DEIXA ESCOLHER e AGIR ===
         BattleAction chosenAction = EnemyAI.ChooseBestAction(activeCharacter, player, enemyTeam);
 
         if (chosenAction == null)
         {
             Debug.Log($"{activeCharacter.characterData.characterName} não tem ações disponíveis!");
+            actionBackup.RestoreActions();
             activeCharacter.ResetATB();
             currentState = BattleState.RUNNING;
             yield break;
@@ -348,7 +363,7 @@ public class BattleManager : MonoBehaviour
 
         if (targets.Any())
         {
-            StartCoroutine(ProcessAction(chosenAction, activeCharacter, targets));
+            yield return StartCoroutine(ProcessAction(chosenAction, activeCharacter, targets));
         }
         else
         {
@@ -356,6 +371,9 @@ public class BattleManager : MonoBehaviour
             activeCharacter.ResetATB();
             currentState = BattleState.RUNNING;
         }
+        
+        // === PASSO 5: VOLTA o que era antes ===
+        actionBackup.RestoreActions();
     }
     
     private void CheckBattleEnd()
@@ -507,9 +525,6 @@ public class BattleManager : MonoBehaviour
         Debug.Log($"[BattleManager] Diálogo do boss '{bossFound}' concluído. Batalha retomada.");
     }
     
-    /// <summary>
-    /// NOVO: Retorna o personagem atualmente ativo (útil para ressurreição)
-    /// </summary>
     public BattleEntity GetActiveCharacter()
     {
         return activeCharacter;
