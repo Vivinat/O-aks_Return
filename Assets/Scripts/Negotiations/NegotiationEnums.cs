@@ -205,7 +205,7 @@ public static class AttributeHelper
             case CardAttribute.PlayerSpeed: return "Velocidade";
             
             // Atributos de ações do jogador
-            case CardAttribute.PlayerActionPower: return "Poder de TODAS as ações";
+            case CardAttribute.PlayerActionPower: return "Poder das ações";
             case CardAttribute.PlayerActionManaCost: return "Custo de Mana para usar habilidades";
             case CardAttribute.PlayerOffensiveActionPower: return "Poder de ações ofensivas";
             case CardAttribute.PlayerDefensiveActionPower: return "Poder de ações de Cura/Buff";

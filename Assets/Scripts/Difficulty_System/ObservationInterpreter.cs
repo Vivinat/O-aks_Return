@@ -245,7 +245,7 @@ public static class ObservationInterpreter
             "Mestre de Uma Arte",
             $"'{skillName}' se torna devastadora.",
             skillName,
-            10, 
+            4, 
             true,
             obs.triggerType
         ));
@@ -255,7 +255,7 @@ public static class ObservationInterpreter
             "Eficiência Aperfeiçoada",
             $"'{skillName}' consome menos energia.",
             skillName,
-            -5,
+            -2,
             true,
             obs.triggerType
         ));
@@ -265,7 +265,7 @@ public static class ObservationInterpreter
             "Domínio Absoluto",
             $"'{skillName}' atinge a perfeição.",
             skillName,
-            10, 
+            2, 
             -5,  
             true,
             obs.triggerType
@@ -275,7 +275,7 @@ public static class ObservationInterpreter
             "Especialização Letal",
             $"Concentre todo seu poder em '{skillName}'.",
             skillName,
-            10, 
+            4, 
             true,
             obs.triggerType
         ));
@@ -284,7 +284,7 @@ public static class ObservationInterpreter
             "Dependência Custosa",
             $"'{skillName}' drena muito mais energia.",
             skillName,
-            10,
+            5,
             false,
             obs.triggerType
         ));
@@ -293,7 +293,7 @@ public static class ObservationInterpreter
             "Uso Excessivo",
             $"'{skillName}' perde eficácia pelo uso repetido.",
             skillName,
-            -10, 
+            -4, 
             false,
             obs.triggerType
         ));
@@ -419,7 +419,7 @@ public static class ObservationInterpreter
             "Fênix de Mana",
             $"'{skillName}' consome menos mana.",
             skillName,
-            -12,
+            -8,
             true,
             obs.triggerType
         ));
@@ -430,7 +430,7 @@ public static class ObservationInterpreter
             $"'{skillName}' se equipara as demais.",
             skillName,
             6, 
-            -12,  
+            -6,  
             true,
             obs.triggerType
         ));
@@ -439,7 +439,7 @@ public static class ObservationInterpreter
             "Competição",
             $"Concentre todo seu poder em '{skillName}'.",
             skillName,
-            15, 
+            5, 
             true,
             obs.triggerType
         ));
@@ -1831,7 +1831,7 @@ public static class ObservationInterpreter
             "Poder Justificado",
             "Skills ficam ainda mais fortes.",
             CardAttribute.PlayerOffensiveActionPower, 
-            10,
+            6,
             obs.triggerType,
             $"Custo médio: {avgCost:F0} MP"
         ));

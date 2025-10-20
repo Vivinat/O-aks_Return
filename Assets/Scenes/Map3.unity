@@ -36116,7 +36116,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   connectedNodes: []
-  isLocked: 0
+  isLocked: 1
   eventType: {fileID: 11400000, guid: 92eafcb1da51eec4cbfb8f4c1cc5a7ab, type: 2}
   eventMusic: {fileID: 8300000, guid: 22ae0753faf058b48b67456873234e53, type: 3}
   battleBackgroundOverride: {fileID: 21300000, guid: 908e78130125f104fbb177131cc4f48f, type: 3}

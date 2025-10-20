@@ -1074,7 +1074,7 @@
         {
             "name": "Fentho, o Sonhador",
             "assetPath": "Assets/Data/Characters/Enemies/Bosses/Fentho.asset",
-            "maxHp": 500,
+            "maxHp": 400,
             "maxMp": 500,
             "defense": 18,
             "speed": 1.7000000476837159,
@@ -1204,7 +1204,7 @@
         {
             "name": "Valdemor, Senhor das Trevas",
             "assetPath": "Assets/Data/Characters/Enemies/Bosses/Valdemor.asset",
-            "maxHp": 350,
+            "maxHp": 300,
             "maxMp": 300,
             "defense": 14,
             "speed": 1.2999999523162842,
@@ -1279,12 +1279,12 @@
         },
         "bosses": {
             "count": 3,
-            "avgHp": 350.0,
+            "avgHp": 300.0,
             "avgMp": 300.0,
             "avgDefense": 13.0,
             "avgSpeed": 1.3333333730697632,
             "minHp": 200,
-            "maxHp": 500
+            "maxHp": 400
         }
     }
 }

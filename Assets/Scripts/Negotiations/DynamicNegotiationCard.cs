@@ -125,8 +125,9 @@ public class DynamicNegotiationCard
         return $"Troca {playerBenefit.offerName.ToLower()} por {playerCost.offerName.ToLower()}.";
     }
     
-    /// <summary>
+ /// <summary>
     /// ✅ CORRIGIDO: Calcula e mostra valores REAIS com sinal correto para mana cost
+    /// NOVO: Detecta e exibe skills específicas corretamente
     /// </summary>
     public string GetFullDescription(CardAttribute? playerAttr, CardAttribute? enemyAttr, CardIntensity intensity)
     {
@@ -134,66 +135,143 @@ public class DynamicNegotiationCard
         desc += $"<i>{cardDescription}</i>\n\n";
 
         // === VANTAGEM ===
-        CardAttribute advantageAttr = playerAttr ?? playerBenefit.targetAttribute;
-        
-        // Calcula o valor REAL aplicando o multiplicador ao valor base
-        int realAdvantageValue = IntensityHelper.GetScaledValue(intensity, playerBenefit.value);
-        
-        // ✅ CORREÇÃO: Força sinal correto para custos de mana
-        realAdvantageValue = CorrectManaCostSignForUI(advantageAttr, realAdvantageValue, true);
-        
         desc += $"<color=#90EE90><b>✓ Você Ganha:</b></color>\n";
         
-        // Formato especial para custos de mana (sempre mostrar redução como positivo na UI)
-        if (advantageAttr == CardAttribute.PlayerActionManaCost)
+        // ✅ NOVO: Verifica se é skill específica
+        bool isSpecificSkillAdvantage = playerBenefit.HasData("isSpecificSkill") && 
+                                         playerBenefit.GetData<bool>("isSpecificSkill");
+        
+        if (isSpecificSkillAdvantage)
         {
-            desc += $"Reduz custo de mana: <color=#90EE90>{Mathf.Abs(realAdvantageValue)}</color>\n";
-        }
-        else if (advantageAttr == CardAttribute.EnemyActionManaCost)
-        {
-            desc += $"Inimigos pagam <color=#90EE90>+{realAdvantageValue}</color> de mana a mais\n";
+            // SKILL ESPECÍFICA
+            string skillName = playerBenefit.GetData<string>("targetSkillName", "Skill");
+            bool modifyPower = playerBenefit.GetData<bool>("modifyPower", false);
+            bool modifyManaCost = playerBenefit.GetData<bool>("modifyManaCost", false);
+            
+            if (modifyPower && modifyManaCost)
+            {
+                int powerChange = playerBenefit.GetData<int>("powerChange", 0);
+                int manaCostChange = playerBenefit.GetData<int>("manaCostChange", 0);
+                
+                // Escala pelos multiplicadores
+                powerChange = IntensityHelper.GetScaledValue(intensity, powerChange);
+                manaCostChange = IntensityHelper.GetScaledValue(intensity, manaCostChange);
+                
+                desc += $"<color=#FFD700>'{skillName}'</color>:\n";
+                desc += $"  Poder: <color=#90EE90>{powerChange:+#;-#;0}</color>\n";
+                desc += $"  Custo: <color=#90EE90>{manaCostChange:+#;-#;0}</color> MP\n";
+            }
+            else if (modifyPower)
+            {
+                int powerChange = playerBenefit.GetData<int>("powerChange", 0);
+                powerChange = IntensityHelper.GetScaledValue(intensity, powerChange);
+                
+                desc += $"<color=#FFD700>'{skillName}'</color>: ";
+                desc += $"Poder <color=#90EE90>{powerChange:+#;-#;0}</color>\n";
+            }
+            else if (modifyManaCost)
+            {
+                int manaCostChange = playerBenefit.GetData<int>("manaCostChange", 0);
+                manaCostChange = IntensityHelper.GetScaledValue(intensity, manaCostChange);
+                
+                desc += $"<color=#FFD700>'{skillName}'</color>: ";
+                desc += $"Custo <color=#90EE90>{manaCostChange:+#;-#;0}</color> MP\n";
+            }
         }
         else
         {
-            desc += $"+{realAdvantageValue} {AttributeHelper.GetDisplayName(advantageAttr)}\n";
+            // MODIFICADOR GERAL
+            CardAttribute advantageAttr = playerAttr ?? playerBenefit.targetAttribute;
+            int realAdvantageValue = IntensityHelper.GetScaledValue(intensity, playerBenefit.value);
+            realAdvantageValue = CorrectManaCostSignForUI(advantageAttr, realAdvantageValue, true);
+            
+            if (advantageAttr == CardAttribute.PlayerActionManaCost)
+            {
+                desc += $"Reduz custo de mana: <color=#90EE90>{Mathf.Abs(realAdvantageValue)}</color>\n";
+            }
+            else if (advantageAttr == CardAttribute.EnemyActionManaCost)
+            {
+                desc += $"Inimigos pagam <color=#90EE90>+{realAdvantageValue}</color> de mana a mais\n";
+            }
+            else
+            {
+                desc += $"+{realAdvantageValue} {AttributeHelper.GetDisplayName(advantageAttr)}\n";
+            }
         }
 
         // === DESVANTAGEM ===
         desc += $"\n<color=#FF6B6B><b>✗ Custo:</b></color>\n";
 
-        CardAttribute costAttr = enemyAttr ?? playerCost.targetAttribute;
+        // ✅ NOVO: Verifica se é skill específica
+        bool isSpecificSkillCost = playerCost.HasData("isSpecificSkill") && 
+                                    playerCost.GetData<bool>("isSpecificSkill");
         
-        // Calcula o valor REAL aplicando o multiplicador ao valor base
-        int realCostValue = IntensityHelper.GetScaledValue(intensity, playerCost.value);
-        
-        // ✅ CORREÇÃO: Força sinal correto para custos de mana
-        realCostValue = CorrectManaCostSignForUI(costAttr, realCostValue, false);
-
-        // Detecta se afeta jogador ou inimigos
-        bool costAffectsPlayer = IsPlayerAttribute(costAttr) || playerCost.affectsPlayer;
-
-        if (costAffectsPlayer)
+        if (isSpecificSkillCost)
         {
-            // Debuff no jogador
-            if (costAttr == CardAttribute.PlayerActionManaCost)
+            // SKILL ESPECÍFICA
+            string skillName = playerCost.GetData<string>("targetSkillName", "Skill");
+            bool modifyPower = playerCost.GetData<bool>("modifyPower", false);
+            bool modifyManaCost = playerCost.GetData<bool>("modifyManaCost", false);
+            
+            if (modifyPower && modifyManaCost)
             {
-                desc += $"Aumenta custo de mana: <color=#FF4444>+{Mathf.Abs(realCostValue)}</color>";
+                int powerChange = playerCost.GetData<int>("powerChange", 0);
+                int manaCostChange = playerCost.GetData<int>("manaCostChange", 0);
+                
+                powerChange = IntensityHelper.GetScaledValue(intensity, powerChange);
+                manaCostChange = IntensityHelper.GetScaledValue(intensity, manaCostChange);
+                
+                desc += $"<color=#FFD700>'{skillName}'</color>:\n";
+                desc += $"  Poder: <color=#FF4444>{powerChange:+#;-#;0}</color>\n";
+                desc += $"  Custo: <color=#FF4444>{manaCostChange:+#;-#;0}</color> MP";
             }
-            else
+            else if (modifyPower)
             {
-                desc += $"Você perde: <color=#FF4444>-{Mathf.Abs(realCostValue)}</color> {AttributeHelper.GetDisplayName(costAttr)}";
+                int powerChange = playerCost.GetData<int>("powerChange", 0);
+                powerChange = IntensityHelper.GetScaledValue(intensity, powerChange);
+                
+                desc += $"<color=#FFD700>'{skillName}'</color>: ";
+                desc += $"Poder <color=#FF4444>{powerChange:+#;-#;0}</color>";
+            }
+            else if (modifyManaCost)
+            {
+                int manaCostChange = playerCost.GetData<int>("manaCostChange", 0);
+                manaCostChange = IntensityHelper.GetScaledValue(intensity, manaCostChange);
+                
+                desc += $"<color=#FFD700>'{skillName}'</color>: ";
+                desc += $"Custo <color=#FF4444>{manaCostChange:+#;-#;0}</color> MP";
             }
         }
         else
         {
-            // Buff nos inimigos
-            if (costAttr == CardAttribute.EnemyActionManaCost)
+            // MODIFICADOR GERAL
+            CardAttribute costAttr = enemyAttr ?? playerCost.targetAttribute;
+            int realCostValue = IntensityHelper.GetScaledValue(intensity, playerCost.value);
+            realCostValue = CorrectManaCostSignForUI(costAttr, realCostValue, false);
+
+            bool costAffectsPlayer = IsPlayerAttribute(costAttr) || playerCost.affectsPlayer;
+
+            if (costAffectsPlayer)
             {
-                desc += $"Inimigos pagam <color=#FF4444>{realCostValue}</color> de mana a menos";
+                if (costAttr == CardAttribute.PlayerActionManaCost)
+                {
+                    desc += $"Aumenta custo de mana: <color=#FF4444>+{Mathf.Abs(realCostValue)}</color>";
+                }
+                else
+                {
+                    desc += $"Você perde: <color=#FF4444>-{Mathf.Abs(realCostValue)}</color> {AttributeHelper.GetDisplayName(costAttr)}";
+                }
             }
             else
             {
-                desc += $"Inimigos ganham: <color=#FF4444>+{Mathf.Abs(realCostValue)}</color> {AttributeHelper.GetDisplayName(costAttr)}";
+                if (costAttr == CardAttribute.EnemyActionManaCost)
+                {
+                    desc += $"Inimigos pagam <color=#FF4444>{realCostValue}</color> de mana a menos";
+                }
+                else
+                {
+                    desc += $"Inimigos ganham: <color=#FF4444>+{Mathf.Abs(realCostValue)}</color> {AttributeHelper.GetDisplayName(costAttr)}";
+                }
             }
         }
 

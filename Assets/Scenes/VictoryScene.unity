@@ -807,7 +807,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e3eab3fcd244d4648875caa58aca93cd, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  mapMusic: {fileID: 8300000, guid: 4ddcd2975b283ec4fafb88e2d7a0662c, type: 3}
+  mapMusic: {fileID: 8300000, guid: 4885d7f5abaf6754bb6d5ecff2ef27f8, type: 3}
   useFade: 1
 --- !u!114 &1086417293 stripped
 MonoBehaviour:

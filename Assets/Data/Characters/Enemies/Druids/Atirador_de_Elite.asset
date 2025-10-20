@@ -21,6 +21,4 @@ MonoBehaviour:
   speed: 1.7
   deathSound: {fileID: 8300000, guid: e12666ffd7681944aa9226f20dc7cb95, type: 3}
   battleActions:
-  - {fileID: 11400000, guid: aefdae9b07600d1448948b8ee092ee4f, type: 2}
-  - {fileID: 11400000, guid: 0d8154578a77a174198049acbe133580, type: 2}
-  - {fileID: 11400000, guid: 2b9bf50d7d02eaf45931b3da843a718d, type: 2}
+  - {fileID: 11400000, guid: fd2185eac5ce59d40a6129af997a4632, type: 2}
