@@ -15,6 +15,7 @@ public static class EnemyCharacterRestorer
     
     /// <summary>
     /// Carrega e cacheia o database de inimigos
+    /// (CORRIGIDO PARA FUNCIONAR NA BUILD)
     /// </summary>
     private static bool LoadDatabase()
     {
@@ -23,17 +24,22 @@ public static class EnemyCharacterRestorer
             return true; // Já carregado
         }
         
-        // Tenta carregar do arquivo JSON
-        if (!File.Exists(JSON_PATH))
-        {
-            Debug.LogError($"❌ JSON de inimigos não encontrado em: {JSON_PATH}");
-            Debug.LogError("Execute Tools > Export Enemy Data to JSON no Editor primeiro!");
-            return false;
-        }
+        // Caminho do JSON dentro da pasta "Resources" (sem a extensão .json)
+        const string RESOURCES_JSON_PATH = "EnemyBalanceData";
         
         try
         {
-            string jsonContent = File.ReadAllText(JSON_PATH);
+            // Carrega o arquivo como um TextAsset
+            TextAsset jsonAsset = Resources.Load<TextAsset>(RESOURCES_JSON_PATH);
+            
+            if (jsonAsset == null)
+            {
+                Debug.LogError($"❌ JSON de inimigos não encontrado em: Assets/Resources/{RESOURCES_JSON_PATH}.json");
+                Debug.LogError("Certifique-se que o arquivo está na pasta Resources!");
+                return false;
+            }
+            
+            string jsonContent = jsonAsset.text;
             cachedDatabase = JsonUtility.FromJson<EnemyDatabase>(jsonContent);
             
             if (cachedDatabase == null)

@@ -2,7 +2,7 @@
     "druids": [
         {
             "name": "Arqueiro",
-            "assetPath": "Assets/Data/Characters/Enemies/Druids/Arqueiro.asset",
+            "assetPath": "Resources/Characters/Enemies/Druids/Arqueiro.asset",
             "maxHp": 40,
             "maxMp": 100,
             "defense": 2,
@@ -45,7 +45,7 @@
         },
         {
             "name": "Arquidruida",
-            "assetPath": "Assets/Data/Characters/Enemies/Druids/Arquidruida.asset",
+            "assetPath": "Resources/Characters/Enemies/Druids/Arquidruida.asset",
             "maxHp": 50,
             "maxMp": 120,
             "defense": 5,
@@ -88,7 +88,7 @@
         },
         {
             "name": "Atirador de Elite",
-            "assetPath": "Assets/Data/Characters/Enemies/Druids/Atirador_de_Elite.asset",
+            "assetPath": "Resources/Characters/Enemies/Druids/Atirador_de_Elite.asset",
             "maxHp": 45,
             "maxMp": 110,
             "defense": 3,
@@ -131,7 +131,7 @@
         },
         {
             "name": "Caçador",
-            "assetPath": "Assets/Data/Characters/Enemies/Druids/Caçador.asset",
+            "assetPath": "Resources/Characters/Enemies/Druids/Caçador.asset",
             "maxHp": 48,
             "maxMp": 100,
             "defense": 4,
@@ -174,7 +174,7 @@
         },
         {
             "name": "Druida",
-            "assetPath": "Assets/Data/Characters/Enemies/Druids/Druida.asset",
+            "assetPath": "Resources/Characters/Enemies/Druids/Druida.asset",
             "maxHp": 30,
             "maxMp": 130,
             "defense": 4,
@@ -217,7 +217,7 @@
         },
         {
             "name": "Guardião da Mata",
-            "assetPath": "Assets/Data/Characters/Enemies/Druids/Guardião_da_Mata.asset",
+            "assetPath": "Resources/Characters/Enemies/Druids/Guardião_da_Mata.asset",
             "maxHp": 80,
             "maxMp": 100,
             "defense": 6,
@@ -260,7 +260,7 @@
         },
         {
             "name": "Troca-Peles",
-            "assetPath": "Assets/Data/Characters/Enemies/Druids/Troca-Peles.asset",
+            "assetPath": "Resources/Characters/Enemies/Druids/Troca-Peles.asset",
             "maxHp": 65,
             "maxMp": 120,
             "defense": 6,
@@ -316,7 +316,7 @@
     "warriors": [
         {
             "name": "Campeão",
-            "assetPath": "Assets/Data/Characters/Enemies/Paladins/Campeão.asset",
+            "assetPath": "Resources/Characters/Enemies/Paladins/Campeão.asset",
             "maxHp": 130,
             "maxMp": 100,
             "defense": 6,
@@ -359,7 +359,7 @@
         },
         {
             "name": "Cruzado",
-            "assetPath": "Assets/Data/Characters/Enemies/Paladins/Cruzado.asset",
+            "assetPath": "Resources/Characters/Enemies/Paladins/Cruzado.asset",
             "maxHp": 150,
             "maxMp": 100,
             "defense": 8,
@@ -391,7 +391,7 @@
         },
         {
             "name": "Escudeiro",
-            "assetPath": "Assets/Data/Characters/Enemies/Paladins/Escudeiro.asset",
+            "assetPath": "Resources/Characters/Enemies/Paladins/Escudeiro.asset",
             "maxHp": 120,
             "maxMp": 110,
             "defense": 4,
@@ -434,7 +434,7 @@
         },
         {
             "name": "Guardião",
-            "assetPath": "Assets/Data/Characters/Enemies/Paladins/Guardião.asset",
+            "assetPath": "Resources/Characters/Enemies/Paladins/Guardião.asset",
             "maxHp": 140,
             "maxMp": 100,
             "defense": 10,
@@ -477,7 +477,7 @@
         },
         {
             "name": "Inquisidora",
-            "assetPath": "Assets/Data/Characters/Enemies/Paladins/Inquisidora.asset",
+            "assetPath": "Resources/Characters/Enemies/Paladins/Inquisidora.asset",
             "maxHp": 140,
             "maxMp": 120,
             "defense": 4,
@@ -520,7 +520,7 @@
         },
         {
             "name": "Paladino",
-            "assetPath": "Assets/Data/Characters/Enemies/Paladins/Paladino.asset",
+            "assetPath": "Resources/Characters/Enemies/Paladins/Paladino.asset",
             "maxHp": 145,
             "maxMp": 120,
             "defense": 11,
@@ -574,7 +574,7 @@
         },
         {
             "name": "Sacerdotisa",
-            "assetPath": "Assets/Data/Characters/Enemies/Paladins/Sacerdotisa.asset",
+            "assetPath": "Resources/Characters/Enemies/Paladins/Sacerdotisa.asset",
             "maxHp": 110,
             "maxMp": 200,
             "defense": 2,
@@ -630,7 +630,7 @@
     "monsters": [
         {
             "name": "Aberração",
-            "assetPath": "Assets/Data/Characters/Enemies/Monsters/Aberração.asset",
+            "assetPath": "Resources/Characters/Enemies/Monsters/Aberração.asset",
             "maxHp": 200,
             "maxMp": 100,
             "defense": 10,
@@ -673,7 +673,7 @@
         },
         {
             "name": "Comensal da Quase-Morte",
-            "assetPath": "Assets/Data/Characters/Enemies/Monsters/ComensalQuaseMorte.asset",
+            "assetPath": "Resources/Characters/Enemies/Monsters/ComensalQuaseMorte.asset",
             "maxHp": 90,
             "maxMp": 100,
             "defense": 6,
@@ -716,7 +716,7 @@
         },
         {
             "name": "Cultista",
-            "assetPath": "Assets/Data/Characters/Enemies/Monsters/Cultista.asset",
+            "assetPath": "Resources/Characters/Enemies/Monsters/Cultista.asset",
             "maxHp": 70,
             "maxMp": 140,
             "defense": 8,
@@ -759,7 +759,7 @@
         },
         {
             "name": "Demônio",
-            "assetPath": "Assets/Data/Characters/Enemies/Monsters/Demônio.asset",
+            "assetPath": "Resources/Characters/Enemies/Monsters/Demônio.asset",
             "maxHp": 180,
             "maxMp": 150,
             "defense": 14,
@@ -802,7 +802,7 @@
         },
         {
             "name": "Discípulo de Fentho",
-            "assetPath": "Assets/Data/Characters/Enemies/Monsters/Discipulo_Fentho.asset",
+            "assetPath": "Resources/Characters/Enemies/Monsters/Discipulo_Fentho.asset",
             "maxHp": 220,
             "maxMp": 180,
             "defense": 15,
@@ -856,7 +856,7 @@
         },
         {
             "name": "Ínfero",
-            "assetPath": "Assets/Data/Characters/Enemies/Monsters/Infero.asset",
+            "assetPath": "Resources/Characters/Enemies/Monsters/Infero.asset",
             "maxHp": 250,
             "maxMp": 120,
             "defense": 12,
@@ -910,7 +910,7 @@
         },
         {
             "name": "Mercenário",
-            "assetPath": "Assets/Data/Characters/Enemies/Monsters/Mercenario.asset",
+            "assetPath": "Resources/Characters/Enemies/Monsters/Mercenario.asset",
             "maxHp": 100,
             "maxMp": 100,
             "defense": 10,
@@ -953,7 +953,7 @@
         },
         {
             "name": "Morto-Vivo",
-            "assetPath": "Assets/Data/Characters/Enemies/Monsters/Morto-Vivo.asset",
+            "assetPath": "Resources/Characters/Enemies/Monsters/Morto-Vivo.asset",
             "maxHp": 80,
             "maxMp": 120,
             "defense": 1,
@@ -974,7 +974,7 @@
         },
         {
             "name": "Necromante",
-            "assetPath": "Assets/Data/Characters/Enemies/Monsters/Necromante.asset",
+            "assetPath": "Resources/Characters/Enemies/Monsters/Necromante.asset",
             "maxHp": 110,
             "maxMp": 160,
             "defense": 9,
@@ -1017,7 +1017,7 @@
         },
         {
             "name": "Sacerdote das Trevas",
-            "assetPath": "Assets/Data/Characters/Enemies/Monsters/Sacerdote_Das_Trevas.asset",
+            "assetPath": "Resources/Characters/Enemies/Monsters/Sacerdote_Das_Trevas.asset",
             "maxHp": 160,
             "maxMp": 200,
             "defense": 12,
@@ -1073,7 +1073,7 @@
     "bosses": [
         {
             "name": "Fentho, o Sonhador",
-            "assetPath": "Assets/Data/Characters/Enemies/Bosses/Fentho.asset",
+            "assetPath": "Resources/Characters/Enemies/Bosses/Fentho.asset",
             "maxHp": 400,
             "maxMp": 500,
             "defense": 18,
@@ -1138,7 +1138,7 @@
         },
         {
             "name": "Mawron, o Senhor do Escuro",
-            "assetPath": "Assets/Data/Characters/Enemies/Bosses/Mawron.asset",
+            "assetPath": "Resources/Characters/Enemies/Bosses/Mawron.asset",
             "maxHp": 200,
             "maxMp": 100,
             "defense": 7,
@@ -1203,7 +1203,7 @@
         },
         {
             "name": "Valdemor, Senhor das Trevas",
-            "assetPath": "Assets/Data/Characters/Enemies/Bosses/Valdemor.asset",
+            "assetPath": "Resources/Characters/Enemies/Bosses/Valdemor.asset",
             "maxHp": 300,
             "maxMp": 300,
             "defense": 14,

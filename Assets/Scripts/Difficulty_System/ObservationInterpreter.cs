@@ -1607,7 +1607,7 @@ public static class ObservationInterpreter
         // DESVANTAGENS (apenas uma mudança cada, valores 4-12)
         disadvantages.Add(NegotiationOffer.CreateDisadvantage(
             "Sede por Sangue",
-            $"{bossName} se fortalece com cada vitória.",
+            $"Inimigos se fortalece com cada vitória de {bossName}.",
             CardAttribute.EnemyActionPower,
             20,
             false, // Afeta inimigos

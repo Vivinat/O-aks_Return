@@ -348,8 +348,11 @@ public class NegotiationManager : MonoBehaviour
         ReturnToMap();
     }
     
+// Assets/Scripts/Negotiation/NegotiationManager.cs
+
     /// <summary>
-    /// ✅ MODIFICADO: ApplyDynamicCard com correção de sinal
+    /// ✅ CORRIGIDO: Aplica vantagem e desvantagem independentemente,
+    /// permitindo misturar "Skill Específica" com "Modificador Geral".
     /// </summary>
     private void ApplyDynamicCard(NegotiationCardUI cardUI)
     {
@@ -376,36 +379,47 @@ public class NegotiationManager : MonoBehaviour
         DebugLog($"=== APLICANDO CARTA: {card.GetCardName()} ===");
         DebugLog($"Intensidade: {IntensityHelper.GetIntensityDisplayName(intensity)} ({IntensityHelper.GetMultiplier(intensity)}x)");
         
-        // === APLICA VANTAGEM ===
+        // === 1. APLICA VANTAGEM ===
         NegotiationOffer advantage = card.playerBenefit;
+        bool isSpecificSkillAdvantage = advantage.HasData("isSpecificSkill") && advantage.GetData<bool>("isSpecificSkill");
         
-        bool isSpecificSkill = advantage.HasData("isSpecificSkill") && advantage.GetData<bool>("isSpecificSkill");
-        
-        if (isSpecificSkill)
+        if (isSpecificSkillAdvantage)
         {
-            DebugLog($"  Aplicando vantagem em SKILL ESPECÍFICA");
+            // Vantagem é SKILL ESPECÍFICA
+            DebugLog($"  Aplicando VANTAGEM (Skill): {advantage.offerName}");
             NegotiationOfferApplier.ApplyOffer(advantage, playerValue);
         }
         else
         {
-            DebugLog($"  Jogador: {playerAttr} {FormatValue(playerValue)}");
-            DebugLog($"  Inimigos: {enemyAttr} {FormatValue(enemyValue)}");
-            
+            // Vantagem é GERAL (Modificador de Atributo)
+            DebugLog($"  Aplicando VANTAGEM (Geral): {playerAttr} {FormatValue(playerValue)}");
             if (DifficultySystem.Instance != null)
             {
-                DifficultySystem.Instance.ApplyNegotiation(playerAttr, enemyAttr, playerValue, enemyValue);
+                // Passa 0 para o lado do inimigo, pois esta é apenas a vantagem
+                DifficultySystem.Instance.ApplyNegotiation(playerAttr, CardAttribute.EnemyMaxHP, playerValue, 0);
             }
         }
         
-        // === APLICA DESVANTAGEM ===
+        // === 2. APLICA DESVANTAGEM ===
         NegotiationOffer disadvantage = card.playerCost;
-        
         bool isSpecificSkillCost = disadvantage.HasData("isSpecificSkill") && disadvantage.GetData<bool>("isSpecificSkill");
         
         if (isSpecificSkillCost)
         {
-            DebugLog($"  Aplicando desvantagem em SKILL ESPECÍFICA");
+            // Desvantagem é SKILL ESPECÍFICA
+            DebugLog($"  Aplicando DESVANTAGEM (Skill): {disadvantage.offerName}");
             NegotiationOfferApplier.ApplyOffer(disadvantage, enemyValue);
+        }
+        else
+        {
+            // Desvantagem é GERAL (Modificador de Atributo)
+            // (Este era o passo que estava faltando no seu log)
+            DebugLog($"  Aplicando DESVANTAGEM (Geral): {enemyAttr} {FormatValue(enemyValue)}");
+            if (DifficultySystem.Instance != null)
+            {
+                // Passa 0 para o lado do jogador, pois esta é apenas a desvantagem
+                DifficultySystem.Instance.ApplyNegotiation(CardAttribute.PlayerMaxHP, enemyAttr, 0, enemyValue);
+            }
         }
         
         DebugLog("=== NEGOCIAÇÃO APLICADA COM SUCESSO (IMEDIATA) ===");

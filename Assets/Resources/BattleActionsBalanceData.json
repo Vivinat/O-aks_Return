@@ -2,7 +2,7 @@
     "paladinActions": [
         {
             "actionName": "Aura da Devoção",
-            "assetPath": "Assets/Data/BattleActions/Paladin/Aura_da_Devocao.asset",
+            "assetPath": "Resources/BattleActions/Paladin/Aura_da_Devocao.asset",
             "description": "Cura 25 de vida de todos os aliados. Custo: 20 MP",
             "targetType": "AllAllies",
             "manaCost": 20,
@@ -27,7 +27,7 @@
         },
         {
             "actionName": "Benção da Resistência",
-            "assetPath": "Assets/Data/BattleActions/Paladin/Bencao_da_Resistencia.asset",
+            "assetPath": "Resources/BattleActions/Paladin/Bencao_da_Resistencia.asset",
             "description": "Concede proteção a um aliado por 3 turnos. Custo:8 MP",
             "targetType": "SingleAlly",
             "manaCost": 16,
@@ -52,7 +52,7 @@
         },
         {
             "actionName": "Bênção dos Reis",
-            "assetPath": "Assets/Data/BattleActions/Paladin/Bencao_dos_Reis.asset",
+            "assetPath": "Resources/BattleActions/Paladin/Bencao_dos_Reis.asset",
             "description": "Aumenta o ataque e a defesa de um aliado por 4 turnos. Custo: 18 MP",
             "targetType": "SingleAlly",
             "manaCost": 18,
@@ -90,7 +90,7 @@
         },
         {
             "actionName": "Escudo da Fé",
-            "assetPath": "Assets/Data/BattleActions/Paladin/Escudo_da_Fe.asset",
+            "assetPath": "Resources/BattleActions/Paladin/Escudo_da_Fe.asset",
             "description": "Reduz o dano recebido por 3 turnos. Custo: 12 MP",
             "targetType": "Self",
             "manaCost": 12,
@@ -115,7 +115,7 @@
         },
         {
             "actionName": "Golpe Divino",
-            "assetPath": "Assets/Data/BattleActions/Paladin/Golpe_Divino.asset",
+            "assetPath": "Resources/BattleActions/Paladin/Golpe_Divino.asset",
             "description": "Causa dano com Poder:35. Custo: 0 MP",
             "targetType": "SingleEnemy",
             "manaCost": 0,
@@ -140,7 +140,7 @@
         },
         {
             "actionName": "Julgamento",
-            "assetPath": "Assets/Data/BattleActions/Paladin/Julgamento.asset",
+            "assetPath": "Resources/BattleActions/Paladin/Julgamento.asset",
             "description": "Causa dano com Poder:60 e deixa o alvo Vulnerável por 2 turnos. Custo: 15 MP",
             "targetType": "SingleEnemy",
             "manaCost": 15,
@@ -165,7 +165,7 @@
         },
         {
             "actionName": "Luz Sagrada",
-            "assetPath": "Assets/Data/BattleActions/Paladin/Luz_Sagrada.asset",
+            "assetPath": "Resources/BattleActions/Paladin/Luz_Sagrada.asset",
             "description": "Cura 50 de vida de um aliado. Custo: 10 MP",
             "targetType": "SingleAlly",
             "manaCost": 10,
@@ -190,7 +190,7 @@
         },
         {
             "actionName": "Martelo Divino",
-            "assetPath": "Assets/Data/BattleActions/Paladin/Martelo_Divino.asset",
+            "assetPath": "Resources/BattleActions/Paladin/Martelo_Divino.asset",
             "description": "Ataque que causa dano com Poder:65 e reduz velocidade. Custo: 20 MP",
             "targetType": "SingleEnemy",
             "manaCost": 20,
@@ -215,7 +215,7 @@
         },
         {
             "actionName": "Retribuição Divina",
-            "assetPath": "Assets/Data/BattleActions/Paladin/Retribuicao_Divina.asset",
+            "assetPath": "Resources/BattleActions/Paladin/Retribuicao_Divina.asset",
             "description": "Causa dano com Poder:150. Custo: 100 MP",
             "targetType": "SingleEnemy",
             "manaCost": 100,
@@ -242,7 +242,7 @@
     "rangerActions": [
         {
             "actionName": "Chuva de Flechas",
-            "assetPath": "Assets/Data/BattleActions/Ranger/Chuva_de_Flechas.asset",
+            "assetPath": "Resources/BattleActions/Ranger/Chuva_de_Flechas.asset",
             "description": "Dano a todos os inimigos. Poder:30. Custo: 22 MP",
             "targetType": "AllEnemies",
             "manaCost": 22,
@@ -267,7 +267,7 @@
         },
         {
             "actionName": "Golpe Preciso",
-            "assetPath": "Assets/Data/BattleActions/Ranger/Golpe_Preciso.asset",
+            "assetPath": "Resources/BattleActions/Ranger/Golpe_Preciso.asset",
             "description": "Poder:30. Custo: 0 MP",
             "targetType": "SingleEnemy",
             "manaCost": 0,
@@ -292,7 +292,7 @@
         },
         {
             "actionName": "Jato Venenoso",
-            "assetPath": "Assets/Data/BattleActions/Ranger/Jato_Venenoso.asset",
+            "assetPath": "Resources/BattleActions/Ranger/Jato_Venenoso.asset",
             "description": "Poder:20. Envenena o alvo por 4 turnos. Custo: 10 MP",
             "targetType": "SingleEnemy",
             "manaCost": 10,
@@ -317,7 +317,7 @@
         },
         {
             "actionName": "Marca do Caçador",
-            "assetPath": "Assets/Data/BattleActions/Ranger/Marca_do_Cacador.asset",
+            "assetPath": "Resources/BattleActions/Ranger/Marca_do_Cacador.asset",
             "description": "Marca um inimigo, reduzindo sua defesa por 3 turnos. Custo: 10 MP",
             "targetType": "SingleEnemy",
             "manaCost": 10,
@@ -342,7 +342,7 @@
         },
         {
             "actionName": "Presas de Caça",
-            "assetPath": "Assets/Data/BattleActions/Ranger/Presas_de_Caca.asset",
+            "assetPath": "Resources/BattleActions/Ranger/Presas_de_Caca.asset",
             "description": "Poder:15. Deixa o alvo vulnerável por 3 turnos. Custo: 14 MP",
             "targetType": "SingleEnemy",
             "manaCost": 14,
@@ -367,7 +367,7 @@
         },
         {
             "actionName": "Primeiros Socorros",
-            "assetPath": "Assets/Data/BattleActions/Ranger/Primeiros_Socorros.asset",
+            "assetPath": "Resources/BattleActions/Ranger/Primeiros_Socorros.asset",
             "description": "Restaura 10 de sua própria vida. Custo: 5 MP",
             "targetType": "Self",
             "manaCost": 5,
@@ -392,7 +392,7 @@
         },
         {
             "actionName": "Tiro Incapacitante",
-            "assetPath": "Assets/Data/BattleActions/Ranger/Tiro_Incapacitante.asset",
+            "assetPath": "Resources/BattleActions/Ranger/Tiro_Incapacitante.asset",
             "description": "Poder:25. Reduz a velocidade do alvo por 1 turno. Custo: 12 MP",
             "targetType": "SingleEnemy",
             "manaCost": 12,
@@ -419,7 +419,7 @@
     "druidActions": [
         {
             "actionName": "Decadência",
-            "assetPath": "Assets/Data/BattleActions/Druid/Decadencia.asset",
+            "assetPath": "Resources/BattleActions/Druid/Decadencia.asset",
             "description": "Amaldiçoa todos os inimigos com deterioração severa por 4 turnos. Poder:15. Custo: 22 MP",
             "targetType": "AllEnemies",
             "manaCost": 22,
@@ -444,7 +444,7 @@
         },
         {
             "actionName": "Desintegrar",
-            "assetPath": "Assets/Data/BattleActions/Druid/Desintegrar.asset",
+            "assetPath": "Resources/BattleActions/Druid/Desintegrar.asset",
             "description": "Poder:28. Custo: 0 MP",
             "targetType": "SingleEnemy",
             "manaCost": 0,
@@ -469,7 +469,7 @@
         },
         {
             "actionName": "Familiar",
-            "assetPath": "Assets/Data/BattleActions/Druid/Familiar.asset",
+            "assetPath": "Resources/BattleActions/Druid/Familiar.asset",
             "description": "Amaldiçoa todos os inimigos, causando dano por 3 turnos de Poder:12. Custo: 18 MP",
             "targetType": "AllEnemies",
             "manaCost": 18,
@@ -494,7 +494,7 @@
         },
         {
             "actionName": "Invigorar",
-            "assetPath": "Assets/Data/BattleActions/Druid/Invigorar.asset",
+            "assetPath": "Resources/BattleActions/Druid/Invigorar.asset",
             "description": "Aumenta drasticamente a defesa de um aliado por 3 turnos. Custo: 14 MP",
             "targetType": "SingleAlly",
             "manaCost": 14,
@@ -519,7 +519,7 @@
         },
         {
             "actionName": "Maldição",
-            "assetPath": "Assets/Data/BattleActions/Druid/Maldicao.asset",
+            "assetPath": "Resources/BattleActions/Druid/Maldicao.asset",
             "description": "Poder:15. Reduz a velocidade do alvo por 4 turnos. Custo: 12 MP",
             "targetType": "SingleEnemy",
             "manaCost": 12,
@@ -544,7 +544,7 @@
         },
         {
             "actionName": "Mártir",
-            "assetPath": "Assets/Data/BattleActions/Druid/Martir.asset",
+            "assetPath": "Resources/BattleActions/Druid/Martir.asset",
             "description": "Aumenta defesa por 4 turnos, recupere 50 de Mana mas cause dano a si mesmo de Poder:50. Custo: 16 MP",
             "targetType": "Self",
             "manaCost": 16,
@@ -569,7 +569,7 @@
         },
         {
             "actionName": "Semente da Vida",
-            "assetPath": "Assets/Data/BattleActions/Druid/Semente_da_Vida.asset",
+            "assetPath": "Resources/BattleActions/Druid/Semente_da_Vida.asset",
             "description": "Aplica 'Abençoado' a um aliado, curando-o por 4 turnos. Custo: 15 MP",
             "targetType": "SingleAlly",
             "manaCost": 15,
@@ -594,7 +594,7 @@
         },
         {
             "actionName": "Toque Restaurador",
-            "assetPath": "Assets/Data/BattleActions/Druid/Toque_Restaurador.asset",
+            "assetPath": "Resources/BattleActions/Druid/Toque_Restaurador.asset",
             "description": "Cura 45 de vida de um alvo. Custo: 9 MP",
             "targetType": "SingleAlly",
             "manaCost": 9,
@@ -619,7 +619,7 @@
         },
         {
             "actionName": "Tranquilidade",
-            "assetPath": "Assets/Data/BattleActions/Druid/Tranquilidade.asset",
+            "assetPath": "Resources/BattleActions/Druid/Tranquilidade.asset",
             "description": "Cura 20 de vida e aplica Regeneração a todos os aliados por 4 turnos. Custo: 28 MP",
             "targetType": "AllAllies",
             "manaCost": 28,
@@ -647,7 +647,7 @@
     "otherActions": [
         {
             "actionName": "Alma em Trevas",
-            "assetPath": "Assets/Data/BattleActions/Items/Alma_Em_Trevas.asset",
+            "assetPath": "Resources/BattleActions/Items/Alma_Em_Trevas.asset",
             "description": "Restaura 80 de vida. Usos: 2",
             "targetType": "Self",
             "manaCost": 0,
@@ -672,7 +672,7 @@
         },
         {
             "actionName": "Apócrifo de Mana",
-            "assetPath": "Assets/Data/BattleActions/Items/Apocrifo_de_Mana.asset",
+            "assetPath": "Resources/BattleActions/Items/Apocrifo_de_Mana.asset",
             "description": "Restaura 35 de mana. Usos: 2",
             "targetType": "Self",
             "manaCost": 0,
@@ -697,7 +697,7 @@
         },
         {
             "actionName": "Aracna",
-            "assetPath": "Assets/Data/BattleActions/Items/Aracna.asset",
+            "assetPath": "Resources/BattleActions/Items/Aracna.asset",
             "description": "Envenena todos os inimigos por 3 turnos com Poder:12. Usos: 2",
             "targetType": "AllEnemies",
             "manaCost": 0,
@@ -722,7 +722,7 @@
         },
         {
             "actionName": "Barreira Divina",
-            "assetPath": "Assets/Data/BattleActions/Items/Barreira_Divina.asset",
+            "assetPath": "Resources/BattleActions/Items/Barreira_Divina.asset",
             "description": "Imunidade total a dano por 1 turno. Usos: 1",
             "targetType": "Self",
             "manaCost": 0,
@@ -747,7 +747,7 @@
         },
         {
             "actionName": "Bênção Completa",
-            "assetPath": "Assets/Data/BattleActions/Items/Bencao_Completa.asset",
+            "assetPath": "Resources/BattleActions/Items/Bencao_Completa.asset",
             "description": "Aumenta ataque, defesa e velocidade simultaneamente por 3 turnos. Usos: 1",
             "targetType": "Self",
             "manaCost": 0,
@@ -798,7 +798,7 @@
         },
         {
             "actionName": "Causalidade",
-            "assetPath": "Assets/Data/BattleActions/Items/Causalidade.asset",
+            "assetPath": "Resources/BattleActions/Items/Causalidade.asset",
             "description": "Cura 30 HP, Causa dano em todos os inimigos com Poder:30 e os amaldiçoa por 2 turnos. Usos: 1",
             "targetType": "AllEnemies",
             "manaCost": 0,
@@ -823,7 +823,7 @@
         },
         {
             "actionName": "Contrato Diabólico",
-            "assetPath": "Assets/Data/BattleActions/Items/Contrato_Diabolico.asset",
+            "assetPath": "Resources/BattleActions/Items/Contrato_Diabolico.asset",
             "description": "Aumenta ataque em +15 por 4 turnos. Usos: 2",
             "targetType": "Self",
             "manaCost": 0,
@@ -848,7 +848,7 @@
         },
         {
             "actionName": "Ébano",
-            "assetPath": "Assets/Data/BattleActions/Items/Ebano.asset",
+            "assetPath": "Resources/BattleActions/Items/Ebano.asset",
             "description": "Restaura 120 de vida. Aumenta agildade. Usos: 1",
             "targetType": "Self",
             "manaCost": 0,
@@ -873,7 +873,7 @@
         },
         {
             "actionName": "Égide",
-            "assetPath": "Assets/Data/BattleActions/Items/Egide.asset",
+            "assetPath": "Resources/BattleActions/Items/Egide.asset",
             "description": "Aumenta defesa por 3 turnos. Usos: 2",
             "targetType": "Self",
             "manaCost": 0,
@@ -898,7 +898,7 @@
         },
         {
             "actionName": "Éter",
-            "assetPath": "Assets/Data/BattleActions/Items/Eter.asset",
+            "assetPath": "Resources/BattleActions/Items/Eter.asset",
             "description": "Restaura 50 de mana. Usos: 2",
             "targetType": "Self",
             "manaCost": 0,
@@ -923,7 +923,7 @@
         },
         {
             "actionName": "Explosivos",
-            "assetPath": "Assets/Data/BattleActions/Items/Explosivos.asset",
+            "assetPath": "Resources/BattleActions/Items/Explosivos.asset",
             "description": "Causa dano a um inimigo. Poder:60. Usos: 3",
             "targetType": "SingleEnemy",
             "manaCost": 0,
@@ -948,7 +948,7 @@
         },
         {
             "actionName": "Fonte de Mana",
-            "assetPath": "Assets/Data/BattleActions/Items/Fonte_de_Mana.asset",
+            "assetPath": "Resources/BattleActions/Items/Fonte_de_Mana.asset",
             "description": "Restaura 25 de mana. Usos: 3",
             "targetType": "Self",
             "manaCost": 0,
@@ -973,7 +973,7 @@
         },
         {
             "actionName": "Grimório da Vida",
-            "assetPath": "Assets/Data/BattleActions/Items/Grimorio_da_Vida.asset",
+            "assetPath": "Resources/BattleActions/Items/Grimorio_da_Vida.asset",
             "description": "Restaura 70 de vida. Usos: 2",
             "targetType": "Self",
             "manaCost": 0,
@@ -998,7 +998,7 @@
         },
         {
             "actionName": "Lâmina do Executor",
-            "assetPath": "Assets/Data/BattleActions/Items/Lamina_do_Executor.asset",
+            "assetPath": "Resources/BattleActions/Items/Lamina_do_Executor.asset",
             "description": "Causa dano a um alvo. Poder:100. Uso: 1",
             "targetType": "SingleEnemy",
             "manaCost": 0,
@@ -1023,7 +1023,7 @@
         },
         {
             "actionName": "Oferenda",
-            "assetPath": "Assets/Data/BattleActions/Items/Oferenda.asset",
+            "assetPath": "Resources/BattleActions/Items/Oferenda.asset",
             "description": "Aumenta ataque em 100 por um turno. Usos: 1",
             "targetType": "Self",
             "manaCost": 0,
@@ -1048,7 +1048,7 @@
         },
         {
             "actionName": "Orbe da Vida",
-            "assetPath": "Assets/Data/BattleActions/Items/Orbe_da_Vida.asset",
+            "assetPath": "Resources/BattleActions/Items/Orbe_da_Vida.asset",
             "description": "Restaura 40 de vida. Usos: 3",
             "targetType": "Self",
             "manaCost": 0,
@@ -1073,7 +1073,7 @@
         },
         {
             "actionName": "Purificação Total",
-            "assetPath": "Assets/Data/BattleActions/Items/Purificacao_Total.asset",
+            "assetPath": "Resources/BattleActions/Items/Purificacao_Total.asset",
             "description": "Recupera 50 de Mana, Cura 50 de vida. Usos: 2",
             "targetType": "Self",
             "manaCost": 0,
@@ -1098,7 +1098,7 @@
         },
         {
             "actionName": "Ritual de Sangue",
-            "assetPath": "Assets/Data/BattleActions/Items/Ritual_de_Sangue.asset",
+            "assetPath": "Resources/BattleActions/Items/Ritual_de_Sangue.asset",
             "description": "Restaura 60 de mana. Cause dano a si próprio com Poder:60. Usos: 2",
             "targetType": "Self",
             "manaCost": 0,
@@ -1123,7 +1123,7 @@
         },
         {
             "actionName": "Selo Explosivo",
-            "assetPath": "Assets/Data/BattleActions/Items/Selo_Explosivo.asset",
+            "assetPath": "Resources/BattleActions/Items/Selo_Explosivo.asset",
             "description": "Causa dano a todos os inimigos. Poder:35. Usos: 2",
             "targetType": "AllEnemies",
             "manaCost": 0,
@@ -1148,7 +1148,7 @@
         },
         {
             "actionName": "Trovão do Tártaro",
-            "assetPath": "Assets/Data/BattleActions/Items/SeloAmaldicoado.asset",
+            "assetPath": "Resources/BattleActions/Items/SeloAmaldicoado.asset",
             "description": "Aumenta agilidade em 3 por 3 turnos.",
             "targetType": "Self",
             "manaCost": 0,
@@ -1173,7 +1173,7 @@
         },
         {
             "actionName": "Agonia",
-            "assetPath": "Assets/Data/BattleActions/Mana/Agonia.asset",
+            "assetPath": "Resources/BattleActions/Mana/Agonia.asset",
             "description": "Causa dano a todos inimigos com Poder:40 e reduz velocidade por 2 turnos. Custo: 30 MP",
             "targetType": "AllEnemies",
             "manaCost": 30,
@@ -1198,7 +1198,7 @@
         },
         {
             "actionName": "Aniquilação da Alma",
-            "assetPath": "Assets/Data/BattleActions/Mana/Aniquilacao_da_Alma.asset",
+            "assetPath": "Resources/BattleActions/Mana/Aniquilacao_da_Alma.asset",
             "description": "Causa dano a si mesmo e a um inimigo com poder Poder:50. Custo: 30 MP",
             "targetType": "SingleEnemy",
             "manaCost": 30,
@@ -1223,7 +1223,7 @@
         },
         {
             "actionName": "Benção da Alma",
-            "assetPath": "Assets/Data/BattleActions/Mana/Benção_da_Alma.asset",
+            "assetPath": "Resources/BattleActions/Mana/Benção_da_Alma.asset",
             "description": "Cura 25 de vida e ganha regeneração por 4 turnos. Custo: 12 MP",
             "targetType": "Self",
             "manaCost": 12,
@@ -1248,7 +1248,7 @@
         },
         {
             "actionName": "Drenar Alma",
-            "assetPath": "Assets/Data/BattleActions/Mana/Drenar_Alma.asset",
+            "assetPath": "Resources/BattleActions/Mana/Drenar_Alma.asset",
             "description": "Causa dano com poder Poder:50. Cura 25 de vida. Custo: 18 MP",
             "targetType": "SingleEnemy",
             "manaCost": 18,
@@ -1273,7 +1273,7 @@
         },
         {
             "actionName": "Espiritismo",
-            "assetPath": "Assets/Data/BattleActions/Mana/Espiritismo.asset",
+            "assetPath": "Resources/BattleActions/Mana/Espiritismo.asset",
             "description": "Restaura 35 de vida. Custo: 10 MP",
             "targetType": "Self",
             "manaCost": 10,
@@ -1298,7 +1298,7 @@
         },
         {
             "actionName": "Explosão Sombria",
-            "assetPath": "Assets/Data/BattleActions/Mana/Explosao_Sombria.asset",
+            "assetPath": "Resources/BattleActions/Mana/Explosao_Sombria.asset",
             "description": "Causa dano a todos os inimigos. Poder:35. Custo: 25 MP",
             "targetType": "AllEnemies",
             "manaCost": 25,
@@ -1323,7 +1323,7 @@
         },
         {
             "actionName": "Fúria",
-            "assetPath": "Assets/Data/BattleActions/Mana/Furia.asset",
+            "assetPath": "Resources/BattleActions/Mana/Furia.asset",
             "description": "Aumenta ataque por 3 turnos, mas reduz defesa. Custo: 8 MP",
             "targetType": "Self",
             "manaCost": 8,
@@ -1348,7 +1348,7 @@
         },
         {
             "actionName": "Golpe das Sombras",
-            "assetPath": "Assets/Data/BattleActions/Mana/Golpe_das_Sombras.asset",
+            "assetPath": "Resources/BattleActions/Mana/Golpe_das_Sombras.asset",
             "description": "Causa dano com Poder:55. Custo: 12 MP",
             "targetType": "SingleEnemy",
             "manaCost": 12,
@@ -1373,7 +1373,7 @@
         },
         {
             "actionName": "Lâmina Fantasma",
-            "assetPath": "Assets/Data/BattleActions/Mana/Lamina_Fantasma.asset",
+            "assetPath": "Resources/BattleActions/Mana/Lamina_Fantasma.asset",
             "description": "Causa dano com Poder:70. Reduz defesa do alvo. Custo: 16 MP",
             "targetType": "SingleEnemy",
             "manaCost": 16,
@@ -1398,7 +1398,7 @@
         },
         {
             "actionName": "Maldição da Fraqueza",
-            "assetPath": "Assets/Data/BattleActions/Mana/Maldição_da_Fraqueza.asset",
+            "assetPath": "Resources/BattleActions/Mana/Maldição_da_Fraqueza.asset",
             "description": "Reduz defesa do inimigo por 4 turnos. Custo: 10 MP",
             "targetType": "SingleEnemy",
             "manaCost": 10,
@@ -1423,7 +1423,7 @@
         },
         {
             "actionName": "Morcegos",
-            "assetPath": "Assets/Data/BattleActions/Mana/Morcegos.asset",
+            "assetPath": "Resources/BattleActions/Mana/Morcegos.asset",
             "description": "Envenena todos os inimigos por 3 turnos. Custo: 15 MP",
             "targetType": "AllEnemies",
             "manaCost": 15,
@@ -1448,7 +1448,7 @@
         },
         {
             "actionName": "Pacto de Sangue",
-            "assetPath": "Assets/Data/BattleActions/Mana/Pacto_de_Sangue.asset",
+            "assetPath": "Resources/BattleActions/Mana/Pacto_de_Sangue.asset",
             "description": "Ganhar ataque massivo por 3 turnos, mas causa dano a si próprio com Poder:50. Custo: 15 MP",
             "targetType": "Self",
             "manaCost": 15,
@@ -1473,7 +1473,7 @@
         },
         {
             "actionName": "Raio Sombrio",
-            "assetPath": "Assets/Data/BattleActions/Mana/Raio_Sombrio.asset",
+            "assetPath": "Resources/BattleActions/Mana/Raio_Sombrio.asset",
             "description": "Causa dano. Poder:45 Custo: 8 MP",
             "targetType": "SingleEnemy",
             "manaCost": 8,
@@ -1498,7 +1498,7 @@
         },
         {
             "actionName": "Tempestade Espectral",
-            "assetPath": "Assets/Data/BattleActions/Mana/Tempestade_Espectral.asset",
+            "assetPath": "Resources/BattleActions/Mana/Tempestade_Espectral.asset",
             "description": "Causa dano a todos os inimigos. Poder:50. Custo: 35 MP",
             "targetType": "AllEnemies",
             "manaCost": 35,
@@ -1523,7 +1523,7 @@
         },
         {
             "actionName": "Tufão",
-            "assetPath": "Assets/Data/BattleActions/Mana/Tufao.asset",
+            "assetPath": "Resources/BattleActions/Mana/Tufao.asset",
             "description": "Causa dano a todos os inimigos. Poder:30. Custo: 20 MP",
             "targetType": "AllEnemies",
             "manaCost": 20,
@@ -1548,7 +1548,7 @@
         },
         {
             "actionName": "Ataque Sombrio",
-            "assetPath": "Assets/Data/BattleActions/Unlimited/Ataque_Sombrio.asset",
+            "assetPath": "Resources/BattleActions/Unlimited/Ataque_Sombrio.asset",
             "description": "Poder:25. Sem custo",
             "targetType": "SingleEnemy",
             "manaCost": 0,
@@ -1573,7 +1573,7 @@
         },
         {
             "actionName": "Golpe da Execução",
-            "assetPath": "Assets/Data/BattleActions/Unlimited/Golpe_da_Execucao.asset",
+            "assetPath": "Resources/BattleActions/Unlimited/Golpe_da_Execucao.asset",
             "description": "Causa dano em um inimigo com Poder:35 e dano em si próprio de Poder:20",
             "targetType": "SingleEnemy",
             "manaCost": 0,
@@ -1598,7 +1598,7 @@
         },
         {
             "actionName": "Golpe Poderoso",
-            "assetPath": "Assets/Data/BattleActions/Unlimited/Golpe_Poderoso.asset",
+            "assetPath": "Resources/BattleActions/Unlimited/Golpe_Poderoso.asset",
             "description": "Poder:40. Reduz sua defesa por 2 turnos. Sem custo",
             "targetType": "SingleEnemy",
             "manaCost": 0,
@@ -1623,7 +1623,7 @@
         },
         {
             "actionName": "Transcender",
-            "assetPath": "Assets/Data/BattleActions/Unlimited/Transcender.asset",
+            "assetPath": "Resources/BattleActions/Unlimited/Transcender.asset",
             "description": "Restaura 15 de vida e 1 de Mana. Sem custo",
             "targetType": "Self",
             "manaCost": 0,

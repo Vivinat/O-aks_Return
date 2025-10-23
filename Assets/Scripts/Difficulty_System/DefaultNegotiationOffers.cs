@@ -223,15 +223,12 @@ public class DefaultNegotiationOffers : MonoBehaviour
     {
         List<NegotiationOffer> offers = new List<NegotiationOffer>();
         
-        bool hasBoss = FindObjectOfType<BossNode>() != null || mapName.ToLower().Contains("boss");
-        if (!hasBoss) return offers;
-        
         string bossName = GetBossNameFromMap(mapName);
         
         // VANTAGEM: Mais poder
         offers.Add(NegotiationOffer.CreateAdvantage(
             "Matador de Chefes",
-            $"Ganhe força contra {bossName}.",
+            $"Ganhe força contra chefes poderosos.",
             CardAttribute.PlayerActionPower,
             6,
             BehaviorTriggerType.DefaultSessionOffer,
@@ -241,10 +238,10 @@ public class DefaultNegotiationOffers : MonoBehaviour
         // DESVANTAGEM: Boss mais forte
         offers.Add(NegotiationOffer.CreateDisadvantage(
             "Fúria do Boss",
-            $"{bossName} se enfurece.",
+            $"Os chefes se enfurecem.",
             CardAttribute.EnemyActionPower,
             15,
-            false, // Afeta inimigos
+            false, 
             BehaviorTriggerType.DefaultSessionOffer,
             $"Boss: {bossName}"
         ));
