@@ -193,6 +193,11 @@ public class DynamicNegotiationCard
             {
                 desc += $"Inimigos pagam <color=#90EE90>+{realAdvantageValue}</color> de mana a mais\n";
             }
+            else if (advantageAttr == CardAttribute.ShopPrices)
+            {
+                // ✅ CORREÇÃO: ShopPrices negativo = mais barato = vantagem
+                desc += $"Itens custam: <color=#90EE90>{Mathf.Abs(realAdvantageValue)}</color> moedas a menos\n";
+            }
             else
             {
                 desc += $"+{realAdvantageValue} {AttributeHelper.GetDisplayName(advantageAttr)}\n";
@@ -256,6 +261,11 @@ public class DynamicNegotiationCard
                 if (costAttr == CardAttribute.PlayerActionManaCost)
                 {
                     desc += $"Aumenta custo de mana: <color=#FF4444>+{Mathf.Abs(realCostValue)}</color>";
+                }
+                else if (costAttr == CardAttribute.ShopPrices)
+                {
+                    // ✅ CORREÇÃO: ShopPrices positivo = mais caro = desvantagem
+                    desc += $"Itens custam: <color=#FF4444>+{Mathf.Abs(realCostValue)}</color> moedas a mais";
                 }
                 else
                 {

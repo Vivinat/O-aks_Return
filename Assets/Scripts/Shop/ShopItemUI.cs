@@ -1,4 +1,4 @@
-// Assets/Scripts/UI/ShopItemUI.cs (FIXED - Com Tooltips Dinâmicos)
+// Assets/Scripts/UI/ShopItemUI.cs (FIXED - Com Tooltips Dinâmicos e Preço Modificado)
 
 using UnityEngine;
 using UnityEngine.EventSystems;
@@ -138,12 +138,14 @@ public class ShopItemUI : MonoBehaviour, IPointerEnterHandler, IPointerExitHandl
         {
             string description = shopItem.battleAction.GetDynamicDescription();
             
-            // Adiciona informações extras se for item à venda
+            // ✅ CORREÇÃO: Adiciona preço modificado ao tooltip
             if (isForSale)
             {
+                description += $"\n\n<color=#FFD700>Preço: {displayPrice} moedas</color>";
+                
                 if (!GameManager.Instance.CurrencySystem.HasEnoughCoins(displayPrice))
                 {
-                    description += " | <color=red>Moedas insuficientes!</color>";
+                    description += "\n<color=red>Moedas insuficientes!</color>";
                 }
             }
             
@@ -152,12 +154,15 @@ public class ShopItemUI : MonoBehaviour, IPointerEnterHandler, IPointerExitHandl
         // ===== POWERUPS USAM DESCRIÇÃO FORMATADA =====
         else if (shopItem.type == ShopItem.ItemType.Powerup && shopItem.powerup != null)
         {
-            string description = shopItem.powerup.GetFormattedDescription();
+            // ✅ CORREÇÃO: Usa description direta em vez de GetFormattedDescription() 
+            // para evitar duplicar o preço
+            string description = shopItem.powerup.description;
             
-            // Adiciona informações extras se for item à venda
+            // ✅ CORREÇÃO: Adiciona preço modificado ao tooltip
             if (isForSale)
             {
-                description += "\n\n(Clique para aplicar imediatamente)";
+                description += $"\n\n<color=#FFD700>Preço: {displayPrice} moedas</color>";
+                description += "\n(Clique para aplicar imediatamente)";
                 
                 if (!GameManager.Instance.CurrencySystem.HasEnoughCoins(displayPrice))
                 {
