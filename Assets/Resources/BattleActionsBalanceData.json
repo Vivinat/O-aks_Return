@@ -999,11 +999,11 @@
         {
             "actionName": "Lâmina do Executor",
             "assetPath": "Resources/BattleActions/Items/Lamina_do_Executor.asset",
-            "description": "Causa dano a um alvo. Poder:100. Uso: 1",
+            "description": "Causa dano a um alvo. Poder:100. Uso: 3",
             "targetType": "SingleEnemy",
             "manaCost": 0,
             "isConsumable": true,
-            "maxUses": 1,
+            "maxUses": 3,
             "shopPrice": 75,
             "effects": [
                 {
@@ -1024,11 +1024,11 @@
         {
             "actionName": "Oferenda",
             "assetPath": "Resources/BattleActions/Items/Oferenda.asset",
-            "description": "Aumenta ataque em 100 por um turno. Usos: 1",
+            "description": "Aumenta ataque em 100 por um turno. Usos: 2",
             "targetType": "Self",
             "manaCost": 0,
             "isConsumable": true,
-            "maxUses": 1,
+            "maxUses": 2,
             "shopPrice": 95,
             "effects": [
                 {

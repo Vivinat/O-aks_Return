@@ -20,7 +20,7 @@ MonoBehaviour:
   - effectType: 3
     power: 0
     statusEffect: 1
-    statusDuration: 1
+    statusDuration: 2
     statusPower: 100
     hasSelfEffect: 0
     selfEffectType: 0
