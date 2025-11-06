@@ -1,10 +1,7 @@
-// Assets/Scripts/Audio/AudioConstants.cs
-
 using UnityEngine;
 
 /// <summary>
 /// Classe estática que centraliza todas as referências de áudio do jogo.
-/// Configure os AudioClips no Inspector através de um componente AudioLibrary.
 /// </summary>
 public class AudioConstants : MonoBehaviour
 {
@@ -43,7 +40,7 @@ public class AudioConstants : MonoBehaviour
         {
             Instance = this;
             DontDestroyOnLoad(gameObject);
-            Debug.Log("✅ AudioConstants inicializado");
+            Debug.Log("AudioConstants inicializado");
         }
         else
         {

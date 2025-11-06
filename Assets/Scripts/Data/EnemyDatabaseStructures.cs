@@ -1,10 +1,7 @@
-// Assets/Scripts/Data/EnemyDatabaseStructures.cs
-
 using System.Collections.Generic;
 
 /// <summary>
 /// Estruturas de dados para serialização de inimigos
-/// IMPORTANTE: Este arquivo deve estar FORA da pasta Editor para ser acessível em runtime
 /// </summary>
 
 [System.Serializable]

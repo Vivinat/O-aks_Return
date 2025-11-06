@@ -1,5 +1,3 @@
-// Assets/Scripts/Battle/StatusEffect.cs
-
 using UnityEngine;
 
 [System.Serializable]
@@ -75,6 +73,7 @@ public class StatusEffect
         }
     }
     
+    // Retorna true se o efeito deve ser removido
     public bool ProcessTurnEffect(BattleEntity entity)
     {
         remainingTurns--;
@@ -83,7 +82,7 @@ public class StatusEffect
         {
             case StatusEffectType.Poison:
             case StatusEffectType.Cursed:
-                entity.TakeDamage(power, null, true); 
+                entity.TakeDamage(power, null, true);
                 Debug.Log($"{entity.characterData.characterName} takes {power} damage from {effectName} (ignores defense)");
                 break;
                 
@@ -94,6 +93,6 @@ public class StatusEffect
                 break;
         }
         
-        return remainingTurns <= 0; // Returns true if effect should be removed
+        return remainingTurns <= 0;
     }
 }

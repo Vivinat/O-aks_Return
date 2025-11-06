@@ -1,5 +1,3 @@
-// Assets/Scripts/Battle/EnemyHighlight.cs
-
 using UnityEngine;
 
 [RequireComponent(typeof(SpriteRenderer))]
@@ -7,8 +5,8 @@ public class EnemyHighlight : MonoBehaviour
 {
     [Header("Highlight Settings")]
     public Color highlightColor = Color.yellow;
-    public float pulseDuration = 0.5f; // Duração de cada pulso
-    public float pulseIntensity = 0.3f; // Intensidade do efeito de piscar
+    public float pulseDuration = 0.5f; 
+    public float pulseIntensity = 0.3f; 
 
     private SpriteRenderer spriteRenderer;
     private Color originalColor;
@@ -25,19 +23,13 @@ public class EnemyHighlight : MonoBehaviour
     {
         if (isHighlighted)
         {
-            // Efeito de piscar usando seno para transição suave
             pulseTimer += Time.deltaTime;
             float pulseValue = Mathf.Sin(pulseTimer * (2f * Mathf.PI / pulseDuration)) * pulseIntensity + 1f;
-            
-            // Interpola entre a cor original e a cor de highlight
             Color currentColor = Color.Lerp(originalColor, highlightColor, pulseValue * 0.5f);
             spriteRenderer.color = currentColor;
         }
     }
 
-    /// <summary>
-    /// Ativa o highlight no inimigo
-    /// </summary>
     public void StartHighlight()
     {
         if (!isHighlighted)
@@ -47,9 +39,6 @@ public class EnemyHighlight : MonoBehaviour
         }
     }
 
-    /// <summary>
-    /// Desativa o highlight e volta à cor original
-    /// </summary>
     public void StopHighlight()
     {
         if (isHighlighted)
@@ -59,9 +48,7 @@ public class EnemyHighlight : MonoBehaviour
         }
     }
 
-    /// <summary>
-    /// Permite atualizar a cor original (útil se a cor do sprite mudar por outros motivos)
-    /// </summary>
+    // Atualiza a cor original se o sprite mudar
     public void UpdateOriginalColor()
     {
         if (!isHighlighted)
@@ -72,7 +59,6 @@ public class EnemyHighlight : MonoBehaviour
 
     void OnDisable()
     {
-        // Garante que o highlight pare se o objeto for desativado
         StopHighlight();
     }
 }

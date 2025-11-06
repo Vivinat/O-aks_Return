@@ -89,11 +89,9 @@ public static class EnemyAI
                 break;
                 
             case ActionType.Mixed:
-                score = 60f; // Score bom para ações mistas
+                score = 60f; 
                 break;
         }
-        
-        // Adiciona variação aleatória para imprevisibilidade
         score += Random.Range(-5f, 5f);
         
         return score;
@@ -108,19 +106,15 @@ public static class EnemyAI
         {
             float hpPercent = (float)caster.GetCurrentHP() / caster.GetMaxHP();
             
-            // NÃO cura se HP > 90%
             if (hpPercent > 0.9f)
                 return -100f;
             
-            // HP crítico? Prioridade MÁXIMA
             if (hpPercent < CRITICAL_HEAL_THRESHOLD)
                 return 100f;
             
-            // HP baixo? Prioridade alta
             if (hpPercent < HEAL_THRESHOLD)
                 return 70f;
             
-            // HP moderado? Prioridade baixa
             return 30f;
         }
         else if (action.targetType == TargetType.SingleAlly || action.targetType == TargetType.AllAllies)
@@ -130,11 +124,9 @@ public static class EnemyAI
                 .Where(e => !e.isDead && e != caster && (float)e.GetCurrentHP() / e.GetMaxHP() < ALLY_HEAL_THRESHOLD)
                 .ToList();
             
-            // Nenhum aliado precisa de cura
             if (!woundedAllies.Any())
                 return -100f;
             
-            // Quanto pior o HP do aliado, mais prioritário
             float worstAllyHpPercent = woundedAllies.Min(e => (float)e.GetCurrentHP() / e.GetMaxHP());
             
             if (worstAllyHpPercent < CRITICAL_HEAL_THRESHOLD)
@@ -177,10 +169,8 @@ public static class EnemyAI
         {
             if (effect.statusEffect == StatusEffectType.None) continue;
             
-            // Buff em si mesmo
             if (action.targetType == TargetType.Self)
             {
-                // NÃO usa se já tiver o buff
                 if (HasStatusEffect(caster, effect.statusEffect))
                     return -100f;
             }
@@ -203,7 +193,7 @@ public static class EnemyAI
     }
 
     /// <summary>
-    /// NOVO: Avalia ações de debuff
+    /// Avalia ações de debuff
     /// </summary>
     private static float EvaluateDebuffAction(BattleAction action, BattleEntity playerTarget)
     {
@@ -215,11 +205,11 @@ public static class EnemyAI
         {
             if (effect.statusEffect == StatusEffectType.None) continue;
 
-            // Se o jogador JÁ TEM o debuff, reduz drasticamente a prioridade
+            // Se o jogador tem o debuff, reduz drasticamente a prioridade
             if (HasStatusEffect(playerTarget, effect.statusEffect))
             {
                 Debug.Log($"IA: Jogador já tem {effect.statusEffect}, penalizando a ação {action.actionName}.");
-                return -100f; // Pontuação muito baixa para evitar o uso
+                return -100f; 
             }
         }
         
@@ -249,13 +239,11 @@ public static class EnemyAI
                 break;
                 
             case TargetType.SingleEnemy:
-                // Sempre ataca o único jogador
                 if (!player.isDead)
                     targets.Add(player);
                 break;
                 
             case TargetType.SingleAlly:
-                // Cura o aliado com MENOR HP
                 var targetAlly = enemyTeam
                     .Where(e => !e.isDead && e != caster)
                     .OrderBy(e => (float)e.GetCurrentHP() / e.GetMaxHP())
@@ -264,7 +252,7 @@ public static class EnemyAI
                 if (targetAlly != null)
                     targets.Add(targetAlly);
                 else
-                    targets.Add(caster); // Se não tem aliado, usa em si mesmo
+                    targets.Add(caster); 
                 break;
                 
             case TargetType.AllEnemies:

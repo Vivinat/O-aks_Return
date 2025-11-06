@@ -1,11 +1,7 @@
-// Assets/Scripts/Data/BattleActionDataStructures.cs
-// COLOQUE NA PASTA Scripts/Data (NÃO na pasta Editor!)
-
 using System.Collections.Generic;
 
 /// <summary>
 /// Estruturas de dados para serialização de BattleActions
-/// Usadas tanto para exportação (Editor) quanto para restauração (Runtime)
 /// </summary>
 
 [System.Serializable]

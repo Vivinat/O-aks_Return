@@ -1,13 +1,9 @@
-// Assets/Scripts/Battle/FloatingTextAdvanced.cs
-// VERSÃO CANVAS UI com todos os efeitos visuais
-
 using UnityEngine;
 using TMPro;
 using System.Collections;
 
 /// <summary>
-/// Versão avançada do FloatingText com scale bounce e rotação
-/// ADAPTADO PARA CANVAS UI - TextMeshProUGUI
+/// Floating text com animações avançadas para Canvas UI
 /// </summary>
 public class FloatingTextAdvanced : MonoBehaviour
 {
@@ -36,23 +32,22 @@ public class FloatingTextAdvanced : MonoBehaviour
     [SerializeField] private float bounceHeight = 20f;
     [SerializeField] private float bounceSpeed = 8f;
     
-    private TextMeshProUGUI textMesh; // MUDOU: Agora usa UI version
-    private RectTransform rectTransform; // NOVO: Para UI
+    private TextMeshProUGUI textMesh;
+    private RectTransform rectTransform;
     private Color originalColor;
-    private Vector2 startPosition; // MUDOU: Vector2 para UI
-    private Vector2 endPosition; // MUDOU: Vector2 para UI
+    private Vector2 startPosition;
+    private Vector2 endPosition;
     private Vector3 startScale;
     private float elapsedTime = 0f;
-    private Vector2 randomOffset; // MUDOU: Vector2 para UI
+    private Vector2 randomOffset;
 
-    
     void Awake()
     {
         textMesh = GetComponentInChildren<TextMeshProUGUI>();
         
         if (textMesh == null)
         {
-            Debug.LogError("ERRO CRÍTICO: O componente TextMeshProUGUI não foi encontrado na prefab ou em seus filhos!", this.gameObject);
+            Debug.LogError("TextMeshProUGUI não encontrado!", this.gameObject);
         }
 
         rectTransform = GetComponent<RectTransform>();
@@ -67,14 +62,14 @@ public class FloatingTextAdvanced : MonoBehaviour
 
     void Start()
     {
-        startPosition = rectTransform.anchoredPosition; // MUDOU: usa anchoredPosition
+        startPosition = rectTransform.anchoredPosition;
         
         randomOffset = new Vector2(
             Random.Range(-horizontalRandomness, horizontalRandomness),
             0
         );
         
-        endPosition = startPosition + Vector2.up * floatDistance + randomOffset; // MUDOU: Vector2
+        endPosition = startPosition + Vector2.up * floatDistance + randomOffset;
         
         StartCoroutine(AnimateText());
     }
@@ -97,20 +92,20 @@ public class FloatingTextAdvanced : MonoBehaviour
             elapsedTime += Time.deltaTime;
             float normalizedTime = elapsedTime / lifetime;
             
-            // === MOVIMENTO ===
+            // Movimento base
             float curveValue = movementCurve.Evaluate(normalizedTime);
             Vector2 basePosition = Vector2.Lerp(startPosition, endPosition, curveValue);
             
-            // === BOUNCE (efeito de quique) ===
+            // Efeito bounce
             if (useBounce)
             {
                 float bounceOffset = Mathf.Sin(elapsedTime * bounceSpeed) * bounceHeight * (1f - normalizedTime);
                 basePosition.y += bounceOffset;
             }
             
-            rectTransform.anchoredPosition = basePosition; // MUDOU: usa anchoredPosition
+            rectTransform.anchoredPosition = basePosition;
             
-            // === SCALE ===
+            // Scale animation
             if (useScaleAnimation)
             {
                 float scaleValue = scaleCurve.Evaluate(normalizedTime);
@@ -118,14 +113,14 @@ public class FloatingTextAdvanced : MonoBehaviour
                 transform.localScale = startScale * scaleMultiplier;
             }
             
-            // === ROTAÇÃO ===
+            // Rotação
             if (useRotation)
             {
                 float rotation = rotationSpeed * elapsedTime;
                 transform.rotation = Quaternion.Euler(0, 0, rotation);
             }
             
-            // === FADE OUT ===
+            // Fade out
             if (elapsedTime >= fadeStartTime)
             {
                 float fadeProgress = (elapsedTime - fadeStartTime) / (lifetime - fadeStartTime);
