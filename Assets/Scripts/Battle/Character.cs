@@ -1,5 +1,3 @@
-// Assets/Scripts/Entities/Character.cs
-
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -17,13 +15,13 @@ public class Character : ScriptableObject
     public Team team;
 
     [Header("Visual")]
-    public Sprite characterSprite; // NOVO: Sprite do personagem para exibir na batalha
+    public Sprite characterSprite; 
 
     [Header("Stats")]
     public int maxHp;
     public int maxMp;
     public int defense;
-    public float speed; // Influenciará a velocidade de preenchimento do ATB
+    public float speed;
     
     [Header("Audio")]
     [Tooltip("Som que toca quando este personagem morre")]
@@ -31,5 +29,4 @@ public class Character : ScriptableObject
 
     [Header("Battle")]
     public List<BattleAction> battleActions;
-    // public AI_Behaviour aiBehaviour; // Opcional para IA
 }

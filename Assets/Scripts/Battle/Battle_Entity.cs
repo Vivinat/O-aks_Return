@@ -1,5 +1,3 @@
-// Assets/Scripts/Battle/BattleEntity.cs (Enhanced with Status Effects)
-
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
@@ -49,18 +47,17 @@ public class BattleEntity : MonoBehaviour
     {
         if (characterData != null)
         {
-            // CASO 1: É um personagem válido (jogador ou inimigo).
             // Garante que a HUD esteja ligada e inicializa os status.
-            EnableHUDElements(); // Liga a HUD!
+            EnableHUDElements(); 
 
-            currentHp = characterData.maxHp; //
-            currentMp = characterData.maxMp; //
-            currentAtb = Random.Range(0, 20); //
+            currentHp = characterData.maxHp; 
+            currentMp = characterData.maxMp; 
+            currentAtb = Random.Range(0, 20); 
 
-            UpdateATBBar(); //
-            UpdateHPBar(); //
-            UpdateMPBar(); //
-            UpdateValueTexts(); //
+            UpdateATBBar(); 
+            UpdateHPBar(); 
+            UpdateMPBar(); 
+            UpdateValueTexts(); 
         }
         
         currentHp = characterData.maxHp;
@@ -128,7 +125,7 @@ public class BattleEntity : MonoBehaviour
         float damageMultiplier = GetDamageMultiplier();
         int finalDamage = Mathf.RoundToInt(baseDamage * damageMultiplier);
         
-        // NOVO: Registra o hit individual
+        // Registra o hit individual
         if (characterData.team == Team.Player)
         {
             BehaviorAnalysisIntegration.OnPlayerHitReceived(finalDamage);
@@ -354,7 +351,7 @@ public class BattleEntity : MonoBehaviour
         // Clear all status effects on death
         ClearAllStatusEffects();
 
-        // NOVO: Se for jogador, tenta ativar segunda chance
+        // Se for jogador, tenta ativar segunda chance
         if (characterData.team == Team.Player)
         {
             TryActivateSecondChance();
@@ -385,8 +382,7 @@ public class BattleEntity : MonoBehaviour
     }
     
     /// <summary>
-    /// CORRIGIDO: Tenta ativar o sistema de segunda chance
-    /// Agora reseta corretamente o ATB do atacante para evitar ação dupla
+    /// Tenta ativar o sistema de segunda chance
     /// </summary>
     private void TryActivateSecondChance()
     {
@@ -404,7 +400,6 @@ public class BattleEntity : MonoBehaviour
             return;
         }
         
-        // Encontra o BattleManager
         BattleManager battleManager = FindObjectOfType<BattleManager>();
         if (battleManager == null)
         {
@@ -415,7 +410,7 @@ public class BattleEntity : MonoBehaviour
         
         Debug.Log("=== ATIVANDO SISTEMA DE SEGUNDA CHANCE ===");
         
-        // NOVO: Salva referência do personagem ativo atual
+        // Salva referência do personagem ativo atual
         BattleEntity currentActiveCharacter = battleManager.GetActiveCharacter();
         
         // Inicia negociação
@@ -429,22 +424,17 @@ public class BattleEntity : MonoBehaviour
             }
             else
             {
-                // Jogador aceitou - já foi revivido pelo manager
                 Debug.Log("Negociação aceita! Jogador revivido.");
                 
-                // CORREÇÃO 1: Limpa TODOS os status effects negativos do jogador
                 ClearNegativeStatusEffects();
                 Debug.Log("Status effects negativos removidos após ressurreição!");
                 
-                // CORREÇÃO 2: Reseta o ATB do personagem que estava agindo
-                // para evitar que ele ataque novamente
                 if (currentActiveCharacter != null && !currentActiveCharacter.isDead)
                 {
                     Debug.Log($"Resetando ATB de {currentActiveCharacter.characterData.characterName} para evitar turno duplo");
                     currentActiveCharacter.ResetATB();
                 }
                 
-                // Precisa resetar o estado da batalha
                 if (battleManager != null)
                 {
                     battleManager.currentState = BattleState.RUNNING;
@@ -454,8 +444,7 @@ public class BattleEntity : MonoBehaviour
     }
     
     /// <summary>
-    /// NOVO: Remove apenas status effects negativos (debuffs e DoTs)
-    /// Útil para ressurreição - mantém buffs positivos
+    /// Remove apenas status effects negativos
     /// </summary>
     public void ClearNegativeStatusEffects()
     {
@@ -479,11 +468,10 @@ public class BattleEntity : MonoBehaviour
     }
 
     /// <summary>
-    /// NOVO: Completa o processo de morte (separado para reutilização)
+    /// Processo de morte (
     /// </summary>
     private void CompleteDeath()
     {
-        // Desativa os sliders da HUD imediatamente
         DisableHUDElements();
         
         if (characterData.deathSound != null)
@@ -491,20 +479,16 @@ public class BattleEntity : MonoBehaviour
             AudioConstants.PlayDeathSound(characterData.deathSound);
         }
 
-        // Aciona a animação de morte
         if (animationController != null)
         {
             animationController.OnDeath();
         }
 
-        // Desativa o sprite após um delay para a animação tocar
         StartCoroutine(DeactivateSpriteAfterDelay());
     }
-
-    // Método para desativar elementos da HUD quando o personagem morre OU quando não tem characterData
+    
     private void DisableHUDElements()
     {
-        // Desativa completamente os sliders
         if (atbBar != null)
         {
             atbBar.gameObject.SetActive(false);
@@ -520,7 +504,6 @@ public class BattleEntity : MonoBehaviour
             mpBar.gameObject.SetActive(false);
         }
 
-        // Esconde os textos de valores também
         if (hpValueText != null)
         {
             hpValueText.gameObject.SetActive(false);
@@ -531,27 +514,23 @@ public class BattleEntity : MonoBehaviour
             mpValueText.gameObject.SetActive(false);
         }
 
-        // CORREÇÃO: Verifica se characterData existe antes de acessar
         string entityName = characterData != null ? characterData.characterName : gameObject.name;
         Debug.Log($"HUD de {entityName} desativada");
     }
 
-    // Método alternativo para fazer fade dos sliders em vez de desativar
+    // Método alternativo p
     private void FadeHUDElements()
     {
-        // Opção 2: Faz fade dos sliders para 50% de transparência
         SetSliderAlpha(atbBar, 0.3f);
         SetSliderAlpha(hpBar, 0.3f);
         SetSliderAlpha(mpBar, 0.3f);
 
-        // Faz fade dos textos também
         SetTextAlpha(hpValueText, 0.3f);
         SetTextAlpha(mpValueText, 0.3f);
 
         Debug.Log($"HUD de {characterData.characterName} com fade aplicado");
     }
 
-    // Método auxiliar para alterar a transparência de um slider
     private void SetSliderAlpha(Slider slider, float alpha)
     {
         if (slider == null) return;
@@ -566,7 +545,6 @@ public class BattleEntity : MonoBehaviour
         }
     }
 
-    // Método auxiliar para alterar a transparência de um texto
     private void SetTextAlpha(TextMeshProUGUI text, float alpha)
     {
         if (text == null) return;
@@ -576,7 +554,6 @@ public class BattleEntity : MonoBehaviour
         text.color = color;
     }
 
-    // Método público para reativar a HUD (útil para debug ou reviver)
     public void EnableHUDElements()
     {
         if (atbBar != null)
@@ -594,7 +571,6 @@ public class BattleEntity : MonoBehaviour
             mpBar.gameObject.SetActive(true);
         }
 
-        // Reativa os textos também
         if (hpValueText != null)
         {
             hpValueText.gameObject.SetActive(true);
@@ -605,7 +581,6 @@ public class BattleEntity : MonoBehaviour
             mpValueText.gameObject.SetActive(true);
         }
 
-        // Restaura a opacidade total
         SetSliderAlpha(atbBar, 1f);
         SetSliderAlpha(hpBar, 1f);
         SetSliderAlpha(mpBar, 1f);
@@ -615,7 +590,6 @@ public class BattleEntity : MonoBehaviour
         Debug.Log($"HUD de {characterData.characterName} reativada");
     }
 
-    // Desativa apenas o renderer para a lógica continuar existindo se necessário
     private IEnumerator DeactivateSpriteAfterDelay()
     {
         // Espera para a animação de morte
@@ -646,30 +620,27 @@ public class BattleEntity : MonoBehaviour
             mpBar.value = (float)currentMp / characterData.maxMp;
     }
 
-    // ===== MÉTODO PARA ATUALIZAR TEXTOS DE VALORES =====
 
     /// <summary>
-    /// Atualiza os textos que mostram os valores numéricos de HP e MP
+    /// Atualiza textos
     /// </summary>
     private void UpdateValueTexts()
     {
         if (isDead) return;
 
-        // Atualiza texto de HP (para todos os personagens)
+        // Atualiza texto de HP
         if (hpValueText != null)
         {
             hpValueText.text = $"{currentHp}";
         }
 
-        // Atualiza texto de MP (geralmente só para o player)
+        // Atualiza texto de MP 
         if (mpValueText != null)
         {
             mpValueText.text = $"{currentMp}";
         }
     }
-
-    // ===== MÉTODOS PÚBLICOS PARA ACESSO AOS VALORES =====
-
+    
     /// <summary>
     /// Retorna o HP atual
     /// </summary>
@@ -703,7 +674,7 @@ public class BattleEntity : MonoBehaviour
     }
 
     /// <summary>
-    /// Força uma atualização dos textos (útil para debug ou mudanças externas)
+    /// Força uma atualização dos textos
     /// </summary>
     public void ForceUpdateValueTexts()
     {

@@ -1,5 +1,3 @@
-// Assets/Scripts/Battle/BattleEntityHover.cs
-
 using UnityEngine;
 using System.Text;
 using System.Linq;
@@ -61,11 +59,9 @@ public class BattleEntityHover : MonoBehaviour
     
     void OnMouseEnter()
     {
-        // Não faz nada se o personagem está morto
         if (battleEntity.isDead) return;
         
         // Só mostra hover se não estiver em seleção de alvo
-        // (TargetSelector tem prioridade)
         if (!IsInTargetSelectionMode())
         {
             StartHighlight();
@@ -115,13 +111,11 @@ public class BattleEntityHover : MonoBehaviour
         string tooltipTitle = GetTooltipTitle();
         string tooltipDescription = GetStatusEffectsDescription();
         
-        // Se não há status effects, mostra apenas informações básicas
         if (string.IsNullOrEmpty(tooltipDescription))
         {
             tooltipDescription = GetBasicInfo();
         }
         
-        // Calcula posição do tooltip acima do personagem
         Vector3 worldPos = transform.position + (Vector3)tooltipOffset;
         
         battleHUD.ShowTooltip(tooltipTitle, tooltipDescription);
@@ -146,7 +140,6 @@ public class BattleEntityHover : MonoBehaviour
     {
         StringBuilder info = new StringBuilder();
         
-        // Linha 1: HP e MP (se tiver)
         info.Append($"<b>HP:</b> {battleEntity.GetCurrentHP()}/{battleEntity.GetMaxHP()}");
         
         if (battleEntity.GetMaxMP() > 0)
@@ -196,7 +189,6 @@ public class BattleEntityHover : MonoBehaviour
         
         StringBuilder description = new StringBuilder();
         
-        // Informações básicas primeiro
         description.AppendLine(GetBasicInfo());
         description.AppendLine();
         description.AppendLine("<b>Status:</b>");
@@ -215,30 +207,15 @@ public class BattleEntityHover : MonoBehaviour
     /// </summary>
     private string GetStatusEffectDescriptionCompact(StatusEffect effect)
     {
-        string icon = GetStatusEffectIcon(effect.type);
+        string icon = GetStatusEffectIcon();
         string colorCode = GetStatusEffectColor(effect.type);
         
         return $"<color={colorCode}>{icon} {effect.effectName} ({effect.remainingTurns}t)</color>";
     }
     
-    private string GetStatusEffectIcon(StatusEffectType type)
+    private string GetStatusEffectIcon()
     {
-        switch (type)
-        {
-            case StatusEffectType.AttackUp: return "⚔️";
-            case StatusEffectType.AttackDown: return "🗡️";
-            case StatusEffectType.DefenseUp: return "🛡️";
-            case StatusEffectType.DefenseDown: return "🪓";
-            case StatusEffectType.SpeedUp: return "⚡";
-            case StatusEffectType.SpeedDown: return "🐌";
-            case StatusEffectType.Poison: return "☠️";
-            case StatusEffectType.Regeneration: return "💚";
-            case StatusEffectType.Vulnerable: return "💔";
-            case StatusEffectType.Protected: return "✨";
-            case StatusEffectType.Blessed: return "🌟";
-            case StatusEffectType.Cursed: return "💀";
-            default: return "•";
-        }
+        return "•";
     }
     
     private string GetStatusEffectColor(StatusEffectType type)

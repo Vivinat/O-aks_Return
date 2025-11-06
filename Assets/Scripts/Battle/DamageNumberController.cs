@@ -1,6 +1,3 @@
-// Assets/Scripts/Battle/DamageNumberController.cs
-// VERSÃO COM EMPILHAMENTO AUTOMÁTICO DE TEXTOS
-
 using UnityEngine;
 using TMPro;
 using System.Collections;
@@ -8,7 +5,6 @@ using System.Collections.Generic;
 
 /// <summary>
 /// Controlador central para criar números de dano e textos de status flutuantes
-/// VERSÃO CANVAS UI com sistema de empilhamento para múltiplos efeitos
 /// </summary>
 public class DamageNumberController : MonoBehaviour
 {
@@ -170,7 +166,7 @@ public class DamageNumberController : MonoBehaviour
     }
 
     /// <summary>
-    /// Cria o texto flutuante na posição especificada COM EMPILHAMENTO AUTOMÁTICO
+    /// Cria o texto flutuante na posição especificada
     /// </summary>
     private void CreateFloatingText(Vector3 worldPosition, string text, Color color, float fontSize)
     {
@@ -186,14 +182,14 @@ public class DamageNumberController : MonoBehaviour
             return;
         }
 
-        // Arredonda a posição para agrupar textos do mesmo alvo
+        // Arredonda a posição para agrupar textos
         Vector3 roundedPosition = new Vector3(
             Mathf.Round(worldPosition.x * 10f) / 10f,
             Mathf.Round(worldPosition.y * 10f) / 10f,
             Mathf.Round(worldPosition.z * 10f) / 10f
         );
 
-        // Obtém o índice de empilhamento atual para esta posição
+        // Obtém o índice de empilhamento atual
         int stackIndex = GetStackIndex(roundedPosition);
 
         // Converte posição do mundo (3D) para posição na tela
@@ -205,7 +201,6 @@ public class DamageNumberController : MonoBehaviour
         
         if (rectTransform != null)
         {
-            // Converte screen position para posição local do Canvas
             RectTransformUtility.ScreenPointToLocalPointInRectangle(
                 targetCanvas.transform as RectTransform,
                 screenPosition,
@@ -213,13 +208,8 @@ public class DamageNumberController : MonoBehaviour
                 out Vector2 localPoint
             );
             
-            // Adiciona offset vertical BASE
             localPoint.y += verticalOffset;
-            
-            // NOVO: Adiciona empilhamento vertical baseado no índice
             localPoint.y += stackIndex * stackingVerticalSpacing;
-            
-            // Adiciona offset horizontal aleatório
             localPoint.x += Random.Range(-horizontalSpread, horizontalSpread);
             
             rectTransform.anchoredPosition = localPoint;
@@ -235,7 +225,6 @@ public class DamageNumberController : MonoBehaviour
             Debug.LogError("O script FloatingTextAdvanced não foi encontrado no prefab!", textObj);
         }
 
-        // Agenda o reset do contador de empilhamento para esta posição
         ScheduleStackReset(roundedPosition);
     }
 
@@ -260,7 +249,6 @@ public class DamageNumberController : MonoBehaviour
     /// </summary>
     private void ScheduleStackReset(Vector3 position)
     {
-        // Se já existe uma coroutine de reset para esta posição, cancela
         if (stackResetCoroutines.ContainsKey(position) && stackResetCoroutines[position] != null)
         {
             StopCoroutine(stackResetCoroutines[position]);
@@ -277,7 +265,6 @@ public class DamageNumberController : MonoBehaviour
     {
         yield return new WaitForSeconds(stackResetTime);
         
-        // Reseta o contador
         if (positionStackCount.ContainsKey(position))
         {
             positionStackCount[position] = 0;

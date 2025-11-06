@@ -1,5 +1,3 @@
-// Assets/Scripts/UI/ActionButtonUI.cs (Atualizado para Itens)
-
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.EventSystems;
@@ -12,7 +10,7 @@ public class ActionButtonUI : MonoBehaviour, IPointerEnterHandler, IPointerExitH
 
     [Header("UI Components")]
     public Image iconImage; 
-    public TextMeshProUGUI usesText; // NOVO: Para mostrar usos de itens
+    public TextMeshProUGUI usesText; 
 
     public void Setup(BattleAction action, BattleHUD hud)
     {
@@ -30,7 +28,7 @@ public class ActionButtonUI : MonoBehaviour, IPointerEnterHandler, IPointerExitH
             iconImage.enabled = false;
         }
 
-        // NOVO: Configura texto de usos para consumíveis
+        //Configura texto de usos para consumíveis
         if (usesText != null)
         {
             if (actionData.isConsumable)
@@ -51,7 +49,7 @@ public class ActionButtonUI : MonoBehaviour, IPointerEnterHandler, IPointerExitH
         {
             string description = actionData.description;
             
-            // NOVO: Adiciona informações extras para consumíveis
+            //Adiciona informações extras para consumíveis
             if (actionData.isConsumable)
             {
                 description += $"\n\nUsos: {actionData.currentUses}/{actionData.maxUses}";

@@ -1,5 +1,3 @@
-// Assets/Scripts/UI/BattleHUD.cs (Atualizado com Timer de Turno)
-
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
@@ -47,7 +45,6 @@ public class BattleHUD : MonoBehaviour
             cancelTargetButton.gameObject.SetActive(false);
         }
 
-        // Esconde o timer inicialmente
         if (turnTimerText != null)
         {
             turnTimerText.gameObject.SetActive(false);
@@ -113,19 +110,17 @@ public class BattleHUD : MonoBehaviour
             }
         }
 
-        // NOVO: Inicia o timer de turno quando o menu é mostrado
+        //Inicia o timer de turno quando o menu é mostrado
         StartTurnTimer();
     }
 
     /// <summary>
-    /// NOVO: Inicia o timer de turno
+    /// Inicia o timer de turno
     /// </summary>
     private void StartTurnTimer()
     {
-        // Para qualquer timer anterior
         StopTurnTimer();
 
-        // CORREÇÃO: Aplica o multiplicador ao tempo limite
         currentTurnTime = turnTimeLimit * decisionTimeMultiplier;
         isTimerActive = true;
     
@@ -139,7 +134,7 @@ public class BattleHUD : MonoBehaviour
     }
 
     /// <summary>
-    /// NOVO: Para o timer de turno
+    /// Para o timer de turno
     /// </summary>
     private void StopTurnTimer()
     {
@@ -158,14 +153,12 @@ public class BattleHUD : MonoBehaviour
     }
 
     /// <summary>
-    /// NOVO: Corrotina do timer de turno
+    /// Corrotina do timer de turno
     /// </summary>
     private IEnumerator TurnTimerCoroutine()
     {
         while (currentTurnTime > 0)
         {
-            // Usa Time.unscaledDeltaTime para que funcione mesmo com Time.timeScale = 0
-            // MAS verificamos se o jogo não está pausado pelo menu de opções
             if (Time.timeScale > 0)
             {
                 currentTurnTime -= Time.deltaTime;
@@ -174,12 +167,12 @@ public class BattleHUD : MonoBehaviour
             yield return null;
         }
 
-        // Tempo esgotado!
+        // Tempo esgotado
         OnTurnTimeout();
     }
 
     /// <summary>
-    /// NOVO: Atualiza o display do timer
+    /// Atualiza o display do timer
     /// </summary>
     private void UpdateTimerDisplay()
     {
@@ -190,17 +183,14 @@ public class BattleHUD : MonoBehaviour
         // Muda a cor conforme o tempo vai acabando
         if (currentTurnTime <= 10f)
         {
-            // Vermelho quando faltam 10 segundos ou menos
             turnTimerText.color = Color.Lerp(Color.yellow, Color.red, 1f - (currentTurnTime / 10f));
         }
         else if (currentTurnTime <= 20f)
         {
-            // Amarelo quando faltam 20 segundos ou menos
             turnTimerText.color = Color.yellow;
         }
         else
         {
-            // Branco quando tem tempo
             turnTimerText.color = Color.white;
         }
 
@@ -208,13 +198,12 @@ public class BattleHUD : MonoBehaviour
     }
 
     /// <summary>
-    /// NOVO: Chamado quando o tempo do turno acaba
+    /// Chamado quando o tempo do turno acaba
     /// </summary>
     private void OnTurnTimeout()
     {
         Debug.Log($"{activeCharacter.characterData.characterName} perdeu o turno por timeout!");
         
-        // Para o timer
         StopTurnTimer();
 
         // Fecha todos os painéis
@@ -283,7 +272,7 @@ public class BattleHUD : MonoBehaviour
     
     public void OnActionSelected(BattleAction action)
     {
-        // NOVO: Para o timer quando uma ação é selecionada
+        // Para o timer quando uma ação é selecionada
         StopTurnTimer();
 
         actionPanel.SetActive(false);
@@ -329,7 +318,7 @@ public class BattleHUD : MonoBehaviour
             targetInstructionText.text = instruction;
         }
 
-        // NOVO: Reinicia o timer quando entra na seleção de alvo
+        // Reinicia o timer quando entra na seleção de alvo
         StartTurnTimer();
     }
 
@@ -375,7 +364,7 @@ public class BattleHUD : MonoBehaviour
 
             if (isValidTarget && !target.isDead)
             {
-                // NOVO: Para o timer quando um alvo é selecionado
+                // Para o timer quando um alvo é selecionado
                 StopTurnTimer();
 
                 targetSelectionPanel.SetActive(false);
@@ -432,7 +421,7 @@ public class BattleHUD : MonoBehaviour
     }
 
     /// <summary>
-    /// NOVO: Mostra o texto da ação do inimigo usando o targetInstructionText
+    /// Mostra o texto da ação do inimigo usando
     /// </summary>
     public void ShowEnemyAction(string actionText)
     {
@@ -452,7 +441,7 @@ public class BattleHUD : MonoBehaviour
     }
 
     /// <summary>
-    /// NOVO: Esconde o texto da ação do inimigo
+    /// Esconde o texto da ação do inimigo
     /// </summary>
     public void HideEnemyAction()
     {
@@ -467,7 +456,7 @@ public class BattleHUD : MonoBehaviour
     }
 
     /// <summary>
-    /// NOVO: Método alternativo para mostrar temporariamente uma mensagem
+    /// Método para mostrar temporariamente uma mensagem
     /// </summary>
     public void ShowTemporaryMessage(string message, float duration = 2f)
     {
@@ -475,7 +464,7 @@ public class BattleHUD : MonoBehaviour
     }
 
     /// <summary>
-    /// NOVO: Corrotina para mostrar mensagem temporária
+    /// Corrotina para mostrar mensagem temporária
     /// </summary>
     private System.Collections.IEnumerator ShowTemporaryMessageCoroutine(string message, float duration)
     {
@@ -485,21 +474,19 @@ public class BattleHUD : MonoBehaviour
     }
 
     /// <summary>
-    /// NOVO: Para ser chamado quando o menu de opções é aberto
+    /// chamado quando o menu de opções é aberto
     /// </summary>
     public void OnGamePaused()
     {
-        // O timer continua rodando mas não decrementa quando Time.timeScale = 0
-        // Isso é tratado automaticamente na corrotina
         Debug.Log("BattleHUD: Jogo pausado");
     }
 
     /// <summary>
-    /// NOVO: Para ser chamado quando o menu de opções é fechado
+    /// chamado quando o menu de opções é fechado
     /// </summary>
     public void OnGameResumed()
     {
-        // O timer continua automaticamente quando Time.timeScale volta a 1
+        // Continua automaticamente quando Time.timeScale volta a 1
         Debug.Log("BattleHUD: Jogo retomado");
     }
     

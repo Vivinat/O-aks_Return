@@ -1,5 +1,3 @@
-// Assets/Scripts/Events/BattleEventSO.cs
-
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -7,7 +5,7 @@ using UnityEngine;
 public class BattleEventSO : EventTypeSO
 {
     [Header("Battle Specific Data")]
-    public List<Character> enemies; // A lista de inimigos para este encontro
+    public List<Character> enemies; 
     
     [Header("Battle Visual")]
     public Sprite battleBackground;

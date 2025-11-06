@@ -1,5 +1,3 @@
-// Assets/Scripts/Battle/BattleAction.cs (Com Descrição Dinâmica)
-
 using UnityEngine;
 using System.Collections.Generic;
 using System.Text;
@@ -70,7 +68,7 @@ public class BattleAction : ScriptableObject
     
     [TextArea]
     [Tooltip("NÃO USADO - A descrição é gerada dinamicamente")]
-    public string description; // Mantido por compatibilidade, mas não será usado
+    public string description; 
     public Sprite icon;
 
     [Header("Action Logic")]
@@ -107,13 +105,12 @@ public class BattleAction : ScriptableObject
     }
     
     /// <summary>
-    /// Gera a descrição completa da ação baseada nos valores atuais (versão compacta)
+    /// Gera a descrição completa da ação baseada nos valores atuais 
     /// </summary>
     public string GetDynamicDescription()
     {
         System.Text.StringBuilder desc = new System.Text.StringBuilder();
         
-        // === PROCESSA EFEITOS PRINCIPAIS ===
         bool hasMainEffects = false;
         List<string> statusEffectsList = new List<string>();
         
@@ -157,14 +154,14 @@ public class BattleAction : ScriptableObject
                 }
                 
                 // ============================================
-                // CORREÇÃO: Efeito em si mesmo
+                // Efeito em si mesmo
                 // ============================================
                 if (effect.hasSelfEffect)
                 {
                     // Trata dano em si mesmo
                     if (effect.selfEffectType == ActionType.Attack)
                     {
-                        desc.AppendLine($"<color=#ff6b6b>⚠️ Auto-Dano: {effect.selfEffectPower} HP</color>");
+                        desc.AppendLine($"<color=#ff6b6b> Auto-Dano: {effect.selfEffectPower} HP</color>");
                         hasMainEffects = true;
                     }
                     
@@ -216,10 +213,10 @@ public class BattleAction : ScriptableObject
         
         if (hasMainEffects)
         {
-            desc.AppendLine(); // Linha em branco após efeitos principais
+            desc.AppendLine();
         }
         
-        // === EFEITOS DE STATUS (formato compacto) ===
+        // === EFEITOS DE STATUS ===
         if (statusEffectsList.Count > 0)
         {
             desc.AppendLine("<b>Efeitos:</b>");

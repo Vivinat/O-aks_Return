@@ -1,13 +1,9 @@
-// Assets/Scripts/Battle/EnemyAI.cs
-// Sistema de IA simplificado - Apenas 1 jogador como alvo
-
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
 public static class EnemyAI
 {
-    // Thresholds para decisões
     private const float HEAL_THRESHOLD = 0.5f; // Cura quando HP < 50%
     private const float CRITICAL_HEAL_THRESHOLD = 0.25f; // Prioridade máxima quando HP < 25%
     private const float ALLY_HEAL_THRESHOLD = 0.6f; // Cura aliado quando HP < 60%
@@ -17,7 +13,7 @@ public static class EnemyAI
     /// </summary>
     public static BattleAction ChooseBestAction(BattleEntity caster, BattleEntity player, List<BattleEntity> enemyTeam)
     {
-        // 1. Filtra ações que o inimigo pode usar (tem MP, etc.)
+        // Filtra ações que o inimigo pode usar
         List<BattleAction> availableActions = caster.characterData.battleActions
             .Where(a => caster.currentMp >= a.manaCost && (!a.isConsumable || a.CanUse()))
             .ToList();
@@ -28,7 +24,7 @@ public static class EnemyAI
             return null;
         }
 
-        // 2. Avalia cada ação e atribui uma pontuação
+        // Avalia cada ação e atribui uma pontuação
         Dictionary<BattleAction, float> actionScores = new Dictionary<BattleAction, float>();
         foreach (BattleAction action in availableActions)
         {
@@ -36,11 +32,10 @@ public static class EnemyAI
             actionScores[action] = score;
         }
 
-        // 3. NOVO: Lógica de Seleção Ponderada
-        // Filtra apenas as ações com pontuação positiva (ações viáveis)
+        // Lógica de Seleção Ponderada
         var viableActions = actionScores.Where(kvp => kvp.Value > 0).ToDictionary(kvp => kvp.Key, kvp => kvp.Value);
 
-        // Se nenhuma ação for considerada "boa" (score > 0), recorre à melhor opção disponível, mesmo que seja ruim.
+        // Recorre à melhor opção disponível, mesmo que seja ruim.
         if (!viableActions.Any())
         {
             Debug.Log($"IA ({caster.characterData.characterName}): Nenhuma ação positiva. Escolhendo a de maior score.");
@@ -57,7 +52,6 @@ public static class EnemyAI
         foreach (var action in viableActions)
         {
             // Subtrai o peso da ação do valor aleatório.
-            // A ação que fizer o valor ficar <= 0 é a escolhida.
             randomValue -= action.Value;
             if (randomValue <= 0)
             {
@@ -65,8 +59,6 @@ public static class EnemyAI
                 return action.Key;
             }
         }
-        
-        // Como segurança (fallback), caso algo dê errado, retorna a primeira ação viável.
         return viableActions.Keys.First();
     }
 
