@@ -1,11 +1,9 @@
-// Assets/Scripts/Dialogue/DialogueTrigger.cs
-
 using UnityEngine;
 using UnityEngine.Events;
 using System.Collections.Generic;
 
 /// <summary>
-/// Componente que pode ser adicionado a GameObjects para disparar diálogos
+/// Componente para disparar diálogos em GameObjects
 /// </summary>
 public class DialogueTrigger : MonoBehaviour
 {
@@ -27,16 +25,15 @@ public class DialogueTrigger : MonoBehaviour
     [SerializeField] private UnityEvent onDialogueStart;
     [SerializeField] private UnityEvent onDialogueComplete;
     
-    // Estado interno
     private bool hasTriggered = false;
     private bool isPlayerInRange = false;
 
     public enum TriggerType
     {
-        OnClick,           // Clique no objeto
-        OnTriggerEnter,    // Jogador entra no trigger
-        OnStart,           // Automaticamente no Start
-        Manual             // Apenas por script
+        OnClick,
+        OnTriggerEnter,
+        OnStart,
+        Manual
     }
 
     void Start()
@@ -44,22 +41,16 @@ public class DialogueTrigger : MonoBehaviour
         if (triggerType == TriggerType.OnStart)
         {
             if (triggerDelay > 0)
-            {
                 Invoke(nameof(TriggerDialogue), triggerDelay);
-            }
             else
-            {
                 TriggerDialogue();
-            }
         }
     }
 
     void OnMouseDown()
     {
         if (triggerType == TriggerType.OnClick && CanTrigger())
-        {
             TriggerDialogue();
-        }
     }
 
     void OnTriggerEnter2D(Collider2D other)
@@ -70,13 +61,9 @@ public class DialogueTrigger : MonoBehaviour
             isPlayerInRange = true;
             
             if (autoTriggerDelay > 0)
-            {
                 Invoke(nameof(DelayedTrigger), autoTriggerDelay);
-            }
             else
-            {
                 TriggerDialogue();
-            }
         }
     }
 
@@ -92,25 +79,17 @@ public class DialogueTrigger : MonoBehaviour
     private void DelayedTrigger()
     {
         if (isPlayerInRange && CanTrigger())
-        {
             TriggerDialogue();
-        }
     }
 
-    /// <summary>
-    /// Dispara o diálogo manualmente (pode ser chamado por outros scripts)
-    /// </summary>
     public void TriggerDialogue()
     {
         if (!CanTrigger())
-        {
-            Debug.Log($"DialogueTrigger '{name}': Não pode disparar o diálogo no momento");
             return;
-        }
 
         if (DialogueManager.Instance == null)
         {
-            Debug.LogError("DialogueTrigger: DialogueSystem não encontrado na cena!");
+            Debug.LogError("DialogueTrigger: DialogueSystem não encontrado!");
             return;
         }
 
@@ -122,36 +101,20 @@ public class DialogueTrigger : MonoBehaviour
             return;
         }
 
-        Debug.Log($"DialogueTrigger '{name}': Disparando diálogo com {dialogueToPlay.Count} entradas");
-
-        // Configura música se especificada
         SetupDialogueMusic();
 
-        // Marca como disparado se for única vez
         if (triggerOnlyOnce)
-        {
             hasTriggered = true;
-        }
 
-        // Dispara eventos
         onDialogueStart?.Invoke();
-
-        // Inicia o diálogo
         DialogueManager.Instance.StartDialogue(dialogueToPlay, OnDialogueCompleted);
     }
 
-    /// <summary>
-    /// Força o trigger novamente (útil para debug ou mecânicas especiais)
-    /// </summary>
     public void ResetTrigger()
     {
         hasTriggered = false;
-        Debug.Log($"DialogueTrigger '{name}': Reset - pode ser disparado novamente");
     }
 
-    /// <summary>
-    /// Verifica se o diálogo pode ser disparado
-    /// </summary>
     public bool CanTrigger()
     {
         if (triggerOnlyOnce && hasTriggered)
@@ -163,26 +126,16 @@ public class DialogueTrigger : MonoBehaviour
         return true;
     }
 
-    /// <summary>
-    /// Retorna as entradas de diálogo configuradas
-    /// </summary>
     private List<DialogueEntry> GetDialogueEntries()
     {
         if (dialogueData != null && dialogueData.IsValid())
-        {
             return dialogueData.GetDialogueEntries();
-        }
         else if (manualDialogue != null && manualDialogue.Count > 0)
-        {
             return new List<DialogueEntry>(manualDialogue);
-        }
         
         return null;
     }
 
-    /// <summary>
-    /// Configura música específica para o diálogo se necessário
-    /// </summary>
     private void SetupDialogueMusic()
     {
         if (dialogueData != null)
@@ -192,30 +145,16 @@ public class DialogueTrigger : MonoBehaviour
             if (bgMusic != null && AudioManager.Instance != null)
             {
                 if (dialogueData.ShouldStopCurrentMusic())
-                {
                     AudioManager.Instance.PlayMusic(bgMusic, true);
-                }
-                else
-                {
-                    // Talvez tocar em volume baixo por cima da música atual
-                    // (implementação dependeria das suas necessidades específicas)
-                }
             }
         }
     }
 
-    /// <summary>
-    /// Callback chamado quando o diálogo termina
-    /// </summary>
     private void OnDialogueCompleted()
     {
-        Debug.Log($"DialogueTrigger '{name}': Diálogo completado");
         onDialogueComplete?.Invoke();
     }
 
-    /// <summary>
-    /// Adiciona uma entrada de diálogo manualmente (útil para scripts)
-    /// </summary>
     public void AddDialogueEntry(string speakerName, string text)
     {
         if (manualDialogue == null)
@@ -224,18 +163,12 @@ public class DialogueTrigger : MonoBehaviour
         manualDialogue.Add(new DialogueEntry(speakerName, text));
     }
 
-    /// <summary>
-    /// Limpa o diálogo manual
-    /// </summary>
     public void ClearManualDialogue()
     {
         if (manualDialogue != null)
             manualDialogue.Clear();
     }
 
-    /// <summary>
-    /// Define um DialogueSO por script
-    /// </summary>
     public void SetDialogueData(DialogueSO newDialogueData)
     {
         dialogueData = newDialogueData;
@@ -243,39 +176,28 @@ public class DialogueTrigger : MonoBehaviour
 
     void OnValidate()
     {
-        // Validação no Editor
         if (dialogueData == null && (manualDialogue == null || manualDialogue.Count == 0))
-        {
-            Debug.LogWarning($"DialogueTrigger '{name}': Nenhum diálogo configurado! " +
-                           "Atribua um DialogueSO ou configure o diálogo manual.");
-        }
+            Debug.LogWarning($"DialogueTrigger '{name}': Nenhum diálogo configurado!");
 
         if (triggerType == TriggerType.OnTriggerEnter)
         {
             Collider2D col = GetComponent<Collider2D>();
             if (col == null)
-            {
-                Debug.LogWarning($"DialogueTrigger '{name}': Tipo OnTriggerEnter requer um Collider2D com isTrigger = true");
-            }
+                Debug.LogWarning($"DialogueTrigger '{name}': OnTriggerEnter requer Collider2D com isTrigger = true");
             else if (!col.isTrigger)
-            {
-                Debug.LogWarning($"DialogueTrigger '{name}': Collider2D deve ter isTrigger = true para OnTriggerEnter");
-            }
+                Debug.LogWarning($"DialogueTrigger '{name}': Collider2D deve ter isTrigger = true");
         }
 
         if (triggerType == TriggerType.OnClick)
         {
             Collider2D col = GetComponent<Collider2D>();
             if (col == null)
-            {
-                Debug.LogWarning($"DialogueTrigger '{name}': Tipo OnClick requer um Collider2D para detectar cliques");
-            }
+                Debug.LogWarning($"DialogueTrigger '{name}': OnClick requer Collider2D");
         }
     }
 
     void OnDrawGizmosSelected()
     {
-        // Desenha área do trigger se for OnTriggerEnter
         if (triggerType == TriggerType.OnTriggerEnter)
         {
             Collider2D col = GetComponent<Collider2D>();
