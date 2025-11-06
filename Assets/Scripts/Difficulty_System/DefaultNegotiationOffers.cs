@@ -1,13 +1,9 @@
-// Assets/Scripts/Difficulty_System/DefaultNegotiationOffers.cs (CORRIGIDO - 1 efeito por oferta)
-
 using UnityEngine;
 using System.Collections.Generic;
 using System.Linq;
 
 /// <summary>
-/// Gera ofertas padrão CORRETAS
-/// Cada oferta tem APENAS UM efeito
-/// Valores balanceados: 4, 8, 12
+/// Gera ofertas padrão
 /// </summary>
 public class DefaultNegotiationOffers : MonoBehaviour
 {
@@ -102,7 +98,7 @@ public class DefaultNegotiationOffers : MonoBehaviour
             "Sua proteção está comprometida.",
             CardAttribute.PlayerDefense,
             -2,
-            true, // Afeta jogador
+            true,
             BehaviorTriggerType.DefaultSessionOffer,
             "Desvantagem de defesa"
         ));
@@ -113,7 +109,7 @@ public class DefaultNegotiationOffers : MonoBehaviour
             "Inimigos ficam mais difíceis de derrotar.",
             CardAttribute.EnemyMaxHP,
             12,
-            false, // Afeta inimigos
+            false, 
             BehaviorTriggerType.DefaultSessionOffer,
             "Desvantagem de defesa"
         ));

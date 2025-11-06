@@ -1,4 +1,4 @@
-// Assets/Scripts/Analytics/PlayerBehaviorAnalyzer.cs (FIXED)
+// Assets/Scripts/Analytics/PlayerBehaviorAnalyzer.cs
 
 using System.Collections.Generic;
 using System.Linq;
@@ -93,7 +93,7 @@ public class PlayerBehaviorAnalyzer : MonoBehaviour
         currentBattleManager = FindObjectOfType<BattleManager>();
         if (currentBattleManager == null)
         {
-            Log("BattleManager não encontrado!");
+            Log("BattleManager não encontrado");
             return;
         }
         
@@ -124,24 +124,20 @@ public class PlayerBehaviorAnalyzer : MonoBehaviour
             playerProfile.currentBattle.startingMP = player.GetCurrentMP();
         }
         
-        // NOVO: Analisa tipos de inimigos
         playerProfile.currentBattle.totalEnemiesInBattle = enemyTeamAtStart.Count;
         
         foreach (var enemy in enemyTeamAtStart)
         {
             playerProfile.currentBattle.enemiesInBattle.Add(enemy.characterData.characterName);
         
-            // NOVO: Classifica inimigos por tipo
             if (enemy.characterData.maxHp > 100)
             {
                 playerProfile.currentBattle.tankEnemiesCount++;
-                Log($"Inimigo Tank detectado: {enemy.characterData.characterName} (HP: {enemy.characterData.maxHp})");
             }
         
             if (enemy.characterData.speed > 5f)
             {
                 playerProfile.currentBattle.fastEnemiesCount++;
-                Log($"Inimigo Rápido detectado: {enemy.characterData.characterName} (Speed: {enemy.characterData.speed})");
             }
         }
         
@@ -155,8 +151,6 @@ public class PlayerBehaviorAnalyzer : MonoBehaviour
                 }
             }
         }
-        
-        Log($"Estado inicial capturado - HP: {playerProfile.currentBattle.startingHP}, MP: {playerProfile.currentBattle.startingMP}");
     }
 
     public void RecordPlayerSkillUsage(BattleAction skill, BattleEntity user)
@@ -165,8 +159,6 @@ public class PlayerBehaviorAnalyzer : MonoBehaviour
         
         playerProfile.currentBattle.RecordSkillUsage(skill.actionName);
         playerProfile.currentBattle.unusedSkills.Remove(skill.actionName);
-        
-        Log($"Skill usada: {skill.actionName}");
     }
 
     public void RecordPlayerDamageReceived(BattleEntity attacker, int damage)
@@ -174,8 +166,6 @@ public class PlayerBehaviorAnalyzer : MonoBehaviour
         if (!isBattleActive || attacker == null) return;
         
         playerProfile.currentBattle.RecordEnemyDamage(attacker.characterData.characterName, damage);
-        
-        Log($"Dano recebido de {attacker.characterData.characterName}: {damage}");
     }
 
     public void RecordPlayerDeath()
@@ -183,7 +173,6 @@ public class PlayerBehaviorAnalyzer : MonoBehaviour
         if (!isBattleActive) return;
         
         playerProfile.currentBattle.playerDied = true;
-        Log("Morte do jogador registrada");
     }
 
     private void FinalizeBattleAnalysis()
@@ -196,27 +185,17 @@ public class PlayerBehaviorAnalyzer : MonoBehaviour
             playerProfile.currentBattle.endingHP = player.GetCurrentHP();
             playerProfile.currentBattle.endingMP = player.GetCurrentMP();
             
-            // NOVO: Registra turno de morte se morreu
             if (player.isDead && currentBattleManager != null)
             {
                 playerProfile.currentBattle.turnOfDeath = currentBattleManager.GetCurrentTurn();
             }
-        
-            Debug.Log($"=== BATTLE END DEBUG ===");
-            Debug.Log($"Player Starting HP/MP: {playerProfile.currentBattle.startingHP}/{playerProfile.currentBattle.startingMP}");
-            Debug.Log($"Player Ending HP/MP: {playerProfile.currentBattle.endingHP}/{playerProfile.currentBattle.endingMP}");
-            Debug.Log($"Player isDead: {player.isDead}");
-            Debug.Log($"Total damage recorded: {playerProfile.currentBattle.enemyDamageDealt.Values.Sum()}");
-            Debug.Log($"=========================");
         }
         
-        // NOVO: Registra HP final no histórico de sessão
         if (!player.isDead)
         {
             float hpPercentage = (float)playerProfile.currentBattle.endingHP / playerProfile.currentBattle.startingHP;
             playerProfile.session.RecordBattleEndHP(hpPercentage);
             
-            // NOVO: Registra vitória para análise de dependência de consumíveis
             playerProfile.session.totalVictories++;
             
             bool usedConsumables = playerProfile.currentBattle.skillUsageCount.Keys.Any(skill =>
@@ -229,14 +208,11 @@ public class PlayerBehaviorAnalyzer : MonoBehaviour
             }
         }
     
-    
-        // NOVO: Atualiza contadores de skills não usadas
         foreach (string unusedSkill in playerProfile.currentBattle.unusedSkills)
         {
             playerProfile.session.RecordSkillNotUsed(unusedSkill);
         }
     
-        // Reseta contadores de skills usadas
         foreach (string usedSkill in playerProfile.currentBattle.skillUsageCount.Keys)
         {
             playerProfile.session.ResetSkillUsageCounter(usedSkill);
@@ -268,7 +244,6 @@ public class PlayerBehaviorAnalyzer : MonoBehaviour
             CheckRepeatedBossDeath(killerEnemy);
         }
     
-        // CHAMADAS ORIGINAIS
         CheckLowHealthNoCure(currentMap);
         CheckNoDamageReceived(currentMap);
         CheckExhaustedItems(currentMap);
@@ -278,69 +253,42 @@ public class PlayerBehaviorAnalyzer : MonoBehaviour
         CheckSingleSkillCarry(currentMap);     
         CheckFrequentLowHP(currentMap);         
         CheckWeakSkillIgnored(currentMap);      
-    
-        // VELOCIDADE/ATB
         CheckAlwaysOutsped(currentMap);
         CheckAlwaysFirstTurn(currentMap);
-    
-        // TIPO DE INIMIGO
         CheckStrugglesAgainstTanks(currentMap);
         CheckStrugglesAgainstFast(currentMap);
         CheckStrugglesAgainstSwarms(currentMap);
-    
-        // PADRÕES DE MORTE
         CheckAlwaysDiesEarly(currentMap);
         CheckAlwaysDiesLate(currentMap);
         CheckDeathByChipDamage(currentMap);
-    
-        // ONE-SHOT
         CheckOneHitKOVulnerable(currentMap);
-    
-        // BUILD
         CheckExpensiveSkillsOnly(currentMap);
         CheckNoAOEDamage(currentMap);
-    
-        // RECURSOS
         CheckBrokeAfterShopping(currentMap);
         CheckRanOutOfConsumables(currentMap);
         CheckConsumableDependency(currentMap);
     }
     
-    /// <summary>
-    /// NOVO: Registra dano causado por skill específica
-    /// </summary>
     public void RecordPlayerSkillDamage(BattleAction skill, int damage)
     {
         if (!isBattleActive || skill == null) return;
     
         playerProfile.currentBattle.RecordSkillDamage(skill.actionName, damage);
-    
-        Log($"Skill '{skill.actionName}' causou {damage} de dano");
     }
 
-    /// <summary>
-    /// NOVO: Registra quando alguém age (para rastrear ordem de turnos)
-    /// </summary>
     public void RecordTurnAction(BattleEntity actor)
     {
         if (!isBattleActive || actor == null) return;
     
         string actorName = actor.characterData.team == Team.Player ? "Player" : actor.characterData.characterName;
         playerProfile.currentBattle.RecordTurnOrder(actorName);
-    
-        // Log($"Turno: {actorName} agiu");
     }
 
-    /// <summary>
-    /// NOVO: Registra hit individual recebido
-    /// </summary>
     public void RecordPlayerHitReceived(int damage)
     {
         if (!isBattleActive) return;
     
         playerProfile.currentBattle.RecordHitReceived(damage);
-    
-        // Log($"Hit recebido: {damage} de dano");
     }
 
     private void CheckLowHealthNoCure(string mapName)
@@ -349,7 +297,6 @@ public class PlayerBehaviorAnalyzer : MonoBehaviour
         
         if (healthPercentage < 0.5f)
         {
-            // FIXED: Use GetPrimaryActionType() instead of .type
             bool hasCureItems = GameManager.Instance.PlayerBattleActions?.Any(action => 
                 action != null && action.GetPrimaryActionType() == ActionType.Heal && action.isConsumable && action.CanUse()) ?? false;
             
@@ -401,7 +348,6 @@ public class PlayerBehaviorAnalyzer : MonoBehaviour
 
     private void CheckDefensiveSkills(string mapName)
     {
-        // FIXED: Use GetPrimaryActionType() instead of .type
         bool hasDefensiveSkills = GameManager.Instance?.PlayerBattleActions?.Any(action => 
             action != null && (action.GetPrimaryActionType() == ActionType.Heal || action.GetPrimaryActionType() == ActionType.Buff)) ?? false;
         
@@ -434,7 +380,6 @@ public class PlayerBehaviorAnalyzer : MonoBehaviour
 
     private void CheckEasyBattleVictory(string mapName)
     {
-        // Verifica se a vitória foi fácil (independente de ser boss ou não)
         if (!playerProfile.currentBattle.playerDied)
         {
             float healthPercentage = (float)playerProfile.currentBattle.endingHP / playerProfile.currentBattle.startingHP;
@@ -442,17 +387,14 @@ public class PlayerBehaviorAnalyzer : MonoBehaviour
                 GameManager.Instance.PlayerBattleActions?.Any(action => 
                     action?.actionName == skill && action.isConsumable) ?? false);
             
-            // Vitória foi fácil: Terminou com mais de 50% HP e não usou itens
             if (healthPercentage > 0.5f && usedNoItems)
             {
-                // Pega todos os inimigos enfrentados
                 string enemiesNames = string.Join(", ", playerProfile.currentBattle.enemiesInBattle);
                 if (string.IsNullOrEmpty(enemiesNames))
                 {
                     enemiesNames = "Unknown Enemy";
                 }
                 
-                // Verifica se é boss para categorização adicional
                 bool isBoss = FindObjectOfType<BossNode>() != null || mapName.ToLower().Contains("boss");
                 
                 var observation = new BehaviorObservation(BehaviorTriggerType.BattleEasyVictory, mapName);
@@ -462,8 +404,6 @@ public class PlayerBehaviorAnalyzer : MonoBehaviour
                 observation.SetData("enemyCount", playerProfile.currentBattle.enemiesInBattle.Count);
                 
                 playerProfile.AddObservation(observation);
-                
-                Debug.Log($"Vitória fácil detectada contra: {enemiesNames} (HP restante: {healthPercentage:P0})");
             }
         }
     }
@@ -517,16 +457,12 @@ public class PlayerBehaviorAnalyzer : MonoBehaviour
         }
     }
     
-    #region Battle Analysis - EVENTOS MELHORADOS
+    #region Battle Analysis - Eventos Melhorados
 
-    /// <summary>
-    /// MELHORIA de SkillOveruse: Detecta skill que domina em DANO (não apenas uso)
-    /// </summary>
     private void CheckSingleSkillCarry(string mapName)
     {
         var battleData = playerProfile.currentBattle;
         
-        // Precisa ter causado dano
         if (battleData.skillDamageDealt.Count == 0) return;
         
         string topDamageSkill = battleData.GetHighestDamageSkill();
@@ -534,7 +470,6 @@ public class PlayerBehaviorAnalyzer : MonoBehaviour
         
         float damagePercentage = battleData.GetSkillDamagePercentage(topDamageSkill);
         
-        // Skill causou >60% do dano total
         if (damagePercentage > 0.6f)
         {
             var observation = new BehaviorObservation(BehaviorTriggerType.SingleSkillCarry, mapName);
@@ -543,17 +478,11 @@ public class PlayerBehaviorAnalyzer : MonoBehaviour
             observation.SetData("totalDamage", battleData.skillDamageDealt[topDamageSkill]);
             
             playerProfile.AddObservation(observation);
-            
-            Log($"SingleSkillCarry detectado: '{topDamageSkill}' causou {damagePercentage:P0} do dano total");
         }
     }
 
-    /// <summary>
-    /// MELHORIA de CriticalHealth: Detecta PADRÃO de terminar batalhas com pouca vida
-    /// </summary>
     private void CheckFrequentLowHP(string mapName)
     {
-        // Precisa ter pelo menos 3 batalhas no histórico
         if (playerProfile.session.HasFrequentLowHPPattern(0.3f, 3))
         {
             float averageHP = playerProfile.session.recentBattleEndHPPercentages.Average();
@@ -563,14 +492,9 @@ public class PlayerBehaviorAnalyzer : MonoBehaviour
             observation.SetData("battleCount", playerProfile.session.recentBattleEndHPPercentages.Count);
             
             playerProfile.AddObservation(observation);
-            
-            Log($"FrequentLowHP detectado: Média de {averageHP:P0} HP nas últimas batalhas");
         }
     }
 
-    /// <summary>
-    /// MELHORIA de UnusedSkill: Detecta skill CRONICAMENTE ignorada
-    /// </summary>
     private void CheckWeakSkillIgnored(string mapName)
     {
         foreach (var skillEntry in playerProfile.session.skillNeverUsedCount)
@@ -582,29 +506,22 @@ public class PlayerBehaviorAnalyzer : MonoBehaviour
                 observation.SetData("battlesIgnored", skillEntry.Value);
                 
                 playerProfile.AddObservation(observation);
-                
-                Log($"WeakSkillIgnored detectado: '{skillEntry.Key}' não usada em {skillEntry.Value} batalhas");
             }
         }
     }
 
     #endregion
 
-    #region Battle Analysis - VELOCIDADE/ATB
+    #region Battle Analysis - Velocidade/ATB
 
-    /// <summary>
-    /// Detecta quando inimigos sempre agem primeiro
-    /// </summary>
     private void CheckAlwaysOutsped(string mapName)
     {
         var battleData = playerProfile.currentBattle;
         
-        // Precisa ter dados de turnos
         if (battleData.turnOrder.Count < 5) return;
         
         float playerFirstPercentage = battleData.GetPlayerFirstTurnPercentage();
         
-        // Jogador age primeiro em <20% dos turnos
         if (playerFirstPercentage < 0.2f)
         {
             var observation = new BehaviorObservation(BehaviorTriggerType.AlwaysOutsped, mapName);
@@ -612,24 +529,17 @@ public class PlayerBehaviorAnalyzer : MonoBehaviour
             observation.SetData("enemyNames", string.Join(", ", battleData.enemiesInBattle));
             
             playerProfile.AddObservation(observation);
-            
-            Log($"AlwaysOutsped detectado: Jogador age primeiro apenas {playerFirstPercentage:P0} das vezes");
         }
     }
 
-    /// <summary>
-    /// Detecta quando jogador sempre age primeiro (muito fácil)
-    /// </summary>
     private void CheckAlwaysFirstTurn(string mapName)
     {
         var battleData = playerProfile.currentBattle;
         
-        // Precisa ter dados de turnos
         if (battleData.turnOrder.Count < 5) return;
         
         float playerFirstPercentage = battleData.GetPlayerFirstTurnPercentage();
         
-        // Jogador age primeiro em >80% dos turnos
         if (playerFirstPercentage > 0.8f)
         {
             var observation = new BehaviorObservation(BehaviorTriggerType.AlwaysFirstTurn, mapName);
@@ -637,78 +547,55 @@ public class PlayerBehaviorAnalyzer : MonoBehaviour
             observation.SetData("enemyNames", string.Join(", ", battleData.enemiesInBattle));
             
             playerProfile.AddObservation(observation);
-            
-            Log($"AlwaysFirstTurn detectado: Jogador age primeiro {playerFirstPercentage:P0} das vezes");
         }
     }
 
     #endregion
 
-    #region Battle Analysis - TIPO DE INIMIGO
+    #region Battle Analysis - Tipo de Inimigo
 
-    /// <summary>
-    /// Detecta dificuldade contra inimigos tanques (muito HP)
-    /// </summary>
     private void CheckStrugglesAgainstTanks(string mapName)
     {
         var battleData = playerProfile.currentBattle;
         
-        // Precisa ter enfrentado pelo menos um tank
         if (battleData.tankEnemiesCount == 0) return;
         
-        // Morreu OU batalha foi muito longa (>10 turnos)
         bool diedToTank = battleData.playerDied;
-        bool longBattle = battleData.turnOrder.Count > 40; // Aproximadamente 10+ turnos
+        bool longBattle = battleData.turnOrder.Count > 40;
         
         if (diedToTank || longBattle)
         {
             var observation = new BehaviorObservation(BehaviorTriggerType.StrugglesAgainstTanks, mapName);
             observation.SetData("tankCount", battleData.tankEnemiesCount);
             observation.SetData("died", diedToTank);
-            observation.SetData("turnCount", battleData.turnOrder.Count / 4); // Estimativa
+            observation.SetData("turnCount", battleData.turnOrder.Count / 4);
             
             playerProfile.AddObservation(observation);
-            
-            Log($"StrugglesAgainstTanks detectado: {battleData.tankEnemiesCount} tanks, morreu: {diedToTank}, longa: {longBattle}");
         }
     }
 
-    /// <summary>
-    /// Detecta dificuldade contra inimigos rápidos
-    /// </summary>
     private void CheckStrugglesAgainstFast(string mapName)
     {
         var battleData = playerProfile.currentBattle;
         
-        // Precisa ter enfrentado pelo menos um inimigo rápido
         if (battleData.fastEnemiesCount == 0) return;
         
-        // Morreu E inimigos rápidos causaram >50% do dano
         if (battleData.playerDied)
         {
-            // Verifica se a maioria do dano veio de inimigos rápidos
-            // (Simplificação: assume que se tem inimigos rápidos e morreu, foi problema)
             var observation = new BehaviorObservation(BehaviorTriggerType.StrugglesAgainstFast, mapName);
             observation.SetData("fastCount", battleData.fastEnemiesCount);
             observation.SetData("totalDamage", battleData.enemyDamageDealt.Values.Sum());
             
             playerProfile.AddObservation(observation);
-            
-            Log($"StrugglesAgainstFast detectado: {battleData.fastEnemiesCount} inimigos rápidos");
         }
     }
 
-    /// <summary>
-    /// Detecta dificuldade contra múltiplos inimigos (swarms)
-    /// </summary>
     private void CheckStrugglesAgainstSwarms(string mapName)
     {
         var battleData = playerProfile.currentBattle;
         
-        // Precisa ter enfrentado 3+ inimigos
         if (battleData.totalEnemiesInBattle < 3) return;
         
-        // Morreu OU terminou com <30% HP
         bool died = battleData.playerDied;
         float hpPercentage = battleData.startingHP > 0 ? 
             (float)battleData.endingHP / battleData.startingHP : 1f;
@@ -722,106 +609,78 @@ public class PlayerBehaviorAnalyzer : MonoBehaviour
             observation.SetData("endingHPPercentage", hpPercentage);
             
             playerProfile.AddObservation(observation);
-            
-            Log($"StrugglesAgainstSwarms detectado: {battleData.totalEnemiesInBattle} inimigos, HP final: {hpPercentage:P0}");
         }
     }
 
     #endregion
     
-    #region Battle Analysis - PADRÕES DE MORTE
+    #region Battle Analysis - Padrões de Morte
 
-/// <summary>
-/// Detecta quando o jogador sempre morre nos primeiros turnos
-/// </summary>
-private void CheckAlwaysDiesEarly(string mapName)
-{
-    var battleData = playerProfile.currentBattle;
-    
-    // Só verifica se morreu
-    if (!battleData.playerDied) return;
-    
-    // Morreu antes do turno 5
-    if (battleData.turnOfDeath > 0 && battleData.turnOfDeath <= 4)
+    private void CheckAlwaysDiesEarly(string mapName)
     {
-        var observation = new BehaviorObservation(BehaviorTriggerType.AlwaysDiesEarly, mapName);
-        observation.SetData("turnOfDeath", battleData.turnOfDeath);
-        observation.SetData("killerEnemy", battleData.GetMostDamagingEnemy());
-        observation.SetData("totalDamageReceived", battleData.enemyDamageDealt.Values.Sum());
+        var battleData = playerProfile.currentBattle;
         
-        playerProfile.AddObservation(observation);
+        if (!battleData.playerDied) return;
         
-        Log($"AlwaysDiesEarly detectado: Morte no turno {battleData.turnOfDeath}");
+        if (battleData.turnOfDeath > 0 && battleData.turnOfDeath <= 4)
+        {
+            var observation = new BehaviorObservation(BehaviorTriggerType.AlwaysDiesEarly, mapName);
+            observation.SetData("turnOfDeath", battleData.turnOfDeath);
+            observation.SetData("killerEnemy", battleData.GetMostDamagingEnemy());
+            observation.SetData("totalDamageReceived", battleData.enemyDamageDealt.Values.Sum());
+            
+            playerProfile.AddObservation(observation);
+        }
     }
-}
 
-/// <summary>
-/// Detecta quando o jogador sempre morre em batalhas longas (guerra de atrito)
-/// </summary>
-private void CheckAlwaysDiesLate(string mapName)
-{
-    var battleData = playerProfile.currentBattle;
-    
-    // Só verifica se morreu
-    if (!battleData.playerDied) return;
-    
-    // Morreu após turno 10
-    if (battleData.turnOfDeath > 10)
+    private void CheckAlwaysDiesLate(string mapName)
     {
-        var observation = new BehaviorObservation(BehaviorTriggerType.AlwaysDiesLate, mapName);
-        observation.SetData("turnOfDeath", battleData.turnOfDeath);
-        observation.SetData("killerEnemy", battleData.GetMostDamagingEnemy());
-        observation.SetData("totalDamageReceived", battleData.enemyDamageDealt.Values.Sum());
+        var battleData = playerProfile.currentBattle;
         
-        playerProfile.AddObservation(observation);
+        if (!battleData.playerDied) return;
         
-        Log($"AlwaysDiesLate detectado: Morte no turno {battleData.turnOfDeath}");
+        if (battleData.turnOfDeath > 10)
+        {
+            var observation = new BehaviorObservation(BehaviorTriggerType.AlwaysDiesLate, mapName);
+            observation.SetData("turnOfDeath", battleData.turnOfDeath);
+            observation.SetData("killerEnemy", battleData.GetMostDamagingEnemy());
+            observation.SetData("totalDamageReceived", battleData.enemyDamageDealt.Values.Sum());
+            
+            playerProfile.AddObservation(observation);
+        }
     }
-}
 
-/// <summary>
-/// Detecta quando o jogador morre por múltiplos hits pequenos
-/// </summary>
-private void CheckDeathByChipDamage(string mapName)
-{
-    var battleData = playerProfile.currentBattle;
-    
-    // Só verifica se morreu E recebeu múltiplos hits
-    if (!battleData.playerDied) return;
-    if (battleData.hitsReceived.Count < 5) return; // Precisa ter recebido pelo menos 5 hits
-    
-    float averageHitSize = battleData.GetAverageHitSize();
-    int totalHits = battleData.hitsReceived.Count;
-    
-    // Hit médio < 20 de dano E recebeu 8+ hits
-    if (averageHitSize < 20f && totalHits >= 8)
+    private void CheckDeathByChipDamage(string mapName)
     {
-        var observation = new BehaviorObservation(BehaviorTriggerType.DeathByChipDamage, mapName);
-        observation.SetData("averageHitSize", averageHitSize);
-        observation.SetData("totalHits", totalHits);
-        observation.SetData("totalDamageReceived", battleData.enemyDamageDealt.Values.Sum());
+        var battleData = playerProfile.currentBattle;
         
-        playerProfile.AddObservation(observation);
+        if (!battleData.playerDied) return;
+        if (battleData.hitsReceived.Count < 5) return;
         
-        Log($"DeathByChipDamage detectado: Média de {averageHitSize:F1} dano em {totalHits} hits");
+        float averageHitSize = battleData.GetAverageHitSize();
+        int totalHits = battleData.hitsReceived.Count;
+        
+        if (averageHitSize < 20f && totalHits >= 8)
+        {
+            var observation = new BehaviorObservation(BehaviorTriggerType.DeathByChipDamage, mapName);
+            observation.SetData("averageHitSize", averageHitSize);
+            observation.SetData("totalHits", totalHits);
+            observation.SetData("totalDamageReceived", battleData.enemyDamageDealt.Values.Sum());
+            
+            playerProfile.AddObservation(observation);
+        }
     }
-}
 
     #endregion
 
-    #region Battle Analysis - ONE-SHOT
+    #region Battle Analysis - One-Shot
 
-    /// <summary>
-    /// Detecta quando o jogador recebe hits que tiram >40% do HP
-    /// </summary>
     private void CheckOneHitKOVulnerable(string mapName)
     {
         var battleData = playerProfile.currentBattle;
         
-        // Precisa ter recebido pelo menos um hit
         if (battleData.hitsReceived.Count == 0) return;
         
-        // Procura por hits grandes
         int biggestHit = 0;
         foreach (int hit in battleData.hitsReceived)
         {
@@ -831,10 +690,8 @@ private void CheckDeathByChipDamage(string mapName)
             }
         }
         
-        // Calcula percentual do maior hit em relação ao HP inicial
         float hitPercentage = (float)biggestHit / battleData.startingHP;
         
-        // Hit tirou >40% do HP máximo
         if (hitPercentage > 0.4f)
         {
             var observation = new BehaviorObservation(BehaviorTriggerType.OneHitKOVulnerable, mapName);
@@ -844,33 +701,23 @@ private void CheckDeathByChipDamage(string mapName)
             observation.SetData("startingHP", battleData.startingHP);
             
             playerProfile.AddObservation(observation);
-            
-            Log($"OneHitKOVulnerable detectado: Hit de {biggestHit} ({hitPercentage:P0} do HP)");
         }
     }
 
     #endregion
 
-    #region Battle Analysis - BUILD
+    #region Battle Analysis - Build
 
-    /// <summary>
-    /// Detecta quando todas as skills custam muito MP
-    /// </summary>
     private void CheckExpensiveSkillsOnly(string mapName)
     {
         if (GameManager.Instance?.PlayerBattleActions == null) return;
         
         var actions = GameManager.Instance.PlayerBattleActions;
-        
-        // Filtra apenas skills (não consumíveis)
         var skills = actions.Where(a => a != null && !a.isConsumable).ToList();
         
         if (skills.Count == 0) return;
         
-        // Calcula custo médio
         float averageManaCost = (float)skills.Average(s => s.manaCost);
-        
-        // Verifica se TODAS as skills custam >20 MP
         bool allExpensive = skills.All(s => s.manaCost >= 20);
         
         if (allExpensive && averageManaCost >= 20f)
@@ -881,27 +728,20 @@ private void CheckDeathByChipDamage(string mapName)
             observation.SetData("skillNames", skills.Select(s => s.actionName).ToList());
             
             playerProfile.AddObservation(observation);
-            
-            Log($"ExpensiveSkillsOnly detectado: Custo médio de {averageManaCost:F1} MP");
         }
     }
 
-    /// <summary>
-    /// Detecta quando o jogador não tem ataques em área
-    /// </summary>
     private void CheckNoAOEDamage(string mapName)
     {
         if (GameManager.Instance?.PlayerBattleActions == null) return;
         
         var actions = GameManager.Instance.PlayerBattleActions;
         
-        // Procura por skills que atingem múltiplos alvos
         bool hasAOE = actions.Any(a => 
             a != null && 
             (a.targetType == TargetType.AllEnemies || a.targetType == TargetType.Everyone) &&
             a.GetPrimaryActionType() == ActionType.Attack);
         
-        // Só registra se NÃO tem AOE E enfrentou 2+ inimigos
         if (!hasAOE && playerProfile.currentBattle.totalEnemiesInBattle >= 2)
         {
             float averageEnemyCount = playerProfile.currentBattle.totalEnemiesInBattle;
@@ -912,29 +752,18 @@ private void CheckDeathByChipDamage(string mapName)
             observation.SetData("skillNames", actions.Select(a => a?.actionName).ToList());
             
             playerProfile.AddObservation(observation);
-            
-            Log($"NoAOEDamage detectado: Sem AOE contra {averageEnemyCount} inimigos");
         }
     }
 
     #endregion
 
-    #region Battle Analysis - RECURSOS
+    #region Battle Analysis - Recursos
 
-    /// <summary>
-    /// Detecta quando jogador gastou quase todas as moedas na loja
-    /// (Este check é chamado APÓS visitar a loja)
-    /// </summary>
     private void CheckBrokeAfterShopping(string mapName)
     {
-        // Este evento é melhor detectado no ShopManager
-        // Vamos adicionar a lógica lá
-        // Por enquanto, deixamos este método vazio como placeholder
+        // Implementar no ShopManager
     }
 
-    /// <summary>
-    /// Detecta quando jogador esgotou TODOS os consumíveis numa batalha
-    /// </summary>
     private void CheckRanOutOfConsumables(string mapName)
     {
         if (GameManager.Instance?.PlayerBattleActions == null) return;
@@ -943,15 +772,12 @@ private void CheckDeathByChipDamage(string mapName)
             .Where(a => a != null && a.isConsumable)
             .ToList();
         
-        // Precisa ter consumíveis
         if (consumables.Count == 0) return;
         
-        // Verifica se TODOS os consumíveis foram usados nesta batalha
         var usedConsumables = playerProfile.currentBattle.skillUsageCount.Keys
             .Where(skillName => consumables.Any(c => c.actionName == skillName))
             .ToList();
         
-        // Todos consumíveis foram usados E pelo menos um ficou sem usos
         bool allUsed = usedConsumables.Count == consumables.Count;
         bool anyExhausted = consumables.Any(c => c.currentUses == 0);
         
@@ -962,24 +788,17 @@ private void CheckDeathByChipDamage(string mapName)
             observation.SetData("totalConsumables", consumables.Count);
             
             playerProfile.AddObservation(observation);
-            
-            Log($"RanOutOfConsumables detectado: {usedConsumables.Count} consumíveis esgotados");
         }
     }
 
-    /// <summary>
-    /// Detecta quando >50% das vitórias dependem de consumíveis
-    /// </summary>
     private void CheckConsumableDependency(string mapName)
     {
         var sessionData = playerProfile.session;
         
-        // Precisa ter pelo menos 3 vitórias registradas
         if (sessionData.totalVictories < 3) return;
         
         float dependencyRate = (float)sessionData.victoriesWithConsumables / sessionData.totalVictories;
         
-        // >50% das vitórias usaram consumíveis
         if (dependencyRate > 0.5f)
         {
             var observation = new BehaviorObservation(BehaviorTriggerType.ConsumableDependency, mapName);
@@ -988,8 +807,6 @@ private void CheckDeathByChipDamage(string mapName)
             observation.SetData("totalVictories", sessionData.totalVictories);
             
             playerProfile.AddObservation(observation);
-            
-            Log($"ConsumableDependency detectado: {dependencyRate:P0} das vitórias usaram consumíveis");
         }
     }
 
@@ -1018,7 +835,6 @@ private void CheckDeathByChipDamage(string mapName)
     public void RecordShopPurchase(BattleAction purchasedItem)
     {
         playerBoughtSomething = true;
-        Log($"Compra registrada: {purchasedItem?.actionName}");
     }
 
     public void RecordShopExit(List<BattleAction> availableItems)
@@ -1032,8 +848,6 @@ private void CheckDeathByChipDamage(string mapName)
             observation.SetData("playerCoins", GameManager.Instance?.CurrencySystem?.CurrentCoins ?? 0);
             
             playerProfile.AddObservation(observation);
-            
-            Log($"Loja ignorada com {availableItems.Count} itens disponíveis");
         }
     }
 
@@ -1043,7 +857,6 @@ private void CheckDeathByChipDamage(string mapName)
 
     private void AnalyzeMapBehavior()
     {
-        Log("Analisando comportamento no mapa");
         CheckLowCoinsWithShops();
     }
 
@@ -1071,8 +884,6 @@ private void CheckDeathByChipDamage(string mapName)
                 observation.SetData("unvisitedShopsCount", mapNodes.Count(n => n.eventType is ShopEventSO && !n.IsCompleted()));
                 
                 playerProfile.AddObservation(observation);
-                
-                Log($"Poucas moedas ({currentCoins}) com lojas disponíveis - sugerindo {suggestedCoins}");
             }
         }
     }
@@ -1090,8 +901,6 @@ private void CheckDeathByChipDamage(string mapName)
             string dataPath = Path.Combine(Application.persistentDataPath, saveFileName);
             string jsonData = JsonUtility.ToJson(playerProfile, true);
             File.WriteAllText(dataPath, jsonData);
-            
-            Log($"Profile salvo em: {dataPath}");
         }
         catch (System.Exception e)
         {
@@ -1116,15 +925,10 @@ private void CheckDeathByChipDamage(string mapName)
                 {
                     playerProfile = new PlayerBehaviorProfile();
                 }
-                
-                playerProfile.CleanOldObservations();
-                
-                Log($"Profile carregado: {playerProfile.observations.Count} observações");
             }
             else
             {
                 playerProfile = new PlayerBehaviorProfile();
-                Log("Novo profile criado");
             }
         }
         catch (System.Exception e)
@@ -1148,17 +952,12 @@ private void CheckDeathByChipDamage(string mapName)
         return playerProfile.GetObservationsByType(type);
     }
     
-    /// <summary>
-    /// NOVO: Permite adicionar observação diretamente (para uso externo)
-    /// </summary>
     public void AddObservationDirectly(BehaviorObservation observation)
     {
         if (observation == null) return;
     
         playerProfile.AddObservation(observation);
         SavePlayerProfile();
-    
-        Log($"Observação adicionada externamente: {observation.triggerType}");
     }
 
     public List<BehaviorObservation> GetNegotiationTriggers(int maxResults = 5)
@@ -1176,7 +975,6 @@ private void CheckDeathByChipDamage(string mapName)
         {
             playerProfile.observations.Remove(observation);
             SavePlayerProfile();
-            Log($"Observação consumida: {observation.triggerType}");
         }
     }
 
@@ -1199,7 +997,6 @@ private void CheckDeathByChipDamage(string mapName)
         if (toRemove.Count > 0)
         {
             SavePlayerProfile();
-            Log($"Consumidas {toRemove.Count} observações do tipo {type}");
         }
     }
     
@@ -1212,11 +1009,6 @@ private void CheckDeathByChipDamage(string mapName)
         {
             playerProfile.currentBattle.endingHP = player.GetCurrentHP();
             playerProfile.currentBattle.endingMP = player.GetCurrentMP();
-        
-            Debug.Log($"=== DADOS CORRETOS CAPTURADOS ===");
-            Debug.Log($"HP Final: {playerProfile.currentBattle.endingHP}");
-            Debug.Log($"MP Final: {playerProfile.currentBattle.endingMP}");
-            Debug.Log($"================================");
         }
     }
 
@@ -1235,7 +1027,6 @@ private void CheckDeathByChipDamage(string mapName)
         if (removedCount > 0)
         {
             SavePlayerProfile();
-            Log($"Consumidas {removedCount} observações em negociação");
         }
     }
 
@@ -1256,7 +1047,6 @@ private void CheckDeathByChipDamage(string mapName)
             observation.SetData("resolved", true);
             observation.SetData("resolvedTimestamp", System.DateTime.Now.Ticks);
             SavePlayerProfile();
-            Log($"Observação marcada como resolvida: {observation.triggerType}");
         }
     }
 
@@ -1269,22 +1059,19 @@ private void CheckDeathByChipDamage(string mapName)
         
         AnalyzeMapBehavior();
         SavePlayerProfile();
-        
-        Log("Análise manual executada");
     }
 
     public void ClearAllData()
     {
         playerProfile = new PlayerBehaviorProfile();
         SavePlayerProfile();
-        Log("Todos os dados foram limpos");
     }
 
     public string GetSummaryStats()
     {
         var stats = new System.Text.StringBuilder();
-        stats.AppendLine($"=== ESTATÍSTICAS DO JOGADOR ===");
-        stats.AppendLine($"Total de observações: {playerProfile.observations.Count}");
+        stats.AppendLine("=== ESTATISTICAS DO JOGADOR ===");
+        stats.AppendLine($"Total de observacoes: {playerProfile.observations.Count}");
         
         var typeGroups = playerProfile.observations.GroupBy(obs => obs.triggerType);
         foreach (var group in typeGroups)

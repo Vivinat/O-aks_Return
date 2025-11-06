@@ -1,11 +1,8 @@
-// Assets/Scripts/Difficulty_System/DifficultyModifiers.cs (REGISTRY ONLY)
-
 using UnityEngine;
 using System.Collections.Generic;
 
 /// <summary>
-/// REGISTRO HISTÓRICO de modificadores aplicados
-/// NÃO aplica modificações - apenas rastreia o que foi feito
+/// Registro de modificadores aplicados
 /// </summary>
 [System.Serializable]
 public class DifficultyModifiers

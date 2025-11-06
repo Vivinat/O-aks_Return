@@ -1,4 +1,4 @@
-// Assets/Scripts/Difficulty_System/ObservationInterpreter.cs (BALANCED & OPTIMIZED)
+
 
 using UnityEngine;
 using System.Collections.Generic;
@@ -6,7 +6,7 @@ using System.Linq;
 
 /// <summary>
 /// Interpreta observações comportamentais e gera ofertas de negociação contextuais
-/// BALANCEADO: 4 vantagens + 4 desvantagens por trigger, valores ajustados
+/// 4 vantagens + 4 desvantagens por trigger
 /// </summary>
 public static class ObservationInterpreter
 {
@@ -156,7 +156,6 @@ public static class ObservationInterpreter
     {
         string killerEnemy = obs.GetData<string>("killerEnemy", "Inimigo");
         
-        // VANTAGENS (4 opções) - Valores moderados
         advantages.Add(NegotiationOffer.CreateAdvantage(
             "Vingança Tardia",
             "Enfraqueça seus adversários após sua queda anterior.",
@@ -189,8 +188,7 @@ public static class ObservationInterpreter
             obs.triggerType,
             $"Morreu para: {killerEnemy}"
         ));
-        
-        // DESVANTAGENS (4 opções) - Custo justo
+
         disadvantages.Add(NegotiationOffer.CreateDisadvantage(
             "Sede de Sangue",
             "Seus inimigos se fortalecem com a memória de sua derrota.",
@@ -239,8 +237,6 @@ public static class ObservationInterpreter
     {
         string skillName = obs.GetData<string>("skillName", "Habilidade");
         
-        // === VANTAGENS (4 opções) - Todas modificam a SKILL ESPECÍFICA ===
-        
         advantages.Add(CreateSpecificSkillPowerOffer(
             "Mestre de Uma Arte",
             $"'{skillName}' se torna devastadora.",
@@ -250,7 +246,6 @@ public static class ObservationInterpreter
             obs.triggerType
         ));
         
-        // 2. Reduz CUSTO DE MANA da skill específica
         advantages.Add(CreateSpecificSkillManaCostOffer(
             "Eficiência Aperfeiçoada",
             $"'{skillName}' consome menos energia.",
@@ -260,7 +255,6 @@ public static class ObservationInterpreter
             obs.triggerType
         ));
         
-        // 3. Aumenta PODER e reduz MANA da skill específica
         advantages.Add(CreateSpecificSkillFullOffer(
             "Domínio Absoluto",
             $"'{skillName}' atinge a perfeição.",
@@ -325,7 +319,6 @@ public static class ObservationInterpreter
     private static void GenerateFrequentLowHPOffers(BehaviorObservation obs,
         List<NegotiationOffer> advantages, List<NegotiationOffer> disadvantages)
     {
-        // VANTAGENS - Foco em sobrevivência
         advantages.Add(NegotiationOffer.CreateAdvantage(
             "Fortificação Massiva",
             "Aumente drasticamente seu HP máximo.",
@@ -360,7 +353,6 @@ public static class ObservationInterpreter
             "HP crítico frequente"
         ));
         
-        // DESVANTAGENS
         disadvantages.Add(NegotiationOffer.CreateDisadvantage(
             "Fragilidade Persistente",
             "Seus problemas defensivos deixam marcas.",
@@ -424,7 +416,6 @@ public static class ObservationInterpreter
             obs.triggerType
         ));
         
-        // 3. Aumenta PODER e reduz MANA da skill específica
         advantages.Add(CreateSpecificSkillFullOffer(
             "Ressurgência",
             $"'{skillName}' se equipara as demais.",
@@ -444,7 +435,6 @@ public static class ObservationInterpreter
             obs.triggerType
         ));
         
-        // DESVANTAGENS
         disadvantages.Add(NegotiationOffer.CreateDisadvantage(
             "Fragilidade Persistente",
             "Seus problemas defensivos deixam marcas.",
@@ -547,7 +537,6 @@ public static class ObservationInterpreter
     private static void GenerateAlwaysFirstTurnOffers(BehaviorObservation obs,
         List<NegotiationOffer> advantages, List<NegotiationOffer> disadvantages)
     {
-        // VANTAGENS - Aproveitar velocidade
         advantages.Add(NegotiationOffer.CreateAdvantage(
             "Domínio Tático",
             "Mais recursos para sua vantagem inicial.",
@@ -572,7 +561,6 @@ public static class ObservationInterpreter
             "Sempre age primeiro"
         ));
         
-        // DESVANTAGENS - Compensação por ser muito forte
         disadvantages.Add(NegotiationOffer.CreateDisadvantage(
             "Força Bruta Inimiga",
             "Inimigos compensam com puro poder.",
@@ -640,13 +628,12 @@ public static class ObservationInterpreter
             "Dificuldade vs Tanks"
         ));
         
-        // DESVANTAGENS - CORRIGIDAS (apenas uma mudança cada, valores 4-12)
         disadvantages.Add(NegotiationOffer.CreateDisadvantage(
             "Fortaleza Impenetrável",
             "Inimigos endurecem suas defesas.",
             CardAttribute.EnemyMaxHP,
             12,
-            false, // Afeta inimigos
+            false,
             obs.triggerType,
             "Dificuldade vs Tanks"
         ));
@@ -656,7 +643,7 @@ public static class ObservationInterpreter
             "Defesas inimigas aumentam drasticamente.",
             CardAttribute.EnemyDefense,
             2,
-            false, // Afeta inimigos
+            false, 
             obs.triggerType,
             "Dificuldade vs Tanks"
         ));
@@ -666,7 +653,7 @@ public static class ObservationInterpreter
             "Sua incapacidade de penetrar defesas te esgota.",
             CardAttribute.PlayerMaxMP,
             -8,
-            true, // Afeta jogador
+            true, 
             obs.triggerType,
             "Dificuldade vs Tanks"
         ));
@@ -676,7 +663,7 @@ public static class ObservationInterpreter
             "Seus ataques enfraquecem contra alvos resistentes.",
             CardAttribute.PlayerSingleTargetActionPower,
             -8,
-            true, // Afeta jogador
+            true, 
             obs.triggerType,
             "Dificuldade vs Tanks"
         ));
@@ -688,7 +675,6 @@ public static class ObservationInterpreter
     private static void GenerateStrugglesAgainstFastOffers(BehaviorObservation obs,
         List<NegotiationOffer> advantages, List<NegotiationOffer> disadvantages)
     {
-        // VANTAGENS - Anti-speed (apenas uma mudança cada, valores 4-12)
         advantages.Add(NegotiationOffer.CreateAdvantage(
             "Antecipação",
             "Aprenda a se defender de adversários velozes.",
@@ -716,13 +702,12 @@ public static class ObservationInterpreter
             "Dificuldade vs Rápidos"
         ));
         
-        // DESVANTAGENS (apenas uma mudança cada, valores 4-12)
         disadvantages.Add(NegotiationOffer.CreateDisadvantage(
             "Velocidade Cegante",
             "Inimigos ficam impossíveis de acompanhar.",
             CardAttribute.EnemyActionPower,
             10,
-            false, // Afeta inimigos
+            false,
             obs.triggerType,
             "Dificuldade vs Rápidos"
         ));
@@ -732,7 +717,7 @@ public static class ObservationInterpreter
             "Inimigos rápidos te acertam com mais frequência.",
             CardAttribute.EnemyOffensiveActionPower,
             12,
-            false, // Afeta inimigos
+            false, 
             obs.triggerType,
             "Dificuldade vs Rápidos"
         ));
@@ -742,7 +727,7 @@ public static class ObservationInterpreter
             "Sua baixa velocidade te prejudica ainda mais.",
             CardAttribute.PlayerActionPower,
             -8,
-            true, // Afeta jogador
+            true, 
             obs.triggerType,
             "Dificuldade vs Rápidos"
         ));
@@ -752,7 +737,7 @@ public static class ObservationInterpreter
             "Sua defesa enfraquece contra adversários velozes.",
             CardAttribute.PlayerDefense,
             -2,
-            true, // Afeta jogador
+            true, 
             obs.triggerType,
             "Dificuldade vs Rápidos"
         ));
@@ -798,12 +783,11 @@ public static class ObservationInterpreter
             "Reduza a vida de cada inimigo no grupo.",
             CardAttribute.EnemyMaxHP,
             -10,
-            false, // Debuff nos inimigos = vantagem para o jogador
+            false,
             obs.triggerType,
             $"Dificuldade vs {enemyCount} inimigos"
         ));
         
-        // DESVANTAGENS (apenas uma mudança cada, valores 4-12)
         disadvantages.Add(NegotiationOffer.CreateDisadvantage(
             "Horda Implacável",
             "Mais inimigos surgem, mais fortes.",
@@ -819,7 +803,7 @@ public static class ObservationInterpreter
             "Números esmagadores te enfraquecem.",
             CardAttribute.PlayerActionPower,
             -8,
-            true, // Afeta jogador
+            true, 
             obs.triggerType,
             $"Dificuldade vs {enemyCount} inimigos"
         ));
@@ -829,7 +813,7 @@ public static class ObservationInterpreter
             "Lutar contra múltiplos te esgota.",
             CardAttribute.PlayerMaxMP,
             -10,
-            true, // Afeta jogador
+            true, 
             obs.triggerType,
             $"Dificuldade vs {enemyCount} inimigos"
         ));
@@ -839,7 +823,7 @@ public static class ObservationInterpreter
             "Suas habilidades de área enfraquecem.",
             CardAttribute.PlayerAOEActionPower,
             -8,
-            true, // Afeta jogador
+            true, 
             obs.triggerType,
             $"Dificuldade vs {enemyCount} inimigos"
         ));
@@ -851,7 +835,6 @@ public static class ObservationInterpreter
     private static void GenerateAlwaysDiesEarlyOffers(BehaviorObservation obs,
         List<NegotiationOffer> advantages, List<NegotiationOffer> disadvantages)
     {
-        // VANTAGENS - Sobrevivência inicial (apenas uma mudança cada, valores 4-12)
         advantages.Add(NegotiationOffer.CreateAdvantage(
             "Início Fortificado",
             "Comece com defesas massivas.",
@@ -875,7 +858,7 @@ public static class ObservationInterpreter
             "Reduza o poder ofensivo dos adversários.",
             CardAttribute.EnemyOffensiveActionPower,
             -8,
-            false, // Debuff nos inimigos = vantagem para o jogador
+            false, 
             obs.triggerType,
             "Morte precoce frequente"
         ));
@@ -889,13 +872,12 @@ public static class ObservationInterpreter
             "Morte precoce frequente"
         ));
         
-        // DESVANTAGENS (apenas uma mudança cada, valores 4-12)
         disadvantages.Add(NegotiationOffer.CreateDisadvantage(
             "Assalto Inicial",
             "Inimigos investem tudo no início.",
             CardAttribute.EnemyActionPower,
             12,
-            false, // Afeta inimigos
+            false, 
             obs.triggerType,
             "Morte precoce frequente"
         ));
@@ -905,7 +887,7 @@ public static class ObservationInterpreter
             "Você começa mais vulnerável.",
             CardAttribute.PlayerMaxHP,
             -12,
-            true, // Afeta jogador
+            true, 
             obs.triggerType,
             "Morte precoce frequente"
         ));
@@ -915,7 +897,7 @@ public static class ObservationInterpreter
             "Primeiros turnos são ainda mais perigosos.",
             CardAttribute.EnemyOffensiveActionPower,
             6,
-            false, // Afeta inimigos
+            false, 
             obs.triggerType,
             "Morte precoce frequente"
         ));
@@ -937,7 +919,6 @@ public static class ObservationInterpreter
     private static void GenerateAlwaysDiesLateOffers(BehaviorObservation obs,
         List<NegotiationOffer> advantages, List<NegotiationOffer> disadvantages)
     {
-        // VANTAGENS - Guerra de atrito (apenas uma mudança cada, valores 4-12)
         advantages.Add(NegotiationOffer.CreateAdvantage(
             "Resistência Prolongada",
             "Ganhe fôlego para batalhas longas.",
@@ -961,7 +942,7 @@ public static class ObservationInterpreter
             "Reduza o poder ofensivo dos inimigos ao longo do tempo.",
             CardAttribute.EnemyOffensiveActionPower,
             -8,
-            false, // Debuff nos inimigos = vantagem para o jogador
+            false, 
             obs.triggerType,
             "Morte tardia por atrito"
         ));
@@ -975,13 +956,12 @@ public static class ObservationInterpreter
             "Morte tardia por atrito"
         ));
         
-        // DESVANTAGENS (apenas uma mudança cada, valores 4-12)
         disadvantages.Add(NegotiationOffer.CreateDisadvantage(
             "Guerra de Atrito",
             "Batalhas longas favorecem adversários.",
             CardAttribute.EnemyDefense,
             2,
-            false, // Afeta inimigos
+            false, 
             obs.triggerType,
             "Morte tardia por atrito"
         ));
@@ -991,7 +971,7 @@ public static class ObservationInterpreter
             "Você se cansa em batalhas prolongadas.",
             CardAttribute.PlayerMaxMP,
             -10,
-            true, // Afeta jogador
+            true, 
             obs.triggerType,
             "Morte tardia por atrito"
         ));
@@ -1001,7 +981,7 @@ public static class ObservationInterpreter
             "Dano constante te enfraquece.",
             CardAttribute.PlayerDefense,
             -2,
-            true, // Afeta jogador
+            true, 
             obs.triggerType,
             "Morte tardia por atrito"
         ));
@@ -1011,7 +991,7 @@ public static class ObservationInterpreter
             "Suas habilidades custam mais mana com o tempo.",
             CardAttribute.PlayerActionManaCost,
             10,
-            true, // Afeta jogador
+            true, 
             obs.triggerType,
             "Morte tardia por atrito"
         ));
@@ -1023,7 +1003,6 @@ public static class ObservationInterpreter
     private static void GenerateDeathByChipDamageOffers(BehaviorObservation obs,
         List<NegotiationOffer> advantages, List<NegotiationOffer> disadvantages)
     {
-        // VANTAGENS - Anti-chip damage (apenas uma mudança cada, valores 4-12)
         advantages.Add(NegotiationOffer.CreateAdvantage(
             "Pele de Aço",
             "Fortifique-se contra ataques menores.",
@@ -1051,13 +1030,12 @@ public static class ObservationInterpreter
             "Morte por dano acumulado"
         ));
     
-        // DESVANTAGENS (apenas uma mudança cada, valores 4-12)
         disadvantages.Add(NegotiationOffer.CreateDisadvantage(
             "Mil Cortes",
             "Inimigos atacam com mais força e frequência.",
             CardAttribute.EnemyActionPower,
             10,
-            false, // Afeta inimigos
+            false, 
             obs.triggerType,
             "Morte por dano acumulado"
         ));
@@ -1067,7 +1045,7 @@ public static class ObservationInterpreter
             "Sua defesa se deteriora.",
             CardAttribute.PlayerDefense,
             -2,
-            true, // Afeta jogador
+            true, 
             obs.triggerType,
             "Morte por dano acumulado"
         ));
@@ -1091,7 +1069,6 @@ public static class ObservationInterpreter
     {
         int biggestHit = obs.GetData<int>("biggestHit", 50);
         
-        // VANTAGENS - Anti-burst (apenas uma mudança cada, valores 4-12)
         advantages.Add(NegotiationOffer.CreateAdvantage(
             "Fortaleza Viva",
             "Torne-se resistente a ataques devastadores.",
@@ -1115,18 +1092,17 @@ public static class ObservationInterpreter
             "Reduza o poder ofensivo dos adversários.",
             CardAttribute.EnemyOffensiveActionPower,
             -6,
-            false, // Debuff nos inimigos = vantagem para o jogador
+            false, 
             obs.triggerType,
             $"Vulnerável a one-shots ({biggestHit} dano)"
         ));
         
-        // DESVANTAGENS (apenas uma mudança cada, valores 4-12)
         disadvantages.Add(NegotiationOffer.CreateDisadvantage(
             "Golpe Executivo",
             "Adversários aperfeiçoam ataques letais.",
             CardAttribute.EnemyActionPower,
             12,
-            false, // Afeta inimigos
+            false, 
             obs.triggerType,
             $"Vulnerável a one-shots ({biggestHit} dano)"
         ));
@@ -1136,7 +1112,7 @@ public static class ObservationInterpreter
             "Você fica ainda mais vulnerável.",
             CardAttribute.PlayerMaxHP,
             -12,
-            true, // Afeta jogador
+            true, 
             obs.triggerType,
             $"Vulnerável a one-shots ({biggestHit} dano)"
         ));
@@ -1146,7 +1122,7 @@ public static class ObservationInterpreter
             "Defesa drasticamente reduzida.",
             CardAttribute.PlayerDefense,
             -2,
-            true, // Afeta jogador
+            true,
             obs.triggerType,
             $"Vulnerável a one-shots ({biggestHit} dano)"
         ));
@@ -1158,7 +1134,6 @@ public static class ObservationInterpreter
     private static void GenerateLowHealthNoCureOffers(BehaviorObservation obs,
         List<NegotiationOffer> advantages, List<NegotiationOffer> disadvantages)
     {
-        // VANTAGENS (apenas uma mudança cada, valores 4-12)
         advantages.Add(NegotiationOffer.CreateAdvantage(
             "Vitalidade Resiliente",
             "Compense falta de cura com mais resistência.",
@@ -1186,13 +1161,12 @@ public static class ObservationInterpreter
             "HP baixo sem itens de cura"
         ));
         
-        // DESVANTAGENS (apenas uma mudança cada, valores 4-12)
         disadvantages.Add(NegotiationOffer.CreateDisadvantage(
             "Feridas Abertas",
             "Feridas o tornam mais vulnerável.",
             CardAttribute.PlayerDefense,
             -2,
-            true, // Afeta jogador
+            true, 
             obs.triggerType,
             "HP baixo sem itens de cura"
         ));
@@ -1202,7 +1176,7 @@ public static class ObservationInterpreter
             "Falta de cura te deixa fraco.",
             CardAttribute.PlayerMaxHP,
             -12,
-            true, // Afeta jogador
+            true, 
             obs.triggerType,
             "HP baixo sem itens de cura"
         ));
@@ -1212,7 +1186,7 @@ public static class ObservationInterpreter
             "Feridas não cicatrizam adequadamente.",
             CardAttribute.PlayerDefensiveActionPower,
             -10,
-            true, // Afeta jogador
+            true, 
             obs.triggerType,
             "HP baixo sem itens de cura"
         ));
@@ -1224,7 +1198,6 @@ public static class ObservationInterpreter
     private static void GenerateManaIssuesOffers(BehaviorObservation obs,
         List<NegotiationOffer> advantages, List<NegotiationOffer> disadvantages)
     {
-        // VANTAGENS (apenas uma mudança cada, valores 4-12)
         advantages.Add(NegotiationOffer.CreateAdvantage(
             "Reservas Mágicas",
             "Amplie drasticamente suas reservas de mana.",
@@ -1248,18 +1221,17 @@ public static class ObservationInterpreter
             "Aumente o custo de mana das habilidades inimigas.",
             CardAttribute.EnemyActionManaCost,
             5,
-            false, // Afeta inimigos = vantagem para o jogador
+            false, 
             obs.triggerType,
             "Problemas de mana constantes"
         ));
         
-        // DESVANTAGENS (apenas uma mudança cada, valores 4-12)
         disadvantages.Add(NegotiationOffer.CreateDisadvantage(
             "Exaustão Mágica",
             "Habilidades drenam ainda mais energia.",
             CardAttribute.PlayerActionManaCost,
             5,
-            true, // Afeta jogador
+            true, 
             obs.triggerType,
             "Problemas de mana constantes"
         ));
@@ -1269,7 +1241,7 @@ public static class ObservationInterpreter
             "Seu MP máximo diminui.",
             CardAttribute.PlayerMaxMP,
             -10,
-            true, // Afeta jogador
+            true, 
             obs.triggerType,
             "Problemas de mana constantes"
         ));
@@ -1279,7 +1251,7 @@ public static class ObservationInterpreter
             "Suas reservas mágicas se deterioram.",
             CardAttribute.PlayerMaxMP,
             -12,
-            true, // Afeta jogador
+            true, 
             obs.triggerType,
             "Problemas de mana constantes"
         ));
@@ -1291,7 +1263,6 @@ public static class ObservationInterpreter
     private static void GenerateConsumableIssuesOffers(BehaviorObservation obs,
         List<NegotiationOffer> advantages, List<NegotiationOffer> disadvantages)
     {
-        // VANTAGENS
         advantages.Add(NegotiationOffer.CreateAdvantage(
             "Autossuficiência",
             "Troque dependência de itens por poder próprio.",
@@ -1324,7 +1295,6 @@ public static class ObservationInterpreter
             "Dependência de consumíveis"
         ));
         
-        // DESVANTAGENS
         disadvantages.Add(NegotiationOffer.CreateDisadvantage(
             "Escassez Material",
             "Recursos se tornam ainda mais raros.",
@@ -1363,7 +1333,6 @@ public static class ObservationInterpreter
     {
         string enemyName = obs.GetData<string>("randomEnemy", "Inimigo");
         
-        // VANTAGENS
         advantages.Add(NegotiationOffer.CreateAdvantage(
             "Tributagem",
             "Alguém com sua força merece recompensas.",
@@ -1390,7 +1359,6 @@ public static class ObservationInterpreter
             $"Vitória perfeita vs {enemyName}"
         ));
         
-        // DESVANTAGENS
         disadvantages.Add(NegotiationOffer.CreateDisadvantage(
             "Lição Aprendida",
             "Inimigos estudam sua técnica.",
@@ -1436,10 +1404,7 @@ public static class ObservationInterpreter
         List<NegotiationOffer> advantages, List<NegotiationOffer> disadvantages)
     {
         string itemName = obs.GetData<string>("exhaustedItem", "Item");
-        
-        // VANTAGENS - Modificar o item específico que foi esgotado (valores 4-12)
-        
-        // 1. Aumenta quantidade/poder do item
+
         advantages.Add(CreateSpecificSkillPowerOffer(
             "Reservas Renovadas",
             $"'{itemName}' se torna mais eficaz quando usado.",
@@ -1448,9 +1413,7 @@ public static class ObservationInterpreter
             true,
             obs.triggerType
         ));
-        
-        
-        // 3. Compensação geral por esgotar item
+
         advantages.Add(NegotiationOffer.CreateAdvantage(
             "Força Interior",
             "Desenvolva resistência própria sem depender de itens.",
@@ -1460,7 +1423,6 @@ public static class ObservationInterpreter
             $"Item esgotado: {itemName}"
         ));
         
-        // 1. Enfraquece o item específico
         disadvantages.Add(CreateSpecificSkillPowerOffer(
             "Degradação",
             $"'{itemName}' perde eficácia pelo uso excessivo.",
@@ -1470,24 +1432,22 @@ public static class ObservationInterpreter
             obs.triggerType
         ));
         
-        // 2. Reduz recursos gerais
         disadvantages.Add(NegotiationOffer.CreateDisadvantage(
             "Escassez Permanente",
             "Recursos ficam ainda mais raros.",
             CardAttribute.CoinsEarned,
             -15,
-            true, // Afeta jogador
+            true, 
             obs.triggerType,
             $"Item esgotado: {itemName}"
         ));
         
-        // 3. Enfraquece jogador por dependência
         disadvantages.Add(NegotiationOffer.CreateDisadvantage(
             "Dependência Crítica",
             "Estratégia baseada em itens te enfraquece.",
             CardAttribute.PlayerDefense,
             -2,
-            true, // Afeta jogador
+            true, 
             obs.triggerType,
             $"Item esgotado: {itemName}"
         ));
@@ -1499,7 +1459,6 @@ public static class ObservationInterpreter
     private static void GenerateNoDefensiveSkillsOffers(BehaviorObservation obs,
         List<NegotiationOffer> advantages, List<NegotiationOffer> disadvantages)
     {
-        // VANTAGENS (apenas uma mudança cada, valores 4-12)
         advantages.Add(NegotiationOffer.CreateAdvantage(
             "A Melhor Defesa",
             "Puro foco ofensivo devastador.",
@@ -1527,13 +1486,12 @@ public static class ObservationInterpreter
             "Build sem skills defensivas"
         ));
         
-        // DESVANTAGENS (apenas uma mudança cada, valores 4-12)
         disadvantages.Add(NegotiationOffer.CreateDisadvantage(
             "Vidro e Canhão",
             "Sem defesas, você é frágil.",
             CardAttribute.PlayerMaxHP,
             -20,
-            true, // Afeta jogador
+            true, 
             obs.triggerType,
             "Build sem skills defensivas"
         ));
@@ -1543,7 +1501,7 @@ public static class ObservationInterpreter
             "Falta de defesa te enfraquece.",
             CardAttribute.PlayerDefense,
             -2,
-            true, // Afeta jogador
+            true, 
             obs.triggerType,
             "Build sem skills defensivas"
         ));
@@ -1553,7 +1511,7 @@ public static class ObservationInterpreter
             "Inimigos exploram sua fragilidade com ataques mais fortes.",
             CardAttribute.EnemyOffensiveActionPower,
             12,
-            false, // Afeta inimigos
+            false, 
             obs.triggerType,
             "Build sem skills defensivas"
         ));
@@ -1567,7 +1525,6 @@ public static class ObservationInterpreter
     {
         string bossName = obs.GetData<string>("bossName", "Boss");
         
-        // VANTAGENS (apenas uma mudança cada, valores 4-12)
         advantages.Add(NegotiationOffer.CreateAdvantage(
             "Vingança Direcionada",
             $"Forças cósmicas concedem poder contra {bossName}.",
@@ -1604,13 +1561,12 @@ public static class ObservationInterpreter
             $"Mortes repetidas: {bossName}"
         ));
         
-        // DESVANTAGENS (apenas uma mudança cada, valores 4-12)
         disadvantages.Add(NegotiationOffer.CreateDisadvantage(
             "Sede por Sangue",
             $"Inimigos se fortalece com cada vitória de {bossName}.",
             CardAttribute.EnemyActionPower,
             20,
-            false, // Afeta inimigos
+            false, 
             obs.triggerType,
             $"Mortes repetidas: {bossName}"
         ));
@@ -1620,7 +1576,7 @@ public static class ObservationInterpreter
             "Mortes repetidas te enfraquecem mentalmente.",
             CardAttribute.PlayerMaxHP,
             -20,
-            true, // Afeta jogador
+            true, 
             obs.triggerType,
             $"Mortes repetidas: {bossName}"
         ));
@@ -1630,7 +1586,7 @@ public static class ObservationInterpreter
             "Derrotas consecutivas te quebram.",
             CardAttribute.PlayerActionPower,
             -20,
-            true, // Afeta jogador
+            true, 
             obs.triggerType,
             $"Mortes repetidas: {bossName}"
         ));
@@ -1640,7 +1596,7 @@ public static class ObservationInterpreter
             $"Pavor de {bossName} te enfraquece.",
             CardAttribute.PlayerDefense,
             -2,
-            true, // Afeta jogador
+            true, 
             obs.triggerType,
             $"Mortes repetidas: {bossName}"
         ));
@@ -1654,7 +1610,6 @@ public static class ObservationInterpreter
     {
         int playerCoins = obs.GetData<int>("playerCoins", 0);
         
-        // VANTAGENS (apenas uma mudança cada, valores 4-12)
         advantages.Add(NegotiationOffer.CreateAdvantage(
             "Guardião de Recursos",
             "Disciplina financeira é recompensada.",
@@ -1678,7 +1633,7 @@ public static class ObservationInterpreter
             "Comerciantes reduzem os preços para você.",
             CardAttribute.ShopPrices,
             -8,
-            false, // Afeta preços (beneficia jogador)
+            false, 
             obs.triggerType,
             $"Loja ignorada com {playerCoins} moedas"
         ));
@@ -1692,13 +1647,12 @@ public static class ObservationInterpreter
             $"Loja ignorada com {playerCoins} moedas"
         ));
         
-        // DESVANTAGENS (apenas uma mudança cada, valores 4-12)
         disadvantages.Add(NegotiationOffer.CreateDisadvantage(
             "Inflação Galopante",
             "Comerciantes aumentam os preços.",
             CardAttribute.ShopPrices,
             12,
-            false, // Afeta preços
+            false, 
             obs.triggerType,
             $"Loja ignorada com {playerCoins} moedas"
         ));
@@ -1708,7 +1662,7 @@ public static class ObservationInterpreter
             "Recursos ficam mais caros.",
             CardAttribute.ShopPrices,
             14,
-            false, // Afeta preços
+            false, 
             obs.triggerType,
             $"Loja ignorada com {playerCoins} moedas"
         ));
@@ -1718,7 +1672,7 @@ public static class ObservationInterpreter
             "Ignorar comércio tem consequências.",
             CardAttribute.CoinsEarned,
             -15,
-            true, // Afeta jogador
+            true, 
             obs.triggerType,
             $"Loja ignorada com {playerCoins} moedas"
         ));
@@ -1728,7 +1682,7 @@ public static class ObservationInterpreter
             "Perder lojas te enfraquece economicamente.",
             CardAttribute.CoinsEarned,
             -12,
-            true, // Afeta jogador
+            true, 
             obs.triggerType,
             $"Loja ignorada com {playerCoins} moedas"
         ));
@@ -1740,7 +1694,6 @@ public static class ObservationInterpreter
     private static void GenerateBattleEasyVictoryOffers(BehaviorObservation obs,
         List<NegotiationOffer> advantages, List<NegotiationOffer> disadvantages)
     {
-        // VANTAGENS (apenas uma mudança cada, valores 4-12)
         advantages.Add(NegotiationOffer.CreateAdvantage(
             "Poder Crescente",
             "Canalize confiança em poder ofensivo.",
@@ -1768,13 +1721,12 @@ public static class ObservationInterpreter
             "Vitória muito fácil"
         ));
     
-        // DESVANTAGENS (apenas uma mudança cada, valores 4-12)
         disadvantages.Add(NegotiationOffer.CreateDisadvantage(
             "Desafio Amplificado",
             "Universo aumenta a dificuldade para te testar.",
             CardAttribute.EnemyMaxHP,
             20,
-            false, // Afeta inimigos
+            false, 
             obs.triggerType,
             "Vitória muito fácil"
         ));
@@ -1784,7 +1736,7 @@ public static class ObservationInterpreter
             "Inimigos se preparam melhor.",
             CardAttribute.EnemyDefense,
             2,
-            false, // Afeta inimigos
+            false, 
             obs.triggerType,
             "Vitória muito fácil"
         ));
@@ -1794,7 +1746,7 @@ public static class ObservationInterpreter
             "Confiança excessiva te enfraquece.",
             CardAttribute.PlayerDefense,
             -2,
-            true, // Afeta jogador
+            true, 
             obs.triggerType,
             "Vitória muito fácil"
         ));
@@ -1808,7 +1760,6 @@ public static class ObservationInterpreter
     {
         float avgCost = obs.GetData<float>("averageManaCost", 20f);
         
-        // VANTAGENS (apenas uma mudança cada, valores 4-12)
         advantages.Add(NegotiationOffer.CreateAdvantage(
             "Maestria Arcana",
             "Domine magias poderosas com mais eficiência.",
@@ -1841,18 +1792,17 @@ public static class ObservationInterpreter
             "Aumente o custo de mana das habilidades inimigas.",
             CardAttribute.EnemyActionManaCost,
             5,
-            false, // Afeta inimigos = vantagem para o jogador
+            false, 
             obs.triggerType,
             $"Custo médio: {avgCost:F0} MP"
         ));
         
-        // DESVANTAGENS (apenas uma mudança cada, valores 4-12)
         disadvantages.Add(NegotiationOffer.CreateDisadvantage(
             "Fome Voraz",
             "Magias poderosas drenam ainda mais energia.",
             CardAttribute.PlayerActionManaCost,
             10,
-            true, // Afeta jogador
+            true,
             obs.triggerType,
             $"Custo médio: {avgCost:F0} MP"
         ));
@@ -1862,7 +1812,7 @@ public static class ObservationInterpreter
             "Você fica sem mana rapidamente.",
             CardAttribute.PlayerMaxMP,
             -15,
-            true, // Afeta jogador
+            true, 
             obs.triggerType,
             $"Custo médio: {avgCost:F0} MP"
         ));
@@ -1872,7 +1822,7 @@ public static class ObservationInterpreter
             "Custos exorbitantes te limitam.",
             CardAttribute.PlayerActionManaCost,
             15,
-            true, // Afeta jogador
+            true, 
             obs.triggerType,
             $"Custo médio: {avgCost:F0} MP"
         ));
@@ -1886,7 +1836,6 @@ public static class ObservationInterpreter
     {
         float avgEnemies = obs.GetData<float>("averageEnemyCount", 2f);
     
-        // VANTAGENS (apenas uma mudança cada, valores 4-12)
         advantages.Add(NegotiationOffer.CreateAdvantage(
             "Assassino Preciso",
             "Foco absoluto em alvos únicos.",
@@ -1905,13 +1854,12 @@ public static class ObservationInterpreter
             $"Sem AOE vs {avgEnemies:F0} inimigos"
         ));
     
-        // DESVANTAGENS (apenas uma mudança cada, valores 4-12)
         disadvantages.Add(NegotiationOffer.CreateDisadvantage(
             "Sobrecarga de Alvos",
             "Múltiplos inimigos te sobrecarregam.",
             CardAttribute.EnemyMaxHP,
             10,
-            false, // Afeta inimigos
+            false, 
             obs.triggerType,
             $"Sem AOE vs {avgEnemies:F0} inimigos"
         ));
@@ -1921,7 +1869,7 @@ public static class ObservationInterpreter
             "Falta de área te expõe.",
             CardAttribute.PlayerDefense,
             -2,
-            true, // Afeta jogador
+            true, 
             obs.triggerType,
             $"Sem AOE vs {avgEnemies:F0} inimigos"
         ));
@@ -1935,7 +1883,6 @@ public static class ObservationInterpreter
     {
         int coinsLeft = obs.GetData<int>("coinsLeft", 0);
         
-        // VANTAGENS (apenas uma mudança cada, valores 4-12)
         advantages.Add(NegotiationOffer.CreateAdvantage(
             "Tudo ou Nada",
             "Gastar tudo mostra comprometimento.",
@@ -1959,18 +1906,17 @@ public static class ObservationInterpreter
             "Comerciantes reduzem preços por pena.",
             CardAttribute.ShopPrices,
             -8,
-            false, // Afeta preços = vantagem para o jogador
+            false, 
             obs.triggerType,
             $"Restaram apenas {coinsLeft} moedas"
         ));
         
-        // DESVANTAGENS (apenas uma mudança cada, valores 4-12)
         disadvantages.Add(NegotiationOffer.CreateDisadvantage(
             "Endividamento",
             "Gastos excessivos têm consequências.",
             CardAttribute.ShopPrices,
             12,
-            false, // Afeta preços
+            false, 
             obs.triggerType,
             $"Restaram apenas {coinsLeft} moedas"
         ));
@@ -1980,7 +1926,7 @@ public static class ObservationInterpreter
             "Você ficou completamente sem recursos.",
             CardAttribute.CoinsEarned,
             -15,
-            true, // Afeta jogador
+            true, 
             obs.triggerType,
             $"Restaram apenas {coinsLeft} moedas"
         ));
@@ -1990,7 +1936,7 @@ public static class ObservationInterpreter
             "Sua situação econômica piora drasticamente.",
             CardAttribute.CoinsEarned,
             -18,
-            true, // Afeta jogador
+            true, 
             obs.triggerType,
             $"Restaram apenas {coinsLeft} moedas"
         ));
@@ -2005,7 +1951,6 @@ public static class ObservationInterpreter
         int currentCoins = obs.GetData<int>("currentCoins", 0);
         int shopsCount = obs.GetData<int>("unvisitedShopsCount", 1);
         
-        // VANTAGENS (apenas uma mudança cada, valores 4-12)
         advantages.Add(NegotiationOffer.CreateAdvantage(
             "Filantropia Cósmica",
             "Forças do universo concedem moedas.",
@@ -2029,18 +1974,17 @@ public static class ObservationInterpreter
             "Comerciantes têm pena de você.",
             CardAttribute.ShopPrices,
             -10,
-            false, // Afeta preços = vantagem para o jogador
+            false, 
             obs.triggerType,
             $"{currentCoins} moedas, {shopsCount} lojas disponíveis"
         ));
         
-        // DESVANTAGENS (apenas uma mudança cada, valores 4-12)
         disadvantages.Add(NegotiationOffer.CreateDisadvantage(
             "Círculo Vicioso",
             "Escassez de recursos persiste.",
             CardAttribute.ShopPrices,
             12,
-            false, // Afeta preços
+            false, 
             obs.triggerType,
             $"{currentCoins} moedas, {shopsCount} lojas disponíveis"
         ));
@@ -2050,7 +1994,7 @@ public static class ObservationInterpreter
             "Você ganha menos moedas.",
             CardAttribute.CoinsEarned,
             -10,
-            true, // Afeta jogador
+            true, 
             obs.triggerType,
             $"{currentCoins} moedas, {shopsCount} lojas disponíveis"
         ));
@@ -2060,7 +2004,7 @@ public static class ObservationInterpreter
             "Recursos escasseiam ainda mais.",
             CardAttribute.CoinsEarned,
             -12,
-            true, // Afeta jogador
+            true, 
             obs.triggerType,
             $"{currentCoins} moedas, {shopsCount} lojas disponíveis"
         ));
@@ -2086,14 +2030,13 @@ public static class ObservationInterpreter
             offerName = offerName,
             offerDescription = description,
             isAdvantage = isAdvantage,
-            targetAttribute = CardAttribute.PlayerActionPower, // Usado como placeholder
+            targetAttribute = CardAttribute.PlayerActionPower, 
             value = powerChange,
             affectsPlayer = true,
             sourceObservationType = triggerType,
             contextualInfo = $"Skill: {targetSkillName}"
         };
         
-        // MARCA ESPECIAL: Esta oferta modifica skill específica
         offer.SetData("isSpecificSkill", true);
         offer.SetData("targetSkillName", targetSkillName);
         offer.SetData("modifyPower", true);
@@ -2103,7 +2046,7 @@ public static class ObservationInterpreter
     }
     
     /// <summary>
-    /// Cria oferta que modifica APENAS O CUSTO DE MANA de uma skill específica
+    /// Cria oferta que modifica custo de mana  de uma skill específica
     /// </summary>
     private static NegotiationOffer CreateSpecificSkillManaCostOffer(
         string offerName,
@@ -2118,7 +2061,7 @@ public static class ObservationInterpreter
             offerName = offerName,
             offerDescription = description,
             isAdvantage = isAdvantage,
-            targetAttribute = CardAttribute.PlayerActionManaCost, // Usado como placeholder
+            targetAttribute = CardAttribute.PlayerActionManaCost, 
             value = manaCostChange,
             affectsPlayer = true,
             sourceObservationType = triggerType,
@@ -2135,7 +2078,7 @@ public static class ObservationInterpreter
     }
     
     /// <summary>
-    /// Cria oferta que modifica PODER E MANA de uma skill específica
+    /// Cria oferta que modifica poder e mana de uma skill específica
     /// </summary>
     private static NegotiationOffer CreateSpecificSkillFullOffer(
         string offerName,

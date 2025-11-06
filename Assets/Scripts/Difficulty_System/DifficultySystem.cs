@@ -1,12 +1,8 @@
-// Assets/Scripts/Difficulty_System/DifficultySystem.cs (FIXED - COMPLETE)
-
 using UnityEngine;
 using System.IO;
-using System.Linq;
 
 /// <summary>
-/// Sistema que APLICA modificações imediatamente nos ScriptableObjects
-/// DifficultyModifiers é apenas um registro histórico
+/// Sistema que aplica modificações imediatamente nos ScriptableObjects
 /// </summary>
 public class DifficultySystem : MonoBehaviour
 {
@@ -48,17 +44,12 @@ public class DifficultySystem : MonoBehaviour
         if (pauseStatus) SaveModifiers();
     }
     
-    /// <summary>
-    /// APLICA negociação IMEDIATAMENTE e registra no histórico
-    /// Agora recebe valores separados para player e enemy
-    /// </summary>
     public void ApplyNegotiation(CardAttribute playerAttr, CardAttribute enemyAttr, int playerValue, int enemyValue)
     {
         DebugLog($"=== APLICANDO NEGOCIAÇÃO ===");
         DebugLog($"Jogador: {playerAttr} {FormatValue(playerValue)}");
         DebugLog($"Inimigo: {enemyAttr} {FormatValue(enemyValue)}");
         
-        // APLICA modificações imediatamente usando os valores já escalados
         if (playerAttr != CardAttribute.PlayerMaxHP || playerValue != 0)
         {
             ApplyModifierImmediate(playerAttr, playerValue, true);
@@ -75,26 +66,22 @@ public class DifficultySystem : MonoBehaviour
         DebugLog("\n" + modifiers.GetSummary());
     }
     
-    /// <summary>
-    /// APLICA modificação IMEDIATAMENTE nos ScriptableObjects
-    /// </summary>
     private void ApplyModifierImmediate(CardAttribute attribute, int value, bool isPlayerAttribute)
     {
         if (GameManager.Instance == null)
         {
-            DebugLog("⚠️ GameManager não encontrado!");
+            DebugLog("GameManager não encontrado!");
             return;
         }
         
         switch (attribute)
         {
-            // === STATS BASE DO JOGADOR ===
             case CardAttribute.PlayerMaxHP:
                 if (GameManager.Instance.PlayerCharacterInfo != null)
                 {
                     GameManager.Instance.PlayerCharacterInfo.maxHp = 
                         Mathf.Max(1, GameManager.Instance.PlayerCharacterInfo.maxHp + value);
-                    DebugLog($"✅ Player MaxHP modificado: {FormatValue(value)}");
+                    DebugLog($"Player MaxHP modificado: {FormatValue(value)}");
                 }
                 break;
             
@@ -103,7 +90,7 @@ public class DifficultySystem : MonoBehaviour
                 {
                     GameManager.Instance.PlayerCharacterInfo.maxMp = 
                         Mathf.Max(0, GameManager.Instance.PlayerCharacterInfo.maxMp + value);
-                    DebugLog($"✅ Player MaxMP modificado: {FormatValue(value)}");
+                    DebugLog($"Player MaxMP modificado: {FormatValue(value)}");
                 }
                 break;
             
@@ -112,7 +99,7 @@ public class DifficultySystem : MonoBehaviour
                 {
                     GameManager.Instance.PlayerCharacterInfo.defense = 
                         Mathf.Max(0, GameManager.Instance.PlayerCharacterInfo.defense + value);
-                    DebugLog($"✅ Player Defense modificada: {FormatValue(value)}");
+                    DebugLog($"Player Defense modificada: {FormatValue(value)}");
                 }
                 break;
             
@@ -121,50 +108,46 @@ public class DifficultySystem : MonoBehaviour
                 {
                     GameManager.Instance.PlayerCharacterInfo.speed = 
                         Mathf.Max(0.1f, GameManager.Instance.PlayerCharacterInfo.speed + value);
-                    DebugLog($"✅ Player Speed modificada: {FormatValue(value)}");
+                    DebugLog($"Player Speed modificada: {FormatValue(value)}");
                 }
                 break;
             
-            // === AÇÕES DO JOGADOR (GERAIS) ===
             case CardAttribute.PlayerActionPower:
                 ApplyPlayerActionModifier(ActionType.Attack, value, null);
-                DebugLog($"✅ Player Action Power modificado: {FormatValue(value)}");
+                DebugLog($"Player Action Power modificado: {FormatValue(value)}");
                 break;
             
             case CardAttribute.PlayerActionManaCost:
                 ApplyPlayerManaCostModifier(value);
-                DebugLog($"✅ Player Mana Cost modificado: {FormatValue(value)}");
+                DebugLog($"Player Mana Cost modificado: {FormatValue(value)}");
                 break;
             
-            // === AÇÕES DO JOGADOR (ESPECÍFICAS) ===
             case CardAttribute.PlayerOffensiveActionPower:
                 ApplyPlayerActionModifier(ActionType.Attack, value, null);
-                DebugLog($"✅ Player Offensive Power modificado: {FormatValue(value)}");
+                DebugLog($"Player Offensive Power modificado: {FormatValue(value)}");
                 break;
             
             case CardAttribute.PlayerDefensiveActionPower:
                 ApplyPlayerActionModifier(ActionType.Heal, value, null);
                 ApplyPlayerActionModifier(ActionType.Buff, value, null);
-                DebugLog($"✅ Player Defensive Power modificado: {FormatValue(value)}");
+                DebugLog($"Player Defensive Power modificado: {FormatValue(value)}");
                 break;
             
             case CardAttribute.PlayerAOEActionPower:
                 ApplyPlayerActionModifier(ActionType.Attack, value, TargetType.AllEnemies);
-                DebugLog($"✅ Player AOE Power modificado: {FormatValue(value)}");
+                DebugLog($"Player AOE Power modificado: {FormatValue(value)}");
                 break;
             
             case CardAttribute.PlayerSingleTargetActionPower:
                 ApplyPlayerActionModifier(ActionType.Attack, value, TargetType.SingleEnemy);
-                DebugLog($"✅ Player Single-Target Power modificado: {FormatValue(value)}");
+                DebugLog($"Player Single-Target Power modificado: {FormatValue(value)}");
                 break;
             
-            // === ECONOMIA ===
             case CardAttribute.CoinsEarned:
             case CardAttribute.ShopPrices:
-                DebugLog($"✅ {attribute} registrado (aplicado em runtime)");
+                DebugLog($"{attribute} registrado (aplicado em runtime)");
                 break;
             
-            // === INIMIGOS (são aplicados em runtime quando spawnam) ===
             case CardAttribute.EnemyMaxHP:
             case CardAttribute.EnemyMaxMP:
             case CardAttribute.EnemyDefense:
@@ -173,14 +156,11 @@ public class DifficultySystem : MonoBehaviour
             case CardAttribute.EnemyActionManaCost:
             case CardAttribute.EnemyOffensiveActionPower:
             case CardAttribute.EnemyAOEActionPower:
-                DebugLog($"✅ {attribute} registrado (aplicado ao spawnar inimigos)");
+                DebugLog($"{attribute} registrado (aplicado ao spawnar inimigos)");
                 break;
         }
     }
     
-    /// <summary>
-    /// Aplica modificador de poder em ações do jogador
-    /// </summary>
     private void ApplyPlayerActionModifier(ActionType actionType, int powerChange, TargetType? targetFilter)
     {
         if (GameManager.Instance?.PlayerBattleActions == null) return;
@@ -189,7 +169,6 @@ public class DifficultySystem : MonoBehaviour
         {
             if (action == null || action.effects == null) continue;
             
-            // Filtra por tipo de alvo se especificado
             if (targetFilter.HasValue && action.targetType != targetFilter.Value)
                 continue;
             
@@ -206,9 +185,6 @@ public class DifficultySystem : MonoBehaviour
         }
     }
     
-    /// <summary>
-    /// Aplica modificador de custo de mana em ações do jogador
-    /// </summary>
     private void ApplyPlayerManaCostModifier(int costChange)
     {
         if (GameManager.Instance?.PlayerBattleActions == null) return;
@@ -221,16 +197,10 @@ public class DifficultySystem : MonoBehaviour
             action.manaCost = Mathf.Max(0, action.manaCost + costChange);
             
             if (oldCost != action.manaCost)
-            {
                 DebugLog($"  '{action.actionName}' custo: {oldCost} → {action.manaCost} MP");
-            }
         }
     }
     
-    /// <summary>
-    /// Aplica modificadores a um inimigo quando ele é criado
-    /// (Chamado pelo BattleManager na InitializeEnemyTeam)
-    /// </summary>
     public void ApplyToEnemy(Character enemy, bool applyStats, bool applyActions)
     {
         if (enemy == null || enemy.team != Team.Enemy) return;
@@ -239,7 +209,6 @@ public class DifficultySystem : MonoBehaviour
         {
             DebugLog($"Aplicando modificadores ao inimigo: {enemy.characterName}");
             
-            // Stats básicos
             enemy.maxHp = Mathf.Max(1, enemy.maxHp + modifiers.enemyMaxHPModifier);
             enemy.maxMp = Mathf.Max(0, enemy.maxMp + modifiers.enemyMaxMPModifier);
             enemy.defense = Mathf.Max(0, enemy.defense + modifiers.enemyDefenseModifier);
@@ -248,7 +217,6 @@ public class DifficultySystem : MonoBehaviour
 
         if (applyActions)
         {
-            // Ações
             if (enemy.battleActions != null)
             {
                 foreach (var action in enemy.battleActions)
@@ -257,56 +225,33 @@ public class DifficultySystem : MonoBehaviour
 
                     foreach (var effect in action.effects)
                     {
-                        // Poder geral
                         if (modifiers.enemyActionPowerModifier != 0 && effect.effectType == ActionType.Attack)
-                        {
                             effect.power = Mathf.Max(1, effect.power + modifiers.enemyActionPowerModifier);
-                        }
 
-                        // Poder ofensivo específico
                         if (modifiers.enemyOffensiveActionPowerModifier != 0 && effect.effectType == ActionType.Attack)
-                        {
                             effect.power = Mathf.Max(1, effect.power + modifiers.enemyOffensiveActionPowerModifier);
-                        }
 
-                        // AOE específico
                         if (modifiers.enemyAOEActionPowerModifier != 0 && IsAOEAction(action))
                         {
                             if (effect.effectType == ActionType.Attack)
-                            {
                                 effect.power = Mathf.Max(1, effect.power + modifiers.enemyAOEActionPowerModifier);
-                            }
                         }
                     }
 
-                    // Custo de mana
                     if (modifiers.enemyActionManaCostModifier != 0)
-                    {
                         action.manaCost = Mathf.Max(0, action.manaCost + modifiers.enemyActionManaCostModifier);
-                    }
                 }
             }
         }
 
-        DebugLog($"✅ {enemy.characterName} modificado");
+        DebugLog($"{enemy.characterName} modificado");
     }
     
-    /// <summary>
-    /// NOVO: Aplica APENAS STATS (HP, MP, Def, Speed) a um inimigo.
-    /// (Chamado pelo BattleManager na InitializeEnemyTeam)
-    /// </summary>
     public void ApplyToEnemy_Stats(Character enemy)
     {
-        // ATENÇÃO: Isso ainda causa o bug cumulativo de stats se a batalha 
-        // for chamada várias vezes sem resetar o SO.
-        // A única solução 100% para isso é Instanciar o inimigo.
         ApplyToEnemy(enemy, true, false); 
     }
     
-    /// <summary>
-    /// NOVO: Aplica APENAS AÇÕES (Power, Mana Cost) a um inimigo.
-    /// (Chamado pelo BattleManager no PerformEnemyAction)
-    /// </summary>
     public void ApplyToEnemy_Actions(Character enemy)
     {
         ApplyToEnemy(enemy, false, true);
@@ -319,17 +264,11 @@ public class DifficultySystem : MonoBehaviour
                action.targetType == TargetType.Everyone;
     }
     
-    /// <summary>
-    /// Calcula moedas modificadas (aplicado em runtime)
-    /// </summary>
     public int GetModifiedCoins(int baseCoins)
     {
         return Mathf.Max(0, baseCoins + modifiers.coinsEarnedModifier);
     }
     
-    /// <summary>
-    /// Calcula preço de loja modificado (aplicado em runtime)
-    /// </summary>
     public int GetModifiedShopPrice(int basePrice)
     {
         return Mathf.Max(1, basePrice + modifiers.shopPricesModifier);
@@ -340,7 +279,7 @@ public class DifficultySystem : MonoBehaviour
     {
         modifiers.Reset();
         SaveModifiers();
-        DebugLog("✅ Todos os modificadores foram resetados!");
+        DebugLog("Todos os modificadores foram resetados!");
     }
     
     private void SaveModifiers()
@@ -375,9 +314,7 @@ public class DifficultySystem : MonoBehaviour
                 modifiers = JsonUtility.FromJson<DifficultyModifiers>(jsonData);
                 
                 if (modifiers == null)
-                {
                     modifiers = new DifficultyModifiers();
-                }
                 
                 DebugLog($"Registro carregado!");
                 DebugLog(modifiers.GetSummary());
@@ -403,9 +340,7 @@ public class DifficultySystem : MonoBehaviour
     private void DebugLog(string message)
     {
         if (showDebugLogs)
-        {
             Debug.Log($"<color=orange>[DifficultySystem]</color> {message}");
-        }
     }
     
     [ContextMenu("Show Current Modifiers")]
