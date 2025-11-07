@@ -10,18 +10,11 @@ public class EventTypeSO : ScriptableObject
     public EventType eventType;
     public string sceneToLoad; 
     
-    /// <summary>
-    /// NOVO: Verifica se este evento requer mudança de cena
-    /// Eventos de diálogo não mudam de cena
-    /// </summary>
     public bool RequiresSceneChange()
     {
         return eventType != EventType.Dialogue;
     }
     
-    /// <summary>
-    /// NOVO: Verifica se este é um evento que acontece no próprio mapa
-    /// </summary>
     public bool IsInMapEvent()
     {
         return eventType == EventType.Dialogue;
@@ -29,20 +22,18 @@ public class EventTypeSO : ScriptableObject
     
     void OnValidate()
     {
-        // Validação específica para eventos de diálogo
         if (eventType == EventType.Dialogue)
         {
             if (!string.IsNullOrEmpty(sceneToLoad))
             {
-                Debug.LogWarning($"EventTypeSO '{name}': Evento de diálogo não deve ter sceneToLoad definido. Este campo será ignorado.");
+                Debug.LogWarning($"EventTypeSO '{name}': Evento de diálogo não deve ter sceneToLoad definido.");
             }
         }
         else
         {
-            // Para outros tipos de evento, sceneToLoad é obrigatório
             if (string.IsNullOrEmpty(sceneToLoad))
             {
-                Debug.LogWarning($"EventTypeSO '{name}': sceneToLoad não foi definido para evento do tipo {eventType}.");
+                Debug.LogWarning($"EventTypeSO '{name}': sceneToLoad não definido para evento tipo {eventType}.");
             }
         }
     }

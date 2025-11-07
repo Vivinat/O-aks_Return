@@ -1,5 +1,3 @@
-// Assets/Scripts/Editor/EnemyDataExporter.cs
-
 using UnityEngine;
 using UnityEditor;
 using System.Collections.Generic;
@@ -7,7 +5,8 @@ using System.IO;
 using System.Linq;
 
 /// <summary>
-/// Exporta dados de todos os inimigos para JSON para facilitar balanceamento
+/// Exporta dados de todos os inimigos para JSON
+/// Usado para resetar o sistema após morte
 /// </summary>
 public class EnemyDataExporter : EditorWindow
 {
@@ -66,11 +65,11 @@ public class EnemyDataExporter : EditorWindow
         
         if (!File.Exists(outputPath))
         {
-            EditorGUILayout.HelpBox("❌ Arquivo JSON não encontrado!", MessageType.Warning);
+            EditorGUILayout.HelpBox("Arquivo JSON não encontrado!", MessageType.Warning);
         }
         else
         {
-            EditorGUILayout.HelpBox("✅ Arquivo JSON pronto.", MessageType.None);
+            EditorGUILayout.HelpBox("Arquivo JSON pronto.", MessageType.None);
         }
     }
 
@@ -78,19 +77,16 @@ public class EnemyDataExporter : EditorWindow
     {
         EnemyDatabase database = new EnemyDatabase();
         
-        // Carrega inimigos de cada categoria
+        // Carrega inimigos
         database.druids = LoadEnemiesFromFolder("Assets/Data/Characters/Enemies/Druids");
         database.warriors = LoadEnemiesFromFolder("Assets/Data/Characters/Enemies/Paladins");
         database.monsters = LoadEnemiesFromFolder("Assets/Data/Characters/Enemies/Monsters");
         database.bosses = LoadEnemiesFromFolder("Assets/Data/Characters/Enemies/Bosses");
         
-        // Calcula estatísticas
         database.statistics = CalculateStatistics(database);
         
-        // Converte para JSON
         string json = JsonUtility.ToJson(database, prettyPrint);
         
-        // Salva arquivo
         try
         {
             string directory = Path.GetDirectoryName(outputPath);
@@ -107,16 +103,10 @@ public class EnemyDataExporter : EditorWindow
             
             EditorUtility.DisplayDialog(
                 "Export Successful", 
-                $"✅ Exported {totalEnemies} enemies to:\n{outputPath}", 
+                $"Exported {totalEnemies} enemies to:\n{outputPath}", 
                 "OK"
             );
             
-            Debug.Log($"✅ Enemy data exported successfully!");
-            Debug.Log($"📊 Total enemies: {totalEnemies}");
-            Debug.Log($"   - Druids/Rangers: {database.druids.Count}");
-            Debug.Log($"   - Warriors/Paladins: {database.warriors.Count}");
-            Debug.Log($"   - Monsters: {database.monsters.Count}");
-            Debug.Log($"   - Bosses: {database.bosses.Count}");
         }
         catch (System.Exception e)
         {
@@ -139,7 +129,6 @@ public class EnemyDataExporter : EditorWindow
             return enemies;
         }
 
-        // Encontra todos os assets de Character na pasta
         string[] guids = AssetDatabase.FindAssets("t:Character", new[] { folderPath });
         
         foreach (string guid in guids)
@@ -157,7 +146,6 @@ public class EnemyDataExporter : EditorWindow
                 enemyData.defense = character.defense;
                 enemyData.speed = character.speed;
                 
-                // Extrai informações das ações
                 if (character.battleActions != null)
                 {
                     enemyData.actions = new List<ActionData>();
@@ -171,12 +159,10 @@ public class EnemyDataExporter : EditorWindow
                             actionData.manaCost = action.manaCost;
                             actionData.targetType = action.targetType.ToString();
                             
-                            // Extrai dados dos efeitos
                             if (action.effects != null && action.effects.Count > 0)
                             {
                                 actionData.effectCount = action.effects.Count;
                                 
-                                // Pega o primeiro efeito como principal
                                 var primaryEffect = action.effects[0];
                                 actionData.primaryEffectType = primaryEffect.effectType.ToString();
                                 actionData.power = primaryEffect.power;
@@ -205,18 +191,15 @@ public class EnemyDataExporter : EditorWindow
     {
         StatisticsData stats = new StatisticsData();
         
-        // Combina todos os inimigos
         List<EnemyData> allEnemies = new List<EnemyData>();
         allEnemies.AddRange(database.druids);
         allEnemies.AddRange(database.warriors);
         allEnemies.AddRange(database.monsters);
         
-        // Separa bosses
         List<EnemyData> bosses = database.bosses;
         
         if (allEnemies.Count > 0)
         {
-            // Estatísticas de inimigos normais
             stats.normalEnemies = new CategoryStats();
             stats.normalEnemies.count = allEnemies.Count;
             stats.normalEnemies.avgHp = (float)allEnemies.Average(e => e.maxHp);
@@ -229,7 +212,6 @@ public class EnemyDataExporter : EditorWindow
         
         if (bosses.Count > 0)
         {
-            // Estatísticas de bosses
             stats.bosses = new CategoryStats();
             stats.bosses.count = bosses.Count;
             stats.bosses.avgHp = (float)bosses.Average(e => e.maxHp);

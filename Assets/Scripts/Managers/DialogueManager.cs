@@ -5,11 +5,9 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
-using UnityEngine.EventSystems;
 
 /// <summary>
-/// Sistema de diálogo centralizado que pode ser invocado de qualquer lugar do jogo.
-/// Gerencia pausa automática do jogo e efeito de digitação.
+/// Sistema de diálogo centralizado com pausa automática e efeito de digitação
 /// </summary>
 public class DialogueManager : MonoBehaviour
 {
@@ -19,8 +17,8 @@ public class DialogueManager : MonoBehaviour
     [SerializeField] private GameObject dialoguePanel;
     [SerializeField] private TextMeshProUGUI speakerNameText;
     [SerializeField] private TextMeshProUGUI dialogueText;
-    [SerializeField] private Button continueButton; // Botão invisível para capturar cliques
-    [SerializeField] private GameObject skipIndicator; // Indicador visual para continuar
+    [SerializeField] private Button continueButton;
+    [SerializeField] private GameObject skipIndicator;
 
     [Header("Animation Settings")]
     [SerializeField] private float typewriterSpeed = 0.03f;
@@ -32,31 +30,21 @@ public class DialogueManager : MonoBehaviour
     [SerializeField] private AudioClip dialogueOpenSound;
     [SerializeField] private AudioClip dialogueCloseSound;
 
-    // Estado interno
     private Queue<DialogueEntry> dialogueQueue = new Queue<DialogueEntry>();
     private Coroutine typewriterCoroutine;
     private bool isTyping = false;
     private bool isDialogueActive = false;
     private float originalTimeScale = 1f;
     private bool wasBattleRunning = false;
-    private int clickCount = 0;
-    private float lastClickTime = 0f;
-    private const float doubleClickTime = 0.3f;
-    private string currentFullText = ""; // NOVO: Armazena o texto completo atual
-    private bool waitingForInput = false; // NOVO: Flag para controlar input
-    private bool skipTyping = false; // <<< ADICIONE ESTA LINHA
-
-
-    // Callbacks
+    private string currentFullText = "";
+    private bool waitingForInput = false;
+    private bool skipTyping = false;
     private System.Action onDialogueComplete;
-
-    // Referências para controle de pausa
     private BattleManager battleManager;
     private CanvasGroup dialogueCanvasGroup;
 
     void Awake()
     {
-        // Singleton pattern
         if (Instance == null)
         {
             Instance = this;
@@ -71,14 +59,12 @@ public class DialogueManager : MonoBehaviour
 
     void Start()
     {
-        // Garante que o diálogo comece fechado
         if (dialoguePanel != null)
             dialoguePanel.SetActive(false);
     }
 
     void Update()
     {
-        // Permite ESC para pular diálogo rapidamente (modo debug)
         if (isDialogueActive && Input.GetKeyDown(KeyCode.Escape))
         {
             SkipAllDialogue();
@@ -87,14 +73,12 @@ public class DialogueManager : MonoBehaviour
 
     private void SetupComponents()
     {
-        // Setup do CanvasGroup para fade
         dialogueCanvasGroup = dialoguePanel?.GetComponent<CanvasGroup>();
         if (dialogueCanvasGroup == null && dialoguePanel != null)
         {
             dialogueCanvasGroup = dialoguePanel.AddComponent<CanvasGroup>();
         }
 
-        // Setup do botão invisível para capturar cliques
         if (continueButton != null)
         {
             continueButton.onClick.AddListener(OnDialogueClick);
@@ -102,7 +86,6 @@ public class DialogueManager : MonoBehaviour
             Image buttonImage = continueButton.GetComponent<Image>();
             if (buttonImage != null)
             {
-                // Torna o botão invisível mas funcional
                 Color transparent = buttonImage.color;
                 transparent.a = 0f;
                 buttonImage.color = transparent;
@@ -110,16 +93,12 @@ public class DialogueManager : MonoBehaviour
             }
         }
 
-        // Setup inicial do indicador
         if (skipIndicator != null)
             skipIndicator.SetActive(false);
     }
 
     #region Public API
 
-    /// <summary>
-    /// Inicia um diálogo com uma única entrada
-    /// </summary>
     public void StartDialogue(string speakerName, string text, System.Action onComplete = null)
     {
         List<DialogueEntry> entries = new List<DialogueEntry>
@@ -129,34 +108,24 @@ public class DialogueManager : MonoBehaviour
         StartDialogue(entries, onComplete);
     }
 
-    /// <summary>
-    /// Inicia um diálogo com múltiplas entradas
-    /// </summary>
     public void StartDialogue(List<DialogueEntry> entries, System.Action onComplete = null)
     {
         if (entries == null || entries.Count == 0)
         {
-            Debug.LogWarning("DialogueSystem: Lista de diálogos vazia!");
             return;
         }
 
-        // Armazena callback
         onDialogueComplete = onComplete;
 
-        // Prepara a fila de diálogos
         dialogueQueue.Clear();
         foreach (var entry in entries)
         {
             dialogueQueue.Enqueue(entry);
         }
 
-        // Inicia o sistema
         StartCoroutine(BeginDialogueSequence());
     }
 
-    /// <summary>
-    /// Para todo o diálogo imediatamente
-    /// </summary>
     public void SkipAllDialogue()
     {
         if (!isDialogueActive) return;
@@ -166,9 +135,6 @@ public class DialogueManager : MonoBehaviour
         EndDialogue();
     }
 
-    /// <summary>
-    /// Verifica se há diálogo ativo
-    /// </summary>
     public bool IsDialogueActive()
     {
         return isDialogueActive;
@@ -180,8 +146,6 @@ public class DialogueManager : MonoBehaviour
 
     private IEnumerator BeginDialogueSequence()
     {
-        Debug.Log("DialogueSystem: Iniciando sequência de diálogo");
-        
         PauseGame();
         if (speakerNameText != null) speakerNameText.text = "";
         if (dialogueText != null) dialogueText.text = "";
@@ -190,20 +154,17 @@ public class DialogueManager : MonoBehaviour
         isDialogueActive = true;
         PlayAudio(dialogueOpenSound);
         
-        // Processa todos os diálogos na fila
         while (dialogueQueue.Count > 0)
         {
             DialogueEntry currentEntry = dialogueQueue.Dequeue();
             yield return StartCoroutine(DisplayDialogue(currentEntry));
             
-            // Espera o jogador clicar para continuar (exceto no último)
             if (dialogueQueue.Count > 0)
             {
                 yield return StartCoroutine(WaitForPlayerInput());
             }
         }
         
-        // Espera input final para fechar
         yield return StartCoroutine(WaitForPlayerInput());
         
         EndDialogue();
@@ -211,27 +172,23 @@ public class DialogueManager : MonoBehaviour
 
     private IEnumerator DisplayDialogue(DialogueEntry entry)
     {
-        skipTyping = false; // <<< ADICIONE ESTA LINHA PARA RESETAR O ESTADO
+        skipTyping = false;
 
         if (speakerNameText != null)
         {
             speakerNameText.text = entry.speakerName;
         }
 
-        // Limpa o texto anterior
         if (dialogueText != null)
         {
             dialogueText.text = "";
         }
 
-        // NOVO: Armazena o texto completo
         currentFullText = entry.text;
 
-        // Esconde o indicador durante a digitação
         if (skipIndicator != null)
             skipIndicator.SetActive(false);
 
-        // Inicia o efeito de digitação
         isTyping = true;
         waitingForInput = false;
         typewriterCoroutine = StartCoroutine(TypewriterEffect(entry.text));
@@ -240,7 +197,6 @@ public class DialogueManager : MonoBehaviour
         
         isTyping = false;
         
-        // Mostra o indicador quando terminar de digitar
         if (skipIndicator != null)
             skipIndicator.SetActive(true);
     }
@@ -251,10 +207,9 @@ public class DialogueManager : MonoBehaviour
 
         for (int i = 0; i < fullText.Length; i++)
         {
-            // VERIFICA A CADA LETRA SE O JOGADOR PEDIU PARA PULAR
             if (skipTyping)
             {
-                break; // Sai do loop de digitação imediatamente
+                break;
             }
 
             currentText += fullText[i];
@@ -269,6 +224,7 @@ public class DialogueManager : MonoBehaviour
 
             yield return new WaitForSecondsRealtime(typewriterSpeed);
         }
+        
         if (dialogueText != null)
             dialogueText.text = fullText;
     }
@@ -281,7 +237,6 @@ public class DialogueManager : MonoBehaviour
         {
             yield return null;
             
-            // Verifica input por teclado (além do clique do botão)
             if (Input.GetKeyDown(KeyCode.Space) || Input.GetKeyDown(KeyCode.Return))
             {
                 waitingForInput = false;
@@ -289,17 +244,12 @@ public class DialogueManager : MonoBehaviour
         }
     }
 
-// Em DialogueManager.cs
-
     private void OnDialogueClick()
     {
-        Debug.Log($"Clique Recebido! Estado: [isTyping = {isTyping}] --- [waitingForInput = {waitingForInput}]");
-        // COMPORTAMENTO 1: Se está digitando, envia o "pedido" para pular.
         if (isTyping)
         {
             skipTyping = true;
         }
-        // COMPORTAMENTO 2: Se não está digitando, avança para o próximo diálogo.
         else if (waitingForInput)
         {
             waitingForInput = false;
@@ -313,7 +263,6 @@ public class DialogueManager : MonoBehaviour
             StopCoroutine(typewriterCoroutine);
             isTyping = false;
             
-            // Mostra o texto completo imediatamente
             if (dialogueText != null && !string.IsNullOrEmpty(currentFullText))
             {
                 dialogueText.text = currentFullText;
@@ -330,49 +279,32 @@ public class DialogueManager : MonoBehaviour
 
     private void PauseGame()
     {
-        Debug.Log("DialogueSystem: Pausando o jogo");
-        
-        // Salva o estado atual do tempo
         originalTimeScale = Time.timeScale;
         Time.timeScale = 0f;
         
-        // Pausa batalhas específicamente
         battleManager = FindObjectOfType<BattleManager>();
         if (battleManager != null && battleManager.currentState == BattleState.RUNNING)
         {
             wasBattleRunning = true;
-            // A batalha naturalmente para de processar quando Time.timeScale = 0
         }
         
-        // Desabilita interações com nós do mapa
         DisableMapInteractions(true);
-        
-        Debug.Log($"Jogo pausado. TimeScale: {Time.timeScale}");
     }
 
     private void ResumeGame()
     {
-        Debug.Log("DialogueSystem: Resumindo o jogo");
-        
-        // Restaura o tempo
         Time.timeScale = originalTimeScale;
         
-        // Restaura batalhas
         if (battleManager != null && wasBattleRunning)
         {
             wasBattleRunning = false;
-            // A batalha automaticamente continua quando Time.timeScale volta ao normal
         }
         
-        // Reabilita interações
         DisableMapInteractions(false);
-        
-        Debug.Log($"Jogo resumido. TimeScale: {Time.timeScale}");
     }
 
     private void DisableMapInteractions(bool disable)
     {
-        // Desabilita cliques nos nós do mapa
         MapNode[] mapNodes = FindObjectsOfType<MapNode>();
         foreach (var node in mapNodes)
         {
@@ -382,9 +314,6 @@ public class DialogueManager : MonoBehaviour
                 collider.enabled = !disable;
             }
         }
-        
-        // Desabilita outros sistemas interativos se necessário
-        // (Adicione aqui conforme sua necessidade)
     }
 
     #endregion
@@ -399,7 +328,6 @@ public class DialogueManager : MonoBehaviour
             
             if (dialogueCanvasGroup != null)
             {
-                // Fade in suave
                 float elapsedTime = 0f;
                 
                 while (elapsedTime < panelFadeTime)
@@ -422,7 +350,6 @@ public class DialogueManager : MonoBehaviour
     {
         if (dialogueCanvasGroup != null)
         {
-            // Fade out suave
             float elapsedTime = 0f;
             float startAlpha = dialogueCanvasGroup.alpha;
             
@@ -450,8 +377,6 @@ public class DialogueManager : MonoBehaviour
 
     private void EndDialogue()
     {
-        Debug.Log("DialogueSystem: Finalizando diálogo");
-        
         StartCoroutine(EndDialogueSequence());
     }
 
@@ -459,27 +384,20 @@ public class DialogueManager : MonoBehaviour
     {
         PlayAudio(dialogueCloseSound);
         
-        // Esconde o painel
         yield return StartCoroutine(HideDialoguePanel());
         
-        // Limpa estado
         isDialogueActive = false;
         isTyping = false;
         waitingForInput = false;
-        clickCount = 0;
         currentFullText = "";
         
         if (skipIndicator != null)
             skipIndicator.SetActive(false);
         
-        // Resume o jogo
         ResumeGame();
         
-        // Chama callback se existir
         onDialogueComplete?.Invoke();
         onDialogueComplete = null;
-        
-        Debug.Log("DialogueSystem: Diálogo finalizado");
     }
 
     #endregion
@@ -500,7 +418,6 @@ public class DialogueManager : MonoBehaviour
 
     void OnValidate()
     {
-        // Validação no Editor
         if (dialoguePanel == null)
             Debug.LogWarning("DialogueSystem: dialoguePanel não foi atribuído!");
             
@@ -516,5 +433,3 @@ public class DialogueManager : MonoBehaviour
 
     #endregion
 }
-
-// REMOVIDO DialogueEntry daqui - agora está em arquivo separado

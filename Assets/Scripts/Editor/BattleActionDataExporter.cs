@@ -1,5 +1,3 @@
-// Assets/Editor/BattleActionDataExporter.cs
-
 using UnityEngine;
 using UnityEditor;
 using System.Collections.Generic;
@@ -8,6 +6,7 @@ using System.Linq;
 
 /// <summary>
 /// Exporta dados de todas as BattleActions para JSON
+/// Usado para resetar o sistema após morte
 /// </summary>
 public class BattleActionDataExporter : EditorWindow
 {
@@ -51,19 +50,13 @@ public class BattleActionDataExporter : EditorWindow
 
         GUILayout.Space(10);
         
-        EditorGUILayout.HelpBox(
-            "⚠️ IMPORTANTE: Execute isso ANTES de fazer modificações de balanceamento!\n\n" +
-            "Este JSON é usado para restaurar valores originais quando o jogador morre.",
-            MessageType.Info
-        );
-        
         if (!File.Exists(outputPath))
         {
-            EditorGUILayout.HelpBox("❌ Arquivo JSON não encontrado!", MessageType.Warning);
+            EditorGUILayout.HelpBox("Arquivo JSON não encontrado!", MessageType.Warning);
         }
         else
         {
-            EditorGUILayout.HelpBox("✅ Arquivo JSON pronto.", MessageType.None);
+            EditorGUILayout.HelpBox("Arquivo JSON pronto.", MessageType.None);
         }
     }
 
@@ -96,9 +89,9 @@ public class BattleActionDataExporter : EditorWindow
                              database.otherActions.Count;
             
             EditorUtility.DisplayDialog("Export Successful", 
-                $"✅ Exported {totalActions} actions to:\n{outputPath}", "OK");
+                $"Exported {totalActions} actions to:\n{outputPath}", "OK");
             
-            Debug.Log($"✅ BattleActions exportadas: {totalActions} ações");
+            Debug.Log($"BattleActions exportadas: {totalActions} ações");
         }
         catch (System.Exception e)
         {

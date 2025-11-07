@@ -1,5 +1,3 @@
-// Assets/Scripts/Editor/EnemyGroupAnalyzer.cs
-
 using UnityEngine;
 using UnityEditor;
 using System.Collections.Generic;
@@ -7,7 +5,7 @@ using System.IO;
 using System.Linq;
 
 /// <summary>
-/// Analisa e exporta dados dos grupos de inimigos (BattleEventSO)
+/// Analisa e exporta dados dos grupos de inimigos
 /// </summary>
 public class EnemyGroupVisualizer : EditorWindow
 {
@@ -34,7 +32,6 @@ public class EnemyGroupVisualizer : EditorWindow
         GUILayout.Label("Enemy Groups Analyzer", EditorStyles.boldLabel);
         GUILayout.Space(10);
 
-        // Botão para carregar/recarregar dados
         if (GUILayout.Button("Load/Refresh Enemy Groups", GUILayout.Height(40)))
         {
             LoadGroupData();
@@ -62,12 +59,10 @@ public class EnemyGroupVisualizer : EditorWindow
 
         GUILayout.Space(10);
 
-        // Estatísticas gerais
         DrawStatistics();
 
         GUILayout.Space(10);
 
-        // Lista de grupos
         GUILayout.Label("Grupos de Inimigos:", EditorStyles.boldLabel);
         scrollPosition = EditorGUILayout.BeginScrollView(scrollPosition);
         
@@ -106,13 +101,11 @@ public class EnemyGroupVisualizer : EditorWindow
     {
         groupDatabase = new EnemyGroupDatabase();
         
-        // Carrega grupos de cada categoria
         groupDatabase.druidGroups = LoadGroupsFromFolder("Assets/Data/Characters/Enemies/Druids/Groups");
         groupDatabase.warriorGroups = LoadGroupsFromFolder("Assets/Data/Characters/Enemies/Paladins/Groups");
         groupDatabase.monsterGroups = LoadGroupsFromFolder("Assets/Data/Characters/Enemies/Monsters/Groups");
         groupDatabase.bossGroups = LoadGroupsFromFolder("Assets/Data/Characters/Enemies/Bosses/Groups");
         
-        // Calcula estatísticas
         groupDatabase.statistics = CalculateStatistics();
         
         dataLoaded = true;
@@ -120,11 +113,6 @@ public class EnemyGroupVisualizer : EditorWindow
         int totalGroups = groupDatabase.druidGroups.Count + groupDatabase.warriorGroups.Count + 
                          groupDatabase.monsterGroups.Count + groupDatabase.bossGroups.Count;
         
-        Debug.Log($"✅ Loaded {totalGroups} enemy groups");
-        Debug.Log($"   - Druid Groups: {groupDatabase.druidGroups.Count}");
-        Debug.Log($"   - Warrior Groups: {groupDatabase.warriorGroups.Count}");
-        Debug.Log($"   - Monster Groups: {groupDatabase.monsterGroups.Count}");
-        Debug.Log($"   - Boss Groups: {groupDatabase.bossGroups.Count}");
     }
 
     List<EnemyGroupData> LoadGroupsFromFolder(string folderPath)
@@ -137,7 +125,6 @@ public class EnemyGroupVisualizer : EditorWindow
             return groups;
         }
 
-        // Encontra todos os BattleEventSO na pasta
         string[] guids = AssetDatabase.FindAssets("t:BattleEventSO", new[] { folderPath });
         
         foreach (string guid in guids)
@@ -152,7 +139,6 @@ public class EnemyGroupVisualizer : EditorWindow
                 groupData.assetPath = path;
                 groupData.sceneName = battleEvent.sceneToLoad;
                 
-                // Processa lista de inimigos
                 if (battleEvent.enemies != null)
                 {
                     groupData.enemyCount = battleEvent.enemies.Count;
@@ -171,13 +157,11 @@ public class EnemyGroupVisualizer : EditorWindow
                             
                             groupData.enemies.Add(enemyData);
                             
-                            // Acumula totais
                             groupData.totalHp += enemy.maxHp;
                             groupData.totalMp += enemy.maxMp;
                         }
                     }
                     
-                    // Calcula médias
                     if (groupData.enemyCount > 0)
                     {
                         groupData.avgHp = groupData.totalHp / groupData.enemyCount;
@@ -233,14 +217,6 @@ public class EnemyGroupVisualizer : EditorWindow
         var stats = groupDatabase.statistics;
         
         EditorGUILayout.BeginVertical(EditorStyles.helpBox);
-        GUILayout.Label("📊 Estatísticas Gerais", EditorStyles.boldLabel);
-        
-        EditorGUILayout.LabelField($"Total de Grupos: {stats.totalGroups}");
-        EditorGUILayout.LabelField($"Média de Inimigos por Grupo: {stats.avgEnemiesPerGroup:F1}");
-        EditorGUILayout.LabelField($"Grupo Menor: {stats.minEnemiesInGroup} inimigos");
-        EditorGUILayout.LabelField($"Grupo Maior: {stats.maxEnemiesInGroup} inimigos");
-        EditorGUILayout.LabelField($"HP Total Médio por Grupo: {stats.avgTotalHpPerGroup:F0}");
-        EditorGUILayout.LabelField($"MP Total Médio por Grupo: {stats.avgTotalMpPerGroup:F0}");
         
         if (stats.groupSizeDistribution != null && stats.groupSizeDistribution.Count > 0)
         {
@@ -261,7 +237,6 @@ public class EnemyGroupVisualizer : EditorWindow
         
         GUILayout.Space(10);
         
-        // Header colorido
         var oldColor = GUI.backgroundColor;
         GUI.backgroundColor = categoryColor;
         EditorGUILayout.BeginVertical(EditorStyles.helpBox);
@@ -275,9 +250,8 @@ public class EnemyGroupVisualizer : EditorWindow
         {
             EditorGUILayout.BeginVertical(EditorStyles.helpBox);
             
-            // Nome do grupo e botão para selecionar
             EditorGUILayout.BeginHorizontal();
-            EditorGUILayout.LabelField($"🎯 {group.eventName}", EditorStyles.boldLabel);
+            EditorGUILayout.LabelField($"{group.eventName}", EditorStyles.boldLabel);
             if (GUILayout.Button("Select", GUILayout.Width(60)))
             {
                 BattleEventSO asset = AssetDatabase.LoadAssetAtPath<BattleEventSO>(group.assetPath);
@@ -286,11 +260,9 @@ public class EnemyGroupVisualizer : EditorWindow
             }
             EditorGUILayout.EndHorizontal();
             
-            // Informações do grupo
-            EditorGUILayout.LabelField($"📍 Scene: {group.sceneName}", EditorStyles.miniLabel);
-            EditorGUILayout.LabelField($"👥 Inimigos: {group.enemyCount} | HP Total: {group.totalHp} | MP Total: {group.totalMp}");
+            EditorGUILayout.LabelField($"Scene: {group.sceneName}", EditorStyles.miniLabel);
+            EditorGUILayout.LabelField($"Inimigos: {group.enemyCount} | HP Total: {group.totalHp} | MP Total: {group.totalMp}");
             
-            // Lista de inimigos
             if (group.enemies != null && group.enemies.Count > 0)
             {
                 GUILayout.Space(3);
@@ -333,7 +305,7 @@ public class EnemyGroupVisualizer : EditorWindow
                 "OK"
             );
             
-            Debug.Log($"✅ Enemy groups data exported to {outputPath}");
+            Debug.Log($"Enemy groups data exported to {outputPath}");
         }
         catch (System.Exception e)
         {
@@ -346,8 +318,6 @@ public class EnemyGroupVisualizer : EditorWindow
         }
     }
 }
-
-// ========== DATA STRUCTURES ==========
 
 [System.Serializable]
 public class EnemyGroupDatabase

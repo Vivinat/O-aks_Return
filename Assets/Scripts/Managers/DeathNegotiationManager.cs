@@ -1,5 +1,3 @@
-// Assets/Scripts/Difficulty_System/DeathNegotiationManager.cs
-
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
@@ -26,7 +24,7 @@ public class DeathNegotiationManager : MonoBehaviour
     [SerializeField] private List<string> introLines = new List<string>
     {
         "Então... este é o seu fim?",
-        "Não tão rápido, mortal.",
+        "Não tão rápido...",
         "Você realmente pensou que seria tão fácil?",
         "A morte não é o fim... não necessariamente."
     };
@@ -43,7 +41,6 @@ public class DeathNegotiationManager : MonoBehaviour
     [SerializeField] private int maxRefreshes = 2;
     [SerializeField] private AudioClip voiceSound;
     
-    // Estado interno
     private bool hasUsedSecondChance = false;
     private int refreshesUsed = 0;
     private DeathNegotiationOffer currentOffer;
@@ -68,32 +65,20 @@ public class DeathNegotiationManager : MonoBehaviour
     
     void Update()
     {
-        // Permite abrir/fechar menu de status com E durante negociação
-        if (negotiationPanel != null && negotiationPanel.activeSelf) //
+        if (negotiationPanel != null && negotiationPanel.activeSelf)
         {
-            if (Input.GetKeyDown(KeyCode.E)) //
+            if (Input.GetKeyDown(KeyCode.E))
             {
-                // --- CORREÇÃO ---
-                // Manda o StatusPanel abrir ou fechar
                 if (StatusPanel.Instance != null)
                 {
                     StatusPanel.Instance.TogglePanel();
                 }
-                else
-                {
-                    Debug.LogWarning("StatusPanel.Instance não encontrado!");
-                }
-                // --- FIM DA CORREÇÃO ---
             }
         }
     }
     
-    /// <summary>
-    /// Verifica se a UI de negociação está visível
-    /// </summary>
     public bool IsNegotiationActive()
     {
-        // Retorna true se o painel de negociação estiver ativo no mundo
         return negotiationPanel != null && negotiationPanel.activeSelf;
     }
     
@@ -120,15 +105,10 @@ public class DeathNegotiationManager : MonoBehaviour
         }
     }
     
-    /// <summary>
-    /// Inicia o processo de negociação
-    /// </summary>
     public void StartNegotiation(BattleEntity player, BattleManager manager, System.Action<bool> callback)
     {
-        // Verifica se já usou a segunda chance nesta batalha
         if (hasUsedSecondChance)
         {
-            Debug.Log("Segunda chance já foi usada nesta batalha!");
             callback?.Invoke(false);
             return;
         }
@@ -138,16 +118,12 @@ public class DeathNegotiationManager : MonoBehaviour
         onNegotiationComplete = callback;
         refreshesUsed = 0;
         
-        // Pausa o jogo
         Time.timeScale = 0f;
-        
-        // Inicia sequência de diálogo
         StartCoroutine(NegotiationSequence());
     }
     
     private IEnumerator NegotiationSequence()
     {
-        // Fase 1: Introdução com voz misteriosa
         List<DialogueEntry> introDialogue = new List<DialogueEntry>
         {
             new DialogueEntry("???", GetRandomLine(introLines)),
@@ -165,7 +141,6 @@ public class DeathNegotiationManager : MonoBehaviour
             dialogueDone = true;
         }
         
-        // Espera diálogo terminar (usando unscaled time)
         while (!dialogueDone)
         {
             yield return null;
@@ -173,7 +148,6 @@ public class DeathNegotiationManager : MonoBehaviour
         
         yield return new WaitForSecondsRealtime(0.5f);
         
-        // Fase 2: Mostra UI de negociação
         GenerateNewOffer();
         ShowNegotiationUI();
     }
@@ -208,7 +182,6 @@ public class DeathNegotiationManager : MonoBehaviour
             bool canRefresh = refreshesUsed < maxRefreshes;
             refreshButton.interactable = canRefresh;
             
-            // Muda cor do botão se desabilitado
             var colors = refreshButton.colors;
             if (!canRefresh)
             {
@@ -250,34 +223,19 @@ public class DeathNegotiationManager : MonoBehaviour
         }
     }
     
-    #region Button Callbacks
-    
     private void OnAcceptClicked()
     {
-        Debug.Log("=== SEGUNDA CHANCE ACEITA ===");
+        if (currentOffer == null || targetPlayer == null) return;
         
-        if (currentOffer == null || targetPlayer == null)
-        {
-            Debug.LogError("Oferta ou jogador inválido!");
-            return;
-        }
-        
-        // Aplica penalidade
         currentOffer.ApplyPenalty(targetPlayer);
-        
-        // Revive o jogador
         RevivePlayer();
-        
-        // Marca que usou a segunda chance
         hasUsedSecondChance = true;
         
-        // Mostra feedback
         StartCoroutine(ShowAcceptFeedback());
     }
     
     private IEnumerator ShowAcceptFeedback()
     {
-        // Mostra diálogo de confirmação
         List<DialogueEntry> acceptDialogue = new List<DialogueEntry>
         {
             new DialogueEntry("???", "Ave, Logrif! Acordo fechado."),
@@ -300,7 +258,6 @@ public class DeathNegotiationManager : MonoBehaviour
             yield return null;
         }
         
-        // Fecha UI e resume batalha
         HideNegotiationUI();
         Time.timeScale = 1f;
         
@@ -309,9 +266,6 @@ public class DeathNegotiationManager : MonoBehaviour
     
     private void OnRejectClicked()
     {
-        Debug.Log("=== SEGUNDA CHANCE RECUSADA ===");
-        
-        // Mostra diálogo de rejeição
         StartCoroutine(ShowRejectFeedback());
     }
     
@@ -339,7 +293,6 @@ public class DeathNegotiationManager : MonoBehaviour
             yield return null;
         }
         
-        // Fecha UI e confirma morte
         HideNegotiationUI();
         Time.timeScale = 1f;
         
@@ -348,42 +301,28 @@ public class DeathNegotiationManager : MonoBehaviour
     
     private void OnRefreshClicked()
     {
-        if (refreshesUsed >= maxRefreshes)
-        {
-            Debug.Log("Máximo de recarregamentos atingido!");
-            return;
-        }
+        if (refreshesUsed >= maxRefreshes) return;
         
         refreshesUsed++;
-        Debug.Log($"Recarregamento {refreshesUsed}/{maxRefreshes}");
-        
-        // Gera nova oferta
         GenerateNewOffer();
-        
         PlayVoiceSound();
     }
-    
-    #endregion
-    
-    #region Helper Methods
     
     private void RevivePlayer()
     {
         if (targetPlayer == null) return;
         
-        // Cura 100 HP e 100 MP
         var hpField = typeof(BattleEntity).GetField("currentHp", 
             System.Reflection.BindingFlags.NonPublic | 
             System.Reflection.BindingFlags.Instance);
 
         if (hpField != null)
         {
-            hpField.SetValue(targetPlayer,100);
+            hpField.SetValue(targetPlayer, 100);
         }
         
         targetPlayer.currentMp = 100;
         
-        // Marca como vivo
         var deadField = typeof(BattleEntity).GetField("isDead", 
             System.Reflection.BindingFlags.Public | 
             System.Reflection.BindingFlags.Instance);
@@ -393,20 +332,15 @@ public class DeathNegotiationManager : MonoBehaviour
             deadField.SetValue(targetPlayer, false);
         }
         
-        // Reativa HUD
         targetPlayer.EnableHUDElements();
         
-        // Reativa sprite
         SpriteRenderer sr = targetPlayer.GetComponentInChildren<SpriteRenderer>();
         if (sr != null)
         {
             sr.enabled = true;
         }
         
-        // Força update das barras
         targetPlayer.ForceUpdateValueTexts();
-        
-        Debug.Log($"Jogador revivido: HP=100, MP=100");
     }
     
     private string GetRandomLine(List<string> lines)
@@ -427,11 +361,6 @@ public class DeathNegotiationManager : MonoBehaviour
         }
     }
     
-    #endregion
-    
-    /// <summary>
-    /// Reseta o estado para nova batalha
-    /// </summary>
     public void ResetForNewBattle()
     {
         hasUsedSecondChance = false;
@@ -441,13 +370,8 @@ public class DeathNegotiationManager : MonoBehaviour
         battleManager = null;
         
         HideNegotiationUI();
-        
-        Debug.Log("Sistema de segunda chance resetado para nova batalha");
     }
     
-    /// <summary>
-    /// Verifica se o sistema já foi usado nesta batalha
-    /// </summary>
     public bool HasUsedSecondChance()
     {
         return hasUsedSecondChance;

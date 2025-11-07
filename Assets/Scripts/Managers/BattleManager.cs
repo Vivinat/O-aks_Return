@@ -1,5 +1,3 @@
-// Assets/Scripts/Managers/BattleManager.cs (FIXED - NO CROSS-CONTAMINATION)
-
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
@@ -30,9 +28,8 @@ public class BattleManager : MonoBehaviour
     public DialogueSO boss3Dialogue;
     
     private int currentTurnNumber = 0;
-    
-    // Sistema de backup para evitar contaminação entre jogador/inimigo
     private BattleActionBackup actionBackup = new BattleActionBackup();
+    private BattleAction currentProcessingAction;
 
     void Start()
     {
@@ -56,9 +53,7 @@ public class BattleManager : MonoBehaviour
     }
     
     /// <summary>
-    /// CORRIGIDO: Instancia o SO do inimigo, aplica stats na instância,
-    /// e atribui a INSTÂNCIA ao BattleEntity.
-    /// Isso corrige os tooltips SEM contaminar as ações.
+    /// Instancia o SO do inimigo, aplica stats na instância e atribui ao BattleEntity
     /// </summary>
     private void InitializeEnemyTeam()
     {
@@ -77,29 +72,18 @@ public class BattleManager : MonoBehaviour
 
                 BattleEntity entity = currentSlot.GetComponent<BattleEntity>();
                 
-                // --- INÍCIO DA CORREÇÃO ---
-                
-                // 1. Pega o ScriptableObject original
                 Character originalEnemySO = enemiesToSpawn[i];
-
-                // 2. Cria uma INSTÂNCIA (cópia) dele
                 Character enemyInstance = Instantiate(originalEnemySO);
                 enemyInstance.name = originalEnemySO.name + " (Runtime Instance)";
             
-                // 3. Aplica os STATS (HP, Def, etc) nessa INSTÂNCIA
                 if (DifficultySystem.Instance != null)
                 {
-                    // Agora estamos modificando 'enemyInstance', não o SO original
                     DifficultySystem.Instance.ApplyToEnemy_Stats(enemyInstance);
                 }
             
-                // 4. Atribui a INSTÂNCIA modificada ao BattleEntity
                 entity.characterData = enemyInstance;
-                
-                // --- FIM DA CORREÇÃO ---
             
                 SpriteRenderer sr = currentSlot.GetComponentInChildren<SpriteRenderer>();
-                // Usa o sprite da instância (que é o mesmo do original)
                 if(sr != null) sr.sprite = enemyInstance.characterSprite;
 
                 enemyTeam.Add(entity);
@@ -107,17 +91,12 @@ public class BattleManager : MonoBehaviour
         }
     }
 
-    /// <summary>
-    /// Inicializa jogador SEM aplicar modificadores
-    /// (modificações já foram aplicadas nos SOs pela negociação)
-    /// </summary>
     private void InitializePlayerTeam()
     {
         playerTeam = FindObjectsOfType<BattleEntity>()
             .Where(e => e.characterData.team == Team.Player)
             .ToList();
     
-        // Carrega HP/MP salvos
         foreach (BattleEntity player in playerTeam)
         {
             if (GameManager.Instance != null)
@@ -127,7 +106,6 @@ public class BattleManager : MonoBehaviour
                     ?.SetValue(player, GameManager.Instance.GetPlayerCurrentHP());
                 
                 player.currentMp = GameManager.Instance.GetPlayerCurrentMP();
-            
                 player.ForceUpdateValueTexts();
             }
         }
@@ -154,14 +132,12 @@ public class BattleManager : MonoBehaviour
 
             activeCharacter.ProcessStatusEffectsTurn();
 
-            // ✅ ADICIONE ESTA VERIFICAÇÃO
             if (activeCharacter.isDead)
             {
-                Debug.Log($"{activeCharacter.characterData.characterName} morreu por efeitos de status antes de agir!");
                 activeCharacter.ResetATB();
-                CheckBattleEnd(); // Verifica se a batalha terminou
+                CheckBattleEnd();
                 currentState = BattleState.RUNNING;
-                return; // Importante: sai do Update sem processar a ação
+                return;
             }
 
             if (activeCharacter.characterData.team == Team.Player)
@@ -186,12 +162,9 @@ public class BattleManager : MonoBehaviour
         currentProcessingAction = action;
         
         BehaviorAnalysisIntegration.OnTurnAction(caster);
-    
         currentTurnNumber++;
 
         caster.OnExecuteAction();
-        Debug.Log($"{caster.characterData.characterName} uses {action.actionName}!");
-    
         yield return new WaitForSeconds(actionDelay);
 
         if (caster.ConsumeMana(action.manaCost))
@@ -207,7 +180,6 @@ public class BattleManager : MonoBehaviour
                     {
                         GameManager.Instance.RemoveItemFromInventory(action);
                     }
-                    Debug.Log($"{action.actionName} was removed - uses exhausted!");
                 }
             }
             
@@ -246,13 +218,8 @@ public class BattleManager : MonoBehaviour
                 BehaviorAnalysisIntegration.OnPlayerSkillDamage(action, totalDamageThisAction);
             }
         }
-        else
-        {
-            Debug.Log("Action failed due to insufficient MP!");
-        }
 
         yield return new WaitForSeconds(postActionDelay);
-    
         caster.ResetATB();
         currentProcessingAction = null;
         CheckBattleEnd();
@@ -314,7 +281,6 @@ public class BattleManager : MonoBehaviour
             {
                 case ActionType.Attack:
                     caster.TakeDamage(effect.selfEffectPower);
-                    Debug.Log($"{caster.characterData.characterName} takes {effect.selfEffectPower} recoil damage!");
                     break;
                     
                 case ActionType.Heal:
@@ -332,8 +298,6 @@ public class BattleManager : MonoBehaviour
             }
         }
     }
-
-    private BattleAction currentProcessingAction;
     
     private BattleAction GetCurrentAction()
     {
@@ -341,12 +305,11 @@ public class BattleManager : MonoBehaviour
     }
 
     /// <summary>
-    /// CORRIGIDO: Evita contaminação cruzada entre modificadores de jogador/inimigo
+    /// Evita contaminação cruzada entre modificadores de jogador/inimigo
     /// </summary>
     private IEnumerator PerformEnemyAction()
     {
         yield return new WaitForSeconds(1.0f);
-    
         BattleEntity player = playerTeam.FirstOrDefault(p => !p.isDead);
     
         if (player == null)
@@ -356,24 +319,18 @@ public class BattleManager : MonoBehaviour
             yield break;
         }
         
-        // === PASSO 1: SALVA valores atuais das ações DESTE inimigo ===
         actionBackup.SaveActions(activeCharacter.characterData.battleActions);
-        
-        // === PASSO 2: RESETA para valores base ===
         BattleActionRestorer.RestoreSingleCharacterActions(activeCharacter.characterData);
         
-        // === PASSO 3: APLICA modificadores de inimigo (se houver) ===
         if (DifficultySystem.Instance != null)
         {
             DifficultySystem.Instance.ApplyToEnemy_Actions(activeCharacter.characterData);
         }
         
-        // === PASSO 4: DEIXA ESCOLHER e AGIR ===
         BattleAction chosenAction = EnemyAI.ChooseBestAction(activeCharacter, player, enemyTeam);
 
         if (chosenAction == null)
         {
-            Debug.Log($"{activeCharacter.characterData.characterName} não tem ações disponíveis!");
             actionBackup.RestoreActions();
             activeCharacter.ResetATB();
             currentState = BattleState.RUNNING;
@@ -382,7 +339,6 @@ public class BattleManager : MonoBehaviour
 
         string enemyActionText = $"{activeCharacter.characterData.characterName} usa {chosenAction.actionName}!";
         battleHUD.ShowEnemyAction(enemyActionText);
-    
         yield return new WaitForSeconds(enemyActionDisplayTime);
         battleHUD.HideEnemyAction();
 
@@ -394,12 +350,10 @@ public class BattleManager : MonoBehaviour
         }
         else
         {
-            Debug.Log($"{activeCharacter.characterData.characterName} não encontrou alvos válidos!");
             activeCharacter.ResetATB();
             currentState = BattleState.RUNNING;
         }
         
-        // === PASSO 5: VOLTA o que era antes ===
         actionBackup.RestoreActions();
     }
     
@@ -413,20 +367,14 @@ public class BattleManager : MonoBehaviour
         if (enemyTeam.All(e => e.isDead))
         {
             currentState = BattleState.WON;
-            Debug.Log("VICTORY!");
-            
             int baseReward = Random.Range(20, 51);
             int totalEnemies = enemyTeam.Count;
-            int rewardCoins = baseReward * totalEnemies;
-            rewardCoins = Mathf.Min(rewardCoins, 150);
-            Debug.Log("Acrescentado " + rewardCoins + " ao jogador. Fórmula usada:" + baseReward + " + " + totalEnemies );
-            
+            int rewardCoins = Mathf.Min(baseReward * totalEnemies, 150);
             StartCoroutine(HandleBattleVictory(rewardCoins));
         }
         else if (playerTeam.All(p => p.isDead))
         {
             currentState = BattleState.LOST;
-            Debug.Log("DEFEAT!");
             StartCoroutine(HandleBattleDefeat());
         }
         else
@@ -438,14 +386,9 @@ public class BattleManager : MonoBehaviour
     private IEnumerator HandleBattleDefeat()
     {
         yield return new WaitForSeconds(2f);
-    
         string defeatMessage = "Você foi derrotado...";
         battleHUD.ShowEnemyAction(defeatMessage);
-    
         yield return new WaitForSeconds(3f);
-    
-        Debug.Log("=== JOGADOR MORREU - INDO PARA TELA DE MORTE ===");
-    
         SceneManager.LoadScene("Defeat_Scene");
     }
 
@@ -461,19 +404,14 @@ public class BattleManager : MonoBehaviour
         string victoryMessage = $"Vitória! Recebido {rewardCoins} moedas!";
         GameManager.Instance.AddBattleReward(rewardCoins);
         battleHUD.ShowEnemyAction(victoryMessage);
-    
         yield return new WaitForSeconds(3f);
-    
         SavePlayerStatsToGameManager();
-    
         GameManager.Instance.ReturnToMap();
     }
     
     public void OnPlayerTurnTimeout(BattleEntity character)
     {
         if (character == null) return;
-
-        Debug.Log($"⏱️ {character.characterData.characterName} perdeu o turno por timeout!");
 
         character.ResetATB();
     
@@ -491,15 +429,12 @@ public class BattleManager : MonoBehaviour
     private void SavePlayerStatsToGameManager()
     {
         if (GameManager.Instance == null) return;
-    
         BattleEntity player = playerTeam.FirstOrDefault();
     
         if (player != null)
         {
             GameManager.Instance.SetPlayerCurrentHP(player.GetCurrentHP());
             GameManager.Instance.SetPlayerCurrentMP(player.GetCurrentMP());
-        
-            Debug.Log($"Stats do jogador salvos - HP: {player.GetCurrentHP()}/{player.GetMaxHP()}, MP: {player.GetCurrentMP()}/{player.GetMaxMP()}");
         }
     }
     
@@ -534,10 +469,7 @@ public class BattleManager : MonoBehaviour
         if (bossFound == null)
             yield break;
 
-        Debug.Log($"[BattleManager] Boss detectado: {bossFound}");
-
         currentState = BattleState.START;
-
         bool finished = false;
 
         if (dialogueToPlay != null && DialogueManager.Instance != null)
@@ -549,7 +481,6 @@ public class BattleManager : MonoBehaviour
             yield return null;
 
         currentState = BattleState.RUNNING;
-        Debug.Log($"[BattleManager] Diálogo do boss '{bossFound}' concluído. Batalha retomada.");
     }
     
     public BattleEntity GetActiveCharacter()
