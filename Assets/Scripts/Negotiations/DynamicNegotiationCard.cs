@@ -1,11 +1,6 @@
-// Assets/Scripts/Negotiation/DynamicNegotiationCard.cs (COMPLETE - FIXED)
-
 using UnityEngine;
 using System.Collections.Generic;
 
-/// <summary>
-/// Carta de negociação: EXATAMENTE 1 vantagem + 1 desvantagem
-/// </summary>
 [System.Serializable]
 public class DynamicNegotiationCard
 {
@@ -15,11 +10,9 @@ public class DynamicNegotiationCard
     
     public NegotiationCardType cardType;
     
-    // EXATAMENTE uma vantagem e uma desvantagem
-    public NegotiationOffer playerBenefit;  // O que você ganha
-    public NegotiationOffer playerCost;     // O que você perde OU o que inimigos ganham
+    public NegotiationOffer playerBenefit;
+    public NegotiationOffer playerCost;
     
-    // Para IntensityOnly e AttributeAndIntensity
     public List<CardIntensity> availableIntensities = new List<CardIntensity>
     {
         CardIntensity.Low,
@@ -32,16 +25,8 @@ public class DynamicNegotiationCard
     
     public DynamicNegotiationCard(NegotiationOffer advantage, NegotiationOffer disadvantage, NegotiationCardType type = NegotiationCardType.Fixed)
     {
-        // Validação: garante que temos exatamente 1 vantagem e 1 desvantagem
-        if (!advantage.isAdvantage)
+        if (!advantage.isAdvantage || disadvantage.isAdvantage)
         {
-            Debug.LogError("Primeira oferta deve ser vantagem!");
-            return;
-        }
-        
-        if (disadvantage.isAdvantage)
-        {
-            Debug.LogError("Segunda oferta deve ser desvantagem!");
             return;
         }
         
@@ -73,7 +58,6 @@ public class DynamicNegotiationCard
     
     private void GenerateAttributeOptions()
     {
-        // Gera variações do atributo da vantagem
         availablePlayerAttributes.Add(playerBenefit.targetAttribute);
         
         switch (playerBenefit.targetAttribute)
@@ -92,7 +76,6 @@ public class DynamicNegotiationCard
                 break;
         }
         
-        // Gera variações do atributo da desvantagem
         availableEnemyAttributes.Add(playerCost.targetAttribute);
         
         switch (playerCost.targetAttribute)
@@ -125,25 +108,18 @@ public class DynamicNegotiationCard
         return $"Troca {playerBenefit.offerName.ToLower()} por {playerCost.offerName.ToLower()}.";
     }
     
- /// <summary>
-    /// ✅ CORRIGIDO: Calcula e mostra valores REAIS com sinal correto para mana cost
-    /// NOVO: Detecta e exibe skills específicas corretamente
-    /// </summary>
     public string GetFullDescription(CardAttribute? playerAttr, CardAttribute? enemyAttr, CardIntensity intensity)
     {
         string desc = $"<b><size=110%>{cardName}</size></b>\n\n";
         desc += $"<i>{cardDescription}</i>\n\n";
 
-        // === VANTAGEM ===
         desc += $"<color=#90EE90><b>✓ Você Ganha:</b></color>\n";
         
-        // ✅ NOVO: Verifica se é skill específica
         bool isSpecificSkillAdvantage = playerBenefit.HasData("isSpecificSkill") && 
                                          playerBenefit.GetData<bool>("isSpecificSkill");
         
         if (isSpecificSkillAdvantage)
         {
-            // SKILL ESPECÍFICA
             string skillName = playerBenefit.GetData<string>("targetSkillName", "Skill");
             bool modifyPower = playerBenefit.GetData<bool>("modifyPower", false);
             bool modifyManaCost = playerBenefit.GetData<bool>("modifyManaCost", false);
@@ -153,7 +129,6 @@ public class DynamicNegotiationCard
                 int powerChange = playerBenefit.GetData<int>("powerChange", 0);
                 int manaCostChange = playerBenefit.GetData<int>("manaCostChange", 0);
                 
-                // Escala pelos multiplicadores
                 powerChange = IntensityHelper.GetScaledValue(intensity, powerChange);
                 manaCostChange = IntensityHelper.GetScaledValue(intensity, manaCostChange);
                 
@@ -180,7 +155,6 @@ public class DynamicNegotiationCard
         }
         else
         {
-            // MODIFICADOR GERAL
             CardAttribute advantageAttr = playerAttr ?? playerBenefit.targetAttribute;
             int realAdvantageValue = IntensityHelper.GetScaledValue(intensity, playerBenefit.value);
             realAdvantageValue = CorrectManaCostSignForUI(advantageAttr, realAdvantageValue, true);
@@ -195,7 +169,6 @@ public class DynamicNegotiationCard
             }
             else if (advantageAttr == CardAttribute.ShopPrices)
             {
-                // ✅ CORREÇÃO: ShopPrices negativo = mais barato = vantagem
                 desc += $"Itens custam: <color=#90EE90>{Mathf.Abs(realAdvantageValue)}</color> moedas a menos\n";
             }
             else
@@ -204,16 +177,13 @@ public class DynamicNegotiationCard
             }
         }
 
-        // === DESVANTAGEM ===
         desc += $"\n<color=#FF6B6B><b>✗ Custo:</b></color>\n";
 
-        // ✅ NOVO: Verifica se é skill específica
         bool isSpecificSkillCost = playerCost.HasData("isSpecificSkill") && 
                                     playerCost.GetData<bool>("isSpecificSkill");
         
         if (isSpecificSkillCost)
         {
-            // SKILL ESPECÍFICA
             string skillName = playerCost.GetData<string>("targetSkillName", "Skill");
             bool modifyPower = playerCost.GetData<bool>("modifyPower", false);
             bool modifyManaCost = playerCost.GetData<bool>("modifyManaCost", false);
@@ -249,7 +219,6 @@ public class DynamicNegotiationCard
         }
         else
         {
-            // MODIFICADOR GERAL
             CardAttribute costAttr = enemyAttr ?? playerCost.targetAttribute;
             int realCostValue = IntensityHelper.GetScaledValue(intensity, playerCost.value);
             realCostValue = CorrectManaCostSignForUI(costAttr, realCostValue, false);
@@ -264,7 +233,6 @@ public class DynamicNegotiationCard
                 }
                 else if (costAttr == CardAttribute.ShopPrices)
                 {
-                    // ✅ CORREÇÃO: ShopPrices positivo = mais caro = desvantagem
                     desc += $"Itens custam: <color=#FF4444>+{Mathf.Abs(realCostValue)}</color> moedas a mais";
                 }
                 else
@@ -288,44 +256,34 @@ public class DynamicNegotiationCard
         return desc;
     }
     
-    /// <summary>
-    /// ✅ NOVO: Força sinal correto para custos de mana na UI
-    /// </summary>
     private int CorrectManaCostSignForUI(CardAttribute attribute, int value, bool isAdvantage)
     {
-        // Se não for custo de mana, retorna valor original
         if (attribute != CardAttribute.PlayerActionManaCost && 
             attribute != CardAttribute.EnemyActionManaCost)
         {
             return value;
         }
     
-        // === CUSTO DE MANA DO JOGADOR ===
         if (attribute == CardAttribute.PlayerActionManaCost)
         {
             if (isAdvantage)
             {
-                // ✅ VANTAGEM: Reduzir custo = NEGATIVO
                 return -Mathf.Abs(value);
             }
             else
             {
-                // ❌ DESVANTAGEM: Aumentar custo = POSITIVO
                 return Mathf.Abs(value);
             }
         }
     
-        // === CUSTO DE MANA DOS INIMIGOS ===
         if (attribute == CardAttribute.EnemyActionManaCost)
         {
             if (isAdvantage)
             {
-                // ✅ VANTAGEM (para jogador): Aumentar custo inimigo = POSITIVO
                 return Mathf.Abs(value);
             }
             else
             {
-                // ❌ DESVANTAGEM: Reduzir custo inimigo = NEGATIVO
                 return -Mathf.Abs(value);
             }
         }
@@ -333,9 +291,6 @@ public class DynamicNegotiationCard
         return value;
     }
     
-    /// <summary>
-    /// Verifica se um atributo afeta o jogador
-    /// </summary>
     private bool IsPlayerAttribute(CardAttribute attr)
     {
         switch (attr)

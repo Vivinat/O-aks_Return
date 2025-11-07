@@ -1,11 +1,6 @@
-// Assets/Scripts/Negotiation/NegotiationCardSO.cs (COMPLETE - FIXED)
-
 using UnityEngine;
 using System.Collections.Generic;
 
-/// <summary>
-/// ScriptableObject que define uma carta de negociação estática
-/// </summary>
 [CreateAssetMenu(menuName = "Negotiation/Negotiation Card")]
 public class NegotiationCardSO : ScriptableObject
 {
@@ -38,9 +33,6 @@ public class NegotiationCardSO : ScriptableObject
     public List<CardAttribute> availablePlayerAttributes = new List<CardAttribute>();
     public List<CardAttribute> availableEnemyAttributes = new List<CardAttribute>();
     
-    /// <summary>
-    /// Retorna descrição completa da carta com valores calculados pela intensidade
-    /// </summary>
     public string GetFullDescription(CardAttribute? playerAttr, CardAttribute? enemyAttr, CardIntensity intensity)
     {
         string desc = $"<b><size=110%>{cardName}</size></b>\n\n";
@@ -81,7 +73,6 @@ public class NegotiationCardSO : ScriptableObject
     
     private string GetIntensityOnlyDescription(CardIntensity intensity)
     {
-        // Aplica multiplicador aos valores base
         int playerValue = IntensityHelper.GetScaledValue(intensity, fixedPlayerValue);
         int enemyValue = IntensityHelper.GetScaledValue(intensity, fixedEnemyValue);
         
@@ -96,7 +87,6 @@ public class NegotiationCardSO : ScriptableObject
     
     private string GetAttributeAndIntensityDescription(CardAttribute playerAttr, CardAttribute enemyAttr, CardIntensity intensity)
     {
-        // Aplica multiplicador aos valores base
         int playerValue = IntensityHelper.GetScaledValue(intensity, fixedPlayerValue);
         int enemyValue = IntensityHelper.GetScaledValue(intensity, fixedEnemyValue);
         
@@ -109,9 +99,6 @@ public class NegotiationCardSO : ScriptableObject
         return desc;
     }
     
-    /// <summary>
-    /// Valida se a carta tem configuração válida
-    /// </summary>
     public bool IsValid()
     {
         if (string.IsNullOrEmpty(cardName))
@@ -137,7 +124,6 @@ public class NegotiationCardSO : ScriptableObject
     
     void OnValidate()
     {
-        // Garante que há pelo menos uma intensidade disponível
         if (availableIntensities.Count == 0)
         {
             availableIntensities.Add(CardIntensity.Low);
@@ -145,7 +131,6 @@ public class NegotiationCardSO : ScriptableObject
             availableIntensities.Add(CardIntensity.High);
         }
         
-        // Para tipo AttributeAndIntensity, garante que há atributos disponíveis
         if (cardType == NegotiationCardType.AttributeAndIntensity)
         {
             if (availablePlayerAttributes.Count == 0)

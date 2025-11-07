@@ -1,5 +1,3 @@
-// Assets/Scripts/Negotiation/NegotiationCardUI.cs (COMPLETE - FIXED)
-
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.EventSystems;
@@ -28,7 +26,6 @@ public class NegotiationCardUI : MonoBehaviour, IPointerEnterHandler, IPointerEx
     [SerializeField] private Color selectedColor = Color.red;
     [SerializeField] private float colorTransitionSpeed = 8f;
     
-    // Dados - pode ser SO ou dinâmico
     private NegotiationCardSO cardDataSO;
     private DynamicNegotiationCard cardDataDynamic;
     private bool isDynamicCard = false;
@@ -38,7 +35,6 @@ public class NegotiationCardUI : MonoBehaviour, IPointerEnterHandler, IPointerEx
     private bool isHovered = false;
     private Color targetColor;
     
-    // Valores selecionados
     private CardAttribute selectedPlayerAttribute;
     private CardAttribute selectedEnemyAttribute;
     private CardIntensity selectedIntensity;
@@ -69,9 +65,6 @@ public class NegotiationCardUI : MonoBehaviour, IPointerEnterHandler, IPointerEx
         }
     }
     
-    /// <summary>
-    /// Setup para cartas estáticas (SO)
-    /// </summary>
     public void Setup(NegotiationCardSO card, NegotiationManager manager)
     {
         cardDataSO = card;
@@ -80,7 +73,6 @@ public class NegotiationCardUI : MonoBehaviour, IPointerEnterHandler, IPointerEx
         
         if (cardDataSO == null)
         {
-            Debug.LogError("NegotiationCardUI: Dados da carta SO são nulos!");
             return;
         }
         
@@ -92,9 +84,6 @@ public class NegotiationCardUI : MonoBehaviour, IPointerEnterHandler, IPointerEx
         UpdateDescription();
     }
     
-    /// <summary>
-    /// Setup para cartas dinâmicas
-    /// </summary>
     public void SetupDynamic(DynamicNegotiationCard card, NegotiationManager manager)
     {
         cardDataDynamic = card;
@@ -103,7 +92,6 @@ public class NegotiationCardUI : MonoBehaviour, IPointerEnterHandler, IPointerEx
         
         if (cardDataDynamic == null)
         {
-            Debug.LogError("NegotiationCardUI: Dados da carta dinâmica são nulos!");
             return;
         }
         
@@ -117,7 +105,6 @@ public class NegotiationCardUI : MonoBehaviour, IPointerEnterHandler, IPointerEx
     
     private void SetupByType(NegotiationCardType type)
     {
-        // Esconde tudo primeiro
         if (playerAttributePanel != null) playerAttributePanel.SetActive(false);
         if (enemyAttributePanel != null) enemyAttributePanel.SetActive(false);
         if (intensityPanel != null) intensityPanel.SetActive(false);
@@ -258,7 +245,6 @@ public class NegotiationCardUI : MonoBehaviour, IPointerEnterHandler, IPointerEx
     
         foreach (var intensity in availableIntensities)
         {
-            // APENAS o nome da intensidade - sem valores
             options.Add(IntensityHelper.GetIntensityDisplayName(intensity));
         }
     
@@ -377,16 +363,12 @@ public class NegotiationCardUI : MonoBehaviour, IPointerEnterHandler, IPointerEx
         }
     }
     
-    // Getters
     public NegotiationCardSO GetCardData() => cardDataSO;
     public DynamicNegotiationCard GetDynamicCardData() => cardDataDynamic;
     public CardAttribute GetSelectedPlayerAttribute() => selectedPlayerAttribute;
     public CardAttribute GetSelectedEnemyAttribute() => selectedEnemyAttribute;
     public CardIntensity GetSelectedIntensity() => selectedIntensity;
     
-    /// <summary>
-    /// Retorna o valor final calculado (base * multiplicador)
-    /// </summary>
     public int GetSelectedValue()
     {
         if (isDynamicCard && cardDataDynamic != null)
@@ -395,7 +377,6 @@ public class NegotiationCardUI : MonoBehaviour, IPointerEnterHandler, IPointerEx
         }
         else if (!isDynamicCard && cardDataSO != null)
         {
-            // Para cartas estáticas, usa o valor base apropriado baseado no tipo
             int baseValue = cardDataSO.cardType switch
             {
                 NegotiationCardType.Fixed => cardDataSO.fixedPlayerValue,

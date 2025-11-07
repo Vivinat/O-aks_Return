@@ -1,66 +1,41 @@
-// Assets/Scripts/Negotiations/DeathOfferGenerator.cs (VERSÃO CORRIGIDA - SÓ TRIGGERS EXISTENTES)
-
 using UnityEngine;
 using System.Collections.Generic;
 using System.Linq;
 
-/// <summary>
-/// Gera ofertas de segunda chance baseadas no comportamento do jogador
-/// CORRIGIDO: Usa apenas triggers que existem no PlayerBehaviorData.cs
-/// </summary>
 public static class DeathOfferGenerator
 {
     private const float CONTEXTUAL_OFFER_CHANCE = 0.75f;
     private const int MIN_COINS_FOR_COIN_PENALTY = 30;
     
-    /// <summary>
-    /// Gera uma oferta, priorizando ofertas contextuais quando possível
-    /// GARANTIDO: Sempre retorna uma oferta válida
-    /// </summary>
     public static DeathNegotiationOffer GenerateOffer(BattleEntity player)
     {
-        // 75% chance de oferta contextual, 25% de oferta fixa
         if (Random.value < CONTEXTUAL_OFFER_CHANCE)
         {
             var contextualOffer = GenerateContextualOffer(player);
             if (contextualOffer != null)
             {
-                Debug.Log($"[DeathOffer] Oferta contextual gerada: {contextualOffer.title}");
                 return contextualOffer;
             }
         }
         
-        // GARANTIA: Fallback SEMPRE gera uma oferta
-        var fixedOffer = GenerateFixedOffer(player);
-        Debug.Log($"[DeathOffer] Oferta fixa gerada: {fixedOffer.title}");
-        return fixedOffer;
+        return GenerateFixedOffer(player);
     }
     
-    /// <summary>
-    /// Gera ofertas baseadas em padrões comportamentais EXISTENTES
-    /// </summary>
     private static DeathNegotiationOffer GenerateContextualOffer(BattleEntity player)
     {
         if (PlayerBehaviorAnalyzer.Instance == null)
         {
-            Debug.LogWarning("[DeathOffer] PlayerBehaviorAnalyzer não disponível");
             return null;
         }
         
         var battleData = PlayerBehaviorAnalyzer.Instance.GetAllObservations();
         if (battleData.Count == 0)
         {
-            Debug.Log("[DeathOffer] Sem dados comportamentais suficientes");
             return null;
         }
         
         List<DeathNegotiationOffer> contextualOffers = new List<DeathNegotiationOffer>();
         
-        // ============================================
-        // APENAS TRIGGERS QUE EXISTEM NO ENUM
-        // ============================================
-        
-        // === TRIGGER: SingleSkillCarry ===
         var singleSkillCarry = battleData.FirstOrDefault(obs => 
             obs.triggerType == BehaviorTriggerType.SingleSkillCarry);
         
@@ -74,7 +49,6 @@ public static class DeathOfferGenerator
             
             if (targetSkill != null)
             {
-                // Opção 1: Enfraquecer a skill dominante
                 int weakenAmount = Mathf.RoundToInt(15 + (damagePercent * 0.1f));
                 contextualOffers.Add(new DeathNegotiationOffer(
                     "Sacrifício da Técnica Dominante",
@@ -87,7 +61,6 @@ public static class DeathOfferGenerator
                     contextInfo = $"Esta skill causou {damagePercent:F0}% do seu dano total. Hora de diversificar."
                 });
                 
-                // Opção 2: Aumentar custo de mana
                 contextualOffers.Add(new DeathNegotiationOffer(
                     "Custo da Repetição",
                     $"Sua skill '{skillName}' custará +5 MP. Aprenda a variar suas táticas.",
@@ -101,14 +74,13 @@ public static class DeathOfferGenerator
             }
         }
         
-        // === TRIGGER: FrequentLowHP ===
         var lowHPPattern = battleData.FirstOrDefault(obs => 
             obs.triggerType == BehaviorTriggerType.FrequentLowHP);
         
         if (lowHPPattern != null)
         {
             float avgHP = lowHPPattern.GetData<float>("averageEndingHP", 0.3f) * 100f;
-            int hpReduction = Mathf.RoundToInt(25 + (1f - avgHP/100f) * 15); // 25-40 HP
+            int hpReduction = Mathf.RoundToInt(25 + (1f - avgHP/100f) * 15);
             
             contextualOffers.Add(new DeathNegotiationOffer(
                 "Fragilidade Aceita",
@@ -120,7 +92,6 @@ public static class DeathOfferGenerator
                 contextInfo = $"Você termina batalhas com média de {avgHP:F0}% HP. Pura sorte."
             });
             
-            // Opção alternativa: Defesa
             int defenseReduction = Mathf.Clamp(8 + Mathf.RoundToInt((1f - avgHP/100f) * 7), 8, 15);
             contextualOffers.Add(new DeathNegotiationOffer(
                 "Armadura Fraturada",
@@ -133,7 +104,6 @@ public static class DeathOfferGenerator
             });
         }
         
-        // === TRIGGER: LowManaStreak ou AllSkillsUseMana ===
         var manaIssues = battleData.FirstOrDefault(obs => 
             obs.triggerType == BehaviorTriggerType.LowManaStreak ||
             obs.triggerType == BehaviorTriggerType.AllSkillsUseMana ||
@@ -162,7 +132,6 @@ public static class DeathOfferGenerator
             });
         }
         
-        // === TRIGGER: ConsumableDependency ===
         var consumableDep = battleData.FirstOrDefault(obs => 
             obs.triggerType == BehaviorTriggerType.ConsumableDependency);
         
@@ -204,7 +173,6 @@ public static class DeathOfferGenerator
             }
         }
         
-        // === TRIGGER: AlwaysOutsped ===
         var speedIssues = battleData.FirstOrDefault(obs => 
             obs.triggerType == BehaviorTriggerType.AlwaysOutsped);
         
@@ -221,7 +189,6 @@ public static class DeathOfferGenerator
             });
         }
         
-        // === TRIGGER: Moedas (via sistema de moedas direto) ===
         int currentCoins = GameManager.Instance?.CurrencySystem?.CurrentCoins ?? 0;
         if (currentCoins >= MIN_COINS_FOR_COIN_PENALTY)
         {
@@ -239,7 +206,6 @@ public static class DeathOfferGenerator
             });
         }
         
-        // === TRIGGER: NoDefensiveSkills ===
         var noDefensive = battleData.FirstOrDefault(obs => 
             obs.triggerType == BehaviorTriggerType.NoDefensiveSkills);
         
@@ -266,7 +232,6 @@ public static class DeathOfferGenerator
             });
         }
         
-        // === TRIGGER: LowHealthNoCure ===
         var lowHealthNoCure = battleData.FirstOrDefault(obs => 
             obs.triggerType == BehaviorTriggerType.LowHealthNoCure);
         
@@ -283,7 +248,6 @@ public static class DeathOfferGenerator
             });
         }
         
-        // === TRIGGER: WeakSkillIgnored ===
         var weakSkill = battleData.FirstOrDefault(obs => 
             obs.triggerType == BehaviorTriggerType.WeakSkillIgnored);
         
@@ -310,13 +274,11 @@ public static class DeathOfferGenerator
             }
         }
         
-        // === TRIGGER: ItemExhausted ===
         var itemExhausted = battleData.FirstOrDefault(obs => 
             obs.triggerType == BehaviorTriggerType.ItemExhausted);
         
         if (itemExhausted != null)
         {
-            // Oferece reduzir custo de skills para compensar falta de itens
             contextualOffers.Add(new DeathNegotiationOffer(
                 "Dependência Punida",
                 "Seus itens acabaram? Todas suas skills custarão +3 MP.",
@@ -328,7 +290,6 @@ public static class DeathOfferGenerator
             });
         }
         
-        // Retorna oferta aleatória da lista contextual
         if (contextualOffers.Count > 0)
         {
             return contextualOffers[Random.Range(0, contextualOffers.Count)];
@@ -337,14 +298,10 @@ public static class DeathOfferGenerator
         return null;
     }
     
-    /// <summary>
-    /// GARANTIA: Sempre gera pelo menos uma oferta válida
-    /// </summary>
     private static DeathNegotiationOffer GenerateFixedOffer(BattleEntity player)
     {
         List<DeathNegotiationOffer> fixedOffers = new List<DeathNegotiationOffer>();
         
-        // === CATEGORIA 1: Redução de Stats (SEMPRE DISPONÍVEL) ===
         fixedOffers.Add(new DeathNegotiationOffer(
             "Vitalidade Drenada",
             "Seu corpo não será o mesmo. -30 HP máximo permanentemente.",
@@ -385,7 +342,6 @@ public static class DeathOfferGenerator
             contextInfo = "Agir por último pode ser fatal."
         });
         
-        // === CATEGORIA 2: Manipulação de Ações (SE DISPONÍVEL) ===
         var playerActions = GameManager.Instance?.PlayerBattleActions?
             .Where(a => a != null && !a.isConsumable)
             .ToList();
@@ -428,7 +384,6 @@ public static class DeathOfferGenerator
             });
         }
         
-        // === CATEGORIA 3: Penalidades Temporais (SEMPRE DISPONÍVEL) ===
         fixedOffers.Add(new DeathNegotiationOffer(
             "Pressão Temporal Extrema",
             "Você terá METADE do tempo para tomar decisões em turnos.",
@@ -439,7 +394,6 @@ public static class DeathOfferGenerator
             contextInfo = "A pressa causa erros. Prepare-se para cometer muitos."
         });
         
-        // === CATEGORIA 4: Custos Globais (SEMPRE DISPONÍVEL) ===
         fixedOffers.Add(new DeathNegotiationOffer(
             "Exaustão Crescente",
             "Todas as suas habilidades custarão +3 MP permanentemente.",
@@ -460,7 +414,6 @@ public static class DeathOfferGenerator
             contextInfo = "Um preço alto, mas você ainda terá suas habilidades."
         });
         
-        // === CATEGORIA 5: Tributos Monetários (SE TIVER MOEDAS) ===
         int currentCoins = GameManager.Instance?.CurrencySystem?.CurrentCoins ?? 0;
         if (currentCoins > 0)
         {
@@ -505,7 +458,6 @@ public static class DeathOfferGenerator
             }
         }
         
-        // === CATEGORIA 6: Debuffs Permanentes (SEMPRE DISPONÍVEL) ===
         fixedOffers.Add(new DeathNegotiationOffer(
             "Marca da Fraqueza",
             "Uma maldição reduzirá seu ataque em 12 pontos até o fim da batalha.",
@@ -526,7 +478,6 @@ public static class DeathOfferGenerator
             contextInfo = "Combinado com sua fragilidade atual... isso será brutal."
         });
         
-        // === CATEGORIA 7: Penalidades de Consumíveis (SE TIVER) ===
         var consumables = GameManager.Instance?.PlayerBattleActions?
             .Where(a => a != null && a.isConsumable && a.currentUses > 0)
             .ToList();
@@ -548,7 +499,6 @@ public static class DeathOfferGenerator
             });
         }
         
-        // === CATEGORIA 8: Combinações (SEMPRE DISPONÍVEL) ===
         fixedOffers.Add(new DeathNegotiationOffer(
             "Pacto do Desesperado",
             "Perca 40 HP máximo, mas mantenha tudo o mais. Simples assim.",
@@ -572,10 +522,8 @@ public static class DeathOfferGenerator
             });
         }
         
-        // GARANTIA FINAL: Se por algum motivo a lista estiver vazia
         if (fixedOffers.Count == 0)
         {
-            Debug.LogWarning("[DeathOffer] FALLBACK DE EMERGÊNCIA ativado!");
             fixedOffers.Add(new DeathNegotiationOffer(
                 "Preço da Ressurreição",
                 "Sua vida retorna, mas você perde 25 HP máximo.",
@@ -587,7 +535,6 @@ public static class DeathOfferGenerator
             });
         }
         
-        // Retorna oferta aleatória balanceada
         return fixedOffers[Random.Range(0, fixedOffers.Count)];
     }
 }

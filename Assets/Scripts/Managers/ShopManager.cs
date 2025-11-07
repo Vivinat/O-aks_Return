@@ -1,5 +1,3 @@
-// Assets/Scripts/Managers/ShopManager.cs (COMPLETE - with Powerups and Refresh)
-
 using UnityEngine;
 using UnityEngine.UI;
 using System.Collections.Generic;
@@ -16,7 +14,7 @@ public class ShopManager : MonoBehaviour
     [Header("UI References")]
     public Transform shopItemsContainer;
     public GameObject shopItemPrefab;
-    public GameObject refreshButtonPrefab; // Prefab do botão de refresh
+    public GameObject refreshButtonPrefab;
     public Button exitButton;
     public TextMeshProUGUI exitButtonText;
     public TextMeshProUGUI coinsDisplay;
@@ -40,23 +38,18 @@ public class ShopManager : MonoBehaviour
     public GameObject purchaseInstructionPanel;
     public TextMeshProUGUI purchaseInstructionText;
 
-    // --- Estado Interno ---
     private List<BattleAction> playerActions;
     private ShopItem selectedShopItem;
     private int selectedShopItemIndex = -1;
     private int selectedPlayerSlotIndex = -1;
     private bool hasPendingPurchase = false;
-    
     private bool playerBoughtSomething = false;
     private int currentItemPrice = 0;
 
-    // Listas para gerenciar os itens e botões
     private List<GameObject> shopButtonObjects = new List<GameObject>();
     private List<GameObject> playerSlotObjects = new List<GameObject>();
     private List<ShopItem> currentShopItems = new List<ShopItem>();
     private List<int> shopModifiedPrices = new List<int>();
-    
-    // Sistema de refresh
     private List<GameObject> refreshButtonObjects = new List<GameObject>();
     private List<bool> refreshButtonUsed = new List<bool>();
 
@@ -64,7 +57,6 @@ public class ShopManager : MonoBehaviour
     {
         if (GameManager.Instance == null)
         {
-            Debug.LogError("GameManager não encontrado!");
             return;
         }
 
@@ -74,14 +66,12 @@ public class ShopManager : MonoBehaviour
         }
         else
         {
-            Debug.LogError("Evento atual não é uma loja!");
             return;
         }
 
         playerActions = GameManager.Instance.PlayerBattleActions;
         if (playerActions == null)
         {
-            Debug.LogError("PlayerBattleActions é null! Inicializando lista vazia.");
             playerActions = new List<BattleAction>();
         }
 
@@ -125,9 +115,6 @@ public class ShopManager : MonoBehaviour
         }
     }
 
-    /// <summary>
-    /// Gera os itens da loja (mix de BattleActions e Powerups)
-    /// </summary>
     private void GenerateShopItems()
     {
         ClearShopButtons();
@@ -136,7 +123,6 @@ public class ShopManager : MonoBehaviour
         shopModifiedPrices.Clear();
         refreshButtonUsed.Clear();
         
-        // Gera mix de itens
         for (int i = 0; i < shopData.numberOfChoices; i++)
         {
             ShopItem item = GenerateRandomShopItem();
@@ -144,20 +130,16 @@ public class ShopManager : MonoBehaviour
             {
                 currentShopItems.Add(item);
                 
-                // Calcula preço modificado
                 int displayPrice = item.Price;
                 if (DifficultySystem.Instance != null)
                 {
                     displayPrice = DifficultySystem.Instance.GetModifiedShopPrice(item.Price);
                 }
                 shopModifiedPrices.Add(displayPrice);
-                
-                // Inicializa refresh como não usado
                 refreshButtonUsed.Add(false);
             }
         }
         
-        // Cria UI para cada item
         for (int i = 0; i < currentShopItems.Count; i++)
         {
             CreateShopItemSlot(currentShopItems[i], shopModifiedPrices[i], i);
@@ -166,23 +148,17 @@ public class ShopManager : MonoBehaviour
         UpdateShopItemStates();
     }
     
-    /// <summary>
-    /// Gera um item aleatório (BattleAction ou Powerup) baseado na probabilidade
-    /// </summary>
     private ShopItem GenerateRandomShopItem()
     {
         float roll = Random.value;
         
-        // Decide se será powerup ou battle action
         if (roll < shopData.powerupChance && shopData.powerupsForSale != null && shopData.powerupsForSale.Count > 0)
         {
-            // Gera Powerup
             int randomIndex = Random.Range(0, shopData.powerupsForSale.Count);
             return new ShopItem(shopData.powerupsForSale[randomIndex]);
         }
         else if (shopData.actionsForSale != null && shopData.actionsForSale.Count > 0)
         {
-            // Gera BattleAction
             int randomIndex = Random.Range(0, shopData.actionsForSale.Count);
             BattleAction action = shopData.actionsForSale[randomIndex];
             
@@ -194,16 +170,11 @@ public class ShopManager : MonoBehaviour
             return new ShopItem(action);
         }
         
-        Debug.LogWarning("Não foi possível gerar item da loja!");
         return null;
     }
     
-    /// <summary>
-    /// Cria um slot de item com botão de refresh
-    /// </summary>
     private void CreateShopItemSlot(ShopItem item, int displayPrice, int index)
     {
-        // Cria container vertical para item + botão refresh
         GameObject containerObj = new GameObject($"ShopSlot_{index}");
         containerObj.transform.SetParent(shopItemsContainer);
         
@@ -215,7 +186,6 @@ public class ShopManager : MonoBehaviour
         verticalLayout.childForceExpandHeight = false;
         verticalLayout.childForceExpandWidth = false;
 
-        // Cria o botão do item
         GameObject shopInstance = Instantiate(shopItemPrefab, containerObj.transform);
         ShopItemUI shopButton = shopInstance.GetComponent<ShopItemUI>();
         
@@ -233,7 +203,6 @@ public class ShopManager : MonoBehaviour
             buttonComponent.onClick.AddListener(() => OnShopItemSelected(item, buttonIndex, displayPrice));
         }
 
-        // Cria o botão de refresh
         if (refreshButtonPrefab != null)
         {
             GameObject refreshObj = Instantiate(refreshButtonPrefab, containerObj.transform);
@@ -255,25 +224,17 @@ public class ShopManager : MonoBehaviour
         }
     }
     
-    /// <summary>
-    /// Chamado quando botão de refresh é clicado
-    /// </summary>
     private void OnRefreshClicked(int slotIndex)
     {
         if (refreshButtonUsed[slotIndex])
         {
-            Debug.Log($"Botão de refresh {slotIndex} já foi usado!");
             AudioConstants.PlayCannotSelect();
             return;
         }
         
-        Debug.Log($"Refresh solicitado para slot {slotIndex}");
         AudioConstants.PlayButtonSelect();
-        
-        // Marca como usado
         refreshButtonUsed[slotIndex] = true;
         
-        // Desabilita visualmente o botão
         if (slotIndex < refreshButtonObjects.Count)
         {
             Button refreshBtn = refreshButtonObjects[slotIndex].GetComponent<Button>();
@@ -289,30 +250,22 @@ public class ShopManager : MonoBehaviour
             }
         }
         
-        // Gera novo item
         RefreshShopSlot(slotIndex);
     }
     
-    /// <summary>
-    /// Atualiza um item específico da loja
-    /// </summary>
     private void RefreshShopSlot(int slotIndex)
     {
         if (slotIndex < 0 || slotIndex >= currentShopItems.Count)
         {
-            Debug.LogError($"Índice de slot inválido: {slotIndex}");
             return;
         }
         
-        // Gera novo item
         ShopItem newItem = GenerateRandomShopItem();
         
         if (newItem == null)
         {
-            Debug.LogWarning("Não foi possível gerar novo item!");
             AudioConstants.PlayCannotSelect();
             
-            // Reverte o botão de refresh
             refreshButtonUsed[slotIndex] = false;
             if (slotIndex < refreshButtonObjects.Count)
             {
@@ -330,12 +283,8 @@ public class ShopManager : MonoBehaviour
             return;
         }
         
-        Debug.Log($"Slot {slotIndex}: '{currentShopItems[slotIndex]?.Name}' → '{newItem.Name}'");
-        
-        // Atualiza a lista interna
         currentShopItems[slotIndex] = newItem;
         
-        // Atualiza preço
         int newPrice = newItem.Price;
         if (DifficultySystem.Instance != null)
         {
@@ -343,7 +292,6 @@ public class ShopManager : MonoBehaviour
         }
         shopModifiedPrices[slotIndex] = newPrice;
         
-        // Atualiza o botão do item
         if (slotIndex < shopButtonObjects.Count)
         {
             ShopItemUI shopButton = shopButtonObjects[slotIndex].GetComponent<ShopItemUI>();
@@ -352,7 +300,6 @@ public class ShopManager : MonoBehaviour
                 shopButton.SetupForSale(newItem, this, newPrice);
             }
             
-            // Atualiza o listener do botão
             Button buttonComponent = shopButtonObjects[slotIndex].GetComponent<Button>();
             if (buttonComponent != null)
             {
@@ -362,7 +309,6 @@ public class ShopManager : MonoBehaviour
             }
         }
         
-        // Se o item refreshado estava selecionado, desseleciona
         if (selectedShopItemIndex == slotIndex)
         {
             CancelPendingPurchase();
@@ -416,7 +362,6 @@ public class ShopManager : MonoBehaviour
     
     public void OnShopItemSelected(ShopItem item, int buttonIndex, int modifiedPrice)
     {
-        // confirma a compra em vez de cancelar.
         if (hasPendingPurchase && selectedShopItemIndex == buttonIndex && item.type == ShopItem.ItemType.Powerup)
         {
             if (ConfirmPurchase())
@@ -425,19 +370,16 @@ public class ShopManager : MonoBehaviour
                 CompletePurchase();
                 AudioConstants.PlayItemBuy();
             }
-            return; // Finaliza a execução do método aqui
+            return;
         }
 
-        // Se já havia uma compra pendente (de outro item), cancela antes de selecionar o novo.
         if (hasPendingPurchase)
         {
             CancelPendingPurchase();
         }
 
-        // O restante do código original permanece igual...
         if (!GameManager.Instance.CurrencySystem.HasEnoughCoins(modifiedPrice))
         {
-            Debug.Log($"Moedas insuficientes para {item.Name}!");
             AudioConstants.PlayCannotSelect();
             return;
         }
@@ -455,9 +397,6 @@ public class ShopManager : MonoBehaviour
     
         if (item.type == ShopItem.ItemType.Powerup)
         {
-            // A remoção do Coroutine não é estritamente necessária, mas a nova lógica
-            // o torna redundante. O método ShowPowerupConfirmation ainda é útil para
-            // exibir a mensagem de confirmação na tela.
             ShowPowerupConfirmation();
         }
         else
@@ -466,9 +405,6 @@ public class ShopManager : MonoBehaviour
         }
     }
     
-    /// <summary>
-    /// Mostra confirmação para compra de powerup
-    /// </summary>
     private void ShowPowerupConfirmation()
     {
         if (purchaseInstructionPanel != null)
@@ -480,7 +416,6 @@ public class ShopManager : MonoBehaviour
             }
         }
         
-        // Espera segundo clique para confirmar
         StartCoroutine(WaitForPowerupConfirmation());
     }
     
@@ -491,11 +426,8 @@ public class ShopManager : MonoBehaviour
         
         while (timeout < 10f && !confirmed)
         {
-            // Verifica se clicou no mesmo item novamente
             if (Input.GetMouseButtonDown(0))
             {
-                // Aqui você pode adicionar lógica mais sofisticada se necessário
-                // Por simplicidade, vamos apenas processar a compra
                 confirmed = true;
             }
             
@@ -525,7 +457,6 @@ public class ShopManager : MonoBehaviour
     {
         if (!hasPendingPurchase || selectedShopItem == null) return;
         
-        // Powerups não vão para slots - são aplicados imediatamente
         if (selectedShopItem.type == ShopItem.ItemType.Powerup)
         {
             if (ConfirmPurchase())
@@ -547,9 +478,6 @@ public class ShopManager : MonoBehaviour
         }
     }
     
-    /// <summary>
-    /// Aplica o efeito do powerup ao jogador
-    /// </summary>
     private void ApplyPowerup(PowerupSO powerup)
     {
         if (powerup == null) return;
@@ -558,11 +486,6 @@ public class ShopManager : MonoBehaviour
         if (playerChar != null)
         {
             powerup.ApplyToCharacter(playerChar);
-            Debug.Log($"✅ Powerup '{powerup.powerupName}' aplicado!");
-        }
-        else
-        {
-            Debug.LogError("PlayerCharacterInfo não encontrado!");
         }
     }
 
@@ -573,13 +496,11 @@ public class ShopManager : MonoBehaviour
         if (GameManager.Instance.CurrencySystem.SpendCoins(price))
         {
             AudioConstants.PlayButtonSelect();
-            Debug.Log($"Compra de {selectedShopItem.Name} por {price} moedas confirmada!");
             return true;
         }
         else
         {
             AudioConstants.PlayCannotSelect();
-            Debug.Log("Falha na compra - verificação final de moedas falhou!");
             CancelPendingPurchase();
             return false;
         }
@@ -763,13 +684,10 @@ public class ShopManager : MonoBehaviour
                     observation.SetData("coinsLeft", coinsLeft);
                 
                     PlayerBehaviorAnalyzer.Instance.AddObservationDirectly(observation);
-                
-                    Debug.Log($"BrokeAfterShopping detectado: Restam apenas {coinsLeft} moedas");
                 }
             }
         }
     
-        // Converte ShopItems para lista de BattleActions para análise
         List<BattleAction> shopActions = currentShopItems
             .Where(item => item.type == ShopItem.ItemType.BattleAction)
             .Select(item => item.battleAction)
@@ -784,7 +702,6 @@ public class ShopManager : MonoBehaviour
     {
         if (selectedShopItem.type != ShopItem.ItemType.BattleAction)
         {
-            Debug.LogError("Tentando atribuir item não-BattleAction a um slot!");
             return;
         }
         
@@ -796,10 +713,7 @@ public class ShopManager : MonoBehaviour
             }
         }
         
-        string oldActionName = playerActions[selectedPlayerSlotIndex]?.actionName ?? "vazio";
         playerActions[selectedPlayerSlotIndex] = selectedShopItem.battleAction;
-        Debug.Log($"Slot {selectedPlayerSlotIndex} ('{oldActionName}') substituído por '{selectedShopItem.Name}'.");
-
         playerActions.RemoveAll(action => action == null);
     }
     
@@ -807,18 +721,13 @@ public class ShopManager : MonoBehaviour
     {
         if (itemIndex < 0 || itemIndex >= shopButtonObjects.Count)
         {
-            Debug.LogError($"Índice inválido para remoção: {itemIndex}");
             return;
         }
 
         GameObject buttonToRemove = shopButtonObjects[itemIndex];
-        string itemName = currentShopItems[itemIndex].Name;
-        
-        Debug.Log($"Iniciando remoção do item: {itemName} (índice {itemIndex})");
 
         if (buttonToRemove != null)
         {
-            // Remove o container pai se existir
             if (buttonToRemove.transform.parent != null && buttonToRemove.transform.parent != shopItemsContainer)
             {
                 Destroy(buttonToRemove.transform.parent.gameObject);
@@ -844,8 +753,6 @@ public class ShopManager : MonoBehaviour
 
         UpdateShopButtonIndices();
         ForceShopRefresh();
-        
-        Debug.Log($"Remoção de {itemName} concluída. Restam {shopButtonObjects.Count} itens na loja.");
     }
 
     private void UpdateShopButtonIndices()
@@ -865,7 +772,6 @@ public class ShopManager : MonoBehaviour
             }
         }
         
-        // Atualiza também os botões de refresh
         for (int i = 0; i < refreshButtonObjects.Count; i++)
         {
             Button refreshBtn = refreshButtonObjects[i].GetComponent<Button>();

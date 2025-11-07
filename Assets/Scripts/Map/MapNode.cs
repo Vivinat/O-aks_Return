@@ -1,5 +1,3 @@
-// MapNode.cs (Versão Atualizada com AudioClip)
-
 using UnityEngine;
 using System.Collections.Generic;
 
@@ -17,7 +15,7 @@ public class MapNode : MonoBehaviour
     
     [Header("Audio Configuration")]
     [Tooltip("Música que tocará na cena do evento. Se null, mantém a música atual.")]
-    public AudioClip eventMusic; // NOVO: Música para a cena do evento
+    public AudioClip eventMusic;
     
     [Header("Battle Visual Configuration")]
     [Tooltip("Sprite de fundo específico para batalhas deste nó (sobrescreve o do BattleEventSO)")]
@@ -30,59 +28,34 @@ public class MapNode : MonoBehaviour
     
     private void OnMouseDown()
     {
-        // A única condição para o clique é o nó estar acessível.
         if (!isLocked && !isCompleted)
         {
-            Debug.Log($"Nó {gameObject.name} clicado");
             AudioConstants.PlayButtonSelect();
             SetupAudioForEvent();
-            
-            // Apenas notifica o MapManager. Toda a lógica acontecerá lá.
             FindObjectOfType<MapManager>().OnNodeClicked(this);
         }
         else
         {
             if (isLocked)
             {
-                Debug.Log($"Nó {gameObject.name} está bloqueado");
                 AudioConstants.PlayCannotSelect();
-            }
-
-            if (isCompleted)
-            {
-                Debug.Log($"Nó {gameObject.name} já foi completado");
             }
         }
     }
     
-    /// <summary>
-    /// Configura o áudio que deve tocar na próxima cena de evento.
-    /// </summary>
     private void SetupAudioForEvent()
     {
         if (AudioManager.Instance != null)
         {
-            // 1. Pega a música que está tocando atualmente no mapa.
             AudioClip currentMapMusic = AudioManager.Instance.GetCurrentMusic();
-
-            // 2. Avisa ao AudioManager qual música tocar no evento 
-            //    e qual música salvar para voltar ao mapa depois.
-            //    O próprio AudioManager cuidará de tocar a música quando a cena carregar.
-            Debug.Log($"MapNode: Agendando a música '{eventMusic?.name ?? "nenhuma"}' para o próximo evento.");
             AudioManager.Instance.SetPendingEventMusic(eventMusic, currentMapMusic);
-        }
-        else
-        {
-            Debug.LogWarning("MapNode: AudioManager não encontrado!");
         }
     }
 
-    // Tornamos esta função PÚBLICA para que o MapManager possa chamá-la.
     public void CompleteNode()
     {
         isCompleted = true;
         UpdateVisuals();
-        Debug.Log($"Nó {gameObject.name} completado");
     }
     
     public void UnlockNode()
@@ -91,16 +64,13 @@ public class MapNode : MonoBehaviour
         {
             isLocked = false;
             UpdateVisuals();
-            Debug.Log($"Nó {gameObject.name} desbloqueado");
         }
     }
     
     public void UnlockConnectedNodes()
     {
-        Debug.Log($"Desbloqueando nós conectados do {gameObject.name}:");
         foreach (MapNode node in connectedNodes)
         {
-            Debug.Log($"  -> Desbloqueando: {node.gameObject.name}");
             node.UnlockNode();
         }
     }
@@ -125,14 +95,9 @@ public class MapNode : MonoBehaviour
         }
     }
     
-    // Métodos públicos para verificação de estado
     public bool IsCompleted() => isCompleted;
     public bool IsLocked() => isLocked;
     public List<MapNode> GetConnectedNodes() => connectedNodes;
-    
-    /// <summary>
-    /// NOVO: Retorna a música configurada para este nó
-    /// </summary>
     public AudioClip GetEventMusic() => eventMusic;
     
     public void ForceComplete()
@@ -140,6 +105,5 @@ public class MapNode : MonoBehaviour
         isCompleted = true;
         isLocked = false;
         UpdateVisuals();
-        Debug.Log($"Nó {gameObject.name} forçado a completar");
     }
 }
