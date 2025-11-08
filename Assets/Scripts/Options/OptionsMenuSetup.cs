@@ -1,10 +1,7 @@
-// Assets/Scripts/UI/OptionsMenuSetup.cs (Versão Simplificada para Configuração Manual)
-
 using UnityEngine;
 
 /// <summary>
-/// Script simples que garante que existe um OptionsMenu na cena.
-/// Para configuração manual - você cria a UI e apenas adiciona este script para verificação.
+/// Garante que existe um OptionsMenu na cena
 /// </summary>
 public class OptionsMenuSetup : MonoBehaviour
 {
@@ -27,12 +24,10 @@ public class OptionsMenuSetup : MonoBehaviour
         if (optionsMenu != null)
         {
             if (showDebugMessages)
-                Debug.Log($"✅ OptionsMenu encontrado na cena '{gameObject.scene.name}'");
+                Debug.Log($"OptionsMenu encontrado na cena '{gameObject.scene.name}'");
                 
-            // Configura o nome da cena do menu se foi especificado
             if (!string.IsNullOrEmpty(menuSceneName))
             {
-                // Usando reflection para acessar o campo privado de forma segura
                 var field = typeof(OptionsMenu).GetField("menuSceneName", 
                     System.Reflection.BindingFlags.NonPublic | 
                     System.Reflection.BindingFlags.Instance);
@@ -41,7 +36,7 @@ public class OptionsMenuSetup : MonoBehaviour
                 {
                     field.SetValue(optionsMenu, menuSceneName);
                     if (showDebugMessages)
-                        Debug.Log($"📝 Menu scene configurado para: {menuSceneName}");
+                        Debug.Log($"Menu scene configurado para: {menuSceneName}");
                 }
             }
         }
@@ -49,15 +44,12 @@ public class OptionsMenuSetup : MonoBehaviour
         {
             if (showDebugMessages)
             {
-                Debug.LogWarning($"⚠️ Nenhum OptionsMenu encontrado na cena '{gameObject.scene.name}'!");
-                Debug.LogWarning("💡 Certifique-se de ter criado o menu manualmente e adicionado o script OptionsMenu.");
+                Debug.LogWarning($"Nenhum OptionsMenu encontrado na cena '{gameObject.scene.name}'!");
+                Debug.LogWarning("Certifique-se de ter criado o menu manualmente e adicionado o script OptionsMenu.");
             }
         }
     }
 
-    /// <summary>
-    /// Método para testar se o menu funciona
-    /// </summary>
     [ContextMenu("Testar Menu")]
     public void TestMenu()
     {
@@ -66,17 +58,14 @@ public class OptionsMenuSetup : MonoBehaviour
         if (optionsMenu != null)
         {
             optionsMenu.ToggleOptionsMenu();
-            Debug.Log("🧪 Teste do menu executado!");
+            Debug.Log("Teste do menu executado!");
         }
         else
         {
-            Debug.LogError("❌ Nenhum OptionsMenu encontrado para testar!");
+            Debug.LogError("Nenhum OptionsMenu encontrado para testar!");
         }
     }
 
-    /// <summary>
-    /// Verifica se todas as referências estão configuradas
-    /// </summary>
     [ContextMenu("Verificar Configuração")]
     public void ValidateSetup()
     {
@@ -84,28 +73,17 @@ public class OptionsMenuSetup : MonoBehaviour
         
         if (optionsMenu == null)
         {
-            Debug.LogError("❌ OptionsMenu não encontrado!");
+            Debug.LogError("OptionsMenu não encontrado!");
             return;
         }
 
-        Debug.Log("🔍 Verificando configuração do OptionsMenu...");
-        
-        // Lista de verificações básicas
-        bool allGood = true;
-        
-        // Nota: Como os campos são privados, esta verificação é limitada
-        // Mas o OptionsMenu tem sua própria validação no OnValidate()
-        
-        if (allGood)
-        {
-            Debug.Log("✅ Configuração parece estar correta!");
-            Debug.Log("💡 Verifique o Console para warnings do OptionsMenu.OnValidate()");
-        }
+        Debug.Log("Verificando configuração do OptionsMenu...");
+        Debug.Log("Configuração parece estar correta!");
+        Debug.Log("Verifique o Console para warnings do OptionsMenu.OnValidate()");
     }
 
     void OnValidate()
     {
-        // Validação simples no Editor
         if (string.IsNullOrEmpty(menuSceneName))
         {
             Debug.LogWarning("OptionsMenuSetup: menuSceneName está vazio!");

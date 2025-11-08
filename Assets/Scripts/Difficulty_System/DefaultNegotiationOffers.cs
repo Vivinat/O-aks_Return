@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 
 /// <summary>
-/// Gera ofertas padrão
+/// Gera ofertas padrão para negociação
 /// </summary>
 public class DefaultNegotiationOffers : MonoBehaviour
 {
@@ -12,9 +12,6 @@ public class DefaultNegotiationOffers : MonoBehaviour
     [Header("Configuration")]
     [SerializeField] private bool enableDefaultOffers = true;
     [SerializeField] private int numberOfDefaultOffers = 6;
-    
-    [Header("Debug")]
-    [SerializeField] private bool showDebugLogs = true;
     
     void Awake()
     {
@@ -32,17 +29,11 @@ public class DefaultNegotiationOffers : MonoBehaviour
     public List<NegotiationOffer> GenerateDefaultOffers()
     {
         if (!enableDefaultOffers)
-        {
-            DebugLog("Ofertas padrão desabilitadas");
             return new List<NegotiationOffer>();
-        }
         
         List<NegotiationOffer> offers = new List<NegotiationOffer>();
         string currentMap = UnityEngine.SceneManagement.SceneManager.GetActiveScene().name;
         
-        DebugLog($"=== GERANDO OFERTAS PADRÃO PARA {currentMap} ===");
-        
-        // Pool de todas as ofertas possíveis
         List<NegotiationOffer> allPossibleOffers = new List<NegotiationOffer>();
         
         allPossibleOffers.AddRange(GenerateDefensiveOffers(currentMap));
@@ -54,25 +45,21 @@ public class DefaultNegotiationOffers : MonoBehaviour
         
         ShuffleList(allPossibleOffers);
         
-        // Pega metade vantagens, metade desvantagens
         var advantages = allPossibleOffers.Where(o => o.isAdvantage).Take(numberOfDefaultOffers / 2 + 1).ToList();
         var disadvantages = allPossibleOffers.Where(o => !o.isAdvantage).Take(numberOfDefaultOffers / 2 + 1).ToList();
         
         offers.AddRange(advantages);
         offers.AddRange(disadvantages);
         
-        DebugLog($"✅ Geradas {offers.Count} ofertas ({advantages.Count} vantagens, {disadvantages.Count} desvantagens)");
-        
         return offers;
     }
     
-    #region Geradores Específicos - CORRIGIDOS
+    #region Geradores Específicos
     
     private List<NegotiationOffer> GenerateDefensiveOffers(string mapName)
     {
         List<NegotiationOffer> offers = new List<NegotiationOffer>();
         
-        // VANTAGEM: Mais HP
         offers.Add(NegotiationOffer.CreateAdvantage(
             "Fortificação",
             "Aumente sua resistência.",
@@ -82,7 +69,6 @@ public class DefaultNegotiationOffers : MonoBehaviour
             "Oferta de defesa"
         ));
         
-        // VANTAGEM: Mais Defesa
         offers.Add(NegotiationOffer.CreateAdvantage(
             "Armadura Reforçada",
             "Fortaleça suas defesas.",
@@ -92,7 +78,6 @@ public class DefaultNegotiationOffers : MonoBehaviour
             "Oferta de defesa"
         ));
         
-        // DESVANTAGEM: Menos Defesa
         offers.Add(NegotiationOffer.CreateDisadvantage(
             "Armadura Frágil",
             "Sua proteção está comprometida.",
@@ -103,7 +88,6 @@ public class DefaultNegotiationOffers : MonoBehaviour
             "Desvantagem de defesa"
         ));
         
-        // DESVANTAGEM: Inimigos ganham HP
         offers.Add(NegotiationOffer.CreateDisadvantage(
             "Adversários Resistentes",
             "Inimigos ficam mais difíceis de derrotar.",
@@ -121,7 +105,6 @@ public class DefaultNegotiationOffers : MonoBehaviour
     {
         List<NegotiationOffer> offers = new List<NegotiationOffer>();
         
-        // VANTAGEM: Mais MP
         offers.Add(NegotiationOffer.CreateAdvantage(
             "Reservas Arcanas",
             "Amplie suas reservas de mana.",
@@ -131,7 +114,6 @@ public class DefaultNegotiationOffers : MonoBehaviour
             "Oferta de mana"
         ));
         
-        // VANTAGEM: Custo reduzido
         offers.Add(NegotiationOffer.CreateAdvantage(
             "Eficiência Mágica",
             "Suas habilidades custam menos mana.",
@@ -141,24 +123,22 @@ public class DefaultNegotiationOffers : MonoBehaviour
             "Oferta de mana"
         ));
         
-        // DESVANTAGEM: Menos MP
         offers.Add(NegotiationOffer.CreateDisadvantage(
             "Fadiga Mágica",
             "Suas reservas de mana diminuem.",
             CardAttribute.PlayerMaxMP,
             -8,
-            true, // Afeta jogador
+            true,
             BehaviorTriggerType.DefaultSessionOffer,
             "Desvantagem de mana"
         ));
         
-        // DESVANTAGEM: Inimigos ganham MP
         offers.Add(NegotiationOffer.CreateDisadvantage(
             "Energia Hostil",
             "Inimigos ganham mais recursos mágicos.",
             CardAttribute.EnemyMaxMP,
             10,
-            false, // Afeta inimigos
+            false,
             BehaviorTriggerType.DefaultSessionOffer,
             "Desvantagem de mana"
         ));
@@ -170,7 +150,6 @@ public class DefaultNegotiationOffers : MonoBehaviour
     {
         List<NegotiationOffer> offers = new List<NegotiationOffer>();
         
-        // VANTAGEM: Ataques únicos mais fortes
         offers.Add(NegotiationOffer.CreateAdvantage(
             "Foco Letal",
             "Ataques contra alvos únicos devastam.",
@@ -180,7 +159,6 @@ public class DefaultNegotiationOffers : MonoBehaviour
             "Buff single-target"
         ));
         
-        // VANTAGEM: AOE mais forte
         offers.Add(NegotiationOffer.CreateAdvantage(
             "Destruição em Massa",
             "Ataques em área ganham poder.",
@@ -190,24 +168,22 @@ public class DefaultNegotiationOffers : MonoBehaviour
             "Buff AOE"
         ));
         
-        // DESVANTAGEM: Ataques mais fracos
         offers.Add(NegotiationOffer.CreateDisadvantage(
             "Força Enfraquecida",
             "Seus ataques perdem potência.",
             CardAttribute.PlayerOffensiveActionPower,
             -8,
-            true, // Afeta jogador
+            true,
             BehaviorTriggerType.DefaultSessionOffer,
             "Debuff ataques"
         ));
         
-        // DESVANTAGEM: Inimigos atacam mais forte
         offers.Add(NegotiationOffer.CreateDisadvantage(
             "Fúria Inimiga",
             "Inimigos ganham poder destrutivo.",
             CardAttribute.EnemyActionPower,
             10,
-            false, // Afeta inimigos
+            false,
             BehaviorTriggerType.DefaultSessionOffer,
             "Debuff ataques"
         ));
@@ -218,10 +194,8 @@ public class DefaultNegotiationOffers : MonoBehaviour
     private List<NegotiationOffer> GenerateBossOffers(string mapName)
     {
         List<NegotiationOffer> offers = new List<NegotiationOffer>();
-        
         string bossName = GetBossNameFromMap(mapName);
         
-        // VANTAGEM: Mais poder
         offers.Add(NegotiationOffer.CreateAdvantage(
             "Matador de Chefes",
             $"Ganhe força contra chefes poderosos.",
@@ -231,7 +205,6 @@ public class DefaultNegotiationOffers : MonoBehaviour
             $"Boss: {bossName}"
         ));
         
-        // DESVANTAGEM: Boss mais forte
         offers.Add(NegotiationOffer.CreateDisadvantage(
             "Fúria do Boss",
             $"Os chefes se enfurecem.",
@@ -248,13 +221,11 @@ public class DefaultNegotiationOffers : MonoBehaviour
     private List<NegotiationOffer> GenerateEnemyOffers(string mapName)
     {
         List<NegotiationOffer> offers = new List<NegotiationOffer>();
-        
         List<string> possibleEnemies = GetPossibleEnemiesFromMap(mapName);
         if (possibleEnemies.Count == 0) possibleEnemies.Add("Inimigo");
         
         string randomEnemy = possibleEnemies[Random.Range(0, possibleEnemies.Count)];
         
-        // VANTAGEM: Mais defesa
         offers.Add(NegotiationOffer.CreateAdvantage(
             "Proteção Aprimorada",
             $"Fortifique-se contra {randomEnemy}.",
@@ -271,7 +242,6 @@ public class DefaultNegotiationOffers : MonoBehaviour
     {
         List<NegotiationOffer> offers = new List<NegotiationOffer>();
         
-        // VANTAGEM: Mais moedas
         offers.Add(NegotiationOffer.CreateAdvantage(
             "Fortuna Crescente",
             "Ganhe mais moedas em batalhas.",
@@ -281,7 +251,6 @@ public class DefaultNegotiationOffers : MonoBehaviour
             "Oferta de moedas"
         ));
         
-        // VANTAGEM: Descontos
         offers.Add(NegotiationOffer.CreateAdvantage(
             "Desconto Cósmico",
             "Itens custam menos nas lojas.",
@@ -291,24 +260,22 @@ public class DefaultNegotiationOffers : MonoBehaviour
             "Desconto na loja"
         ));
         
-        // DESVANTAGEM: Menos moedas
         offers.Add(NegotiationOffer.CreateDisadvantage(
             "Pobreza Forçada",
             "Ganhe menos moedas.",
             CardAttribute.CoinsEarned,
             -8,
-            true, // Afeta jogador
+            true,
             BehaviorTriggerType.DefaultSessionOffer,
             "Desvantagem econômica"
         ));
         
-        // DESVANTAGEM: Preços maiores
         offers.Add(NegotiationOffer.CreateDisadvantage(
             "Inflação Galopante",
             "Itens custam mais nas lojas.",
             CardAttribute.ShopPrices,
             12,
-            true, // Afeta jogador
+            true,
             BehaviorTriggerType.DefaultSessionOffer,
             "Desvantagem econômica"
         ));
@@ -383,27 +350,18 @@ public class DefaultNegotiationOffers : MonoBehaviour
         }
     }
     
-    private void DebugLog(string message)
-    {
-        if (showDebugLogs)
-        {
-            Debug.Log($"<color=green>[DefaultOffers]</color> {message}");
-        }
-    }
-    
     #endregion
     
     #region Public API
     
     public void ResetDefaultOffers()
     {
-        DebugLog("Ofertas padrão resetadas para próxima sessão");
+        // Reset para próxima sessão
     }
     
     public void SetEnabled(bool enabled)
     {
         enableDefaultOffers = enabled;
-        DebugLog($"Ofertas padrão {(enabled ? "ativadas" : "desativadas")}");
     }
     
     #endregion

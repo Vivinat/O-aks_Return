@@ -1,5 +1,3 @@
-// Assets/Scripts/UI/OptionsMenu.cs (Versão Corrigida - Bug de Pausa Resolvido)
-
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.SceneManagement;
@@ -67,7 +65,6 @@ public class OptionsMenu : MonoBehaviour
         SetupAudioSliders();
         LoadAudioSettings();
 
-        Debug.Log("OptionsMenu inicializado com configuração manual");
     }
 
     private void SetupButtons()
@@ -135,7 +132,6 @@ public class OptionsMenu : MonoBehaviour
             UpdateSFXVolumeText(sfxVolume);
         }
 
-        Debug.Log($"Configurações de áudio carregadas - Música: {musicVolume:F1}, SFX: {sfxVolume:F1}");
     }
 
     #region Public Methods
@@ -144,7 +140,6 @@ public class OptionsMenu : MonoBehaviour
     {
         if (optionsPanel == null)
         {
-            Debug.LogWarning("OptionsPanel não foi atribuído no Inspector!");
             return;
         }
 
@@ -162,17 +157,14 @@ public class OptionsMenu : MonoBehaviour
     {
         if (optionsPanel == null)
         {
-            Debug.LogWarning("OptionsPanel não foi atribuído no Inspector!");
             return;
         }
 
-        Debug.Log("Abrindo menu de opções");
         AudioConstants.PlayMenuOpen();
 
         if (pauseGameWhenOpen)
         {
             Time.timeScale = 0f;
-            Debug.Log($"Jogo pausado. Time.timeScale = {Time.timeScale}");
         }
 
         // Notifica o BattleHUD se existir
@@ -190,18 +182,14 @@ public class OptionsMenu : MonoBehaviour
     {
         if (optionsPanel == null) return;
 
-        Debug.Log("Fechando menu de opções");
 
         optionsPanel.SetActive(false);
 
-        // CORRIGIDO: Sempre restaura o Time.timeScale para 1 quando fecha
         if (pauseGameWhenOpen)
         {
             Time.timeScale = 1f;
-            Debug.Log($"Jogo retomado. Time.timeScale = {Time.timeScale}");
         }
 
-        // Notifica o BattleHUD se existir
         BattleHUD battleHUD = FindObjectOfType<BattleHUD>();
         if (battleHUD != null)
         {
@@ -213,10 +201,8 @@ public class OptionsMenu : MonoBehaviour
 
     public void ExitGame()
     {
-        Debug.Log("Saindo do jogo...");
         SaveAudioSettings();
 
-        // CORRIGIDO: Restaura o timeScale antes de sair
         Time.timeScale = 1f;
 
         #if UNITY_EDITOR
@@ -228,11 +214,8 @@ public class OptionsMenu : MonoBehaviour
 
     public void ReturnToMainMenu()
     {
-        Debug.Log($"Retornando ao menu principal: {menuSceneName}");
-        
         SaveAudioSettings();
 
-        // CORRIGIDO: Restaura o tempo antes de mudar de cena
         Time.timeScale = 1f;
 
         if (GameManager.Instance != null)
@@ -311,7 +294,6 @@ public class OptionsMenu : MonoBehaviour
         }
 
         PlayerPrefs.Save();
-        Debug.Log("Configurações de áudio salvas");
     }
 
     #endregion
@@ -330,35 +312,14 @@ public class OptionsMenu : MonoBehaviour
 
     private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
     {
-        // CORRIGIDO: Garante que o timeScale está correto ao carregar nova cena
         if (optionsPanel != null && optionsPanel.activeSelf)
         {
             optionsPanel.SetActive(false);
         }
         
         Time.timeScale = 1f;
-        Debug.Log($"Nova cena carregada: {scene.name}. Time.timeScale resetado para 1");
 
         LoadAudioSettings();
-    }
-
-    #endregion
-
-    #region Validation
-
-    void OnValidate()
-    {
-        if (optionsPanel == null)
-            Debug.LogWarning("OptionsMenu: optionsPanel não foi atribuído!");
-            
-        if (optionsButton == null)
-            Debug.LogWarning("OptionsMenu: optionsButton não foi atribuído!");
-            
-        if (musicVolumeSlider == null)
-            Debug.LogWarning("OptionsMenu: musicVolumeSlider não foi atribuído!");
-            
-        if (sfxVolumeSlider == null)
-            Debug.LogWarning("OptionsMenu: sfxVolumeSlider não foi atribuído!");
     }
 
     #endregion

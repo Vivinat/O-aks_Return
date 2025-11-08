@@ -381,9 +381,6 @@ public class BattleEntity : MonoBehaviour
         StartCoroutine(DeactivateSpriteAfterDelay());
     }
     
-    /// <summary>
-    /// Tenta ativar o sistema de segunda chance
-    /// </summary>
     private void TryActivateSecondChance()
     {
         if (DeathNegotiationManager.Instance == null)
@@ -443,9 +440,6 @@ public class BattleEntity : MonoBehaviour
         });
     }
     
-    /// <summary>
-    /// Remove apenas status effects negativos
-    /// </summary>
     public void ClearNegativeStatusEffects()
     {
         List<StatusEffectType> negativeEffects = new List<StatusEffectType>
@@ -466,10 +460,7 @@ public class BattleEntity : MonoBehaviour
             Debug.Log($"{characterData.characterName} teve {removedCount} status effects negativos removidos!");
         }
     }
-
-    /// <summary>
-    /// Processo de morte (
-    /// </summary>
+    
     private void CompleteDeath()
     {
         DisableHUDElements();
@@ -518,7 +509,6 @@ public class BattleEntity : MonoBehaviour
         Debug.Log($"HUD de {entityName} desativada");
     }
 
-    // Método alternativo p
     private void FadeHUDElements()
     {
         SetSliderAlpha(atbBar, 0.3f);
@@ -641,58 +631,37 @@ public class BattleEntity : MonoBehaviour
         }
     }
     
-    /// <summary>
-    /// Retorna o HP atual
-    /// </summary>
     public int GetCurrentHP()
     {
         return currentHp;
     }
-
-    /// <summary>
-    /// Retorna o MP atual
-    /// </summary>
+    
     public int GetCurrentMP()
     {
         return currentMp;
     }
-
-    /// <summary>
-    /// Retorna o HP máximo
-    /// </summary>
+    
     public int GetMaxHP()
     {
         return characterData.maxHp;
     }
-
-    /// <summary>
-    /// Retorna o MP máximo
-    /// </summary>
+    
     public int GetMaxMP()
     {
         return characterData.maxMp;
     }
-
-    /// <summary>
-    /// Força uma atualização dos textos
-    /// </summary>
+    
     public void ForceUpdateValueTexts()
     {
         UpdateValueTexts();
     }
     
-    /// <summary>
-    /// Retorna a defesa base do personagem
-    /// </summary>
     public int GetBaseDefense()
     {
         if (characterData == null) return 0;
         return characterData.defense;
     }
     
-    /// <summary>
-    /// Retorna a defesa atual (base + modificadores de status)
-    /// </summary>
     public int GetCurrentDefense()
     {
         return GetBaseDefense() + GetDefenseModifier();

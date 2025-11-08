@@ -1,9 +1,7 @@
-// Assets/Scripts/Shop/ShopItem.cs (UPDATED - Com Descrições Dinâmicas)
-
 using UnityEngine;
 
 /// <summary>
-/// Wrapper para itens da loja (pode ser BattleAction ou Powerup)
+/// Wrapper para itens da loja
 /// </summary>
 public class ShopItem
 {
@@ -17,7 +15,6 @@ public class ShopItem
     public BattleAction battleAction;
     public PowerupSO powerup;
     
-    // Construtor para BattleAction
     public ShopItem(BattleAction action)
     {
         type = ItemType.BattleAction;
@@ -25,15 +22,12 @@ public class ShopItem
         powerup = null;
     }
     
-    // Construtor para Powerup
     public ShopItem(PowerupSO powerupData)
     {
         type = ItemType.Powerup;
         battleAction = null;
         powerup = powerupData;
     }
-    
-    // ===== PROPRIEDADES ÚTEIS =====
     
     public string Name
     {
@@ -47,15 +41,12 @@ public class ShopItem
         }
     }
     
-    /// <summary>
-    /// ATUALIZADO: Retorna descrição dinâmica para BattleActions
-    /// </summary>
     public string Description
     {
         get
         {
             if (type == ItemType.BattleAction && battleAction != null)
-                return battleAction.GetDynamicDescription(); // USA DESCRIÇÃO DINÂMICA
+                return battleAction.GetDynamicDescription(); 
             if (type == ItemType.Powerup && powerup != null)
                 return powerup.GetFormattedDescription();
             return "";
@@ -92,7 +83,7 @@ public class ShopItem
         {
             if (type == ItemType.BattleAction && battleAction != null)
                 return battleAction.isConsumable;
-            return false; // Powerups não são "consumíveis" no sentido de BattleAction
+            return false; 
         }
     }
 }

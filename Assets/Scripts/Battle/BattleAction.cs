@@ -104,9 +104,6 @@ public class BattleAction : ScriptableObject
         }
     }
     
-    /// <summary>
-    /// Gera a descrição completa da ação baseada nos valores atuais 
-    /// </summary>
     public string GetDynamicDescription()
     {
         System.Text.StringBuilder desc = new System.Text.StringBuilder();
@@ -153,9 +150,6 @@ public class BattleAction : ScriptableObject
                     statusEffectsList.Add(statusDesc);
                 }
                 
-                // ============================================
-                // Efeito em si mesmo
-                // ============================================
                 if (effect.hasSelfEffect)
                 {
                     // Trata dano em si mesmo
@@ -216,7 +210,6 @@ public class BattleAction : ScriptableObject
             desc.AppendLine();
         }
         
-        // === EFEITOS DE STATUS ===
         if (statusEffectsList.Count > 0)
         {
             desc.AppendLine("<b>Efeitos:</b>");
@@ -227,7 +220,6 @@ public class BattleAction : ScriptableObject
             desc.AppendLine();
         }
         
-        // === INFORMAÇÕES DE CUSTO/USOS ===
         List<string> metaInfo = new List<string>();
         
         if (isConsumable)
@@ -254,10 +246,7 @@ public class BattleAction : ScriptableObject
         
         return desc.ToString().TrimEnd();
     }
-    
-    //// <summary>
-    /// Descrição compacta de efeitos de status
-    /// </summary>
+
     private string GetStatusEffectDescriptionCompact(StatusEffectType type, int power, int duration)
     {
         string colorTag = "";
@@ -319,10 +308,7 @@ public class BattleAction : ScriptableObject
         
         return $"<color={colorTag}>{effectName}</color>";
     }
-
-    /// <summary>
-    /// Texto descritivo do tipo de alvo
-    /// </summary>
+    
     private string GetTargetTypeText()
     {
         switch (targetType)
@@ -342,9 +328,6 @@ public class BattleAction : ScriptableObject
         }
     }
     
-    /// <summary>
-    /// Converte ActionType para texto em português
-    /// </summary>
     private string GetEffectTypeText(ActionType type)
     {
         switch (type)
@@ -359,9 +342,6 @@ public class BattleAction : ScriptableObject
         }
     }
     
-    /// <summary>
-    /// Gera texto do efeito com poder
-    /// </summary>
     private string GetEffectText(ActionEffect effect)
     {
         StringBuilder sb = new StringBuilder();
@@ -373,9 +353,6 @@ public class BattleAction : ScriptableObject
         return sb.ToString();
     }
     
-    /// <summary>
-    /// Converte StatusEffectType para texto em português
-    /// </summary>
     private string GetStatusEffectText(StatusEffectType type)
     {
         switch (type)

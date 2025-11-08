@@ -4,16 +4,15 @@ using UnityEngine;
 
 public static class EnemyAI
 {
-    private const float HEAL_THRESHOLD = 0.5f; // Cura quando HP < 50%
-    private const float CRITICAL_HEAL_THRESHOLD = 0.25f; // Prioridade máxima quando HP < 25%
-    private const float ALLY_HEAL_THRESHOLD = 0.6f; // Cura aliado quando HP < 60%
+    private const float HEAL_THRESHOLD = 0.5f;
+    private const float CRITICAL_HEAL_THRESHOLD = 0.25f;
+    private const float ALLY_HEAL_THRESHOLD = 0.6f;
     
     /// <summary>
     /// Escolhe a melhor ação para o inimigo usando uma seleção ponderada aleatória
     /// </summary>
     public static BattleAction ChooseBestAction(BattleEntity caster, BattleEntity player, List<BattleEntity> enemyTeam)
     {
-        // Filtra ações que o inimigo pode usar
         List<BattleAction> availableActions = caster.characterData.battleActions
             .Where(a => caster.currentMp >= a.manaCost && (!a.isConsumable || a.CanUse()))
             .ToList();
@@ -24,7 +23,6 @@ public static class EnemyAI
             return null;
         }
 
-        // Avalia cada ação e atribui uma pontuação
         Dictionary<BattleAction, float> actionScores = new Dictionary<BattleAction, float>();
         foreach (BattleAction action in availableActions)
         {
@@ -32,39 +30,27 @@ public static class EnemyAI
             actionScores[action] = score;
         }
 
-        // Lógica de Seleção Ponderada
         var viableActions = actionScores.Where(kvp => kvp.Value > 0).ToDictionary(kvp => kvp.Key, kvp => kvp.Value);
 
-        // Recorre à melhor opção disponível, mesmo que seja ruim.
         if (!viableActions.Any())
         {
-            Debug.Log($"IA ({caster.characterData.characterName}): Nenhuma ação positiva. Escolhendo a de maior score.");
             return actionScores.OrderByDescending(kvp => kvp.Value).FirstOrDefault().Key;
         }
         
-        // Calcula o peso total de todas as ações viáveis
         float totalWeight = viableActions.Sum(kvp => kvp.Value);
-        
-        // Gera um número aleatório entre 0 e o peso total
         float randomValue = Random.Range(0, totalWeight);
         
-        // Itera sobre as ações viáveis até encontrar a escolhida
         foreach (var action in viableActions)
         {
-            // Subtrai o peso da ação do valor aleatório.
             randomValue -= action.Value;
             if (randomValue <= 0)
             {
-                Debug.Log($"IA: {caster.characterData.characterName} escolheu {action.Key.actionName} (Score: {action.Value:F2}) por seleção ponderada.");
                 return action.Key;
             }
         }
         return viableActions.Keys.First();
     }
 
-    /// <summary>
-    /// Avalia o valor de uma ação (esta função permanece a mesma)
-    /// </summary>
     private static float EvaluateAction(BattleAction action, BattleEntity caster, BattleEntity player, List<BattleEntity> enemyTeam)
     {
         float score = 0f;
@@ -97,9 +83,6 @@ public static class EnemyAI
         return score;
     }
 
-    /// <summary>
-    /// Avalia ações de cura
-    /// </summary>
     private static float EvaluateHealAction(BattleAction action, BattleEntity caster, List<BattleEntity> enemyTeam)
     {
         if (action.targetType == TargetType.Self)
@@ -119,7 +102,6 @@ public static class EnemyAI
         }
         else if (action.targetType == TargetType.SingleAlly || action.targetType == TargetType.AllAllies)
         {
-            // Verifica se há aliados precisando de cura
             var woundedAllies = enemyTeam
                 .Where(e => !e.isDead && e != caster && (float)e.GetCurrentHP() / e.GetMaxHP() < ALLY_HEAL_THRESHOLD)
                 .ToList();
@@ -141,14 +123,10 @@ public static class EnemyAI
         return 0f;
     }
 
-    /// <summary>
-    /// Avalia ações de ataque
-    /// </summary>
     private static float EvaluateAttackAction(BattleAction action)
     {
-        float score = 50f; // Score base
+        float score = 50f;
         
-        // Bonus se tiver status effect
         foreach (ActionEffect effect in action.effects)
         {
             if (effect.statusEffect != StatusEffectType.None)
@@ -158,9 +136,6 @@ public static class EnemyAI
         return score;
     }
 
-    /// <summary>
-    /// Avalia ações de buff
-    /// </summary>
     private static float EvaluateBuffAction(BattleAction action, BattleEntity caster, List<BattleEntity> enemyTeam)
     {
         float score = 40f;
@@ -174,17 +149,14 @@ public static class EnemyAI
                 if (HasStatusEffect(caster, effect.statusEffect))
                     return -100f;
             }
-            // Buff em área
             else if (action.targetType == TargetType.AllAllies)
             {
                 int alliesWithBuff = enemyTeam.Count(e => !e.isDead && HasStatusEffect(e, effect.statusEffect));
                 int totalAllies = enemyTeam.Count(e => !e.isDead);
                 
-                // Se maioria já tem o buff, não vale a pena
                 if (alliesWithBuff >= totalAllies * 0.7f)
                     return -100f;
                 
-                // Bonus por cada aliado sem o buff
                 score += (totalAllies - alliesWithBuff) * 15f;
             }
         }
@@ -192,12 +164,8 @@ public static class EnemyAI
         return score;
     }
 
-    /// <summary>
-    /// Avalia ações de debuff
-    /// </summary>
     private static float EvaluateDebuffAction(BattleAction action, BattleEntity playerTarget)
     {
-        // Se o jogador está morto, não há alvo para debuff
         if (playerTarget.isDead)
             return -100f;
 
@@ -205,21 +173,15 @@ public static class EnemyAI
         {
             if (effect.statusEffect == StatusEffectType.None) continue;
 
-            // Se o jogador tem o debuff, reduz drasticamente a prioridade
             if (HasStatusEffect(playerTarget, effect.statusEffect))
             {
-                Debug.Log($"IA: Jogador já tem {effect.statusEffect}, penalizando a ação {action.actionName}.");
                 return -100f; 
             }
         }
         
-        // Se o jogador não tem o debuff, é uma boa opção
         return 45f;
     }
 
-    /// <summary>
-    /// Verifica se tem um status effect
-    /// </summary>
     private static bool HasStatusEffect(BattleEntity entity, StatusEffectType statusType)
     {
         return entity.GetActiveStatusEffects().Any(effect => effect.type == statusType);

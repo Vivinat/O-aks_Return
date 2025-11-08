@@ -92,11 +92,9 @@ public class FloatingTextAdvanced : MonoBehaviour
             elapsedTime += Time.deltaTime;
             float normalizedTime = elapsedTime / lifetime;
             
-            // Movimento base
             float curveValue = movementCurve.Evaluate(normalizedTime);
             Vector2 basePosition = Vector2.Lerp(startPosition, endPosition, curveValue);
             
-            // Efeito bounce
             if (useBounce)
             {
                 float bounceOffset = Mathf.Sin(elapsedTime * bounceSpeed) * bounceHeight * (1f - normalizedTime);
@@ -105,7 +103,6 @@ public class FloatingTextAdvanced : MonoBehaviour
             
             rectTransform.anchoredPosition = basePosition;
             
-            // Scale animation
             if (useScaleAnimation)
             {
                 float scaleValue = scaleCurve.Evaluate(normalizedTime);
@@ -113,14 +110,12 @@ public class FloatingTextAdvanced : MonoBehaviour
                 transform.localScale = startScale * scaleMultiplier;
             }
             
-            // Rotação
             if (useRotation)
             {
                 float rotation = rotationSpeed * elapsedTime;
                 transform.rotation = Quaternion.Euler(0, 0, rotation);
             }
             
-            // Fade out
             if (elapsedTime >= fadeStartTime)
             {
                 float fadeProgress = (elapsedTime - fadeStartTime) / (lifetime - fadeStartTime);

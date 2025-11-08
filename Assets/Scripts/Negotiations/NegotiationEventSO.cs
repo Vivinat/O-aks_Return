@@ -1,5 +1,3 @@
-// Assets/Scripts/Negotiation/NegotiationEventSO.cs
-
 using UnityEngine;
 using System.Collections.Generic;
 
@@ -27,7 +25,6 @@ public class NegotiationEventSO : EventTypeSO
     {
         List<NegotiationCardSO> validCards = new List<NegotiationCardSO>();
         
-        // Filtra apenas cartas válidas
         foreach (var card in cardPool)
         {
             if (card != null && card.IsValid())
@@ -42,7 +39,6 @@ public class NegotiationEventSO : EventTypeSO
             return new List<NegotiationCardSO>();
         }
         
-        // Embaralha e pega as primeiras N cartas
         List<NegotiationCardSO> shuffled = new List<NegotiationCardSO>(validCards);
         
         for (int i = 0; i < shuffled.Count; i++)

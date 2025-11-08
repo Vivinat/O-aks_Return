@@ -1,5 +1,3 @@
-// Assets/Scripts/Utils/BattleActionRestorer.cs
-
 using UnityEngine;
 using System.Collections.Generic;
 using System.IO;
@@ -15,27 +13,23 @@ public static class BattleActionRestorer
     
     /// <summary>
     /// Carrega e cacheia o database de BattleActions
-    /// (CORRIGIDO PARA FUNCIONAR NA BUILD)
     /// </summary>
     private static bool LoadDatabase()
     {
         if (cachedDatabase != null)
         {
-            return true; // Já carregado
+            return true;
         }
         
-        // Caminho do JSON dentro da pasta "Resources" (sem a extensão .json)
         const string RESOURCES_JSON_PATH = "BattleActionsBalanceData";
         
         try
         {
-            // Carrega o arquivo como um TextAsset
             TextAsset jsonAsset = Resources.Load<TextAsset>(RESOURCES_JSON_PATH);
             
             if (jsonAsset == null)
             {
-                Debug.LogError($"❌ JSON de BattleActions não encontrado em: Assets/Resources/{RESOURCES_JSON_PATH}.json");
-                Debug.LogError("Certifique-se que o arquivo está na pasta Resources!");
+                Debug.LogError($"JSON de BattleActions não encontrado em: Assets/Resources/{RESOURCES_JSON_PATH}.json");
                 return false;
             }
             
@@ -44,37 +38,33 @@ public static class BattleActionRestorer
             
             if (cachedDatabase == null)
             {
-                Debug.LogError("❌ Falha ao deserializar JSON de BattleActions");
+                Debug.LogError("Falha ao deserializar JSON de BattleActions");
                 return false;
             }
             
-            Debug.Log($"✅ Database carregado: {GetTotalActionsCount()} ações encontradas");
             return true;
         }
         catch (System.Exception e)
         {
-            Debug.LogError($"❌ Erro ao carregar JSON: {e.Message}");
+            Debug.LogError($"Erro ao carregar JSON: {e.Message}");
             return false;
         }
     }
     
     /// <summary>
-    /// Restaura TODAS as BattleActions aos valores originais
+    /// Restaura as BattleActions
     /// </summary>
     public static void RestoreAllBattleActions()
     {
-        Debug.Log("=== RESTAURANDO TODAS AS BATTLEACTIONS ===");
-        
         if (!LoadDatabase())
         {
-            Debug.LogError("Não foi possível carregar o database. Restauração cancelada.");
+            Debug.LogError("Não foi possível carregar o database.");
             return;
         }
         
         int restoredCount = 0;
         int errorCount = 0;
         
-        // Combina todas as listas
         List<BattleActionData> allActions = new List<BattleActionData>();
         allActions.AddRange(cachedDatabase.paladinActions);
         allActions.AddRange(cachedDatabase.rangerActions);
@@ -94,9 +84,6 @@ public static class BattleActionRestorer
             }
         }
         
-        Debug.Log($"✅ Restauração completa: {restoredCount} ações restauradas, {errorCount} erros");
-        
-        // Força Unity a salvar as mudanças
         #if UNITY_EDITOR
         UnityEditor.AssetDatabase.SaveAssets();
         UnityEditor.AssetDatabase.Refresh();
@@ -104,41 +91,23 @@ public static class BattleActionRestorer
     }
     
     /// <summary>
-    /// NOVO: Restaura as BattleActions de um Character específico
-    /// (Usado pelo BattleManager para resetar o inimigo antes do turno)
+    /// Restaura as BattleActions de um Character específico
     /// </summary>
     public static void RestoreSingleCharacterActions(Character character)
     {
-        if (character == null || character.battleActions == null)
-        {
-            Debug.LogWarning("Character ou suas BattleActions são nulos.");
-            return;
-        }
-
-        // Garante que o JSON com os valores base esteja carregado
-        if (!LoadDatabase()) //
-        {
-            Debug.LogError("Não foi possível carregar o database. Restauração do inimigo cancelada.");
-            return;
-        }
-        
-        // Debug.Log($"Restaurando ações para: {character.characterName}");
-
         foreach (var action in character.battleActions)
         {
             if (action == null) continue;
             
-            // Encontra os dados originais no JSON pelo nome
-            BattleActionData originalData = FindActionData(action.actionName); //
+            BattleActionData originalData = FindActionData(action.actionName);
             
             if (originalData != null)
             {
-                // Restaura o SO para os valores base
-                RestoreSingleAction(originalData); //
+                RestoreSingleAction(originalData);
             }
             else
             {
-                Debug.LogWarning($"⚠️ Dados originais não encontrados para: {action.actionName}");
+                Debug.LogWarning($"Dados originais não encontrados para: {action.actionName}");
             }
         }
     }
@@ -154,49 +123,39 @@ public static class BattleActionRestorer
             return false;
         }
         
-        // Carrega o asset
         #if UNITY_EDITOR
         BattleAction action = UnityEditor.AssetDatabase.LoadAssetAtPath<BattleAction>(data.assetPath);
         #else
-        // Em runtime, use Resources.Load ou outro método
         BattleAction action = Resources.Load<BattleAction>(GetResourcesPath(data.assetPath));
         #endif
         
         if (action == null)
         {
-            Debug.LogWarning($"⚠️ Não foi possível carregar: {data.assetPath}");
+            Debug.LogWarning($"Não foi possível carregar: {data.assetPath}");
             return false;
         }
         
-        // Restaura valores numéricos
         bool wasModified = false;
         
-        // Custo de mana
         if (action.manaCost != data.manaCost)
         {
-            Debug.Log($"  Restaurando manaCost de '{action.actionName}': {action.manaCost} → {data.manaCost}");
             action.manaCost = data.manaCost;
             wasModified = true;
         }
         
-        // Usos máximos (para consumíveis)
         if (action.isConsumable && action.maxUses != data.maxUses)
         {
-            Debug.Log($"  Restaurando maxUses de '{action.actionName}': {action.maxUses} → {data.maxUses}");
             action.maxUses = data.maxUses;
-            action.currentUses = data.maxUses; // Reseta usos atuais também
+            action.currentUses = data.maxUses;
             wasModified = true;
         }
         
-        // Preço de loja
         if (action.shopPrice != data.shopPrice)
         {
-            Debug.Log($"  Restaurando shopPrice de '{action.actionName}': {action.shopPrice} → {data.shopPrice}");
             action.shopPrice = data.shopPrice;
             wasModified = true;
         }
         
-        // Restaura efeitos
         if (action.effects != null && data.effects != null)
         {
             int effectCount = Mathf.Min(action.effects.Count, data.effects.Count);
@@ -206,50 +165,38 @@ public static class BattleActionRestorer
                 var effect = action.effects[i];
                 var effectData = data.effects[i];
                 
-                // Power
                 if (effect.power != effectData.power)
                 {
-                    Debug.Log($"  Restaurando effect[{i}].power de '{action.actionName}': {effect.power} → {effectData.power}");
                     effect.power = effectData.power;
                     wasModified = true;
                 }
                 
-                // Status power
                 if (effect.statusPower != effectData.statusPower)
                 {
-                    Debug.Log($"  Restaurando effect[{i}].statusPower de '{action.actionName}': {effect.statusPower} → {effectData.statusPower}");
                     effect.statusPower = effectData.statusPower;
                     wasModified = true;
                 }
                 
-                // Status duration
                 if (effect.statusDuration != effectData.statusDuration)
                 {
-                    Debug.Log($"  Restaurando effect[{i}].statusDuration de '{action.actionName}': {effect.statusDuration} → {effectData.statusDuration}");
                     effect.statusDuration = effectData.statusDuration;
                     wasModified = true;
                 }
                 
-                // Self effect power
                 if (effect.hasSelfEffect && effect.selfEffectPower != effectData.selfEffectPower)
                 {
-                    Debug.Log($"  Restaurando effect[{i}].selfEffectPower de '{action.actionName}': {effect.selfEffectPower} → {effectData.selfEffectPower}");
                     effect.selfEffectPower = effectData.selfEffectPower;
                     wasModified = true;
                 }
                 
-                // Self status power
                 if (effect.hasSelfEffect && effect.selfStatusPower != effectData.selfStatusPower)
                 {
-                    Debug.Log($"  Restaurando effect[{i}].selfStatusPower de '{action.actionName}': {effect.selfStatusPower} → {effectData.selfStatusPower}");
                     effect.selfStatusPower = effectData.selfStatusPower;
                     wasModified = true;
                 }
                 
-                // Self status duration
                 if (effect.hasSelfEffect && effect.selfStatusDuration != effectData.selfStatusDuration)
                 {
-                    Debug.Log($"  Restaurando effect[{i}].selfStatusDuration de '{action.actionName}': {effect.selfStatusDuration} → {effectData.selfStatusDuration}");
                     effect.selfStatusDuration = effectData.selfStatusDuration;
                     wasModified = true;
                 }
@@ -277,8 +224,6 @@ public static class BattleActionRestorer
             return;
         }
         
-        Debug.Log("=== RESTAURANDO BATTLEACTIONS DO JOGADOR ===");
-        
         if (!LoadDatabase())
         {
             Debug.LogError("Não foi possível carregar o database. Restauração cancelada.");
@@ -291,7 +236,6 @@ public static class BattleActionRestorer
         {
             if (action == null) continue;
             
-            // Encontra os dados originais
             BattleActionData originalData = FindActionData(action.actionName);
             
             if (originalData != null)
@@ -303,21 +247,15 @@ public static class BattleActionRestorer
             }
             else
             {
-                Debug.LogWarning($"⚠️ Dados originais não encontrados para: {action.actionName}");
+                Debug.LogWarning($"Dados originais não encontrados para: {action.actionName}");
             }
         }
-        
-        Debug.Log($"✅ {restoredCount} ações do jogador restauradas");
     }
     
-    /// <summary>
-    /// Procura dados de uma ação pelo nome
-    /// </summary>
     private static BattleActionData FindActionData(string actionName)
     {
         if (cachedDatabase == null) return null;
         
-        // Busca em todas as listas
         var allActions = new List<BattleActionData>();
         allActions.AddRange(cachedDatabase.paladinActions);
         allActions.AddRange(cachedDatabase.rangerActions);
@@ -328,12 +266,8 @@ public static class BattleActionRestorer
         return allActions.FirstOrDefault(a => a.actionName == actionName);
     }
     
-    /// <summary>
-    /// Converte asset path para Resources path
-    /// </summary>
     private static string GetResourcesPath(string assetPath)
     {
-        // Remove "Assets/Resources/" e ".asset"
         if (assetPath.Contains("Resources/"))
         {
             int index = assetPath.IndexOf("Resources/") + "Resources/".Length;
@@ -345,9 +279,6 @@ public static class BattleActionRestorer
         return assetPath;
     }
     
-    /// <summary>
-    /// Retorna total de ações no database
-    /// </summary>
     private static int GetTotalActionsCount()
     {
         if (cachedDatabase == null) return 0;
@@ -359,31 +290,22 @@ public static class BattleActionRestorer
                cachedDatabase.otherActions.Count;
     }
     
-    /// <summary>
-    /// Limpa o cache (útil se o JSON foi atualizado)
-    /// </summary>
     public static void ClearCache()
     {
         cachedDatabase = null;
-        Debug.Log("Cache de BattleActions limpo");
     }
     
     #if UNITY_EDITOR
-    /// <summary>
-    /// Menu de editor para testar restauração
-    /// </summary>
     [UnityEditor.MenuItem("Tools/Restore All BattleActions")]
     public static void EditorRestoreAll()
     {
         RestoreAllBattleActions();
-        Debug.Log("✅ Restauração manual completa via menu");
     }
     
     [UnityEditor.MenuItem("Tools/Restore Player BattleActions Only")]
     public static void EditorRestorePlayer()
     {
         RestorePlayerBattleActions();
-        Debug.Log("✅ Restauração do jogador completa via menu");
     }
     #endif
 }

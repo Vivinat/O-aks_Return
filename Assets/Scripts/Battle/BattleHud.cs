@@ -113,10 +113,7 @@ public class BattleHUD : MonoBehaviour
         //Inicia o timer de turno quando o menu é mostrado
         StartTurnTimer();
     }
-
-    /// <summary>
-    /// Inicia o timer de turno
-    /// </summary>
+    
     private void StartTurnTimer()
     {
         StopTurnTimer();
@@ -132,10 +129,7 @@ public class BattleHUD : MonoBehaviour
 
         timerCoroutine = StartCoroutine(TurnTimerCoroutine());
     }
-
-    /// <summary>
-    /// Para o timer de turno
-    /// </summary>
+    
     private void StopTurnTimer()
     {
         isTimerActive = false;
@@ -151,10 +145,7 @@ public class BattleHUD : MonoBehaviour
             turnTimerText.gameObject.SetActive(false);
         }
     }
-
-    /// <summary>
-    /// Corrotina do timer de turno
-    /// </summary>
+    
     private IEnumerator TurnTimerCoroutine()
     {
         while (currentTurnTime > 0)
@@ -170,10 +161,7 @@ public class BattleHUD : MonoBehaviour
         // Tempo esgotado
         OnTurnTimeout();
     }
-
-    /// <summary>
-    /// Atualiza o display do timer
-    /// </summary>
+    
     private void UpdateTimerDisplay()
     {
         if (turnTimerText == null) return;
@@ -196,17 +184,13 @@ public class BattleHUD : MonoBehaviour
 
         turnTimerText.text = $"Tempo: {seconds}s";
     }
-
-    /// <summary>
-    /// Chamado quando o tempo do turno acaba
-    /// </summary>
+    
     private void OnTurnTimeout()
     {
         Debug.Log($"{activeCharacter.characterData.characterName} perdeu o turno por timeout!");
         
         StopTurnTimer();
 
-        // Fecha todos os painéis
         actionPanel.SetActive(false);
         targetSelectionPanel.SetActive(false);
         tooltipUI.Hide();
@@ -218,7 +202,6 @@ public class BattleHUD : MonoBehaviour
 
         StopAllHighlights();
 
-        // Notifica o BattleManager sobre o timeout
         if (battleManager != null && activeCharacter != null)
         {
             battleManager.OnPlayerTurnTimeout(activeCharacter);
@@ -227,10 +210,7 @@ public class BattleHUD : MonoBehaviour
         activeCharacter = null;
         selectedAction = null;
     }
-
-    /// <summary>
-    /// Obtém apenas as ações disponíveis para o personagem
-    /// </summary>
+    
     private List<BattleAction> GetAvailableActions(BattleEntity character)
     {
         List<BattleAction> availableActions = new List<BattleAction>();
@@ -254,10 +234,7 @@ public class BattleHUD : MonoBehaviour
 
         return availableActions;
     }
-
-    /// <summary>
-    /// Verifica se uma ação específica está disponível
-    /// </summary>
+    
     private bool IsActionAvailable(BattleEntity character, BattleAction action)
     {
         if (action.isConsumable)
@@ -272,7 +249,6 @@ public class BattleHUD : MonoBehaviour
     
     public void OnActionSelected(BattleAction action)
     {
-        // Para o timer quando uma ação é selecionada
         StopTurnTimer();
 
         actionPanel.SetActive(false);
@@ -318,7 +294,6 @@ public class BattleHUD : MonoBehaviour
             targetInstructionText.text = instruction;
         }
 
-        // Reinicia o timer quando entra na seleção de alvo
         StartTurnTimer();
     }
 
@@ -364,7 +339,6 @@ public class BattleHUD : MonoBehaviour
 
             if (isValidTarget && !target.isDead)
             {
-                // Para o timer quando um alvo é selecionado
                 StopTurnTimer();
 
                 targetSelectionPanel.SetActive(false);
@@ -419,10 +393,7 @@ public class BattleHUD : MonoBehaviour
             tooltipUI.Hide();
         }
     }
-
-    /// <summary>
-    /// Mostra o texto da ação do inimigo usando
-    /// </summary>
+    
     public void ShowEnemyAction(string actionText)
     {
         if (targetInstructionText != null)
@@ -439,10 +410,7 @@ public class BattleHUD : MonoBehaviour
             Debug.Log($"Mostrando ação do inimigo: {actionText}");
         }
     }
-
-    /// <summary>
-    /// Esconde o texto da ação do inimigo
-    /// </summary>
+    
     public void HideEnemyAction()
     {
         if (targetSelectionPanel != null && targetSelectionPanel.activeSelf)
@@ -454,45 +422,32 @@ public class BattleHUD : MonoBehaviour
             }
         }
     }
-
-    /// <summary>
-    /// Método para mostrar temporariamente uma mensagem
-    /// </summary>
+    
     public void ShowTemporaryMessage(string message, float duration = 2f)
     {
         StartCoroutine(ShowTemporaryMessageCoroutine(message, duration));
     }
-
-    /// <summary>
-    /// Corrotina para mostrar mensagem temporária
-    /// </summary>
+    
     private System.Collections.IEnumerator ShowTemporaryMessageCoroutine(string message, float duration)
     {
         ShowEnemyAction(message);
         yield return new WaitForSeconds(duration);
         HideEnemyAction();
     }
-
-    /// <summary>
-    /// chamado quando o menu de opções é aberto
-    /// </summary>
+    
     public void OnGamePaused()
     {
-        Debug.Log("BattleHUD: Jogo pausado");
+        Debug.Log("Jogo pausado");
     }
-
-    /// <summary>
-    /// chamado quando o menu de opções é fechado
-    /// </summary>
+    
     public void OnGameResumed()
     {
-        // Continua automaticamente quando Time.timeScale volta a 1
-        Debug.Log("BattleHUD: Jogo retomado");
+        Debug.Log("Jogo retomado");
     }
     
     public void SetDecisionTimeMultiplier(float multiplier)
     {
         decisionTimeMultiplier = multiplier;
-        Debug.Log($"Tempo de decisão multiplicado por {multiplier}");
+        Debug.Log($"Tempo multiplicado por {multiplier}");
     }
 }

@@ -1,11 +1,7 @@
-// Assets/Scripts/Difficulty_System/SpecificSkillModifier.cs (NOVO - Sistema Simples)
-
 using UnityEngine;
-using System.Collections.Generic;
 
 /// <summary>
-/// Sistema SIMPLES para modificar skills específicas
-/// Modifica diretamente o ScriptableObject
+/// Sistema simples para modificar skills específicas
 /// </summary>
 public class SpecificSkillModifier : MonoBehaviour
 {
@@ -28,7 +24,7 @@ public class SpecificSkillModifier : MonoBehaviour
     }
     
     /// <summary>
-    /// Modifica o PODER de uma skill específica pelo nome
+    /// Modifica o poder de uma skill específica pelo nome
     /// </summary>
     public void ModifySkillPower(string skillName, int powerChange)
     {
@@ -36,24 +32,23 @@ public class SpecificSkillModifier : MonoBehaviour
         
         if (skill == null)
         {
-            DebugLog($"⚠️ Skill '{skillName}' não encontrada!");
+            DebugLog($"Skill '{skillName}' não encontrada!");
             return;
         }
         
-        // Modifica TODOS os efeitos da skill
         foreach (var effect in skill.effects)
         {
             if (effect.effectType == ActionType.Attack)
             {
                 int oldPower = effect.power;
                 effect.power = Mathf.Max(1, effect.power + powerChange);
-                DebugLog($"✅ '{skillName}': Poder {oldPower} → {effect.power} ({powerChange:+#;-#;0})");
+                DebugLog($"'{skillName}': Poder {oldPower} → {effect.power} ({powerChange:+#;-#;0})");
             }
         }
     }
     
     /// <summary>
-    /// Modifica o CUSTO DE MANA de uma skill específica pelo nome
+    /// Modifica o custo de mana de uma skill específica pelo nome
     /// </summary>
     public void ModifySkillManaCost(string skillName, int manaCostChange)
     {
@@ -61,18 +56,17 @@ public class SpecificSkillModifier : MonoBehaviour
         
         if (skill == null)
         {
-            DebugLog($"⚠️ Skill '{skillName}' não encontrada!");
+            DebugLog($"Skill '{skillName}' não encontrada!");
             return;
         }
         
-        // Modifica custo de mana
         int oldCost = skill.manaCost;
         skill.manaCost = Mathf.Max(0, skill.manaCost + manaCostChange);
-        DebugLog($"✅ '{skillName}': Custo {oldCost} MP → {skill.manaCost} MP ({manaCostChange:+#;-#;0})");
+        DebugLog($"'{skillName}': Custo {oldCost} MP → {skill.manaCost} MP ({manaCostChange:+#;-#;0})");
     }
     
     /// <summary>
-    /// Modifica PODER e CUSTO de uma skill de uma vez
+    /// Modifica poder e custo de uma skill de uma vez
     /// </summary>
     public void ModifySkill(string skillName, int powerChange, int manaCostChange)
     {
@@ -80,11 +74,10 @@ public class SpecificSkillModifier : MonoBehaviour
         
         if (skill == null)
         {
-            DebugLog($"⚠️ Skill '{skillName}' não encontrada!");
+            DebugLog($"Skill '{skillName}' não encontrada!");
             return;
         }
         
-        // Modifica poder
         foreach (var effect in skill.effects)
         {
             if (effect.effectType == ActionType.Attack)
@@ -93,10 +86,9 @@ public class SpecificSkillModifier : MonoBehaviour
             }
         }
         
-        // Modifica mana
         skill.manaCost = Mathf.Max(0, skill.manaCost + manaCostChange);
         
-        DebugLog($"✅ '{skillName}' modificada: Poder {powerChange:+#;-#;0}, Mana {manaCostChange:+#;-#;0}");
+        DebugLog($"'{skillName}' modificada: Poder {powerChange:+#;-#;0}, Mana {manaCostChange:+#;-#;0}");
     }
     
     /// <summary>
@@ -106,7 +98,7 @@ public class SpecificSkillModifier : MonoBehaviour
     {
         if (GameManager.Instance == null || GameManager.Instance.PlayerBattleActions == null)
         {
-            DebugLog("⚠️ GameManager ou PlayerBattleActions não encontrado!");
+            DebugLog("GameManager ou PlayerBattleActions não encontrado!");
             return null;
         }
         

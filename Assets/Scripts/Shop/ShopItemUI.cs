@@ -1,5 +1,3 @@
-// Assets/Scripts/UI/ShopItemUI.cs (FIXED - Com Tooltips Dinâmicos e Preço Modificado)
-
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
@@ -11,13 +9,12 @@ public class ShopItemUI : MonoBehaviour, IPointerEnterHandler, IPointerExitHandl
     public Image iconImage;
     public TextMeshProUGUI priceText;
     public TextMeshProUGUI usesText;
-    public Image typeIndicator; // NOVO: Indicador visual de tipo (opcional)
+    public Image typeIndicator;
     
     [Header("Type Colors")]
     public Color battleActionColor = new Color(0.8f, 0.8f, 1f);
     public Color powerupColor = new Color(1f, 0.8f, 0.5f);
 
-    // Variáveis internas organizadas
     private ShopItem shopItem;
     private ShopManager shopManager;
     private bool isForSale;
@@ -37,7 +34,7 @@ public class ShopItemUI : MonoBehaviour, IPointerEnterHandler, IPointerExitHandl
     }
 
     /// <summary>
-    /// Setup para BattleAction à venda (compatibilidade)
+    /// Setup para BattleAction à venda
     /// </summary>
     public void SetupForSale(BattleAction action, ShopManager manager, int displayPrice = -1)
     {
@@ -45,7 +42,7 @@ public class ShopItemUI : MonoBehaviour, IPointerEnterHandler, IPointerExitHandl
     }
 
     /// <summary>
-    /// Setup para slots do jogador (apenas BattleActions)
+    /// Setup para slots do jogador
     /// </summary>
     public void SetupPlayerSlot(BattleAction action, ShopManager manager)
     {
@@ -59,14 +56,12 @@ public class ShopItemUI : MonoBehaviour, IPointerEnterHandler, IPointerExitHandl
     {
         if (shopItem == null) return;
         
-        // Configura o ícone
         if (iconImage != null)
         {
             iconImage.sprite = shopItem.Icon;
             iconImage.enabled = (shopItem.Icon != null);
         }
 
-        // Configura o preço (apenas para itens à venda)
         if (priceText != null)
         {
             if (isForSale)
@@ -81,7 +76,6 @@ public class ShopItemUI : MonoBehaviour, IPointerEnterHandler, IPointerExitHandl
             }
         }
 
-        // Configura usos (apenas para BattleActions consumíveis)
         if (usesText != null)
         {
             if (shopItem.type == ShopItem.ItemType.BattleAction && 
@@ -104,7 +98,6 @@ public class ShopItemUI : MonoBehaviour, IPointerEnterHandler, IPointerExitHandl
             }
         }
         
-        // NOVO: Configura indicador de tipo
         if (typeIndicator != null && isForSale)
         {
             typeIndicator.gameObject.SetActive(true);
@@ -123,7 +116,6 @@ public class ShopItemUI : MonoBehaviour, IPointerEnterHandler, IPointerExitHandl
         return shopItem;
     }
 
-    // Compatibilidade - retorna BattleAction se for desse tipo
     public BattleAction GetAction()
     {
         return shopItem?.battleAction;
@@ -133,12 +125,10 @@ public class ShopItemUI : MonoBehaviour, IPointerEnterHandler, IPointerExitHandl
     {
         if (shopManager == null || shopItem == null) return;
         
-        // ===== USA DESCRIÇÃO DINÂMICA PARA BATTLEACTIONS =====
         if (shopItem.type == ShopItem.ItemType.BattleAction && shopItem.battleAction != null)
         {
             string description = shopItem.battleAction.GetDynamicDescription();
             
-            // ✅ CORREÇÃO: Adiciona preço modificado ao tooltip
             if (isForSale)
             {
                 description += $"\n\n<color=#FFD700>Preço: {displayPrice} moedas</color>";
@@ -151,14 +141,10 @@ public class ShopItemUI : MonoBehaviour, IPointerEnterHandler, IPointerExitHandl
             
             shopManager.ShowTooltip(shopItem.battleAction.actionName, description);
         }
-        // ===== POWERUPS USAM DESCRIÇÃO FORMATADA =====
         else if (shopItem.type == ShopItem.ItemType.Powerup && shopItem.powerup != null)
         {
-            // ✅ CORREÇÃO: Usa description direta em vez de GetFormattedDescription() 
-            // para evitar duplicar o preço
             string description = shopItem.powerup.description;
             
-            // ✅ CORREÇÃO: Adiciona preço modificado ao tooltip
             if (isForSale)
             {
                 description += $"\n\n<color=#FFD700>Preço: {displayPrice} moedas</color>";

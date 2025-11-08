@@ -1,4 +1,3 @@
-// Assets/Scripts/Data/TreasurePoolSO.cs (UPDATED with exclusion support)
 using UnityEngine;
 using System.Collections.Generic;
 using System.Linq;
@@ -16,7 +15,6 @@ public class TreasurePoolSO : ScriptableObject
         // Cria pool de ações disponíveis
         List<BattleAction> availableRewards = new List<BattleAction>(possibleRewards);
         
-        // Remove ações que devem ser excluídas
         if (excludeActions != null && excludeActions.Count > 0)
         {
             availableRewards = availableRewards
@@ -27,7 +25,6 @@ public class TreasurePoolSO : ScriptableObject
 
         List<BattleAction> selectedRewards = new List<BattleAction>();
 
-        // Sorteia ações únicas
         for (int i = 0; i < count && availableRewards.Count > 0; i++)
         {
             int randomIndex = Random.Range(0, availableRewards.Count);
@@ -47,9 +44,6 @@ public class TreasurePoolSO : ScriptableObject
         return rewards.Count > 0 ? rewards[0] : null;
     }
     
-    /// <summary>
-    /// Verifica se há recompensas suficientes disponíveis após exclusões
-    /// </summary>
     public bool HasEnoughRewards(int requiredCount, List<BattleAction> excludeActions = null)
     {
         List<BattleAction> availableRewards = new List<BattleAction>(possibleRewards);

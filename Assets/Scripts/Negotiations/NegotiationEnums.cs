@@ -1,5 +1,3 @@
-// Assets/Scripts/Negotiation/NegotiationEnums.cs (COMPLETE - SIMPLIFIED)
-
 using UnityEngine;
 
 /// <summary>
@@ -7,9 +5,9 @@ using UnityEngine;
 /// </summary>
 public enum NegotiationCardType
 {
-    Fixed,                  // Carta fixa (apenas texto)
-    AttributeAndIntensity,  // Permite escolher atributo e intensidade
-    IntensityOnly          // Permite apenas escolher intensidade
+    Fixed,
+    AttributeAndIntensity,
+    IntensityOnly
 }
 
 /// <summary>
@@ -17,13 +15,13 @@ public enum NegotiationCardType
 /// </summary>
 public enum CardAttribute
 {
-    // Atributos do Jogador/Personagem
+    // Atributos do Jogador
     PlayerMaxHP,
     PlayerMaxMP,
     PlayerDefense,
     PlayerSpeed,
     
-    // Atributos de Ações do Jogador
+    // Ações do Jogador
     PlayerActionPower,
     PlayerActionManaCost,
     PlayerOffensiveActionPower,
@@ -41,11 +39,10 @@ public enum CardAttribute
     EnemyOffensiveActionPower,
     EnemyAOEActionPower,
     
-    // Atributos Gerais
+    // Economia
     CoinsEarned,
     ShopPrices,
     
-    // Modificadores específicos de skill
     SpecificSkillPower,
     SpecificSkillManaCost,
 }
@@ -62,14 +59,9 @@ public enum CardIntensity
 
 /// <summary>
 /// Helper para trabalhar com intensidades de cartas
-/// MULTIPLICADORES SIMPLES: 1x, 2x, 3x
 /// </summary>
 public static class IntensityHelper
 {
-    /// <summary>
-    /// Retorna o multiplicador da intensidade
-    /// Low = 1x, Medium = 2x, High = 3x
-    /// </summary>
     public static float GetMultiplier(CardIntensity intensity)
     {
         return intensity switch
@@ -81,9 +73,6 @@ public static class IntensityHelper
         };
     }
     
-    /// <summary>
-    /// Aplica o multiplicador da intensidade a um valor base
-    /// </summary>
     public static int GetScaledValue(CardIntensity intensity, int baseValue)
     {
         float multiplier = GetMultiplier(intensity);
@@ -91,7 +80,7 @@ public static class IntensityHelper
     }
     
     /// <summary>
-    /// ✅ NOVO: Escala valor e GARANTE sinal correto para custos de mana
+    /// Escala valor e garante sinal correto para custos de mana
     /// </summary>
     public static int GetScaledValueWithCorrection(
         CardIntensity intensity, 
@@ -99,70 +88,54 @@ public static class IntensityHelper
         CardAttribute attribute, 
         bool isAdvantage)
     {
-        // Calcula valor escalado normalmente
         int scaledValue = GetScaledValue(intensity, baseValue);
     
-        // Se não for custo de mana, retorna direto
         if (attribute != CardAttribute.PlayerActionManaCost && 
             attribute != CardAttribute.EnemyActionManaCost)
         {
             return scaledValue;
         }
     
-        // ✅ CORREÇÃO AUTOMÁTICA para custos de mana
         return CorrectManaCostSign(attribute, scaledValue, isAdvantage);
     }
     
     /// <summary>
-    /// ✅ Força o sinal correto para custos de mana
+    /// Força o sinal correto para custos de mana
     /// </summary>
     private static int CorrectManaCostSign(CardAttribute attribute, int value, bool isAdvantage)
     {
-        // === CUSTO DE MANA DO JOGADOR ===
         if (attribute == CardAttribute.PlayerActionManaCost)
         {
             if (isAdvantage)
             {
-                // ✅ VANTAGEM: Reduzir custo = NEGATIVO
-                return -Mathf.Abs(value);
+                return -Mathf.Abs(value); // Vantagem: Reduzir custo = negativo
             }
             else
             {
-                // ❌ DESVANTAGEM: Aumentar custo = POSITIVO
-                return Mathf.Abs(value);
+                return Mathf.Abs(value); // Desvantagem: Aumentar custo = positivo
             }
         }
     
-        // === CUSTO DE MANA DOS INIMIGOS ===
         if (attribute == CardAttribute.EnemyActionManaCost)
         {
             if (isAdvantage)
             {
-                // ✅ VANTAGEM (para jogador): Aumentar custo inimigo = POSITIVO
-                return Mathf.Abs(value);
+                return Mathf.Abs(value); // Vantagem: Aumentar custo inimigo = positivo
             }
             else
             {
-                // ❌ DESVANTAGEM: Reduzir custo inimigo = NEGATIVO
-                return -Mathf.Abs(value);
+                return -Mathf.Abs(value); // Desvantagem: Reduzir custo inimigo = negativo
             }
         }
     
         return value;
     }
-
     
-    /// <summary>
-    /// Retorna valor básico para a intensidade (compatibilidade)
-    /// </summary>
     public static int GetValue(CardIntensity intensity)
     {
         return (int)GetMultiplier(intensity);
     }
     
-    /// <summary>
-    /// Retorna descrição legível da intensidade (apenas o nome)
-    /// </summary>
     public static string GetIntensityDisplayName(CardIntensity intensity)
     {
         return intensity switch
@@ -174,16 +147,13 @@ public static class IntensityHelper
         };
     }
     
-    /// <summary>
-    /// Retorna cor para a intensidade
-    /// </summary>
     public static Color GetIntensityColor(CardIntensity intensity)
     {
         return intensity switch
         {
-            CardIntensity.Low => new Color(0.6f, 0.8f, 1f),      // Azul claro
-            CardIntensity.Medium => new Color(1f, 0.8f, 0.4f),   // Amarelo
-            CardIntensity.High => new Color(1f, 0.4f, 0.4f),     // Vermelho
+            CardIntensity.Low => new Color(0.6f, 0.8f, 1f),
+            CardIntensity.Medium => new Color(1f, 0.8f, 0.4f),
+            CardIntensity.High => new Color(1f, 0.4f, 0.4f),
             _ => Color.white
         };
     }
@@ -198,13 +168,11 @@ public static class AttributeHelper
     {
         switch (attribute)
         {
-            // Atributos base do jogador
             case CardAttribute.PlayerMaxHP: return "Vida Máxima";
             case CardAttribute.PlayerMaxMP: return "Mana Máxima";
             case CardAttribute.PlayerDefense: return "Defesa";
             case CardAttribute.PlayerSpeed: return "Velocidade";
             
-            // Atributos de ações do jogador
             case CardAttribute.PlayerActionPower: return "Poder das ações";
             case CardAttribute.PlayerActionManaCost: return "Custo de Mana para usar habilidades";
             case CardAttribute.PlayerOffensiveActionPower: return "Poder de ações ofensivas";
@@ -212,7 +180,6 @@ public static class AttributeHelper
             case CardAttribute.PlayerAOEActionPower: return "Poder de Ataques em Área";
             case CardAttribute.PlayerSingleTargetActionPower: return "Poder de Ataques Ofensivos de Alvo Único";
             
-            // Atributos dos inimigos
             case CardAttribute.EnemyMaxHP: return "Vida Máxima dos Inimigos";
             case CardAttribute.EnemyMaxMP: return "Mana Máxima dos Inimigos";
             case CardAttribute.EnemyDefense: return "Defesa dos Inimigos";
@@ -222,7 +189,6 @@ public static class AttributeHelper
             case CardAttribute.EnemyOffensiveActionPower: return "Poder de Ataques Inimigos";
             case CardAttribute.EnemyAOEActionPower: return "Poder de Ataques em Área Inimigos";
             
-            // Economia
             case CardAttribute.CoinsEarned: return "Moedas Ganhas nas Próximas Batalhas";
             case CardAttribute.ShopPrices: return "Valor dos Items da Loja";
             
@@ -231,7 +197,7 @@ public static class AttributeHelper
     }
     
     /// <summary>
-    /// NOVO: Retorna explicação detalhada de quando/como o atributo afeta o jogo
+    /// Retorna explicação detalhada de quando/como o atributo afeta o jogo
     /// </summary>
     public static string GetDetailedExplanation(CardAttribute attribute, int value, bool isAdvantage)
     {
@@ -240,7 +206,6 @@ public static class AttributeHelper
         
         switch (attribute)
         {
-            // === JOGADOR - STATS BASE ===
             case CardAttribute.PlayerMaxHP:
                 if (isAdvantage)
                     return $"Sua vida máxima aumenta em {absValue} pontos";
@@ -265,7 +230,6 @@ public static class AttributeHelper
                 else
                     return $"Sua velocidade diminui em {absValue}";
             
-            // === JOGADOR - AÇÕES ===
             case CardAttribute.PlayerActionPower:
                 if (isAdvantage)
                     return $"Habilidades causam {sign}{absValue} de dano/cura extra";
@@ -302,7 +266,6 @@ public static class AttributeHelper
                 else
                     return $"Ataques de alvo único causam {sign}{absValue} de dano a menos";
             
-            // === INIMIGOS - STATS ===
             case CardAttribute.EnemyMaxHP:
                 if (isAdvantage)
                     return $"Inimigos têm {absValue} HP a menos";
@@ -327,7 +290,6 @@ public static class AttributeHelper
                 else
                     return $"Inimigos têm {sign}{absValue} de velocidade a mais";
             
-            // === INIMIGOS - AÇÕES ===
             case CardAttribute.EnemyActionPower:
                 if (isAdvantage)
                     return $"Ataques inimigos causam {absValue} de dano a menos";
@@ -352,7 +314,6 @@ public static class AttributeHelper
                 else
                     return $"Ataques em área inimigos causam {sign}{absValue} de dano extra";
             
-            // === ECONOMIA ===
             case CardAttribute.CoinsEarned:
                 if (isAdvantage)
                     return $"Você ganha {sign}{absValue} moedas extras ao vencer batalhas";
@@ -370,9 +331,6 @@ public static class AttributeHelper
         }
     }
     
-    /// <summary>
-    /// Retorna descrição curta para UI compacta
-    /// </summary>
     public static string GetShortName(CardAttribute attribute)
     {
         switch (attribute)
@@ -393,9 +351,6 @@ public static class AttributeHelper
         }
     }
     
-    /// <summary>
-    /// Verifica se um atributo modifica BattleActions
-    /// </summary>
     public static bool IsActionModifier(CardAttribute attribute)
     {
         return attribute == CardAttribute.PlayerActionPower ||
@@ -410,9 +365,6 @@ public static class AttributeHelper
                attribute == CardAttribute.EnemyAOEActionPower;
     }
     
-    /// <summary>
-    /// Retorna atributos relacionados (para AttributeAndIntensity)
-    /// </summary>
     public static CardAttribute[] GetRelatedAttributes(CardAttribute attribute)
     {
         switch (attribute)

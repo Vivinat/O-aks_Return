@@ -1,10 +1,8 @@
-// Assets/Scripts/Battle/BattleActionBackup.cs
-
 using System.Collections.Generic;
 using UnityEngine;
 
 /// <summary>
-/// Sistema simples para fazer backup e restaurar valores de BattleActions
+/// Sistema de backup e restauração de valores de BattleActions
 /// </summary>
 public class BattleActionBackup
 {
@@ -30,7 +28,7 @@ public class BattleActionBackup
     private List<ActionBackup> backups = new List<ActionBackup>();
     
     /// <summary>
-    /// Salva valores atuais de uma lista de BattleActions
+    /// Salva valores atuais de uma lista
     /// </summary>
     public void SaveActions(List<BattleAction> actions)
     {

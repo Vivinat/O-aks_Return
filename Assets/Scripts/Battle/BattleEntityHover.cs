@@ -2,9 +2,6 @@ using UnityEngine;
 using System.Text;
 using System.Linq;
 
-/// <summary>
-/// Componente para gerenciar hover visual e tooltip de status effects em personagens de batalha
-/// </summary>
 [RequireComponent(typeof(BattleEntity))]
 public class BattleEntityHover : MonoBehaviour
 {
@@ -75,9 +72,6 @@ public class BattleEntityHover : MonoBehaviour
         HideTooltip();
     }
     
-    /// <summary>
-    /// Verifica se estamos em modo de seleção de alvo
-    /// </summary>
     private bool IsInTargetSelectionMode()
     {
         if (battleHUD == null) return false;
@@ -148,7 +142,6 @@ public class BattleEntityHover : MonoBehaviour
         }
         info.AppendLine();
         
-        // Linha 2: DEF
         int currentDef = battleEntity.GetCurrentDefense();
         int baseDef = battleEntity.GetBaseDefense();
         
@@ -157,9 +150,6 @@ public class BattleEntityHover : MonoBehaviour
         return info.ToString();
     }
     
-    /// <summary>
-    /// Formata uma stat mostrando modificadores em cores
-    /// </summary>
     private string FormatStatWithModifier(int current, int baseValue)
     {
         if (current == baseValue)
@@ -202,9 +192,6 @@ public class BattleEntityHover : MonoBehaviour
         return description.ToString();
     }
     
-    /// <summary>
-    /// Versão compacta da descrição de status effect
-    /// </summary>
     private string GetStatusEffectDescriptionCompact(StatusEffect effect)
     {
         string icon = GetStatusEffectIcon();
@@ -222,7 +209,6 @@ public class BattleEntityHover : MonoBehaviour
     {
         switch (type)
         {
-            // Buffs positivos - Verde
             case StatusEffectType.AttackUp:
             case StatusEffectType.DefenseUp:
             case StatusEffectType.SpeedUp:
@@ -231,7 +217,6 @@ public class BattleEntityHover : MonoBehaviour
             case StatusEffectType.Blessed:
                 return "#90EE90";
             
-            // Debuffs negativos - Vermelho
             case StatusEffectType.AttackDown:
             case StatusEffectType.DefenseDown:
             case StatusEffectType.SpeedDown:

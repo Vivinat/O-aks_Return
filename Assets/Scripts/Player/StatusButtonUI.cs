@@ -1,5 +1,3 @@
-// Assets/Scripts/UI/StatusButtonUI.cs (UPDATED - Com Descrição Dinâmica)
-
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
