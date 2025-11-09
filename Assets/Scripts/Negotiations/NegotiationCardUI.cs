@@ -6,11 +6,9 @@ using System.Collections.Generic;
 
 public class NegotiationCardUI : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler, IPointerClickHandler
 {
-    [Header("Card Visual")]
     [SerializeField] private Image cardImage;
     [SerializeField] private TextMeshProUGUI descriptionText;
     
-    [Header("Dropdowns")]
     [SerializeField] private GameObject playerAttributePanel;
     [SerializeField] private TMP_Dropdown playerAttributeDropdown;
     
@@ -20,7 +18,6 @@ public class NegotiationCardUI : MonoBehaviour, IPointerEnterHandler, IPointerEx
     [SerializeField] private GameObject intensityPanel;
     [SerializeField] private TMP_Dropdown intensityDropdown;
     
-    [Header("Visual Settings")]
     [SerializeField] private Color normalColor = Color.white;
     [SerializeField] private Color hoverColor = Color.yellow;
     [SerializeField] private Color selectedColor = Color.red;

@@ -5,13 +5,11 @@ using TMPro;
 
 public class ShopItemUI : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
 {
-    [Header("UI Components")]
     public Image iconImage;
     public TextMeshProUGUI priceText;
     public TextMeshProUGUI usesText;
     public Image typeIndicator;
     
-    [Header("Type Colors")]
     public Color battleActionColor = new Color(0.8f, 0.8f, 1f);
     public Color powerupColor = new Color(1f, 0.8f, 0.5f);
 
@@ -20,9 +18,7 @@ public class ShopItemUI : MonoBehaviour, IPointerEnterHandler, IPointerExitHandl
     private bool isForSale;
     private int displayPrice = 0;
 
-    /// <summary>
-    /// Setup para itens à venda usando ShopItem wrapper
-    /// </summary>
+    // Setup para itens à venda usando ShopItem wrapper
     public void SetupForSale(ShopItem item, ShopManager manager, int displayPrice = -1)
     {
         this.shopItem = item;
@@ -33,17 +29,12 @@ public class ShopItemUI : MonoBehaviour, IPointerEnterHandler, IPointerExitHandl
         SetupUI();
     }
 
-    /// <summary>
-    /// Setup para BattleAction à venda
-    /// </summary>
     public void SetupForSale(BattleAction action, ShopManager manager, int displayPrice = -1)
     {
         SetupForSale(new ShopItem(action), manager, displayPrice);
     }
 
-    /// <summary>
-    /// Setup para slots do jogador
-    /// </summary>
+    // Setup para slots do jogador
     public void SetupPlayerSlot(BattleAction action, ShopManager manager)
     {
         this.shopItem = new ShopItem(action);

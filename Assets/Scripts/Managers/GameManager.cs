@@ -6,11 +6,9 @@ public class GameManager : MonoBehaviour
 {
     public static GameManager Instance { get; private set; }
     
-    [Header("Player Configuration")]
     public Character PlayerCharacterInfo;
     public EventTypeSO CurrentEvent { get; private set; }
     
-    [Header("Currency System")]
     [SerializeField]
     private CurrencySystem currencySystem = new CurrencySystem();
     public CurrencySystem CurrencySystem => currencySystem;
@@ -28,13 +26,11 @@ public class GameManager : MonoBehaviour
     private MapManager currentMapManager;
     private MapNode pendingNodeToComplete;
     
-    [Header("Player Current Stats")]
     [SerializeField]
     private int playerCurrentHP = -1;
     [SerializeField]
     private int playerCurrentMP = -1;
     
-    [Header("Initial Setup")]
     [Tooltip("Skill inicial que o jogador sempre começa (Ataque_Sombrio)")]
     [SerializeField] private BattleAction initialPlayerSkill;
 

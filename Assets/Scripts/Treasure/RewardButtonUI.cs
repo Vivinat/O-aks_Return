@@ -15,7 +15,6 @@ public class RewardButtonUI : MonoBehaviour, IPointerEnterHandler, IPointerExitH
         this.actionData = action;
         this.treasureManager = manager;
 
-        // Atribui o sprite diretamente à imagem de ícone referenciada.
         if (iconImage != null && actionData != null)
         {
             iconImage.sprite = actionData.icon;

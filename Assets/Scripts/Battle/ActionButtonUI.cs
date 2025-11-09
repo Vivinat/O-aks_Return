@@ -7,8 +7,6 @@ public class ActionButtonUI : MonoBehaviour, IPointerEnterHandler, IPointerExitH
 {
     private BattleAction actionData;
     private BattleHUD battleHUD;
-
-    [Header("UI Components")]
     public Image iconImage; 
     public TextMeshProUGUI usesText; 
 

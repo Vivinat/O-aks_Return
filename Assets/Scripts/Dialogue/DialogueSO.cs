@@ -1,20 +1,15 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-/// <summary>
-/// ScriptableObject para criar e configurar diálogos no Editor
-/// </summary>
+// cria e configurar diálogos no Editor
+
 [CreateAssetMenu(fileName = "New Dialogue", menuName = "Dialogue/Dialogue")]
 public class DialogueSO : ScriptableObject
 {
-    [Header("Dialogue Configuration")]
     [SerializeField] private string dialogueTitle = "New Dialogue";
     
-    [Header("Dialogue Entries")]
-    [Tooltip("Lista de falas que compõem este diálogo")]
     [SerializeField] private List<DialogueEntry> dialogueEntries = new List<DialogueEntry>();
     
-    [Header("Audio Settings (Optional)")]
     [SerializeField] private AudioClip backgroundMusic;
     [SerializeField] private bool stopCurrentMusicWhenPlaying = false;
 
@@ -114,7 +109,6 @@ public class DialogueSO : ScriptableObject
         if (string.IsNullOrEmpty(dialogueTitle))
             dialogueTitle = "New Dialogue";
         
-        // Remove entradas completamente vazias
         for (int i = dialogueEntries.Count - 1; i >= 0; i--)
         {
             if (dialogueEntries[i] == null)
@@ -127,45 +121,4 @@ public class DialogueSO : ScriptableObject
         if (dialogueEntries.Count == 0)
             dialogueEntries.Add(new DialogueEntry());
     }
-
-    #if UNITY_EDITOR
-    [ContextMenu("Add Empty Entry")]
-    public void AddEmptyEntry()
-    {
-        if (dialogueEntries == null)
-            dialogueEntries = new List<DialogueEntry>();
-            
-        dialogueEntries.Add(new DialogueEntry());
-        UnityEditor.EditorUtility.SetDirty(this);
-    }
-
-    [ContextMenu("Add Sample Dialogue")]
-    public void AddSampleDialogue()
-    {
-        ClearDialogue();
-        AddDialogueEntry("NPC", "Olá! Como posso ajudá-lo hoje?");
-        
-        Debug.Log("Diálogo de exemplo adicionado ao " + name);
-    }
-
-    [ContextMenu("Validate Dialogue")]
-    public void ValidateDialogue()
-    {
-        int validEntries = 0;
-        int invalidEntries = 0;
-
-        foreach (var entry in dialogueEntries)
-        {
-            if (entry != null && entry.IsValid())
-                validEntries++;
-            else
-                invalidEntries++;
-        }
-
-        Debug.Log($"Validação do {name}:\n" +
-                  $"• Entradas válidas: {validEntries}\n" +
-                  $"• Entradas inválidas: {invalidEntries}\n" +
-                  $"• Total: {dialogueEntries.Count}");
-    }
-    #endif
 }

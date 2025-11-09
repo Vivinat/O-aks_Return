@@ -5,7 +5,6 @@ using TMPro;
 
 public class StatusButtonUI : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
 {
-    [Header("UI Components")]
     public Image iconImage;
 
     private BattleAction actionData;
@@ -32,7 +31,6 @@ public class StatusButtonUI : MonoBehaviour, IPointerEnterHandler, IPointerExitH
     {
         if (statusPanel != null && actionData != null)
         {
-            // ===== USA DESCRIÇÃO DINÂMICA =====
             statusPanel.ShowTooltip(actionData.actionName, actionData.GetDynamicDescription());
         }
     }

@@ -1,37 +1,17 @@
 using UnityEngine;
 
-/// <summary>
-/// Classe estática que centraliza todas as referências de áudio do jogo.
-/// </summary>
+//referências de áudio do jogo.
 public class AudioConstants : MonoBehaviour
 {
     public static AudioConstants Instance { get; private set; }
-
-    [Header("═══ UI SOUNDS ═══")]
-    [Tooltip("Som quando um botão é clicado")]
+    
     public AudioClip selectButton;
-    
-    [Tooltip("Som quando um menu é aberto")]
     public AudioClip openMenu;
-    
-    [Tooltip("Som quando uma ação inválida é tentada (sem recursos)")]
     public AudioClip cannotSelect;
-    
-    [Tooltip("Compra de Item")]
     public AudioClip itemBuy;
-
-    [Header("═══ DEATH SOUNDS ═══")]
-    [Tooltip("Som de morte para monstros/criaturas")]
     public AudioClip deathMonster;
-    
-    [Tooltip("Som de morte para humanos/humanoides")]
     public AudioClip deathHuman;
-
-    [Header("═══ BATTLE SOUNDS ═══")]
-    [Tooltip("Som de derrota na batalha")]
     public AudioClip defeatSound;
-    
-    [Tooltip("Som de texto sendo digitado")]
     public AudioClip textTypeSound;
 
     void Awake()
@@ -49,10 +29,8 @@ public class AudioConstants : MonoBehaviour
     }
 
     #region Static Helper Methods
-
-    /// <summary>
-    /// Toca o som de seleção de botão
-    /// </summary>
+    
+    // Toca o som de seleção de botão
     public static void PlayButtonSelect()
     {
         if (Instance != null && Instance.selectButton != null && AudioManager.Instance != null)
@@ -61,9 +39,7 @@ public class AudioConstants : MonoBehaviour
         }
     }
 
-    /// <summary>
-    /// Toca o som de abertura de menu
-    /// </summary>
+    // Toca o som de abertura de menu
     public static void PlayMenuOpen()
     {
         if (Instance != null && Instance.openMenu != null && AudioManager.Instance != null)
@@ -72,9 +48,7 @@ public class AudioConstants : MonoBehaviour
         }
     }
 
-    /// <summary>
-    /// Toca o som de ação inválida
-    /// </summary>
+    // Toca o som de ação inválida
     public static void PlayCannotSelect()
     {
         if (Instance != null && Instance.cannotSelect != null && AudioManager.Instance != null)
@@ -83,9 +57,7 @@ public class AudioConstants : MonoBehaviour
         }
     }
 
-    /// <summary>
-    /// Toca um som de morte específico
-    /// </summary>
+    // Toca um som de morte específico
     public static void PlayDeathSound(AudioClip deathSound)
     {
         if (deathSound != null && AudioManager.Instance != null)
@@ -102,9 +74,7 @@ public class AudioConstants : MonoBehaviour
         }
     }
 
-    /// <summary>
-    /// Toca o som de derrota
-    /// </summary>
+    // Toca o som de derrota
     public static void PlayDefeat()
     {
         if (Instance != null && Instance.defeatSound != null && AudioManager.Instance != null)
@@ -113,9 +83,7 @@ public class AudioConstants : MonoBehaviour
         }
     }
 
-    /// <summary>
-    /// Toca o som de digitação de texto
-    /// </summary>
+    // Toca o som de digitação de texto
     public static void PlayTextType()
     {
         if (Instance != null && Instance.textTypeSound != null && AudioManager.Instance != null)
@@ -125,17 +93,5 @@ public class AudioConstants : MonoBehaviour
     }
 
     #endregion
-
-    void OnValidate()
-    {
-        // Validação no Editor
-        if (selectButton == null)
-            Debug.LogWarning("AudioConstants: selectButton não foi atribuído!");
-        
-        if (openMenu == null)
-            Debug.LogWarning("AudioConstants: openMenu não foi atribuído!");
-        
-        if (cannotSelect == null)
-            Debug.LogWarning("AudioConstants: cannotSelect não foi atribuído!");
-    }
+    
 }

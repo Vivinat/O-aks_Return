@@ -20,21 +20,4 @@ public class EventTypeSO : ScriptableObject
         return eventType == EventType.Dialogue;
     }
     
-    void OnValidate()
-    {
-        if (eventType == EventType.Dialogue)
-        {
-            if (!string.IsNullOrEmpty(sceneToLoad))
-            {
-                Debug.LogWarning($"EventTypeSO '{name}': Evento de diálogo não deve ter sceneToLoad definido.");
-            }
-        }
-        else
-        {
-            if (string.IsNullOrEmpty(sceneToLoad))
-            {
-                Debug.LogWarning($"EventTypeSO '{name}': sceneToLoad não definido para evento tipo {eventType}.");
-            }
-        }
-    }
 }

@@ -1,4 +1,3 @@
-// Assets/Scripts/Dialogue/DialogueSystem.cs
 
 using System.Collections;
 using System.Collections.Generic;
@@ -6,26 +5,21 @@ using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
 
-/// <summary>
-/// Sistema de diálogo centralizado com pausa automática e efeito de digitação
-/// </summary>
+// Sistema de diálogo
 public class DialogueManager : MonoBehaviour
 {
     public static DialogueManager Instance { get; private set; }
 
-    [Header("UI References")]
     [SerializeField] private GameObject dialoguePanel;
     [SerializeField] private TextMeshProUGUI speakerNameText;
     [SerializeField] private TextMeshProUGUI dialogueText;
     [SerializeField] private Button continueButton;
     [SerializeField] private GameObject skipIndicator;
 
-    [Header("Animation Settings")]
     [SerializeField] private float typewriterSpeed = 0.03f;
     [SerializeField] private AnimationCurve fadeInCurve = AnimationCurve.EaseInOut(0, 0, 1, 1);
     [SerializeField] private float panelFadeTime = 0.3f;
 
-    [Header("Audio Settings")]
     [SerializeField] private AudioClip typewriterSound;
     [SerializeField] private AudioClip dialogueOpenSound;
     [SerializeField] private AudioClip dialogueCloseSound;
@@ -413,23 +407,5 @@ public class DialogueManager : MonoBehaviour
     }
 
     #endregion
-
-    #region Validation
-
-    void OnValidate()
-    {
-        if (dialoguePanel == null)
-            Debug.LogWarning("DialogueSystem: dialoguePanel não foi atribuído!");
-            
-        if (speakerNameText == null)
-            Debug.LogWarning("DialogueSystem: speakerNameText não foi atribuído!");
-            
-        if (dialogueText == null)
-            Debug.LogWarning("DialogueSystem: dialogueText não foi atribuído!");
-            
-        if (continueButton == null)
-            Debug.LogWarning("DialogueSystem: continueButton não foi atribuído!");
-    }
-
-    #endregion
+    
 }

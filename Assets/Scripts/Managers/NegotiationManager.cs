@@ -5,7 +5,6 @@ using System.Collections.Generic;
 
 public class NegotiationManager : MonoBehaviour
 {
-    [Header("UI References")]
     [SerializeField] private Transform cardsContainer;
     [SerializeField] private GameObject cardPrefab;
     [SerializeField] private GameObject refreshButtonPrefab;
@@ -14,12 +13,10 @@ public class NegotiationManager : MonoBehaviour
     [SerializeField] private TextMeshProUGUI titleText;
     [SerializeField] private TextMeshProUGUI infoText;
     
-    [Header("Configuration")]
     [SerializeField] private int numberOfCards = 3;
     [SerializeField] private bool useDynamicCards = true;
     [SerializeField] private List<NegotiationCardSO> fallbackCards;
     
-    [Header("Refresh Settings")]
     [SerializeField] private Color refreshUsedColor = new Color(0.5f, 0.5f, 0.5f, 0.5f);
     
     private List<GameObject> cardContainers = new List<GameObject>();
@@ -157,7 +154,7 @@ public class NegotiationManager : MonoBehaviour
                 TextMeshProUGUI btnText = refreshBtn.GetComponentInChildren<TextMeshProUGUI>();
                 if (btnText != null)
                 {
-                    btnText.text = "🔄 Refresh";
+                    btnText.text = "Refresh";
                 }
             }
             

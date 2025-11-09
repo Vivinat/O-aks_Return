@@ -4,17 +4,15 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 
-/// <summary>
-/// Exporta dados de todos os inimigos para JSON
-/// Usado para resetar o sistema após morte
-/// </summary>
+
+// Exporta dados de todos os inimigos para JSON
+// Usado para resetar o sistema após morte
 public class EnemyDataExporter : EditorWindow
 {
     private string outputPath = "Assets/Data/EnemyBalanceData.json";
     private bool prettyPrint = true;
     private Vector2 scrollPosition;
-    
-    [MenuItem("Tools/Export Enemy Data to JSON")]
+
     public static void ShowWindow()
     {
         GetWindow<EnemyDataExporter>("Enemy Data Exporter");

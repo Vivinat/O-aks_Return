@@ -1,8 +1,7 @@
 using System.Collections.Generic;
 
-/// <summary>
-/// Estruturas de dados para serialização de BattleActions
-/// </summary>
+
+// Estruturas de dados para serialização de BattleActions
 
 [System.Serializable]
 public class BattleActionDatabase

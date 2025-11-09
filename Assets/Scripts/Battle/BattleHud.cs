@@ -9,21 +9,17 @@ public class BattleHUD : MonoBehaviour
 {
     public BattleManager battleManager;
 
-    [Header("UI Panels")]
     public GameObject actionPanel;
     public GameObject targetSelectionPanel;
     public TooltipUI tooltipUI;
     public RectTransform tooltipAnchor;
 
-    [Header("Target Selection UI")]
     public Button cancelTargetButton;
     public TextMeshProUGUI targetInstructionText;
     
-    [Header("Turn Timer UI")]
     public TextMeshProUGUI turnTimerText;
     public float turnTimeLimit = 30f;
     
-    [Header("Prefabs")]
     public GameObject actionButtonPrefab;
 
     private BattleEntity activeCharacter;
@@ -407,7 +403,6 @@ public class BattleHUD : MonoBehaviour
             
             targetInstructionText.text = actionText;
             
-            Debug.Log($"Mostrando ação do inimigo: {actionText}");
         }
     }
     
@@ -418,7 +413,6 @@ public class BattleHUD : MonoBehaviour
             if (cancelTargetButton != null && !cancelTargetButton.gameObject.activeSelf)
             {
                 targetSelectionPanel.SetActive(false);
-                Debug.Log("Escondendo ação do inimigo");
             }
         }
     }

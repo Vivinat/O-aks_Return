@@ -1,9 +1,7 @@
 using UnityEngine;
 using System.Collections.Generic;
 
-/// <summary>
-/// Ponte entre o sistema de batalha e o PlayerBehaviorAnalyzer
-/// </summary>
+// Ponte entre o sistema de batalha e o PlayerBehaviorAnalyzer
 public static class BehaviorAnalysisIntegration
 {
     public static void OnPlayerSkillUsed(BattleAction skill, BattleEntity user)

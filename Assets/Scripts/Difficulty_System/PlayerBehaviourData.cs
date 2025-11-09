@@ -2,9 +2,8 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 
-/// <summary>
-/// Tipos de observações comportamentais do jogador
-/// </summary>
+
+// Tipos de observações comportamentais do jogador
 public enum BehaviorTriggerType
 {
 
@@ -41,9 +40,6 @@ public enum BehaviorTriggerType
     DefaultSessionOffer     //100
 }
 
-/// <summary>
-/// Dados específicos para cada tipo de observação
-/// </summary>
 [System.Serializable]
 public class BehaviorObservation
 {
@@ -89,9 +85,7 @@ public class BehaviorObservation
     }
 }
 
-/// <summary>
-/// Dados de comportamento específicos para batalha
-/// </summary>
+// Dados de comportamento específicos para batalha
 [System.Serializable]
 public class BattleBehaviorData
 {
@@ -270,7 +264,6 @@ public class BattleBehaviorData
             }
         }
         
-        // divide pelo número de ciclos
         int estimatedTurns = Mathf.Max(1, turnOrder.Count / 4);
         return (float)playerFirstCount / estimatedTurns;
     }
@@ -377,9 +370,7 @@ public class SessionBehaviorData
     }
 }
 
-/// <summary>
-/// Container principal para todos os dados comportamentais
-/// </summary>
+// Container principal para todos os dados comportamentais
 [System.Serializable]
 public class PlayerBehaviorProfile
 {
@@ -389,7 +380,6 @@ public class PlayerBehaviorProfile
     
     public void AddObservation(BehaviorObservation newObservation)
     {
-        // Procura por observação similar existente
         var existing = observations.Find(obs => 
             obs.triggerType == newObservation.triggerType &&
             obs.mapName == newObservation.mapName &&
@@ -398,7 +388,6 @@ public class PlayerBehaviorProfile
         if (existing != null)
         {
             existing.IncrementSession();
-            // Atualiza dados se necessário
             foreach (var kvp in newObservation.data)
             {
                 existing.SetData(kvp.Key, kvp.Value);
@@ -412,9 +401,6 @@ public class PlayerBehaviorProfile
         Debug.Log($"Comportamento registrado: {newObservation.triggerType} no mapa {newObservation.mapName}");
     }
     
-    /// <summary>
-    /// Verifica se duas observações são similares o suficiente para serem agrupadas
-    /// </summary>
     private bool AreObservationsSimilar(BehaviorObservation obs1, BehaviorObservation obs2)
     {
         switch (obs1.triggerType)
@@ -436,9 +422,7 @@ public class PlayerBehaviorProfile
         }
     }
     
-    /// <summary>
-    /// Obtém todas as observações de um tipo específico
-    /// </summary>
+    // Obtém todas as observações de um tipo específico
     public List<BehaviorObservation> GetObservationsByType(BehaviorTriggerType type)
     {
         return observations.FindAll(obs => obs.triggerType == type);

@@ -4,21 +4,16 @@ using UnityEngine.SceneManagement;
 using TMPro;
 using System.Collections;
 
-/// <summary>
-/// Gerencia a tela de morte do jogador
-/// </summary>
+// Gerencia a tela de morte do jogador
 public class DeathScreenManager : MonoBehaviour
 {
-    [Header("UI References")]
     [SerializeField] private TextMeshProUGUI deathMessageText;
     [SerializeField] private Button returnToMenuButton;
     [SerializeField] private CanvasGroup canvasGroup;
     
-    [Header("Animation Settings")]
     [SerializeField] private float fadeInDuration = 1.5f;
     [SerializeField] private float messageDelay = 0.5f;
     
-    [Header("Death Messages")]
     [SerializeField] private string[] deathMessages = new string[]
     {
         "Derrotado novamente? Que novidade!",
@@ -82,12 +77,4 @@ public class DeathScreenManager : MonoBehaviour
         SceneManager.LoadScene("MainMenu");
     }
     
-    void OnValidate()
-    {
-        if (deathMessageText == null)
-            Debug.LogWarning("DeathScreenManager: deathMessageText não foi atribuído!");
-            
-        if (returnToMenuButton == null)
-            Debug.LogWarning("DeathScreenManager: returnToMenuButton não foi atribuído!");
-    }
 }

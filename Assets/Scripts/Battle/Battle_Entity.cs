@@ -11,12 +11,7 @@ public class BattleEntity : MonoBehaviour
     public Slider atbBar;
     public Slider hpBar;
     public Slider mpBar;
-
-    [Header("Text Values UI")]
-    [Tooltip("Texto que mostra o valor atual de HP (ex: '85/100')")]
     public TextMeshProUGUI hpValueText;
-    
-    [Tooltip("Texto que mostra o valor atual de MP (ex: '30/50') - Apenas para o player")]
     public TextMeshProUGUI mpValueText;
 
     // Status de batalha
@@ -47,7 +42,6 @@ public class BattleEntity : MonoBehaviour
     {
         if (characterData != null)
         {
-            // Garante que a HUD esteja ligada e inicializa os status.
             EnableHUDElements(); 
 
             currentHp = characterData.maxHp; 
@@ -64,7 +58,6 @@ public class BattleEntity : MonoBehaviour
         currentMp = characterData.maxMp;
         currentAtb = Random.Range(0, 20);
 
-        // Garante que a HUD esteja visível caso tenha sido desativada antes
         EnableHUDElements();
 
         UpdateATBBar();
@@ -121,11 +114,9 @@ public class BattleEntity : MonoBehaviour
             baseDamage = Mathf.Max(1, damageAmount - effectiveDefense);
         }
         
-        // Aplica multiplicadores de dano (Vulnerable, Protected)
         float damageMultiplier = GetDamageMultiplier();
         int finalDamage = Mathf.RoundToInt(baseDamage * damageMultiplier);
         
-        // Registra o hit individual
         if (characterData.team == Team.Player)
         {
             BehaviorAnalysisIntegration.OnPlayerHitReceived(finalDamage);
@@ -137,7 +128,7 @@ public class BattleEntity : MonoBehaviour
         if (DamageNumberController.Instance != null)
         {
             Debug.Log("chamando numero flutuante");
-            bool isCritical = finalDamage >= (characterData.maxHp * 0.3f); // Crítico se for 30%+ do HP máximo
+            bool isCritical = finalDamage >= (characterData.maxHp * 0.3f); 
             DamageNumberController.Instance.ShowDamage(transform.position, finalDamage, isCritical);
         }
 
@@ -216,18 +207,15 @@ public class BattleEntity : MonoBehaviour
     {
         if (type == StatusEffectType.None || duration <= 0) return;
 
-        // Check if we already have this status effect
         StatusEffect existingEffect = activeStatusEffects.FirstOrDefault(e => e.type == type);
         if (existingEffect != null)
         {
-            // Refresh the effect with new values
             existingEffect.power = power;
             existingEffect.remainingTurns = duration;
             Debug.Log($"{characterData.characterName}'s {existingEffect.effectName} refreshed!");
         }
         else
         {
-            // Add new status effect
             StatusEffect newEffect = new StatusEffect(type, power, duration);
             activeStatusEffects.Add(newEffect);
             Debug.Log($"{characterData.characterName} gains {newEffect.effectName}!");
@@ -242,17 +230,14 @@ public class BattleEntity : MonoBehaviour
     {
         if (isDead) return;
 
-        // Loop reverso de 'for'
         for (int i = activeStatusEffects.Count - 1; i >= 0; i--)
         {
             StatusEffect effect = activeStatusEffects[i];
         
             bool shouldRemove = effect.ProcessTurnEffect(this);
 
-            // Se o personagem morreu durante o efeito, paramos tudo
             if (isDead) break;
 
-            // Se o efeito expirou, removemos diretamente da lista
             if (shouldRemove)
             {
                 Debug.Log($"{characterData.characterName} loses {effect.effectName}");
@@ -351,11 +336,10 @@ public class BattleEntity : MonoBehaviour
         // Clear all status effects on death
         ClearAllStatusEffects();
 
-        // Se for jogador, tenta ativar segunda chance
         if (characterData.team == Team.Player)
         {
             TryActivateSecondChance();
-            return; // Não continua o processo de morte se a segunda chance for ativada
+            return; 
         }
         
         if (currentHp == 0 && characterData.team == Team.Player)
@@ -363,7 +347,6 @@ public class BattleEntity : MonoBehaviour
             BehaviorAnalysisIntegration.OnPlayerDeath(this);
         }
 
-        // Desativa os sliders da HUD imediatamente (apenas inimigos chegam aqui)
         DisableHUDElements();
     
         if (characterData.deathSound != null)
@@ -371,13 +354,11 @@ public class BattleEntity : MonoBehaviour
             AudioConstants.PlayDeathSound(characterData.deathSound);
         }
 
-        // Aciona a animação de morte
         if (animationController != null)
         {
             animationController.OnDeath();
         }
 
-        // Desativa o sprite após um delay para a animação tocar
         StartCoroutine(DeactivateSpriteAfterDelay());
     }
     

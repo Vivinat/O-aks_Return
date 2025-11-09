@@ -4,22 +4,18 @@ using System.Collections.Generic;
 [CreateAssetMenu(menuName = "Negotiation/Negotiation Card")]
 public class NegotiationCardSO : ScriptableObject
 {
-    [Header("Card Info")]
     public string cardName;
     [TextArea(3, 6)]
     public string cardDescription;
     public Sprite cardSprite;
     
-    [Header("Card Type")]
     public NegotiationCardType cardType;
     
-    [Header("Fixed Type Settings")]
     public CardAttribute fixedPlayerAttribute;
     public int fixedPlayerValue;
     public CardAttribute fixedEnemyAttribute;
     public int fixedEnemyValue;
     
-    [Header("Intensity Only Settings")]
     public CardAttribute intensityOnlyPlayerAttribute;
     public CardAttribute intensityOnlyEnemyAttribute;
     public List<CardIntensity> availableIntensities = new List<CardIntensity>
@@ -29,7 +25,6 @@ public class NegotiationCardSO : ScriptableObject
         CardIntensity.High
     };
     
-    [Header("Attribute and Intensity Settings")]
     public List<CardAttribute> availablePlayerAttributes = new List<CardAttribute>();
     public List<CardAttribute> availableEnemyAttributes = new List<CardAttribute>();
     

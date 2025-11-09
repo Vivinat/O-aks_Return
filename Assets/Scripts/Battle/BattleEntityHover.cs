@@ -5,14 +5,10 @@ using System.Linq;
 [RequireComponent(typeof(BattleEntity))]
 public class BattleEntityHover : MonoBehaviour
 {
-    [Header("Highlight Settings")]
     [SerializeField] private Color highlightColor = Color.yellow;
     [SerializeField] private float pulseDuration = 0.5f;
     [SerializeField] private float pulseIntensity = 0.3f;
-    
-    [Header("Tooltip Settings")]
     [SerializeField] private Vector2 tooltipOffset = new Vector2(0, 50);
-    
     private BattleEntity battleEntity;
     private SpriteRenderer spriteRenderer;
     private BattleHUD battleHUD;
@@ -35,10 +31,6 @@ public class BattleEntityHover : MonoBehaviour
     {
         battleHUD = FindObjectOfType<BattleHUD>();
         
-        if (battleHUD == null)
-        {
-            Debug.LogWarning($"BattleEntityHover em {gameObject.name}: BattleHUD não encontrado!");
-        }
     }
     
     void Update()

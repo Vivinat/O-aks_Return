@@ -8,7 +8,6 @@ public enum BattleState { START, RUNNING, ACTION_PENDING, PERFORMING_ACTION, WON
 
 public class BattleManager : MonoBehaviour
 {
-    [Header("Battle State")]
     public BattleState currentState;
     
     public List<BattleEntity> playerTeam;
@@ -17,12 +16,10 @@ public class BattleManager : MonoBehaviour
     private BattleEntity activeCharacter;
     public BattleHUD battleHUD;
 
-    [Header("Timings")]
     [SerializeField] private float actionDelay = 0.5f;
     [SerializeField] private float postActionDelay = 1.0f;
     [SerializeField] private float enemyActionDisplayTime = 2.0f;
     
-    [Header("Boss Dialogues")]
     public DialogueSO boss1Dialogue;
     public DialogueSO boss2Dialogue;
     public DialogueSO boss3Dialogue;
@@ -52,9 +49,7 @@ public class BattleManager : MonoBehaviour
         StartCoroutine(CheckForBossDialogue());
     }
     
-    /// <summary>
-    /// Instancia o SO do inimigo, aplica stats na instância e atribui ao BattleEntity
-    /// </summary>
+    // Instancia o SO do inimigo, aplica stats na instância e atribui ao BattleEntity
     private void InitializeEnemyTeam()
     {
         enemyTeam = new List<BattleEntity>();
@@ -304,9 +299,7 @@ public class BattleManager : MonoBehaviour
         return currentProcessingAction;
     }
 
-    /// <summary>
-    /// Evita contaminação cruzada entre modificadores de jogador/inimigo
-    /// </summary>
+    // Evita contaminação cruzada entre modificadores de jogador/inimigo em suas battleactions
     private IEnumerator PerformEnemyAction()
     {
         yield return new WaitForSeconds(1.0f);

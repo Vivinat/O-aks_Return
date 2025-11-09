@@ -6,10 +6,7 @@ using System.Linq;
 public class TreasurePoolSO : ScriptableObject
 {
     public List<BattleAction> possibleRewards;
-
-    /// <summary>
-    /// Sorteia ações únicas, evitando repetição e ações excluídas
-    /// </summary>
+    
     public List<BattleAction> GetRandomRewards(int count, List<BattleAction> excludeActions = null)
     {
         // Cria pool de ações disponíveis
@@ -35,9 +32,6 @@ public class TreasurePoolSO : ScriptableObject
         return selectedRewards;
     }
     
-    /// <summary>
-    /// Sorteia uma única ação, excluindo específicas
-    /// </summary>
     public BattleAction GetSingleRandomReward(List<BattleAction> excludeActions = null)
     {
         var rewards = GetRandomRewards(1, excludeActions);

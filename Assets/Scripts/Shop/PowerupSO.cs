@@ -13,7 +13,6 @@ public enum PowerupType
 [CreateAssetMenu(fileName = "New Powerup", menuName = "Shop/Powerup")]
 public class PowerupSO : ScriptableObject
 {
-    [Header("Basic Info")]
     public string powerupName;
     
     [TextArea]
@@ -21,11 +20,9 @@ public class PowerupSO : ScriptableObject
     
     public Sprite icon;
     
-    [Header("Effect")]
     public PowerupType powerupType;
     public int value;
     
-    [Header("Shop")]
     public int shopPrice = 50;
     
     public string GetFormattedDescription()
@@ -35,16 +32,9 @@ public class PowerupSO : ScriptableObject
         return baseDesc;
     }
     
-    /// <summary>
-    /// Aplica o efeito do powerup ao personagem
-    /// </summary>
+    // Aplica o efeito do powerup ao personagem
     public void ApplyToCharacter(Character character)
     {
-        if (character == null)
-        {
-            Debug.LogError("Character é null!");
-            return;
-        }
         
         switch (powerupType)
         {

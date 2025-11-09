@@ -7,20 +7,17 @@ public class OptionsMenu : MonoBehaviour
 {
     public static OptionsMenu Instance { get; private set; }
 
-    [Header("UI References - Configure no Inspector")]
     [SerializeField] private GameObject optionsPanel;
     [SerializeField] private Button optionsButton;
     [SerializeField] private Button closeButton;
     [SerializeField] private Button exitGameButton;
     [SerializeField] private Button returnToMenuButton;
 
-    [Header("Audio Controls - Configure no Inspector")]
     [SerializeField] private Slider musicVolumeSlider;
     [SerializeField] private Slider sfxVolumeSlider;
     [SerializeField] private TextMeshProUGUI musicVolumeText;
     [SerializeField] private TextMeshProUGUI sfxVolumeText;
 
-    [Header("Settings")]
     [SerializeField] private string menuSceneName = "MainMenu";
     [SerializeField] private bool pauseGameWhenOpen = true;
 
@@ -49,7 +46,6 @@ public class OptionsMenu : MonoBehaviour
 
     void Update()
     {
-        // Tecla ESC para abrir/fechar o menu
         if (Input.GetKeyDown(KeyCode.Escape))
         {
             ToggleOptionsMenu();

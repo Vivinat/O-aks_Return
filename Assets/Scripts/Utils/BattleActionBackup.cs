@@ -1,9 +1,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-/// <summary>
-/// Sistema de backup e restauração de valores de BattleActions
-/// </summary>
+// Sistema de backup e restauração de valores de BattleActions
 public class BattleActionBackup
 {
     [System.Serializable]
@@ -27,9 +25,7 @@ public class BattleActionBackup
     
     private List<ActionBackup> backups = new List<ActionBackup>();
     
-    /// <summary>
-    /// Salva valores atuais de uma lista
-    /// </summary>
+    // Salva valores atuais de uma lista
     public void SaveActions(List<BattleAction> actions)
     {
         backups.Clear();
@@ -66,9 +62,7 @@ public class BattleActionBackup
         }
     }
     
-    /// <summary>
-    /// Restaura valores salvos
-    /// </summary>
+    // Restaura valores salvos
     public void RestoreActions()
     {
         foreach (var backup in backups)

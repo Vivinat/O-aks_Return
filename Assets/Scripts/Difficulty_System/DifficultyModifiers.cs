@@ -1,19 +1,15 @@
 using UnityEngine;
 using System.Collections.Generic;
 
-/// <summary>
-/// Registro de modificadores aplicados
-/// </summary>
+// Registro de modificadores aplicados
 [System.Serializable]
 public class DifficultyModifiers
 {
-    [Header("Player Base Stats - Applied")]
     public int playerMaxHPModifier = 0;
     public int playerMaxMPModifier = 0;
     public int playerDefenseModifier = 0;
     public float playerSpeedModifier = 0f;
     
-    [Header("Player Action Modifiers - Applied")]
     public int playerActionPowerModifier = 0;
     public int playerActionManaCostModifier = 0;
     public int playerOffensiveActionPowerModifier = 0;
@@ -21,25 +17,20 @@ public class DifficultyModifiers
     public int playerAOEActionPowerModifier = 0;
     public int playerSingleTargetActionPowerModifier = 0;
     
-    [Header("Enemy Base Stats - Applied")]
     public int enemyMaxHPModifier = 0;
     public int enemyMaxMPModifier = 0;
     public int enemyDefenseModifier = 0;
     public float enemySpeedModifier = 0f;
     
-    [Header("Enemy Action Modifiers - Applied")]
     public int enemyActionPowerModifier = 0;
     public int enemyActionManaCostModifier = 0;
     public int enemyOffensiveActionPowerModifier = 0;
     public int enemyAOEActionPowerModifier = 0;
     
-    [Header("Economy Modifiers - Applied")]
     public int coinsEarnedModifier = 0;
     public int shopPricesModifier = 0;
     
-    /// <summary>
-    /// Registra que um modificador foi aplicado (NÃO aplica, só registra)
-    /// </summary>
+    // Registra que um modificador foi aplicado (NÃO aplica, só registra)
     public void RecordModifier(CardAttribute attribute, int value)
     {
         switch (attribute)
@@ -111,9 +102,7 @@ public class DifficultyModifiers
         }
     }
     
-    /// <summary>
-    /// Retorna o modificador registrado para um atributo
-    /// </summary>
+    // Retorna o modificador registrado para um atributo
     public int GetModifier(CardAttribute attribute)
     {
         switch (attribute)
@@ -147,9 +136,7 @@ public class DifficultyModifiers
         }
     }
     
-    /// <summary>
-    /// Reseta todos os registros
-    /// </summary>
+    // Reseta todos os registros
     public void Reset()
     {
         playerMaxHPModifier = 0;
@@ -178,9 +165,7 @@ public class DifficultyModifiers
         shopPricesModifier = 0;
     }
     
-    /// <summary>
-    /// Retorna um resumo dos modificadores registrados
-    /// </summary>
+    // Resumo dos modificadores registrados
     public string GetSummary()
     {
         System.Text.StringBuilder summary = new System.Text.StringBuilder();

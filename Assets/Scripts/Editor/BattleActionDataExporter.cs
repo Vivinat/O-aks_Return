@@ -4,10 +4,10 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 
-/// <summary>
-/// Exporta dados de todas as BattleActions para JSON
-/// Usado para resetar o sistema após morte
-/// </summary>
+
+// Exporta dados de todas as BattleActions para JSON
+// Usado para resetar o sistema após morte
+
 public class BattleActionDataExporter : EditorWindow
 {
     private string outputPath = "Assets/Data/BattleActionsBalanceData.json";

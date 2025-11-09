@@ -2,9 +2,7 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 using System.IO;
 
-/// <summary>
-/// Limpa automaticamente os dados salvos em momentos específicos
-/// </summary>
+// Limpa automaticamente os dados DE DIFFICULTY_MODIFIERS
 public class JSONCleaner : MonoBehaviour
 {
     [Header("Configuration")]
@@ -36,7 +34,7 @@ public class JSONCleaner : MonoBehaviour
             
             if (clearOnMainMenu && IsCurrentSceneMainMenu())
             {
-                FullCleanup("Main Menu - Awake (Início do jogo)");
+                FullCleanup("Main Menu");
                 hasCleanedOnMainMenu = true;
             }
             
@@ -148,7 +146,7 @@ public class JSONCleaner : MonoBehaviour
         }
         catch (System.Exception e)
         {
-            Debug.LogError($"Erro ao deletar {fileName}: {e.Message}");
+            Debug.LogError($"Erro {fileName}: {e.Message}");
             return false;
         }
     }
@@ -161,7 +159,7 @@ public class JSONCleaner : MonoBehaviour
         }
         catch (System.Exception e)
         {
-            Debug.LogError($"Erro ao executar GameStateResetter: {e.Message}");
+            Debug.LogError($"Erro: {e.Message}");
         }
     }
 
@@ -177,28 +175,12 @@ public class JSONCleaner : MonoBehaviour
             PlayerBehaviorAnalyzer.Instance.ClearAllData();
         }
     }
-
-    public static void ClearDataManually()
-    {
-        if (instance != null)
-        {
-            instance.FullCleanup("Manual Clear");
-        }
-        else
-        {
-            Debug.LogWarning("[JSONCleaner] Instance não encontrada!");
-        }
-    }
-
+    
     public static void FullReset()
     {
         if (instance != null)
         {
             instance.FullCleanup("Full Reset");
-        }
-        else
-        {
-            Debug.LogWarning("[JSONCleaner] Instance não encontrada para FullReset!");
         }
     }
 

@@ -2,17 +2,13 @@ using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.SceneManagement;
 
-/// <summary>
-/// Gerencia o menu principal do jogo
-/// </summary>
+// Gerencia o menu principal do jogo
 public class MainMenuManager : MonoBehaviour
 {
-    [Header("UI References")]
     [SerializeField] private Button startGameButton;
     [SerializeField] private Button optionsButton;
     [SerializeField] private Button exitGameButton;
     
-    [Header("Scene Configuration")]
     [SerializeField] private string firstMapScene = "Map1";
 
     void Start()
@@ -81,16 +77,5 @@ public class MainMenuManager : MonoBehaviour
         
         PlayerPrefs.Save();
     }
-
-    void OnValidate()
-    {
-        if (startGameButton == null)
-            Debug.LogWarning("MainMenuManager: startGameButton não foi atribuído!");
-            
-        if (optionsButton == null)
-            Debug.LogWarning("MainMenuManager: optionsButton não foi atribuído!");
-            
-        if (string.IsNullOrEmpty(firstMapScene))
-            Debug.LogWarning("MainMenuManager: firstMapScene não foi definido!");
-    }
+    
 }

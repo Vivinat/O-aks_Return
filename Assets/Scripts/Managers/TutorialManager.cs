@@ -1,10 +1,9 @@
-// Assets/Scripts/Tutorial/TutorialManager.cs
 
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
 /// <summary>
-/// Gerencia os tutoriais do jogo, mostrando-os apenas na primeira vez
+/// Gerencia os tutoriais do jogo. Aparecem apenas uma vez devido ao uso de playerprefs
 /// </summary>
 public class TutorialManager : MonoBehaviour
 {
@@ -280,17 +279,5 @@ public class TutorialManager : MonoBehaviour
     }
 
     #endregion
-
-    #region Validation
-
-    void OnValidate()
-    {
-        if (delayBeforeTutorial < 0)
-        {
-            delayBeforeTutorial = 0;
-            Debug.LogWarning("Delay não pode ser negativo!");
-        }
-    }
-
-    #endregion
+    
 }

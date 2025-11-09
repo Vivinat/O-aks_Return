@@ -3,17 +3,12 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 
-/// <summary>
-/// Restaura os valores originais de Characters de inimigos usando o JSON exportado
-/// </summary>
+// Restaura os valores originais de Characters de inimigos usando o JSON exportado
 public static class EnemyCharacterRestorer
 {
     private const string JSON_PATH = "Assets/Data/EnemyBalanceData.json";
     private static EnemyDatabase cachedDatabase = null;
     
-    /// <summary>
-    /// Carrega e cacheia o database de inimigos
-    /// </summary>
     private static bool LoadDatabase()
     {
         if (cachedDatabase != null)
@@ -27,21 +22,9 @@ public static class EnemyCharacterRestorer
         {
             TextAsset jsonAsset = Resources.Load<TextAsset>(RESOURCES_JSON_PATH);
             
-            if (jsonAsset == null)
-            {
-                Debug.LogError($"JSON de inimigos não encontrado em: Assets/Resources/{RESOURCES_JSON_PATH}.json");
-                Debug.LogError("Certifique-se que o arquivo está na pasta Resources!");
-                return false;
-            }
             
             string jsonContent = jsonAsset.text;
             cachedDatabase = JsonUtility.FromJson<EnemyDatabase>(jsonContent);
-            
-            if (cachedDatabase == null)
-            {
-                Debug.LogError("Falha ao deserializar JSON de inimigos");
-                return false;
-            }
             
             return true;
         }
@@ -52,9 +35,7 @@ public static class EnemyCharacterRestorer
         }
     }
     
-    /// <summary>
-    /// Restaura os Characters de inimigos aos valores originais
-    /// </summary>
+    // Restaura os Characters de inimigos aos valores originais
     public static void RestoreAllEnemyCharacters()
     {
         int restoredCount = 0;
@@ -84,28 +65,14 @@ public static class EnemyCharacterRestorer
         #endif
     }
     
-    /// <summary>
-    /// Restaura um único Character de inimigo
-    /// </summary>
     private static bool RestoreSingleEnemy(EnemyData data)
     {
-        if (string.IsNullOrEmpty(data.assetPath))
-        {
-            Debug.LogWarning($"AssetPath vazio para inimigo: {data.name}");
-            return false;
-        }
         
         #if UNITY_EDITOR
         Character character = UnityEditor.AssetDatabase.LoadAssetAtPath<Character>(data.assetPath);
         #else
         Character character = Resources.Load<Character>(GetResourcesPath(data.assetPath));
         #endif
-        
-        if (character == null)
-        {
-            Debug.LogWarning($"Não foi possível carregar: {data.assetPath}");
-            return false;
-        }
         
         bool wasModified = false;
         

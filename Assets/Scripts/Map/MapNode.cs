@@ -10,15 +10,10 @@ public class MapNode : MonoBehaviour
     private bool isLocked = true;
     private bool isCompleted = false;
 
-    [Header("Event Configuration")]
     public EventTypeSO eventType;
     
-    [Header("Audio Configuration")]
-    [Tooltip("Música que tocará na cena do evento. Se null, mantém a música atual.")]
     public AudioClip eventMusic;
     
-    [Header("Battle Visual Configuration")]
-    [Tooltip("Sprite de fundo específico para batalhas deste nó (sobrescreve o do BattleEventSO)")]
     public Sprite battleBackgroundOverride;
     
     private void Start()

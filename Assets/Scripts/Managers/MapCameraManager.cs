@@ -3,15 +3,12 @@ using System.Collections;
 
 public class MapCameraManager : MonoBehaviour
 {
-    [Header("Camera Settings")]
     public float panSpeed = 2f;
     public float smoothTime = 0.1f;
     
-    [Header("Camera Limits")]
     public Vector2 minBounds = new Vector2(-10f, -10f);
     public Vector2 maxBounds = new Vector2(10f, 10f);
     
-    [Header("Focus Settings")]
     public float focusTime = 1f;
     public AnimationCurve focusCurve = AnimationCurve.EaseInOut(0, 0, 1, 1);
     

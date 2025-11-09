@@ -1,26 +1,17 @@
 using UnityEngine;
 using System.Collections.Generic;
 
-/// <summary>
-/// Evento que leva para a cena de negociação
-/// </summary>
+// Evento que leva para a cena de negociação
 [CreateAssetMenu(menuName = "Events/Negotiation Event SO")]
 public class NegotiationEventSO : EventTypeSO
 {
-    [Header("Negotiation Configuration")]
-    [Tooltip("Pool de cartas disponíveis para este evento")]
     public List<NegotiationCardSO> cardPool = new List<NegotiationCardSO>();
     
-    [Tooltip("Número de cartas para apresentar (padrão: 3)")]
     public int numberOfCards = 3;
     
-    [Header("Visual Configuration")]
-    [Tooltip("Fundo da cena de negociação (opcional)")]
     public Sprite negotiationBackground;
     
-    /// <summary>
-    /// Seleciona cartas aleatórias do pool
-    /// </summary>
+    // Seleciona cartas aleatórias do pool
     public List<NegotiationCardSO> GetRandomCards()
     {
         List<NegotiationCardSO> validCards = new List<NegotiationCardSO>();
@@ -51,24 +42,5 @@ public class NegotiationEventSO : EventTypeSO
         
         int cardsToReturn = Mathf.Min(numberOfCards, shuffled.Count);
         return shuffled.GetRange(0, cardsToReturn);
-    }
-    
-    void OnValidate()
-    {
-        if (eventType != EventType.DifficultAdjust)
-        {
-            Debug.LogWarning($"NegotiationEvent '{name}': EventType deve ser DifficultAdjust!");
-            eventType = EventType.DifficultAdjust;
-        }
-        
-        if (cardPool.Count == 0)
-        {
-            Debug.LogWarning($"NegotiationEvent '{name}': Pool de cartas está vazio!");
-        }
-        
-        if (string.IsNullOrEmpty(sceneToLoad))
-        {
-            sceneToLoad = "NegotiationScene";
-        }
     }
 }

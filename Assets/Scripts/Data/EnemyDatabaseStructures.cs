@@ -1,8 +1,5 @@
 using System.Collections.Generic;
 
-/// <summary>
-/// Estruturas de dados para serialização de inimigos
-/// </summary>
 
 [System.Serializable]
 public class EnemyDatabase

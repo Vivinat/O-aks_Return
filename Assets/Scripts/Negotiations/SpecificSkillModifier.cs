@@ -1,13 +1,10 @@
 using UnityEngine;
 
-/// <summary>
-/// Sistema simples para modificar skills específicas
-/// </summary>
+// Sistema simples para modificar skills específicas
 public class SpecificSkillModifier : MonoBehaviour
 {
     public static SpecificSkillModifier Instance { get; private set; }
     
-    [Header("Debug")]
     [SerializeField] private bool showDebugLogs = true;
     
     void Awake()
@@ -23,18 +20,10 @@ public class SpecificSkillModifier : MonoBehaviour
         }
     }
     
-    /// <summary>
-    /// Modifica o poder de uma skill específica pelo nome
-    /// </summary>
+    // Modifica o poder de uma skill específica pelo nome
     public void ModifySkillPower(string skillName, int powerChange)
     {
         BattleAction skill = FindSkillByName(skillName);
-        
-        if (skill == null)
-        {
-            DebugLog($"Skill '{skillName}' não encontrada!");
-            return;
-        }
         
         foreach (var effect in skill.effects)
         {
@@ -47,27 +36,15 @@ public class SpecificSkillModifier : MonoBehaviour
         }
     }
     
-    /// <summary>
-    /// Modifica o custo de mana de uma skill específica pelo nome
-    /// </summary>
+    // Modifica o custo de mana de uma skill específica pelo nome
     public void ModifySkillManaCost(string skillName, int manaCostChange)
     {
         BattleAction skill = FindSkillByName(skillName);
-        
-        if (skill == null)
-        {
-            DebugLog($"Skill '{skillName}' não encontrada!");
-            return;
-        }
         
         int oldCost = skill.manaCost;
         skill.manaCost = Mathf.Max(0, skill.manaCost + manaCostChange);
         DebugLog($"'{skillName}': Custo {oldCost} MP → {skill.manaCost} MP ({manaCostChange:+#;-#;0})");
     }
-    
-    /// <summary>
-    /// Modifica poder e custo de uma skill de uma vez
-    /// </summary>
     public void ModifySkill(string skillName, int powerChange, int manaCostChange)
     {
         BattleAction skill = FindSkillByName(skillName);
@@ -91,16 +68,9 @@ public class SpecificSkillModifier : MonoBehaviour
         DebugLog($"'{skillName}' modificada: Poder {powerChange:+#;-#;0}, Mana {manaCostChange:+#;-#;0}");
     }
     
-    /// <summary>
-    /// Encontra uma skill pelo nome nas ações do jogador
-    /// </summary>
+    // Encontra uma skill pelo nome nas ações do jogador
     private BattleAction FindSkillByName(string skillName)
     {
-        if (GameManager.Instance == null || GameManager.Instance.PlayerBattleActions == null)
-        {
-            DebugLog("GameManager ou PlayerBattleActions não encontrado!");
-            return null;
-        }
         
         foreach (var action in GameManager.Instance.PlayerBattleActions)
         {

@@ -42,16 +42,11 @@ public enum StatusEffectType
 [System.Serializable]
 public class ActionEffect
 {
-    [Header("Primary Effect")]
     public ActionType effectType;
     public int power;
-    
-    [Header("Status Effect (Optional)")]
     public StatusEffectType statusEffect = StatusEffectType.None;
     public int statusDuration = 0;
     public int statusPower = 0;
-    
-    [Header("Self Effect (Optional)")]
     public bool hasSelfEffect = false;
     public ActionType selfEffectType;
     public int selfEffectPower = 0;
@@ -63,24 +58,12 @@ public class ActionEffect
 [CreateAssetMenu(fileName = "New Action", menuName = "Battle/Battle Action")]
 public class BattleAction : ScriptableObject
 {
-    [Header("General Information")]
     public string actionName;
-    
-    [TextArea]
-    [Tooltip("NÃO USADO - A descrição é gerada dinamicamente")]
     public string description; 
     public Sprite icon;
-
-    [Header("Action Logic")]
     public TargetType targetType;
-
-    [Header("Effects")]
     public List<ActionEffect> effects = new List<ActionEffect>();
-
-    [Header("Cost")]
     public int manaCost;
-    
-    [Header("Consumable (Optional)")]
     public bool isConsumable = false;
     public int maxUses = 1;
     public int shopPrice = 10;
@@ -135,11 +118,9 @@ public class BattleAction : ScriptableObject
                         
                     case ActionType.Buff:
                     case ActionType.Debuff:
-                        // Buffs/Debuffs são tratados via status effects
                         break;
                 }
                 
-                // Coleta status effects
                 if (effect.statusEffect != StatusEffectType.None)
                 {
                     string statusDesc = GetStatusEffectDescriptionCompact(

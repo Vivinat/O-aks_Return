@@ -5,32 +5,26 @@ using TMPro;
 
 public class TreasureManager : MonoBehaviour
 {
-    [Header("Data")]
     private TreasurePoolSO rewardPool;
     public int numberOfChoices = 3;
     private const int MAX_PLAYER_ACTIONS = 4;
 
-    [Header("UI References")]
     public Transform rewardOptionsContainer;
     public GameObject rewardChoicePrefab;
     public GameObject refreshButtonPrefab;
     public Button skipButton;
     public TextMeshProUGUI skipButtonText;
 
-    [Header("Player Actions UI")]
     public GameObject playerActionsPanel;
     public GameObject playerActionSlotPrefab;
 
-    [Header("Tooltip UI")]
     public TooltipUI tooltipUI;
     public RectTransform tooltipAnchor;
 
-    [Header("Highlight Visuals")]
     public Color highlightColor = new Color(1f, 0.9f, 0.4f);
     public Color defaultColor = Color.white;
     public Color emptySlotColor = new Color(0.7f, 0.7f, 0.7f, 0.8f);
     
-    [Header("Refresh Settings")]
     public Color refreshUsedColor = new Color(0.5f, 0.5f, 0.5f, 0.5f);
 
     private List<BattleAction> playerActions;

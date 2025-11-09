@@ -72,7 +72,6 @@ public static class GameStateResetter
         }
         else
         {
-            Debug.LogError("CRÍTICO: initialPlayerSkill não está configurado no GameManager!");
             player.battleActions = new List<BattleAction>();
             GameManager.Instance.PlayerBattleActions = new List<BattleAction>();
         }
@@ -80,12 +79,6 @@ public static class GameStateResetter
     
     private static void ClearDynamicOfferPools()
     {
-        if (DynamicNegotiationCardGenerator.Instance == null)
-        {
-            Debug.LogWarning("DynamicNegotiationCardGenerator.Instance não encontrado");
-            return;
-        }
-        
         DynamicNegotiationCardGenerator.Instance.ProcessObservations();
     }
     
@@ -105,11 +98,6 @@ public static class GameStateResetter
 
     private static void ResetCurrency()
     {
-        if (GameManager.Instance?.CurrencySystem == null)
-        {
-            Debug.LogWarning("CurrencySystem não encontrado");
-            return;
-        }
         
         int currentCoins = GameManager.Instance.CurrencySystem.CurrentCoins;
         if (currentCoins > 0)

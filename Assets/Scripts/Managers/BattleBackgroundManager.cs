@@ -1,11 +1,8 @@
 using UnityEngine;
 
-/// <summary>
-/// Gerencia o sprite de fundo das batalhas dinamicamente
-/// </summary>
+// Gerencia o sprite de fundo das batalhas dinamicamente
 public class BattleBackgroundManager : MonoBehaviour
 {
-    [Header("Background Configuration")]
     [SerializeField] private SpriteRenderer backgroundRenderer;
     [SerializeField] private string backgroundTag = "Background";
     [SerializeField] private Sprite defaultBackground;
@@ -26,11 +23,6 @@ public class BattleBackgroundManager : MonoBehaviour
     
     private void LoadBattleBackground()
     {
-        if (backgroundRenderer == null)
-        {
-            Debug.LogWarning("BattleBackgroundManager: SpriteRenderer do background não encontrado");
-            return;
-        }
         
         Sprite battleBackground = GetBattleBackgroundSprite();
         
@@ -44,9 +36,7 @@ public class BattleBackgroundManager : MonoBehaviour
         }
     }
     
-    /// <summary>
-    /// Recupera o sprite de background com sistema de prioridades
-    /// </summary>
+    // Recupera o sprite de background com sistema de prioridades
     private Sprite GetBattleBackgroundSprite()
     {
         if (GameManager.pendingBattleBackground != null)

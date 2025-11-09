@@ -7,11 +7,9 @@ public class DamageNumberController : MonoBehaviour
 {
     public static DamageNumberController Instance { get; private set; }
 
-    [Header("Canvas Configuration")]
     [SerializeField] private Canvas targetCanvas;
     [SerializeField] private GameObject floatingTextPrefab;
 
-    [Header("Colors")]
     [SerializeField] private Color damageColor = new Color(1f, 0.3f, 0.3f);
     [SerializeField] private Color healColor = new Color(0.3f, 1f, 0.3f);
     [SerializeField] private Color manaColor = new Color(0.25f, 0.1f, 1);
@@ -20,25 +18,19 @@ public class DamageNumberController : MonoBehaviour
     [SerializeField] private Color statusNegativeColor = new Color(1f, 0.5f, 0f);
     [SerializeField] private Color statusRemoveColor = new Color(0.7f, 0.7f, 0.7f);
 
-    [Header("Font Sizes")]
     [SerializeField] private float baseFontSize = 36f;
     [SerializeField] private float criticalFontMultiplier = 1.5f;
     [SerializeField] private float statusFontSize = 28f;
 
-    [Header("Damage Thresholds")]
     [SerializeField] private int smallDamageThreshold = 20;
     [SerializeField] private int mediumDamageThreshold = 50;
     [SerializeField] private int largeDamageThreshold = 100;
 
-    [Header("Spawn Settings")]
     [SerializeField] private float verticalOffset = 50f;
     [SerializeField] private float horizontalSpread = 20f;
-    
-    [Header("Stacking Settings")]
-    [Tooltip("Distância vertical entre textos empilhados")]
+
     [SerializeField] private float stackingVerticalSpacing = 45f;
     
-    [Tooltip("Tempo para resetar o contador de empilhamento")]
     [SerializeField] private float stackResetTime = 0.5f;
 
     private Camera mainCamera;
@@ -62,10 +54,6 @@ public class DamageNumberController : MonoBehaviour
         if (targetCanvas == null)
         {
             targetCanvas = FindObjectOfType<Canvas>();
-            if (targetCanvas != null)
-            {
-                Debug.Log("DamageNumberController: Canvas encontrado automaticamente!");
-            }
         }
     }
 
@@ -147,17 +135,6 @@ public class DamageNumberController : MonoBehaviour
 
     private void CreateFloatingText(Vector3 worldPosition, string text, Color color, float fontSize)
     {
-        if (floatingTextPrefab == null)
-        {
-            Debug.LogError("DamageNumberController: floatingTextPrefab não foi atribuído!");
-            return;
-        }
-
-        if (targetCanvas == null)
-        {
-            Debug.LogError("DamageNumberController: Canvas não encontrado!");
-            return;
-        }
 
         Vector3 roundedPosition = new Vector3(
             Mathf.Round(worldPosition.x * 10f) / 10f,
@@ -192,10 +169,6 @@ public class DamageNumberController : MonoBehaviour
         if (floatingText != null)
         {
             floatingText.Setup(text, color, fontSize);
-        }
-        else
-        {
-            Debug.LogError("O script FloatingTextAdvanced não foi encontrado no prefab!", textObj);
         }
 
         ScheduleStackReset(roundedPosition);

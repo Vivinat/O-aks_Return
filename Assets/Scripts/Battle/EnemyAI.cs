@@ -8,9 +8,8 @@ public static class EnemyAI
     private const float CRITICAL_HEAL_THRESHOLD = 0.25f;
     private const float ALLY_HEAL_THRESHOLD = 0.6f;
     
-    /// <summary>
-    /// Escolhe a melhor ação para o inimigo usando uma seleção ponderada aleatória
-    /// </summary>
+
+    //Escolhe a melhor ação para o inimigo usando uma seleção ponderada aleatória
     public static BattleAction ChooseBestAction(BattleEntity caster, BattleEntity player, List<BattleEntity> enemyTeam)
     {
         List<BattleAction> availableActions = caster.characterData.battleActions

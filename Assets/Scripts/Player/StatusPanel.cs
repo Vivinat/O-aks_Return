@@ -9,11 +9,9 @@ public class StatusPanel : MonoBehaviour
 {
     public static StatusPanel Instance { get; private set; }
 
-    [Header("UI References")]
     [SerializeField] private GameObject statusPanel;
     [SerializeField] private Button closeButton;
     
-    [Header("Character Stats")]
     [SerializeField] private TextMeshProUGUI characterNameText;
     [SerializeField] private TextMeshProUGUI hpText;
     [SerializeField] private TextMeshProUGUI mpText;
@@ -22,11 +20,9 @@ public class StatusPanel : MonoBehaviour
     [SerializeField] private TextMeshProUGUI speedText;
     [SerializeField] private TextMeshProUGUI coinsText;
 
-    [Header("Battle Skills")]
     [SerializeField] private Transform skillsContainer;
     [SerializeField] private GameObject skillSlotPrefab;
 
-    [Header("Tooltip")]
     [SerializeField] private TooltipUI tooltipUI;
     [SerializeField] private RectTransform tooltipAnchor;
 
@@ -96,11 +92,6 @@ public class StatusPanel : MonoBehaviour
 
     public void OpenPanel()
     {
-        if (statusPanel == null)
-        {
-            Debug.LogWarning("StatusPanel: statusPanel não foi atribuído!");
-            return;
-        }
         AudioConstants.PlayMenuOpen();
         
         isOpen = true;
@@ -148,11 +139,6 @@ public class StatusPanel : MonoBehaviour
 
     private void UpdateCharacterInfo()
     {
-        if (GameManager.Instance?.PlayerCharacterInfo == null)
-        {
-            Debug.LogWarning("Informações do personagem não encontradas!");
-            return;
-        }
 
         Character playerData = GameManager.Instance.PlayerCharacterInfo;
 
@@ -178,12 +164,6 @@ public class StatusPanel : MonoBehaviour
     private void UpdateSkillsList()
     {
         ClearSkillSlots();
-
-        if (GameManager.Instance?.PlayerBattleActions == null)
-        {
-            Debug.LogWarning("Lista de ações do jogador não encontrada!");
-            return;
-        }
 
         foreach (var action in GameManager.Instance.PlayerBattleActions)
         {
@@ -242,20 +222,5 @@ public class StatusPanel : MonoBehaviour
     public bool IsOpen()
     {
         return isOpen;
-    }
-
-    void OnValidate()
-    {
-        if (statusPanel == null)
-            Debug.LogWarning("StatusPanel: statusPanel não foi atribuído!");
-            
-        if (skillsContainer == null)
-            Debug.LogWarning("StatusPanel: skillsContainer não foi atribuído!");
-            
-        if (skillSlotPrefab == null)
-            Debug.LogWarning("StatusPanel: skillSlotPrefab não foi atribuído!");
-            
-        if (tooltipUI == null)
-            Debug.LogWarning("StatusPanel: tooltipUI não foi atribuído!");
     }
 }

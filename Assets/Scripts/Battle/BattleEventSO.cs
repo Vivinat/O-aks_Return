@@ -4,9 +4,6 @@ using UnityEngine;
 [CreateAssetMenu(menuName = "Events/Battle Event SO")]
 public class BattleEventSO : EventTypeSO
 {
-    [Header("Battle Specific Data")]
-    public List<Character> enemies; 
-    
-    [Header("Battle Visual")]
+    public List<Character> enemies;
     public Sprite battleBackground;
 }

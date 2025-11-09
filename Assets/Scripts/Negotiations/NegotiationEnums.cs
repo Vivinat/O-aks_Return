@@ -1,8 +1,6 @@
 using UnityEngine;
 
-/// <summary>
-/// Tipos de cartas de negociação
-/// </summary>
+// Tipos de cartas de negociação
 public enum NegotiationCardType
 {
     Fixed,
@@ -10,9 +8,7 @@ public enum NegotiationCardType
     IntensityOnly
 }
 
-/// <summary>
-/// Atributos que podem ser modificados nas cartas
-/// </summary>
+// Atributos que podem ser modificados nas cartas
 public enum CardAttribute
 {
     // Atributos do Jogador
@@ -47,9 +43,7 @@ public enum CardAttribute
     SpecificSkillManaCost,
 }
 
-/// <summary>
-/// Intensidades disponíveis para modificações
-/// </summary>
+// Intensidades disponíveis para modificações
 public enum CardIntensity
 {
     Low,     // 1x
@@ -57,9 +51,7 @@ public enum CardIntensity
     High     // 3x
 }
 
-/// <summary>
-/// Helper para trabalhar com intensidades de cartas
-/// </summary>
+// Helper para trabalhar com intensidades de cartas
 public static class IntensityHelper
 {
     public static float GetMultiplier(CardIntensity intensity)
@@ -79,9 +71,6 @@ public static class IntensityHelper
         return Mathf.RoundToInt(baseValue * multiplier);
     }
     
-    /// <summary>
-    /// Escala valor e garante sinal correto para custos de mana
-    /// </summary>
     public static int GetScaledValueWithCorrection(
         CardIntensity intensity, 
         int baseValue, 
@@ -99,9 +88,6 @@ public static class IntensityHelper
         return CorrectManaCostSign(attribute, scaledValue, isAdvantage);
     }
     
-    /// <summary>
-    /// Força o sinal correto para custos de mana
-    /// </summary>
     private static int CorrectManaCostSign(CardAttribute attribute, int value, bool isAdvantage)
     {
         if (attribute == CardAttribute.PlayerActionManaCost)
@@ -159,9 +145,6 @@ public static class IntensityHelper
     }
 }
 
-/// <summary>
-/// Classe auxiliar para nomes e descrições de atributos
-/// </summary>
 public static class AttributeHelper
 {
     public static string GetDisplayName(CardAttribute attribute)
@@ -196,9 +179,6 @@ public static class AttributeHelper
         }
     }
     
-    /// <summary>
-    /// Retorna explicação detalhada de quando/como o atributo afeta o jogo
-    /// </summary>
     public static string GetDetailedExplanation(CardAttribute attribute, int value, bool isAdvantage)
     {
         string sign = value > 0 ? "+" : "";

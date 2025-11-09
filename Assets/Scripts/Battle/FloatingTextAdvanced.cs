@@ -2,32 +2,25 @@ using UnityEngine;
 using TMPro;
 using System.Collections;
 
-/// <summary>
-/// Floating text com animações avançadas para Canvas UI
-/// </summary>
+// Floating text
 public class FloatingTextAdvanced : MonoBehaviour
 {
-    [Header("Animation Settings")]
     [SerializeField] private float floatSpeed = 100f;
     [SerializeField] private float floatDistance = 80f;
     [SerializeField] private float fadeStartTime = 0.5f;
     [SerializeField] private float lifetime = 1.5f;
     [SerializeField] private AnimationCurve movementCurve = AnimationCurve.EaseInOut(0, 0, 1, 1);
     
-    [Header("Random Movement")]
     [SerializeField] private float horizontalRandomness = 30f;
     
-    [Header("Scale Animation")]
     [SerializeField] private bool useScaleAnimation = true;
     [SerializeField] private float scaleStartMultiplier = 1.5f;
     [SerializeField] private float scaleEndMultiplier = 1f;
     [SerializeField] private AnimationCurve scaleCurve = AnimationCurve.EaseInOut(0, 1, 1, 0);
     
-    [Header("Rotation")]
     [SerializeField] private bool useRotation = false;
     [SerializeField] private float rotationSpeed = 45f;
     
-    [Header("Bounce Effect")]
     [SerializeField] private bool useBounce = true;
     [SerializeField] private float bounceHeight = 20f;
     [SerializeField] private float bounceSpeed = 8f;
@@ -44,11 +37,6 @@ public class FloatingTextAdvanced : MonoBehaviour
     void Awake()
     {
         textMesh = GetComponentInChildren<TextMeshProUGUI>();
-        
-        if (textMesh == null)
-        {
-            Debug.LogError("TextMeshProUGUI não encontrado!", this.gameObject);
-        }
 
         rectTransform = GetComponent<RectTransform>();
         

@@ -7,11 +7,9 @@ using System.Collections;
 
 public class ShopManager : MonoBehaviour
 {
-    [Header("Data")]
     private ShopEventSO shopData;
     private const int MAX_PLAYER_ACTIONS = 4;
 
-    [Header("UI References")]
     public Transform shopItemsContainer;
     public GameObject shopItemPrefab;
     public GameObject refreshButtonPrefab;
@@ -19,22 +17,18 @@ public class ShopManager : MonoBehaviour
     public TextMeshProUGUI exitButtonText;
     public TextMeshProUGUI coinsDisplay;
 
-    [Header("Player Actions UI")]
     public GameObject playerActionsPanel;
     public GameObject playerActionSlotPrefab;
 
-    [Header("Tooltip UI")]
     public TooltipUI tooltipUI;
     public RectTransform tooltipAnchor;
 
-    [Header("Highlight Visuals")]
     public Color highlightColor = new Color(1f, 0.9f, 0.4f);
     public Color defaultColor = Color.white;
     public Color emptySlotColor = new Color(0.7f, 0.7f, 0.7f, 0.8f);
     public Color cantAffordColor = new Color(0.7f, 0.4f, 0.4f);
     public Color refreshUsedColor = new Color(0.5f, 0.5f, 0.5f, 0.5f);
     
-    [Header("Purchase State")]
     public GameObject purchaseInstructionPanel;
     public TextMeshProUGUI purchaseInstructionText;
 

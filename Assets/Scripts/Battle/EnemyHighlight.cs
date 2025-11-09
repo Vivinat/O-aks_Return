@@ -3,7 +3,6 @@ using UnityEngine;
 [RequireComponent(typeof(SpriteRenderer))]
 public class EnemyHighlight : MonoBehaviour
 {
-    [Header("Highlight Settings")]
     public Color highlightColor = Color.yellow;
     public float pulseDuration = 0.5f; 
     public float pulseIntensity = 0.3f; 

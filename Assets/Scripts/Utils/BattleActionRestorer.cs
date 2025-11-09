@@ -3,17 +3,12 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 
-/// <summary>
-/// Restaura os valores originais de BattleActions usando o JSON exportado
-/// </summary>
+// Restaura os valores originais de BattleActions usando o JSON exportado
 public static class BattleActionRestorer
 {
     private const string JSON_PATH = "Assets/Data/BattleActionsBalanceData.json";
     private static BattleActionDatabase cachedDatabase = null;
     
-    /// <summary>
-    /// Carrega e cacheia o database de BattleActions
-    /// </summary>
     private static bool LoadDatabase()
     {
         if (cachedDatabase != null)
@@ -29,18 +24,11 @@ public static class BattleActionRestorer
             
             if (jsonAsset == null)
             {
-                Debug.LogError($"JSON de BattleActions não encontrado em: Assets/Resources/{RESOURCES_JSON_PATH}.json");
                 return false;
             }
             
             string jsonContent = jsonAsset.text;
             cachedDatabase = JsonUtility.FromJson<BattleActionDatabase>(jsonContent);
-            
-            if (cachedDatabase == null)
-            {
-                Debug.LogError("Falha ao deserializar JSON de BattleActions");
-                return false;
-            }
             
             return true;
         }
@@ -51,16 +39,9 @@ public static class BattleActionRestorer
         }
     }
     
-    /// <summary>
-    /// Restaura as BattleActions
-    /// </summary>
+    // Restaura as BattleActions
     public static void RestoreAllBattleActions()
     {
-        if (!LoadDatabase())
-        {
-            Debug.LogError("Não foi possível carregar o database.");
-            return;
-        }
         
         int restoredCount = 0;
         int errorCount = 0;
@@ -90,9 +71,7 @@ public static class BattleActionRestorer
         #endif
     }
     
-    /// <summary>
-    /// Restaura as BattleActions de um Character específico
-    /// </summary>
+    
     public static void RestoreSingleCharacterActions(Character character)
     {
         foreach (var action in character.battleActions)
@@ -112,28 +91,15 @@ public static class BattleActionRestorer
         }
     }
     
-    /// <summary>
-    /// Restaura uma única BattleAction
-    /// </summary>
+    // Restaura uma única BattleAction
     public static bool RestoreSingleAction(BattleActionData data)
     {
-        if (string.IsNullOrEmpty(data.assetPath))
-        {
-            Debug.LogWarning($"AssetPath vazio para ação: {data.actionName}");
-            return false;
-        }
-        
+
         #if UNITY_EDITOR
         BattleAction action = UnityEditor.AssetDatabase.LoadAssetAtPath<BattleAction>(data.assetPath);
         #else
         BattleAction action = Resources.Load<BattleAction>(GetResourcesPath(data.assetPath));
         #endif
-        
-        if (action == null)
-        {
-            Debug.LogWarning($"Não foi possível carregar: {data.assetPath}");
-            return false;
-        }
         
         bool wasModified = false;
         
@@ -213,22 +179,9 @@ public static class BattleActionRestorer
         return true;
     }
     
-    /// <summary>
-    /// Restaura apenas as BattleActions do jogador
-    /// </summary>
+    // Restaura apenas as BattleActions do jogador
     public static void RestorePlayerBattleActions()
     {
-        if (GameManager.Instance == null || GameManager.Instance.PlayerBattleActions == null)
-        {
-            Debug.LogWarning("GameManager ou PlayerBattleActions não encontrado");
-            return;
-        }
-        
-        if (!LoadDatabase())
-        {
-            Debug.LogError("Não foi possível carregar o database. Restauração cancelada.");
-            return;
-        }
         
         int restoredCount = 0;
         
@@ -244,10 +197,6 @@ public static class BattleActionRestorer
                 {
                     restoredCount++;
                 }
-            }
-            else
-            {
-                Debug.LogWarning($"Dados originais não encontrados para: {action.actionName}");
             }
         }
     }

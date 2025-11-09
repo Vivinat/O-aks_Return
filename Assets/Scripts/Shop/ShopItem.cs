@@ -1,8 +1,6 @@
 using UnityEngine;
 
-/// <summary>
-/// Wrapper para itens da loja
-/// </summary>
+// Wrapper para itens da loja
 public class ShopItem
 {
     public enum ItemType

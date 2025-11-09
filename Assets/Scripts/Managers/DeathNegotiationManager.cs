@@ -4,14 +4,11 @@ using TMPro;
 using System.Collections;
 using System.Collections.Generic;
 
-/// <summary>
-/// Gerencia o sistema de segunda chance quando o jogador morre
-/// </summary>
+// Gerencia o sistema de segunda chance quando o jogador morre
 public class DeathNegotiationManager : MonoBehaviour
 {
     public static DeathNegotiationManager Instance { get; private set; }
     
-    [Header("UI References")]
     [SerializeField] private GameObject negotiationPanel;
     [SerializeField] private TextMeshProUGUI titleText;
     [SerializeField] private TextMeshProUGUI descriptionText;

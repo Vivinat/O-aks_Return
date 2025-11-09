@@ -2,14 +2,11 @@ using UnityEngine;
 using System.Collections.Generic;
 using System.Linq;
 
-/// <summary>
-/// Gera ofertas padrão para negociação
-/// </summary>
+// Gera ofertas padrão para negociação
 public class DefaultNegotiationOffers : MonoBehaviour
 {
     public static DefaultNegotiationOffers Instance { get; private set; }
     
-    [Header("Configuration")]
     [SerializeField] private bool enableDefaultOffers = true;
     [SerializeField] private int numberOfDefaultOffers = 6;
     

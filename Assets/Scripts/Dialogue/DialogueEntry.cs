@@ -1,8 +1,7 @@
 using UnityEngine;
 
-/// <summary>
-/// Estrutura para representar uma entrada de diálogo
-/// </summary>
+
+//Estrutura para representar uma entrada de diálogo
 [System.Serializable]
 public class DialogueEntry
 {

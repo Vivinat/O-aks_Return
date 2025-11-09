@@ -2,26 +2,20 @@ using UnityEngine;
 using UnityEngine.Events;
 using System.Collections.Generic;
 
-/// <summary>
-/// Componente para disparar diálogos em GameObjects
-/// </summary>
+
+// Componente para disparar diálogos em GameObjects
 public class DialogueTrigger : MonoBehaviour
 {
-    [Header("Dialogue Configuration")]
     [SerializeField] private DialogueSO dialogueData;
     
-    [Header("Manual Dialogue (if no DialogueSO)")]
     [SerializeField] private List<DialogueEntry> manualDialogue = new List<DialogueEntry>();
     
-    [Header("Trigger Settings")]
     [SerializeField] private TriggerType triggerType = TriggerType.OnClick;
     [SerializeField] private bool triggerOnlyOnce = true;
     [SerializeField] private float triggerDelay = 0f;
     
-    [Header("Auto Trigger Settings")]
     [SerializeField] private float autoTriggerDelay = 1f;
     
-    [Header("Events")]
     [SerializeField] private UnityEvent onDialogueStart;
     [SerializeField] private UnityEvent onDialogueComplete;
     
@@ -87,19 +81,7 @@ public class DialogueTrigger : MonoBehaviour
         if (!CanTrigger())
             return;
 
-        if (DialogueManager.Instance == null)
-        {
-            Debug.LogError("DialogueTrigger: DialogueSystem não encontrado!");
-            return;
-        }
-
         List<DialogueEntry> dialogueToPlay = GetDialogueEntries();
-        
-        if (dialogueToPlay == null || dialogueToPlay.Count == 0)
-        {
-            Debug.LogWarning($"DialogueTrigger '{name}': Nenhum diálogo configurado!");
-            return;
-        }
 
         SetupDialogueMusic();
 
@@ -172,28 +154,6 @@ public class DialogueTrigger : MonoBehaviour
     public void SetDialogueData(DialogueSO newDialogueData)
     {
         dialogueData = newDialogueData;
-    }
-
-    void OnValidate()
-    {
-        if (dialogueData == null && (manualDialogue == null || manualDialogue.Count == 0))
-            Debug.LogWarning($"DialogueTrigger '{name}': Nenhum diálogo configurado!");
-
-        if (triggerType == TriggerType.OnTriggerEnter)
-        {
-            Collider2D col = GetComponent<Collider2D>();
-            if (col == null)
-                Debug.LogWarning($"DialogueTrigger '{name}': OnTriggerEnter requer Collider2D com isTrigger = true");
-            else if (!col.isTrigger)
-                Debug.LogWarning($"DialogueTrigger '{name}': Collider2D deve ter isTrigger = true");
-        }
-
-        if (triggerType == TriggerType.OnClick)
-        {
-            Collider2D col = GetComponent<Collider2D>();
-            if (col == null)
-                Debug.LogWarning($"DialogueTrigger '{name}': OnClick requer Collider2D");
-        }
     }
 
     void OnDrawGizmosSelected()

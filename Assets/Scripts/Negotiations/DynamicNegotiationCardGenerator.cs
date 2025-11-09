@@ -6,15 +6,11 @@ public class DynamicNegotiationCardGenerator : MonoBehaviour
 {
     public static DynamicNegotiationCardGenerator Instance { get; private set; }
     
-    [Header("Configuration")]
     [SerializeField] private int maxObservationsToProcess = 10;
     [SerializeField] private bool clearProcessedObservations = true;
     
-    [Header("Card Type Distribution")]
-    [Tooltip("Probabilidade de carta Fixed (0-1)")]
     [SerializeField] [Range(0f, 1f)] private float fixedProbability = 0.4f;
     
-    [Tooltip("Probabilidade de carta IntensityOnly (0-1)")]
     [SerializeField] [Range(0f, 1f)] private float intensityOnlyProbability = 0.3f;
     
     private List<NegotiationOffer> advantagePool = new List<NegotiationOffer>();

@@ -4,9 +4,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 
-/// <summary>
-/// Analisa e exporta dados dos grupos de inimigos
-/// </summary>
+// Analisa e exporta dados dos grupos de inimigos
 public class EnemyGroupVisualizer : EditorWindow
 {
     private Vector2 scrollPosition;
@@ -15,7 +13,6 @@ public class EnemyGroupVisualizer : EditorWindow
     private string outputPath = "Assets/Data/EnemyGroupsData.json";
     private bool prettyPrint = true;
     
-    // Filtros
     private bool showDruidGroups = true;
     private bool showWarriorGroups = true;
     private bool showMonsterGroups = true;

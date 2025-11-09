@@ -1,4 +1,3 @@
-// Assets/Scripts/Analytics/PlayerBehaviorAnalyzer.cs
 
 using System.Collections.Generic;
 using System.Linq;
@@ -10,7 +9,6 @@ public class PlayerBehaviorAnalyzer : MonoBehaviour
 {
     public static PlayerBehaviorAnalyzer Instance { get; private set; }
     
-    [Header("Configuration")]
     [SerializeField] private bool enableLogging = true;
     [SerializeField] private bool saveToFile = true;
     [SerializeField] private string saveFileName = "player_behavior.json";
@@ -91,11 +89,6 @@ public class PlayerBehaviorAnalyzer : MonoBehaviour
         playerProfile.currentBattle.Reset();
         
         currentBattleManager = FindObjectOfType<BattleManager>();
-        if (currentBattleManager == null)
-        {
-            Log("BattleManager não encontrado");
-            return;
-        }
         
         Invoke(nameof(CaptureBattleStartState), 0.1f);
     }
@@ -457,7 +450,6 @@ public class PlayerBehaviorAnalyzer : MonoBehaviour
         }
     }
     
-    #region Battle Analysis - Eventos Melhorados
 
     private void CheckSingleSkillCarry(string mapName)
     {
@@ -509,8 +501,6 @@ public class PlayerBehaviorAnalyzer : MonoBehaviour
             }
         }
     }
-
-    #endregion
 
     #region Battle Analysis - Velocidade/ATB
 
@@ -761,7 +751,7 @@ public class PlayerBehaviorAnalyzer : MonoBehaviour
 
     private void CheckBrokeAfterShopping(string mapName)
     {
-        // Implementar no ShopManager
+        
     }
 
     private void CheckRanOutOfConsumables(string mapName)
@@ -818,7 +808,6 @@ public class PlayerBehaviorAnalyzer : MonoBehaviour
 
     private void StartShopMonitoring()
     {
-        Log("Iniciando monitoramento de loja");
         
         lastShopItems.Clear();
         playerBoughtSomething = false;
@@ -1070,18 +1059,12 @@ public class PlayerBehaviorAnalyzer : MonoBehaviour
     public string GetSummaryStats()
     {
         var stats = new System.Text.StringBuilder();
-        stats.AppendLine("=== ESTATISTICAS DO JOGADOR ===");
-        stats.AppendLine($"Total de observacoes: {playerProfile.observations.Count}");
         
         var typeGroups = playerProfile.observations.GroupBy(obs => obs.triggerType);
         foreach (var group in typeGroups)
         {
             stats.AppendLine($"{group.Key}: {group.Count()}");
         }
-        
-        stats.AppendLine($"Mortes em boss registradas: {playerProfile.session.bossDeathHistory.Count}");
-        stats.AppendLine($"Batalhas consecutivas com MP baixo: {playerProfile.session.consecutiveLowManaBattles}");
-        stats.AppendLine($"Batalhas consecutivas com MP zerado: {playerProfile.session.consecutiveZeroManaBattles}");
         
         return stats.ToString();
     }

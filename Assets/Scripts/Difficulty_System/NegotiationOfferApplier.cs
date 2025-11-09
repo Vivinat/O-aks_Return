@@ -1,8 +1,6 @@
 using UnityEngine;
 
-/// <summary>
-/// Aplica ofertas de negociação imediatamente (gerais e específicas de skill)
-/// </summary>
+// Aplica ofertas de negociação imediatamente
 public static class NegotiationOfferApplier
 {
     public static void ApplyOffer(NegotiationOffer offer, int finalValue)
@@ -21,19 +19,8 @@ public static class NegotiationOfferApplier
     
     private static void ApplySpecificSkillOfferImmediate(NegotiationOffer offer, int finalValue)
     {
-        if (SpecificSkillModifier.Instance == null)
-        {
-            Debug.LogError("SpecificSkillModifier não encontrado!");
-            return;
-        }
         
         string skillName = offer.GetData<string>("targetSkillName", "");
-        
-        if (string.IsNullOrEmpty(skillName))
-        {
-            Debug.LogError("Nome da skill não encontrado na oferta!");
-            return;
-        }
         
         bool modifyPower = offer.GetData<bool>("modifyPower", false);
         bool modifyManaCost = offer.GetData<bool>("modifyManaCost", false);
@@ -80,11 +67,6 @@ public static class NegotiationOfferApplier
     
     private static void ApplyGeneralOfferImmediate(NegotiationOffer offer, int finalValue)
     {
-        if (DifficultySystem.Instance == null)
-        {
-            Debug.LogError("DifficultySystem não encontrado!");
-            return;
-        }
         
         // Aplica modificador imediatamente via reflexão
         var method = typeof(DifficultySystem).GetMethod("ApplyModifierImmediate", 

@@ -6,14 +6,11 @@ public class AudioManager : MonoBehaviour
 {
     public static AudioManager Instance { get; private set; }
 
-    [Header("Audio Sources")] 
     [SerializeField] private AudioSource musicSource;
     [SerializeField] private AudioSource sfxSource;
 
-    [Header("Default Music")] 
     [SerializeField] private AudioClip defaultMapMusic;
 
-    [Header("Audio Settings")] 
     [Range(0f, 1f)] [SerializeField] private float musicVolume = 0.7f;
     [Range(0f, 1f)] [SerializeField] private float sfxVolume = 1f;
     [SerializeField] private float musicFadeTime = 1f;
@@ -244,18 +241,14 @@ public class AudioManager : MonoBehaviour
         sfxSource.pitch = 1f;
     }
 
-    /// <summary>
-    /// Define a música do próximo evento e salva a música atual do mapa
-    /// </summary>
+    // Define a música do próximo evento e salva a música atual do mapa
     public void SetPendingEventMusic(AudioClip eventMusic, AudioClip mapMusic)
     {
         pendingEventMusic = eventMusic;
         savedMapMusic = mapMusic;
     }
 
-    /// <summary>
-    /// Volta à música do mapa salva
-    /// </summary>
+    // Volta à música do mapa salva
     public void ReturnToMapMusic()
     {
         if (savedMapMusic != null)

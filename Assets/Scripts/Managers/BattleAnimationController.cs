@@ -10,11 +10,9 @@ public class BattleAnimationController : MonoBehaviour
     private Coroutine flashCoroutine;
     private Coroutine hurtResetCoroutine;
 
-    [Header("Flash Settings")]
     [SerializeField] private float flashDuration = 0.05f;
     [SerializeField] private int flashCount = 5;
 
-    [Header("Animation Settings")]
     [SerializeField] private float hurtAnimationDuration = 0.5f;
 
     void Awake()
@@ -26,20 +24,11 @@ public class BattleAnimationController : MonoBehaviour
         {
             spriteRenderer = GetComponentInChildren<SpriteRenderer>();
         }
-
-        if (spriteRenderer != null)
-        {
-            originalColor = spriteRenderer.color;
-        }
-        else
-        {
-            Debug.LogWarning($"SpriteRenderer não encontrado em {gameObject.name}");
-        }
+        
     }
 
     public void SetFlashMaterial(Material newFlashMaterial)
     {
-        // Mantido para compatibilidade
     }
 
     public void OnTakeDamage()

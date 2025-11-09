@@ -1,25 +1,12 @@
 using UnityEngine;
 
-/// <summary>
-/// Evento de diálogo executado no mapa. Suporta texto direto ou referência a DialogueSO.
-/// </summary>
 [CreateAssetMenu(menuName = "Events/Dialogue Event SO")]
 public class DialogueEventSO : EventTypeSO
 {
-    [Header("Dialogue Configuration")]
-    [Tooltip("Texto do diálogo. Se preenchido, será usado em vez do DialogueSO.")]
-    [TextArea(3, 8)]
+    
     public string dialogueText = "";
-    
-    [Tooltip("Nome do speaker (opcional)")]
     public string speakerName = "";
-    
-    [Header("Advanced Dialogue")]
-    [Tooltip("DialogueSO complexo (opcional). Ignorado se dialogueText estiver preenchido.")]
     public DialogueSO dialogueData;
-    
-    [Header("Audio Configuration")]
-    [Tooltip("Som específico para este diálogo (opcional)")]
     public AudioClip dialogueSound;
     
     public bool HasValidDialogue()
@@ -61,12 +48,4 @@ public class DialogueEventSO : EventTypeSO
                dialogueData.IsValid();
     }
     
-    void OnValidate()
-    {
-        if (string.IsNullOrEmpty(dialogueText) && dialogueData == null)
-            Debug.LogWarning($"DialogueEventSO '{name}': Nem dialogueText nem dialogueData foram configurados!");
-        
-        if (!string.IsNullOrEmpty(dialogueText) && dialogueData != null)
-            Debug.LogWarning($"DialogueEventSO '{name}': Ambos configurados. dialogueText será usado.");
-    }
 }

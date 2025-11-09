@@ -1,18 +1,13 @@
-
-
 using UnityEngine;
 using System.Collections.Generic;
 using System.Linq;
 
-/// <summary>
-/// Interpreta observações comportamentais e gera ofertas de negociação contextuais
-/// 4 vantagens + 4 desvantagens por trigger
-/// </summary>
+
+// Interpreta observações comportamentais e gera ofertas de negociação contextuais
+
 public static class ObservationInterpreter
 {
-    /// <summary>
-    /// Interpreta uma observação e gera ofertas (retorna múltiplas opções e sorteia aleatoriamente)
-    /// </summary>
+    // Interpreta uma observação e gera ofertas (retorna múltiplas opções e sorteia aleatoriamente)
     public static List<NegotiationOffer> InterpretObservation(BehaviorObservation observation)
     {
         List<NegotiationOffer> allAdvantages = new List<NegotiationOffer>();
@@ -146,11 +141,9 @@ public static class ObservationInterpreter
         return selectedOffers;
     }
     
-    #region Geradores de Ofertas - BALANCEADOS (4+4)
+    #region Geradores de Ofertas
     
-    /// <summary>
-    /// Morte do jogador - 4 vantagens + 4 desvantagens
-    /// </summary>
+    // Morte do jogador - 4 vantagens + 4 desvantagens
     private static void GeneratePlayerDeathOffers(BehaviorObservation obs, 
         List<NegotiationOffer> advantages, List<NegotiationOffer> disadvantages)
     {
@@ -229,9 +222,7 @@ public static class ObservationInterpreter
         ));
     }
     
-    /// <summary>
-    /// Dependência de skill única - 4 vantagens + 4 desvantagens
-    /// </summary>
+    // Dependência de skill única - 4 vantagens + 4 desvantagens
     private static void GenerateSingleSkillCarryOffers(BehaviorObservation obs,
         List<NegotiationOffer> advantages, List<NegotiationOffer> disadvantages)
     {
@@ -313,9 +304,7 @@ public static class ObservationInterpreter
         ));
     }    
     
-    /// <summary>
-    /// HP baixo frequente - 4 vantagens + 4 desvantagens
-    /// </summary>
+    // HP baixo frequente - 4 vantagens + 4 desvantagens
     private static void GenerateFrequentLowHPOffers(BehaviorObservation obs,
         List<NegotiationOffer> advantages, List<NegotiationOffer> disadvantages)
     {
@@ -390,9 +379,7 @@ public static class ObservationInterpreter
         ));
     }
     
-    /// <summary>
-    /// Skill ignorada - 4 vantagens + 4 desvantagens
-    /// </summary>
+    // Skill ignorada - 4 vantagens + 4 desvantagens
     private static void GenerateWeakSkillIgnoredOffers(BehaviorObservation obs,
         List<NegotiationOffer> advantages, List<NegotiationOffer> disadvantages)
     {
@@ -472,9 +459,7 @@ public static class ObservationInterpreter
         ));
     }
     
-    /// <summary>
-    /// Sempre age por último - 4 vantagens + 4 desvantagens
-    /// </summary>
+    // Sempre age por último - 4 vantagens + 4 desvantagens
     private static void GenerateAlwaysOutspedOffers(BehaviorObservation obs,
         List<NegotiationOffer> advantages, List<NegotiationOffer> disadvantages)
     {
@@ -531,9 +516,7 @@ public static class ObservationInterpreter
         ));
     }
     
-    /// <summary>
-    /// Sempre age primeiro - 4 vantagens + 4 desvantagens
-    /// </summary>
+    // Sempre age primeiro - 4 vantagens + 4 desvantagens
     private static void GenerateAlwaysFirstTurnOffers(BehaviorObservation obs,
         List<NegotiationOffer> advantages, List<NegotiationOffer> disadvantages)
     {
@@ -589,9 +572,7 @@ public static class ObservationInterpreter
         ));
     }
     
-    /// <summary>
-    /// Dificuldade vs Tanks - 4 vantagens + 4 desvantagens
-    /// </summary>
+    // Dificuldade vs Tanks - 4 vantagens + 4 desvantagens
     private static void GenerateStrugglesAgainstTanksOffers(BehaviorObservation obs,
         List<NegotiationOffer> advantages, List<NegotiationOffer> disadvantages)
     {
@@ -669,9 +650,7 @@ public static class ObservationInterpreter
         ));
     }
     
-    /// <summary>
-    /// Dificuldade vs Rápidos - 4 vantagens + 4 desvantagens
-    /// </summary>
+    // Dificuldade vs Rápidos - 4 vantagens + 4 desvantagens
     private static void GenerateStrugglesAgainstFastOffers(BehaviorObservation obs,
         List<NegotiationOffer> advantages, List<NegotiationOffer> disadvantages)
     {
@@ -743,9 +722,7 @@ public static class ObservationInterpreter
         ));
     }
     
-    /// <summary>
-    /// Dificuldade vs Múltiplos - 4 vantagens + 4 desvantagens
-    /// </summary>
+    // Dificuldade vs Múltiplos - 4 vantagens + 4 desvantagens
     private static void GenerateStrugglesAgainsSwarmsOffers(BehaviorObservation obs,
         List<NegotiationOffer> advantages, List<NegotiationOffer> disadvantages)
     {
@@ -829,9 +806,7 @@ public static class ObservationInterpreter
         ));
     }
     
-    /// <summary>
-    /// Sempre morre cedo - 4 vantagens + 4 desvantagens
-    /// </summary>
+    // Sempre morre cedo - 4 vantagens + 4 desvantagens
     private static void GenerateAlwaysDiesEarlyOffers(BehaviorObservation obs,
         List<NegotiationOffer> advantages, List<NegotiationOffer> disadvantages)
     {
@@ -913,9 +888,7 @@ public static class ObservationInterpreter
         ));
     }
     
-    /// <summary>
-    /// Sempre morre tarde - 4 vantagens + 4 desvantagens
-    /// </summary>
+    // Sempre morre tarde - 4 vantagens + 4 desvantagens
     private static void GenerateAlwaysDiesLateOffers(BehaviorObservation obs,
         List<NegotiationOffer> advantages, List<NegotiationOffer> disadvantages)
     {
@@ -997,9 +970,7 @@ public static class ObservationInterpreter
         ));
     }
 
-    /// <summary>
-    /// Morte por chip damage - 3 vantagens + 3 desvantagens
-    /// </summary>
+    // Morte por chip damage - 3 vantagens + 3 desvantagens
     private static void GenerateDeathByChipDamageOffers(BehaviorObservation obs,
         List<NegotiationOffer> advantages, List<NegotiationOffer> disadvantages)
     {
@@ -1061,9 +1032,7 @@ public static class ObservationInterpreter
         ));
     }
     
-    /// <summary>
-    /// Vulnerável a one-shots - 3 vantagens + 3 desvantagens
-    /// </summary>
+    // Vulnerável a one-shots - 3 vantagens + 3 desvantagens
     private static void GenerateOneHitKOVulnerableOffers(BehaviorObservation obs,
         List<NegotiationOffer> advantages, List<NegotiationOffer> disadvantages)
     {
@@ -1128,9 +1097,7 @@ public static class ObservationInterpreter
         ));
     }
     
-    /// <summary>
-    /// HP baixo sem cura - 3 vantagens + 3 desvantagens
-    /// </summary>
+    // HP baixo sem cura - 3 vantagens + 3 desvantagens
     private static void GenerateLowHealthNoCureOffers(BehaviorObservation obs,
         List<NegotiationOffer> advantages, List<NegotiationOffer> disadvantages)
     {
@@ -1192,9 +1159,7 @@ public static class ObservationInterpreter
         ));
     }
     
-    /// <summary>
-    /// Problemas de mana - 3 vantagens + 3 desvantagens
-    /// </summary>
+    // Problemas de mana - 3 vantagens + 3 desvantagens
     private static void GenerateManaIssuesOffers(BehaviorObservation obs,
         List<NegotiationOffer> advantages, List<NegotiationOffer> disadvantages)
     {
@@ -1257,9 +1222,7 @@ public static class ObservationInterpreter
         ));
     }
     
-    /// <summary>
-    /// Dependência de consumíveis - 4 vantagens + 4 desvantagens
-    /// </summary>
+    // Dependência de consumíveis - 4 vantagens + 4 desvantagens
     private static void GenerateConsumableIssuesOffers(BehaviorObservation obs,
         List<NegotiationOffer> advantages, List<NegotiationOffer> disadvantages)
     {
@@ -1325,9 +1288,7 @@ public static class ObservationInterpreter
         ));
     }
     
-    /// <summary>
-    /// Vitória perfeita - 4 vantagens + 4 desvantagens
-    /// </summary>
+    // Vitória perfeita - 4 vantagens + 4 desvantagens
     private static void GenerateNoDamageReceivedOffers(BehaviorObservation obs,
         List<NegotiationOffer> advantages, List<NegotiationOffer> disadvantages)
     {
@@ -1397,9 +1358,7 @@ public static class ObservationInterpreter
         ));
     }
     
-    /// <summary>
-    /// Item esgotado - 3 vantagens + 3 desvantagens
-    /// </summary>
+    // Item esgotado - 3 vantagens + 3 desvantagens
     private static void GenerateItemExhaustedOffers(BehaviorObservation obs,
         List<NegotiationOffer> advantages, List<NegotiationOffer> disadvantages)
     {
@@ -1453,9 +1412,7 @@ public static class ObservationInterpreter
         ));
     }
     
-    /// <summary>
-    /// Sem skills defensivas - 3 vantagens + 3 desvantagens
-    /// </summary>
+    // Sem skills defensivas - 3 vantagens + 3 desvantagens
     private static void GenerateNoDefensiveSkillsOffers(BehaviorObservation obs,
         List<NegotiationOffer> advantages, List<NegotiationOffer> disadvantages)
     {
@@ -1517,9 +1474,7 @@ public static class ObservationInterpreter
         ));
     }
     
-    /// <summary>
-    /// Morte repetida em boss - 4 vantagens + 4 desvantagens
-    /// </summary>
+    // Morte repetida em boss - 4 vantagens + 4 desvantagens
     private static void GenerateRepeatedBossDeathOffers(BehaviorObservation obs,
         List<NegotiationOffer> advantages, List<NegotiationOffer> disadvantages)
     {
@@ -1602,9 +1557,7 @@ public static class ObservationInterpreter
         ));
     }
     
-    /// <summary>
-    /// Loja ignorada - 4 vantagens + 4 desvantagens
-    /// </summary>
+    // Loja ignorada - 4 vantagens + 4 desvantagens
     private static void GenerateShopIgnoredOffers(BehaviorObservation obs,
         List<NegotiationOffer> advantages, List<NegotiationOffer> disadvantages)
     {
@@ -1688,9 +1641,7 @@ public static class ObservationInterpreter
         ));
     }
     
-    /// <summary>
-    /// Vitória muito fácil - 3 vantagens + 3 desvantagens
-    /// </summary>
+    // Vitória muito fácil - 3 vantagens + 3 desvantagens
     private static void GenerateBattleEasyVictoryOffers(BehaviorObservation obs,
         List<NegotiationOffer> advantages, List<NegotiationOffer> disadvantages)
     {
@@ -1752,9 +1703,7 @@ public static class ObservationInterpreter
         ));
     }
     
-    /// <summary>
-    /// Apenas skills caras - 4 vantagens + 4 desvantagens
-    /// </summary>
+    // Apenas skills caras - 4 vantagens + 4 desvantagens
     private static void GenerateExpensiveSkillsOnlyOffers(BehaviorObservation obs,
         List<NegotiationOffer> advantages, List<NegotiationOffer> disadvantages)
     {
@@ -1828,9 +1777,7 @@ public static class ObservationInterpreter
         ));
     }
     
-    /// <summary>
-    /// Sem dano em área - 2 vantagens + 2 desvantagens
-    /// </summary>
+    // Sem dano em área - 2 vantagens + 2 desvantagens
     private static void GenerateNoAOEDamageOffers(BehaviorObservation obs,
         List<NegotiationOffer> advantages, List<NegotiationOffer> disadvantages)
     {
@@ -1875,9 +1822,7 @@ public static class ObservationInterpreter
         ));
     }
   
-    /// <summary>
-    /// Ficou sem dinheiro após compras - 3 vantagens + 3 desvantagens
-    /// </summary>
+    // Ficou sem dinheiro após compras - 3 vantagens + 3 desvantagens
     private static void GenerateBrokeAfterShoppingOffers(BehaviorObservation obs,
         List<NegotiationOffer> advantages, List<NegotiationOffer> disadvantages)
     {
@@ -1942,9 +1887,7 @@ public static class ObservationInterpreter
         ));
     }
 
-    /// <summary>
-    /// Poucas moedas com lojas disponíveis - 3 vantagens + 3 desvantagens
-    /// </summary>
+    // Poucas moedas com lojas disponíveis - 3 vantagens + 3 desvantagens
     private static void GenerateLowCoinsUnvisitedShopsOffers(BehaviorObservation obs,
         List<NegotiationOffer> advantages, List<NegotiationOffer> disadvantages)
     {
@@ -2012,11 +1955,9 @@ public static class ObservationInterpreter
     
     #endregion
     
-    #region Métodos Helper para Ofertas de Skill Específica
+    #region Métodos Helper
     
-    /// <summary>
-    /// Cria oferta que modifica APENAS O PODER de uma skill específica
-    /// </summary>
+
     private static NegotiationOffer CreateSpecificSkillPowerOffer(
         string offerName,
         string description,
@@ -2045,9 +1986,6 @@ public static class ObservationInterpreter
         return offer;
     }
     
-    /// <summary>
-    /// Cria oferta que modifica custo de mana  de uma skill específica
-    /// </summary>
     private static NegotiationOffer CreateSpecificSkillManaCostOffer(
         string offerName,
         string description,
@@ -2068,7 +2006,6 @@ public static class ObservationInterpreter
             contextualInfo = $"Skill: {targetSkillName}"
         };
         
-        // MARCA ESPECIAL
         offer.SetData("isSpecificSkill", true);
         offer.SetData("targetSkillName", targetSkillName);
         offer.SetData("modifyManaCost", true);
@@ -2077,9 +2014,6 @@ public static class ObservationInterpreter
         return offer;
     }
     
-    /// <summary>
-    /// Cria oferta que modifica poder e mana de uma skill específica
-    /// </summary>
     private static NegotiationOffer CreateSpecificSkillFullOffer(
         string offerName,
         string description,
@@ -2101,7 +2035,6 @@ public static class ObservationInterpreter
             contextualInfo = $"Skill: {targetSkillName}"
         };
         
-        // MARCA ESPECIAL
         offer.SetData("isSpecificSkill", true);
         offer.SetData("targetSkillName", targetSkillName);
         offer.SetData("modifyPower", true);

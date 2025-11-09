@@ -1,21 +1,16 @@
 using UnityEngine;
 using System.IO;
 
-/// <summary>
-/// Sistema que aplica modificações imediatamente nos ScriptableObjects
-/// </summary>
+// Sistema que aplica modificações imediatamente nos ScriptableObjects
 public class DifficultySystem : MonoBehaviour
 {
     public static DifficultySystem Instance { get; private set; }
     
-    [Header("Configuration")]
     [SerializeField] private bool saveModifiers = true;
     [SerializeField] private string saveFileName = "difficulty_modifiers.json";
     
-    [Header("Debug")]
     [SerializeField] private bool showDebugLogs = true;
     
-    [Header("Historical Registry (Read-Only)")]
     [SerializeField] private DifficultyModifiers modifiers = new DifficultyModifiers();
     
     public DifficultyModifiers Modifiers => modifiers;
@@ -46,9 +41,6 @@ public class DifficultySystem : MonoBehaviour
     
     public void ApplyNegotiation(CardAttribute playerAttr, CardAttribute enemyAttr, int playerValue, int enemyValue)
     {
-        DebugLog($"=== APLICANDO NEGOCIAÇÃO ===");
-        DebugLog($"Jogador: {playerAttr} {FormatValue(playerValue)}");
-        DebugLog($"Inimigo: {enemyAttr} {FormatValue(enemyValue)}");
         
         if (playerAttr != CardAttribute.PlayerMaxHP || playerValue != 0)
         {
@@ -68,11 +60,6 @@ public class DifficultySystem : MonoBehaviour
     
     private void ApplyModifierImmediate(CardAttribute attribute, int value, bool isPlayerAttribute)
     {
-        if (GameManager.Instance == null)
-        {
-            DebugLog("GameManager não encontrado!");
-            return;
-        }
         
         switch (attribute)
         {
@@ -145,7 +132,7 @@ public class DifficultySystem : MonoBehaviour
             
             case CardAttribute.CoinsEarned:
             case CardAttribute.ShopPrices:
-                DebugLog($"{attribute} registrado (aplicado em runtime)");
+                DebugLog($"{attribute} registrado");
                 break;
             
             case CardAttribute.EnemyMaxHP:
@@ -156,7 +143,7 @@ public class DifficultySystem : MonoBehaviour
             case CardAttribute.EnemyActionManaCost:
             case CardAttribute.EnemyOffensiveActionPower:
             case CardAttribute.EnemyAOEActionPower:
-                DebugLog($"{attribute} registrado (aplicado ao spawnar inimigos)");
+                DebugLog($"{attribute} registrado");
                 break;
         }
     }
@@ -207,8 +194,6 @@ public class DifficultySystem : MonoBehaviour
         
         if (applyStats)
         {
-            DebugLog($"Aplicando modificadores ao inimigo: {enemy.characterName}");
-            
             enemy.maxHp = Mathf.Max(1, enemy.maxHp + modifiers.enemyMaxHPModifier);
             enemy.maxMp = Mathf.Max(0, enemy.maxMp + modifiers.enemyMaxMPModifier);
             enemy.defense = Mathf.Max(0, enemy.defense + modifiers.enemyDefenseModifier);
@@ -274,7 +259,6 @@ public class DifficultySystem : MonoBehaviour
         return Mathf.Max(1, basePrice + modifiers.shopPricesModifier);
     }
     
-    [ContextMenu("Reset All Modifiers")]
     public void ResetModifiers()
     {
         modifiers.Reset();
@@ -316,13 +300,12 @@ public class DifficultySystem : MonoBehaviour
                 if (modifiers == null)
                     modifiers = new DifficultyModifiers();
                 
-                DebugLog($"Registro carregado!");
                 DebugLog(modifiers.GetSummary());
             }
             else
             {
                 modifiers = new DifficultyModifiers();
-                DebugLog("Nenhum registro salvo - iniciando limpo");
+                DebugLog("Nenhum registro salvo");
             }
         }
         catch (System.Exception e)

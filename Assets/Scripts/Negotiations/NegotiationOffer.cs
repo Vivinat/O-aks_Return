@@ -1,10 +1,7 @@
 using UnityEngine;
 using System.Collections.Generic;
 
-/// <summary>
-/// Representa uma oferta de negociação 
-/// Corrige automaticamente o sinal para custos de mana
-/// </summary>
+// Representa uma oferta de negociação 
 [System.Serializable]
 public class NegotiationOffer
 {
@@ -21,9 +18,8 @@ public class NegotiationOffer
     
     private Dictionary<string, object> customData = new Dictionary<string, object>();
     
-    /// <summary>
-    /// Cria vantagem com correção automática de sinal para mana cost
-    /// </summary>
+    // Cria vantagem 
+
     public static NegotiationOffer CreateAdvantage(
         string name,
         string description,
@@ -47,9 +43,7 @@ public class NegotiationOffer
         };
     }
     
-    /// <summary>
-    /// Cria desvantagem com correção automática de sinal para mana cost
-    /// </summary>
+    // Cria desvantagem 
     public static NegotiationOffer CreateDisadvantage(
         string name,
         string description,
@@ -74,9 +68,6 @@ public class NegotiationOffer
         };
     }
     
-    /// <summary>
-    /// Correção automática de sinal para custos de mana
-    /// </summary>
     private static int CorrectSignForManaCost(CardAttribute attribute, int value, bool isAdvantage)
     {
         if (attribute != CardAttribute.PlayerActionManaCost && 
